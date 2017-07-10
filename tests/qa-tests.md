@@ -1,5 +1,7 @@
 # Project Electron Transfer QA Tests
 
+These tests are written in [Gherkin](https://github.com/cucumber/cucumber/wiki/Gherkin), a structured language that can be used for both documentation and automated testing of software.
+
 ## Feature: validate bag size and filename
 
 	Scenario: bag size and filename validate successfully
