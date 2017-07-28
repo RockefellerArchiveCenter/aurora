@@ -7,7 +7,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> Detail View </title>
+  <title> Organization Admin View </title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   <!-- Bootstrap 3.3.6 -->
@@ -148,7 +148,7 @@ desired effect
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Detail View
+        Organization Admin
         <small>Optional description</small>
       </h1>
       <ol id="breadcrumb" class="breadcrumb">
@@ -164,36 +164,10 @@ desired effect
         <div class="col-md-12">
           <div class="box box-solid">
             <div class="box-header with-border">
-              <h3 class="box-title">Metadata</h3>
+              <h3 class="box-title">Donor Organization</h3>
             </div>
             <div class="box-body">
-              Bag Metadata goes here.
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box box-solid">
-            <div class="box-header with-border">
-              <h3 class="box-title">Error Messages</h3>
-            </div>
-            <div class="box-body">
-              <table class="table" id="error-messages-table"></table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="row">
-        <div class="col-md-12">
-          <div class="box box-solid">
-            <div class="box-header with-border">
-              <h3 class="box-title">Log</h3>
-            </div>
-            <div class="box-body">
-              <table id="log-table"></table>
+              <table class="table" id="org-admin-table"></table>
             </div>
           </div>
         </div>
@@ -302,7 +276,7 @@ desired effect
 <!-- AdminLTE App -->
 <script src="dist/js/app.min.js"></script>
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs/jq-2.2.4/dt-1.10.15/b-1.3.1/r-2.1.1/datatables.min.js"></script>
-<script type="text/javascript" src="dist/js/detail_view.js"></script>
+<script type="text/javascript" src="dist/js/org_admin.js"></script>
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
      Both of these plugins are recommended to enhance the
      user experience. Slimscroll is required when using the

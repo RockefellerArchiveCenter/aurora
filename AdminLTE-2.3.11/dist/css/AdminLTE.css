@@ -198,7 +198,6 @@ a:focus {
   -o-transition: margin-left 0.3s ease-in-out;
   transition: margin-left 0.3s ease-in-out;
   margin-bottom: 0;
-  margin-left: 230px;
   border: none;
   min-height: 50px;
   border-radius: 0;
@@ -322,13 +321,12 @@ a:focus {
   font-weight: 300;
 }
 .content-header > .breadcrumb {
-  float: right;
+  float: left;
   background: transparent;
   margin-top: 0;
   margin-bottom: 0;
   font-size: 12px;
   padding: 7px 5px;
-  position: absolute;
   top: 15px;
   right: 10px;
   border-radius: 2px;
@@ -1094,9 +1092,10 @@ a:focus {
   border-bottom-left-radius: 4px;
 }
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header {
-  height: 175px;
+  height: 146px;
   padding: 10px;
   text-align: center;
+    background-color: #5ea6d1;
 }
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header > img {
   z-index: 5;
@@ -1141,7 +1140,10 @@ a:focus {
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer {
   background-color: #f9f9f9;
-  padding: 10px;
+  padding-left: 10px;
+  padding-top: 10px;
+  padding-right: 10px;
+  display: table;
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer:before,
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer:after {
@@ -1153,6 +1155,8 @@ a:focus {
 }
 .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default {
   color: #666666;
+  margin-bottom: 10px;
+  width: 180px;
 }
 @media (max-width: 991px) {
   .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default:hover {
@@ -1233,6 +1237,10 @@ a:focus {
   position: absolute;
   right: 0;
   left: auto;
+  width: 200px;
+  padding: 0;
+  border: none;
+  margin-top: 2px;
 }
 @media (max-width: 991px) {
   .navbar-custom-menu > .navbar-nav {
@@ -4938,4 +4946,39 @@ table.text-center th {
   .table-responsive > .table tr td {
     white-space: normal !important;
   }
+}
+
+
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #cccccc;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #e0e0e0;
+}
+
+.container {
+    width: 98%;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#welcomeli {
+    color: white;
+    line-height: 32px;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.navbar-nav {
+    margin-right: 40px;
 }
