@@ -135,17 +135,18 @@ These tests are written in [Gherkin](https://github.com/cucumber/cucumber/wiki/G
 ## Feature: validate bag metadata
 
 	Scenario: all metadata validation checks pass
-		Given bag includes metadata.json file and bag-info.txt contains required information
+		Given bag includes valid metadata.json file and bag-info.txt contains required information
 		When metadata validation scripts are run
 		Then metadata validation passes
 			And success information is logged in database
 			And success notifications are delivered to system
 
-	Scenario: bag is missing the metadata.json file
-		Given the bag is missing the required file
+	Scenario: metadata.json is invalid
+		Given a file named metadata.json exists in payload directory (/data)
+			And metadata.json is not valid JSON or JSON-LD
 		When metadata validation scripts are run
 		Then metadata validation fails
-		And the bag is deleted
+			And the bag is deleted
 			And error information is logged in database
 			And error notifications are delivered to system
 			And error notifications are delivered to client

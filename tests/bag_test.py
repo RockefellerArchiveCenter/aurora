@@ -195,11 +195,12 @@ class BagMetadataCheckTestCase(TestCase)
 		# 	And success notifications are delivered to system
 
 	def missing_metadata_file(self):
-        """Bag missing metadata.json file is rejected"""
-		# Given the bag is missing the required file
+        """Bag with invalid metadata.json file is rejected"""
+		# Given a file named metadata.json exists in payload directory (/data)
+        #   And metadata.json is not valid JSON or JSON-LD
 		# When metadata validation scripts are run
 		# Then metadata validation fails
-		# And the bag is deleted
+		#   And the bag is deleted
 		# 	And error information is logged in database
 		# 	And error notifications are delivered to system
 		# 	And error notifications are delivered to client
