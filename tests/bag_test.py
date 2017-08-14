@@ -194,7 +194,7 @@ class BagMetadataCheckTestCase(TestCase)
 		# 	And success information is logged in database
 		# 	And success notifications are delivered to system
 
-	def missing_metadata_file(self):
+	def invalid_metadata_file(self):
         """Bag with invalid metadata.json file is rejected"""
 		# Given a file named metadata.json exists in payload directory (/data)
         #   And metadata.json is not valid JSON or JSON-LD
@@ -226,7 +226,7 @@ class BagMetadataCheckTestCase(TestCase)
 		# 	And error notifications are delivered to client
 
 	def invalid_data_type(self):
-        """A bag with a metadata element who's data type does not match specification is rejected"""
+        """A bag containing a metadata element that does not conform to datatype specification is rejected"""
 		# Given data type’s content doesn’t adhere to RAC specification
 		# When metadata validation scripts are run
 		# Then metadata validation fails
