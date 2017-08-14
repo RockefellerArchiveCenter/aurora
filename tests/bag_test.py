@@ -78,6 +78,13 @@ class VirusCheckTestCase(TestCase)
 		# 	And error notifications are delivered to client
 		# 	And Marist sysadmins are notified
 
+	def update_definitions(self):
+        """Virus definitions are updated before script is run"""
+		# Given virus definitions are outdated
+		# When virus check script is triggered
+		# Then virus definitions are updated
+		# 	And the virus check script is run
+
 class BagStructureTestCase(TestCase)
     def setUp(self):
         Bag.objects.create() # Add bag data

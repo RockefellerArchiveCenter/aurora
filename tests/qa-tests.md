@@ -49,6 +49,12 @@ These tests are written in [Gherkin](https://github.com/cucumber/cucumber/wiki/G
 			And error notifications are delivered to client
 			And Marist sysadmins are notified
 
+	Scenario: virus definitions are out of date
+		Given virus definitions are outdated
+		When virus check script is triggered
+		Then virus definitions are updated
+			And the virus check script is run
+
 ## Feature: validate bag structure
 
 	Scenario: bag is correctly structured
