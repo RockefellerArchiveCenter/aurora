@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>{% include 'transfer_app/head.html' %}</head>
+  <body class="hold-transition skin-blue sidebar-mini">
+    <div class="wrapper">
+      <!-- Main Header -->
+      {% include 'transfer_app/header.html' %}
+
+      <!-- Content Wrapper. Contains page content -->
+      {% block content %}{% endblock %}
+
+      <!-- Main Footer -->
+      {% include 'transfer_app/footer.html' %}
+
+      
+      {% include 'transfer_app/sidebar.html' %}
+
+      <!-- REQUIRED JS SCRIPTS -->
+      {% include 'transfer_app/js_scripts.html' %}
+
+    </div>
+  </body>
+</html>

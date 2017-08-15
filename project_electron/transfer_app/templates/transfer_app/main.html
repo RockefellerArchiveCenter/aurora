@@ -1,0 +1,36 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block content %}
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <h1>
+      Organization Admin
+      <!--<small>Optional description</small> -->
+    </h1>
+    <ol id="breadcrumb" class="breadcrumb">
+      <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+      <li class="active">Here</li>
+    </ol>
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+
+    <div class="row">
+      <div class="col-md-12">
+        <div class="box box-solid">
+          <div class="box-header with-border">
+            <h3 class="box-title">Donor Organization</h3>
+          </div>
+          <div class="box-body">
+            <table class="table" id="org-admin-table"></table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+  <!-- /.content -->
+</div>
+{% endblock %}
