@@ -2,13 +2,16 @@
 
 The following sample bags are needed:
 
-### valid_bag
-bag that validates against all checks
+### valid_bag_unzipped
+Unzipped bag that validates against all checks
+
+### valid_bag_zipped
+Zipped bag that validates against all checks
 
 ### large_bag
 bag that exceeds 500GB size
 
-### invalid_filename
+### invalid_filëname
 bag whose root directory contains a filename with special characters
 
 ### contains_virus
@@ -43,3 +46,6 @@ bag containing metadata element that does not conform to datatype specification
 
 ### unauthorized_term
 bag containing metadata elements which do not adhere to locally controlled vocabularies
+
+### changed_file
+bag containing a file modified after the bag was created
