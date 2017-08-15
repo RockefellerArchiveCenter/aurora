@@ -21,7 +21,7 @@ bag which contains a file which will trigger virus scanning tools
 bag missing bagit.txt
 
 ### missing_payload_manifest
-bag missing mainifest-<alg>.txt
+bag missing manifest-<alg>.txt
 
 ### missing_bag_manifest
 bag missing bag-info.txt
