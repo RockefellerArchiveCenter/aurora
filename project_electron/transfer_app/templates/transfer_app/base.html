@@ -9,8 +9,24 @@
       <!-- Main Header -->
       {% include 'transfer_app/header.html' %}
 
+      <!-- Left Sidebar -->
+      {% include 'transfer_app/left_sidebar.html' %}
+
       <!-- Content Wrapper. Contains page content -->
-      {% block content %}{% endblock %}
+      <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+          <h1>{% block h1_title %}{% endblock %}</h1>
+          <ol id="breadcrumb" class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+          </ol>
+        </section>
+        <!-- Main content -->
+        <section class="content">
+        {% block content %}{% endblock %}
+        </section>
+      </div>
 
       <!-- Main Footer -->
       {% include 'transfer_app/footer.html' %}
@@ -20,6 +36,7 @@
 
       <!-- REQUIRED JS SCRIPTS -->
       {% include 'transfer_app/js_scripts.html' %}
+      {% block extra_js %}{% endblock %}
 
     </div>
   </body>

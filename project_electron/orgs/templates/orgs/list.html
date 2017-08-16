@@ -1,0 +1,47 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}Organization List{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Donor Organization</h3>
+      </div>
+      <div class="box-body">
+
+        <table class="table" id="org-admin-table">
+        	<thead>
+        		<tr>
+        			<th>col1</th>
+        			<th>col2</th>
+        		</tr>
+        	<thead>
+        	<tbody>
+        	{% for org in object_list %}
+        	<tr>
+        		<td>{{ org.name }}</td>
+        		<td>{{ org.created_time }}</td>
+        	</tr>
+        	{% endfor %}
+        	</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+var org_admin = [["Message1", "Message1","Message1","Message1"],["Message2","Message2","Message2","Message2"]];
+  
+$(document).ready(function(){
+	$('#org-admin-table').DataTable({
+		// data: org_admin,
+	});
+});
+
+</script>
+{% endblock %}

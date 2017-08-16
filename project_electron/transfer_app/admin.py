@@ -2,5 +2,8 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
+from orgs.models import Organization
 
-# Register your models here.
+@admin.register(Organization)
+class OrganizationsAdmin(admin.ModelAdmin):
+    pass

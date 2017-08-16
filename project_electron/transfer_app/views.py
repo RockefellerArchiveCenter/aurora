@@ -5,5 +5,4 @@ from django.views.generic import TemplateView
 from django.shortcuts import render
 
 class MainView(TemplateView):
-	template_name = "transfer_app/main.html"
-
+    template_name = "transfer_app/main.html"

@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rac_user',
     'transfer_app',
+    'orgs',
 ]
 
 MIDDLEWARE = [

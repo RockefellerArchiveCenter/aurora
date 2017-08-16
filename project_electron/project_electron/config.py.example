@@ -1,0 +1,15 @@
+##
+#   After Updating with your configs,
+#   rename/save as to config.py
+##
+
+db_configs = {
+  'ENGINE' :    'django.db.backends.mysql',
+  'NAME' :  '',
+  'USER' :  '',
+  'PASSWORD':   '',
+  'HOST':   '',
+}
+ALLOWED_HOSTS = ['localhost']
+
+
