@@ -1,4 +1,5 @@
 {% extends 'transfer_app/base.html' %}
+{% load tz %}
 
 {% block h1_title %}Organization List{% endblock %}
 
@@ -22,7 +23,7 @@
         	{% for org in object_list %}
         	<tr>
         		<td>{{ org.name }}</td>
-        		<td>{{ org.created_time }}</td>
+        		<td>{{ org.created_time|localtime }}</td>
         	</tr>
         	{% endfor %}
         	</tbody>
@@ -35,12 +36,11 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-var org_admin = [["Message1", "Message1","Message1","Message1"],["Message2","Message2","Message2","Message2"]];
   
 $(document).ready(function(){
-	$('#org-admin-table').DataTable({
+	// $('#org-admin-table').DataTable({
 		// data: org_admin,
-	});
+	// });
 });
 
 </script>

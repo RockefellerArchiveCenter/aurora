@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 class Organization(models.Model):
@@ -13,3 +13,7 @@ class Organization(models.Model):
         super(Organization,self).save(*args,**kwargs)
 
     def __unicode__(self): return self.name
+
+
+class User(AbstractUser):
+	organization = models.ForeignKey(Organization, null=True, blank=True)
