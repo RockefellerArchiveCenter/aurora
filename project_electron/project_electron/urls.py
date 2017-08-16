@@ -15,8 +15,13 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
+from rac_user.views import SplashView
+from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r'^admin/', 	admin.site.urls),
-    url(r'app/', 			include('transfer_app.urls')),
+    url(r'^app/', 		include('transfer_app.urls')),
+    url(r'^$',			SplashView.as_view()),
+    url(r'^login/$',	auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
+    url(r'^logout/$', 	auth_views.logout, {'next_page': '/login'}, name='logout'),
 ]

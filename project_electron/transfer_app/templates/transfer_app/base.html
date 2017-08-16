@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
-  <head>{% include 'transfer_app/head.html' %}</head>
+  <head>
+    {% include 'transfer_app/head.html' %}
+    {% block extra_css %}{% endblock %}
+  </head>
   <body class="hold-transition skin-blue sidebar-mini">
     <div class="wrapper">
       <!-- Main Header -->

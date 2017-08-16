@@ -32,7 +32,7 @@
         </li>
 
         <li>
-          <h5 id="welcomeli"> Welcome Guest </h5>
+          <h5 id="welcomeli">{{request.user.username}}</h5>
         </li>
 
         <!-- User Account Menu -->
@@ -62,7 +62,7 @@
                 </div>
                   <br>
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat" id="signout">Sign out</a>
+                  <a href="/logout" class="btn btn-default btn-flat" id="signout">Sign out</a>
                 </div>
               </li>
             </ul>
