@@ -11,5 +11,4 @@ db_configs = {
   'HOST':   '',
 }
 ALLOWED_HOSTS = ['localhost']
-
-
+TIME_ZONE = 'EST'
