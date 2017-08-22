@@ -41,6 +41,4 @@ rm -rf /data/tomcat8/logs/*
 cp /data/fedora/marist/repository.json /data/tomcat8/webapps/fedora/WEB-INF/classes/config/jdbc-mysql/repository.json
 # Copy the mysql connector to the appropriate location
 cp /data/fedora/marist/mysql-connector-java-5.1.38-bin.jar /data/tomcat8/webapps/fedora/WEB-INF/lib/mysql-connector-java-5.1.38-bin.jar
-# Startup Tomcat 
-./startup.sh
 
