@@ -11,7 +11,7 @@ Zipped bag that validates against all checks
 ### large_bag
 bag that exceeds 500GB size
 
-### invalid_filëname
+### invalid_filename
 bag whose root directory contains a filename with special characters
 
 ### contains_virus

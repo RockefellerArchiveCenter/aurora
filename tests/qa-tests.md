@@ -2,6 +2,80 @@
 
 These tests are written in [Gherkin](https://github.com/cucumber/cucumber/wiki/Gherkin), a structured language that can be used for both documentation and automated testing of software.
 
+## Feature: create and delete accounts
+
+  Scenario: Create a new RAC user
+	  Given a valid RAC email address is provided
+			And a valid password is provided
+	  When the email and password are entered
+	  Then the email and password are assigned to an LDAP user id
+			And the user information is logged in database
+			And success notification is delivered to the RAC user
+
+  Scenario: Create a new organization
+	  Given a RAC user logs in with a valid email and password
+			And a valid organization email is provided
+			And an organization name is provided
+			And the organization name does not already exist
+	  When the organization name and email are entered
+	  Then the organization name and email are assigned to an LDAP organization id
+			And new directories are created for the organization
+			And the organization information is logged in database
+			And success notification is delivered to the RAC user
+
+  Scenario: create a new organization user
+	  Given a RAC user logs in with a valid email and password
+      And a valid org user email is provided
+			And a valid org user password is provided
+		When the org user email and password are entered
+		Then the org user email and password are assigned to an LDAP user id
+		  And success notification is delivered to the RAC user
+			And the changelog is updated
+
+		Scenario: delete a RAC or org user
+		  Given a RAC user logs in with a valid email and password
+			  And a given RAC or org user exists
+		  When a RAC user deletes a user
+			Then user is deleted from the system
+			  And success notification is delivered to the RAC user
+
+## Feature: manage accounts
+
+  Scenario: add an organization user to an organization
+	  Given a RAC user logs in with a valid email and password
+		  And a specified org user exists
+			And a specified organization exists
+	  When a RAC user adds an org user to an organization
+		Then org user is added to organization
+		  And organization assignment is logged in database
+		  And success notification is delivered to the RAC user
+
+		## Scenario: change a user password
+		  Given a user is logged in with valid email_1 and password_1
+		  When a user changes their password_1 to password_2
+		  Then a user can log in with the email_1 and password_2
+		    And a user can no longer log in with email_1 and password_1
+				And password change is logged in database
+				And success notification is delivered to the user
+
+	Scenario: account is inactive
+    [expand this]
+
+## Feature: user login results
+
+  Scenario: RAC user logs in
+	  Given a RAC user logs in with a valid email and password
+	  When login is successful
+	  Then RAC user can access Organization Admin IU
+		  And RAC user can access User Admin UI
+			And RAC user can access Transfer Log, Detail View, and Error Message UIs for a specified organization
+
+  Scenario: org user logs in
+	  Given: an org user logs in with a valid email and password
+	  When login is successful
+	  Then org user can access Transfer Log, Detail View, and Error Message UIs for their organization
+			And user org can initiate transfers
+
 ## Feature: validate bag size and filename
 
 	Scenario: bag size and filename validate successfully
