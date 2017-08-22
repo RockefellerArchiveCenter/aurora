@@ -5,7 +5,8 @@ from django.db import models
 
 class Organization(models.Model):
     name =          models.CharField(max_length=60, unique=True)
-    machine_name =  models.CharField(max_length=30, unique=True, default="orgXXX will be created here")
+    machine_name =  models.CharField(
+        max_length=30, unique=True, default="orgXXX will be created here")
     created_time =  models.DateTimeField(auto_now = True)
     modified_time = models.DateTimeField(auto_now_add = True)
 
@@ -20,10 +21,11 @@ class Organization(models.Model):
         
         if self.pk is None:                         # Initial Save / Sync table
             results = add_org(self.name)
-            # print results
-            # Run RACaddorg and on successful return code save model updated with machine_name
-                # if not successful Return message to page
-
+            if results[0]:
+                self.machine_name = results[1]
+            else:
+                go = 1
+                # and when it fails
 
         super(Organization,self).save(*args,**kwargs)
 

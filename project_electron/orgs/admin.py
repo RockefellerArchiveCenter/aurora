@@ -6,7 +6,7 @@ from orgs.models import Organization,User
 
 @admin.register(Organization)
 class OrganizationsAdmin(admin.ModelAdmin):
-    pass
+	readonly_fields=('machine_name',)
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
