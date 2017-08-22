@@ -12,3 +12,5 @@ db_configs = {
 }
 ALLOWED_HOSTS = ['localhost']
 TIME_ZONE = 'EST'
+
+STATIC_ROOT = '/STATIC_FILES_LOCATION/'
