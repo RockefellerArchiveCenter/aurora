@@ -1,6 +1,6 @@
 # project_electron_transfer
 
-Full documentation available [here](scripts/Rockefeller Archive Center Bash Scripts Documentation.pdf) (PDF)
+Full documentation available [here](https://github.com/RockefellerArchiveCenter/project_electron_transfer/blob/scripts/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF)
 
 ### upload.sh
 
