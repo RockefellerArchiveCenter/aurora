@@ -119,8 +119,8 @@ These tests are written in [Gherkin](https://github.com/cucumber/cucumber/wiki/G
 			And error notification is displayed
 
 	Scenario: a user attempts to login with invalid password
-	  Given a user status in active
-		  And user has been added to an organization
-	  When user enters an invalid password
-	  Then system rejects the login attempt
-		  And error notification is displayed
+		Given a user status in active
+			And user has been added to an organization
+		When user enters an invalid password
+		Then system rejects the login attempt
+			And error notification is displayed
