@@ -58,17 +58,17 @@ echo "Run: " $date_time_now
 # Write the records to $temp_file.  Add an "EOF" record to the file in case there 
 # are no uploads to process in this run.
 #
-echo "***** START ***** Run:" $date_time_now "*****" > $temp_file
+echo "----- START ***** Run:" $date_time_now "-----" > $temp_file
 if [ -e $rfile ]; then
    unxz -c -d $rfile | awk -FT '{print $1 " "  $2}' | grep "sftp\-server.*close " |
    awk -v "b=$date_time_30mins_ago" -v "e=$date_time_now" -F '.' '$1 >= b && $1 <= e' >> $temp_file
    awk -FT '{print $1 " "  $2}' $messages_file | grep "sftp\-server.*close " |
    awk -v "b=$date_time_30mins_ago" -v "e=$date_time_now" -F '.' '$1 >= b && $1 <= e' >> $temp_file
-   echo "***** END ***** Run:" $date_time_now "*****" >> $temp_file
+   echo "----- END ***** Run:" $date_time_now "-----" >> $temp_file
 else
    awk -FT '{print $1 " "  $2}' $messages_file | grep "sftp\-server.*close " |
    awk -v "b=$date_time_30mins_ago" -v "e=$date_time_now" -F '.' '$1 >= b && $1 <= e' >> $temp_file
-   echo "***** END ***** Run:" $date_time_now "*****" >> $temp_file
+   echo "----- END ***** Run:" $date_time_now "-----" >> $temp_file
 fi
 #
 # See if there are any uploads in this run.
