@@ -9,7 +9,7 @@ cd /data/tomcat/bin
 killall java
 export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.modeshape.configuration=file:/config/jdbc-mysql/repository.json"
 export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.username=rac_fedora"
-export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.password=PfwXGrrfcFeE"
+export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.password=xxxxxxxx"
 export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.host=db001.it.marist.cloud"
 export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.mysql.port=3306"
 export JAVA_OPTS="${JAVA_OPTS} -Dfcrepo.binary.directory=/data/fedora-binaries"
