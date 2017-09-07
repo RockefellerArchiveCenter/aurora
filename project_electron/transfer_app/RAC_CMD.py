@@ -1,7 +1,6 @@
 import sys
 from subprocess import *
 def add_org(org_name):
-    # command = ['sudo','-S','/usr/local/bin/RACaddorg', '{}'.format(org_name)]
     command = 'sudo /usr/local/bin/RACaddorg {}'.format(org_name)
 
     output = None
@@ -20,3 +19,8 @@ def add_org(org_name):
 
                 return (1, orgname) 
     return (0,'')
+
+def add_user(machine_user_id):
+    # try add add
+    # return results
+    return True

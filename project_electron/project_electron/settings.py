@@ -126,3 +126,32 @@ STATIC_ROOT = CF.STATIC_ROOT
 
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
 
+
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
+#-----------------------------------------------------------------------------#
+#
+#   LDAP Settings
+#
+#-----------------------------------------------------------------------------#
+
+AUTH_LDAP_GLOBAL_OPTIONS = {
+    ldap.OPT_X_TLS_REQUIRE_CERT: False,
+    ldap.OPT_REFERRALS: False,
+}
+
+AUTH_LDAP_SERVER_URI =      "ldaps://10.10.1.236"
+
+AUTH_LDAP_BIND_DN =         "cn=Manager,ou=Policies,dc=gke"
+
+AUTH_LDAP_BIND_PASSWORD =   "@@@rcheNwhy"
+
+AUTH_LDAP_USER_SEARCH =     LDAPSearch("ou=People,dc=ROCK,dc=org,dc=gke", ldap.SCOPE_SUBTREE, "(uid=%(user)s)")
+
+AUTH_LDAP_ALWAYS_UPDATE_USER = False
+
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
