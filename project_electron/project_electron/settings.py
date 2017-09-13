@@ -134,7 +134,6 @@ ORG_ROOT_DIR = CF.ORG_ROOT_DIR
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
-
 #-----------------------------------------------------------------------------#
 #
 #   LDAP Settings
@@ -150,6 +149,4 @@ AUTH_LDAP_BIND_DN =             CF.AUTH_LDAP_BIND_DN
 AUTH_LDAP_BIND_PASSWORD =       CF.AUTH_LDAP_BIND_PASSWORD
 AUTH_LDAP_ALWAYS_UPDATE_USER =  CF.AUTH_LDAP_ALWAYS_UPDATE_USER
 AUTH_LDAP_USER_SEARCH =     LDAPSearch(CF.LDAP_SEARCH_DN, ldap.SCOPE_SUBTREE, CF.LDAP_SEARCH_REGEX)
-
-
 

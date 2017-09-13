@@ -36,12 +36,12 @@ class Organization(models.Model):
 
 
 class User(AbstractUser):
+
     organization = models.ForeignKey(Organization, null=True, blank=False)
     machine_user = models.CharField(max_length = 10, blank=True, null=True,unique=True)
     is_machine_account = models.BooleanField(default=True)
 
     AbstractUser._meta.get_field('email').blank = False
-
 
     def save(self, *args, **kwargs):
 
@@ -74,10 +74,6 @@ class User(AbstractUser):
                     else:
                         # handle it not going as expected
                         go = 0
-                    
-
-
-                
 
         super(User,self).save(*args,**kwargs)
 

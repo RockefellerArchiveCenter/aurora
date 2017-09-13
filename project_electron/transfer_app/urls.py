@@ -8,7 +8,6 @@ urlpatterns = [
     url(r'^orgs/add/$', OrganizationCreateView.as_view(), name='orgs-add'),
     url(r'^orgs/$', 	OrganizationListView.as_view(), name='orgs-list'),
     url(r'^orgs/(?P<pk>\d+)/$', OrganizationEditView.as_view(), name='orgs-edit'),
-    
 
     url(r'^users/$', UsersListView.as_view(), name='users-list'),
     url(r'^users/add/$', UsersCreateView.as_view(), name='users-add'),

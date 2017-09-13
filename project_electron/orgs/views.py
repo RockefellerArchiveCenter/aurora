@@ -47,3 +47,4 @@ class UsersEditView(UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     fields = ['is_active','username','email','organization']
+
