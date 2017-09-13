@@ -15,6 +15,7 @@
         <table class="table" id="org-admin-table">
         	<thead>
         		<tr>
+              <th></th>
         			<th>col1</th>
         			<th>col2</th>
         		</tr>
@@ -22,6 +23,7 @@
         	<tbody>
         	{% for org in object_list %}
         	<tr>
+            <td><a href="{% url 'orgs-edit' org.pk %}"><i class="fa fa-edit"></i></a></td>
         		<td>{{ org.name }}</td>
         		<td>{{ org.created_time|localtime }}</td>
         	</tr>

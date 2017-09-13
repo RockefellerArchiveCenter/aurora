@@ -83,6 +83,10 @@ DATABASES = {
     'default': CF.db_configs,
 }
 
+AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -125,4 +129,27 @@ STATIC_URL = '/static/'
 STATIC_ROOT = CF.STATIC_ROOT
 
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
+
+
+import ldap
+from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+
+
+#-----------------------------------------------------------------------------#
+#
+#   LDAP Settings
+#
+#-----------------------------------------------------------------------------#
+
+AUTH_LDAP_GLOBAL_OPTIONS = {
+    ldap.OPT_X_TLS_REQUIRE_CERT:    CF.LDAP_OPTIONS_X_TLS_REQUIRE_CERT,
+    ldap.OPT_REFERRALS:             CF.LDAP_OPTIONS_REFERRALS,
+}
+AUTH_LDAP_SERVER_URI =          CF.AUTH_LDAP_SERVER_URI
+AUTH_LDAP_BIND_DN =             CF.AUTH_LDAP_BIND_DN
+AUTH_LDAP_BIND_PASSWORD =       CF.AUTH_LDAP_BIND_PASSWORD
+AUTH_LDAP_ALWAYS_UPDATE_USER =  CF.AUTH_LDAP_ALWAYS_UPDATE_USER
+AUTH_LDAP_USER_SEARCH =     LDAPSearch(CF.LDAP_SEARCH_DN, ldap.SCOPE_SUBTREE, CF.LDAP_SEARCH_REGEX)
+
+
 
