@@ -6,7 +6,12 @@ from django.views.generic import ListView, UpdateView, CreateView
 from orgs.models import Organization, User
 from django.utils import timezone
 
-class OrganizationCreateView(CreateView):
+from braces import views
+
+class LoggedInMixinDefaults(views.LoginRequiredMixin):
+    login_url = '/login'
+
+class OrganizationCreateView(LoggedInMixinDefaults, CreateView):
     template_name = 'orgs/create.html'
     model = Organization
     fields = ['name']
@@ -17,8 +22,8 @@ class OrganizationEditView(UpdateView):
     fields =        ['is_active','name','machine_name']
 
 
-class OrganizationListView(ListView):
-    
+class OrganizationListView(LoggedInMixinDefaults, ListView):
+
     template_name = 'orgs/list.html'
     model = Organization
 
