@@ -23,6 +23,7 @@ def has_files_to_process():
             if get_uploads:
                 # DOES FILE CURRENTLY EXIST
                 if not isfile(get_uploads.group('file_path')):
+                    print get_uploads.group('file_path')
                     print 'we have problems'
                     continue
 
