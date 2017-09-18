@@ -1,0 +1,49 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}Organization List{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Donor Organization</h3>
+      </div>
+      <div class="box-body">
+
+        <table class="table" id="org-admin-table">
+        	<thead>
+        		<tr>
+              <th></th>
+        			<th>col1</th>
+        			<th>col2</th>
+        		</tr>
+        	<thead>
+        	<tbody>
+        	{% for org in object_list %}
+        	<tr>
+            <td><a href="{% url 'orgs-edit' org.pk %}"><i class="fa fa-edit"></i></a></td>
+        		<td>{{ org.name }}</td>
+        		<td>{{ org.created_time|localtime }}</td>
+        	</tr>
+        	{% endfor %}
+        	</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  
+$(document).ready(function(){
+	// $('#org-admin-table').DataTable({
+		// data: org_admin,
+	// });
+});
+
+</script>
+{% endblock %}
