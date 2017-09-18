@@ -161,3 +161,5 @@ INSTALLED_APPS += [
 CRON_CLASSES = [
     "transfer_app.cron.MyCronJob",
 ]
+
+UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE

@@ -30,6 +30,25 @@ class Organization(models.Model):
 
         super(Organization,self).save(*args,**kwargs)
 
+    @staticmethod
+    def is_org_active(org):
+        
+        ## DOES ORG EXIST
+        organization = {}
+        try:
+            organization = Organization.objects.get(machine_name=org)
+        except Organization.DoesNotExist as e:
+            print e
+        if not organization:
+            print 'org doesnt exist log and continue to next file'
+            return False
+
+        ## ORG ACTIVE
+        if not organization.is_active:
+            print 'org not acitve, log and continue'
+            return False
+        return organization
+
     def __unicode__(self): return self.name
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
@@ -77,5 +96,36 @@ class User(AbstractUser):
 
         super(User,self).save(*args,**kwargs)
 
+    @staticmethod
+    def is_user_active(u,org):
+        user = {}
+        try:
+            print 'i am here'
+            user = User.objects.get(machine_user = u, organization =org)
+        except User.DoesNotExist as e:
+            print e
+        if not user:
+            print 'not a user or not in org'
+            return False
+        if not user.is_active:
+            print 'this would help to chain different message'
+            return False
+        return user
+
     def get_absolute_url(self):
         return reverse('users-edit', kwargs={'pk': self.pk})
+
+class Archives(models.Model):
+
+    organization =          models.ForeignKey(Organization)
+    user_uploaded =         models.ForeignKey(User, null=True)
+    machine_file_path =          models.CharField(max_length=100)
+    machine_file_size =     models.CharField(max_length= 30)
+    machine_file_upload_time = models.DateTimeField()
+    machine_file_identifier = models.CharField(max_length=255,unique=True)
+    
+    created_time =          models.DateTimeField(auto_now=True) # process time
+    modified_time =         models.DateTimeField(auto_now_add=True)
+
+    def gen_identifier(self,org,date,time):
+        return "{}{}{}".format(org,date,time)
