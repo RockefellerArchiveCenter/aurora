@@ -22,10 +22,18 @@ class bagChecker():
     def _is_rac_bag(self):
         pass
 
+    def _ck_checksums(self):
+        return True
+
     def bag_passed_all(self):
         if not self.archive_extracted:
             print 'bag didnt pass due to extract error'
             return False
+
+        if not self._ck_checksums():
+            print 'bag didnt pass checksums were False'
+            return False
+
 
         if not self._is_generic_bag():
             print 'bag didnt pass due to not being valid bag'

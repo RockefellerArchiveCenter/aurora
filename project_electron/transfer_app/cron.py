@@ -42,7 +42,7 @@ class MyCronJob(CronJobBase):
 
                 ## Init / Save
                 new_arc.organization =          org
-                new_arc.user_upload =           user
+                new_arc.user_uploaded =         user
                 new_arc.machine_file_path =     upload_list['file_path']
                 new_arc.machine_file_size =     upload_list['file_size']
                 new_arc.machine_file_upload_time =  upload_list['file_modtime']
@@ -67,7 +67,7 @@ class MyCronJob(CronJobBase):
 
                 bag = bagChecker(new_arc)
                 if bag.bag_passed_all():
-                    
+
                     new_arc.bag_it_valid = True
                     new_arc.save()
                     print 'bagit passed and saved'

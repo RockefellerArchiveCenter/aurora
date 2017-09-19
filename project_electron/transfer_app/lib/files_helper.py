@@ -83,6 +83,7 @@ def has_files_to_process():
                     'auto_fail' :           False,
                     'bag_it_name':          bag_it_name,
                 }
+                print data
 
                 files_to_process.append(data)
             else:
