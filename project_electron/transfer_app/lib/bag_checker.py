@@ -13,6 +13,10 @@ class bagChecker():
         if self.archiveObj.machine_file_type == 'TAR':
             if FH.tar_extract_all(self.archiveObj.machine_file_path):
                 return True
+        elif self.archiveObj.machine_file_type == 'ZIP':
+            if FH.zip_extract_all(self.archiveObj.machine_file_path):
+                print 'zip working'
+                return True
         return False
 
     def _is_generic_bag(self):
@@ -23,6 +27,7 @@ class bagChecker():
         pass
 
     def _ck_checksums(self):
+
         return True
 
     def bag_passed_all(self):

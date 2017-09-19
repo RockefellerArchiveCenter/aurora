@@ -4,6 +4,7 @@ from pwd import getpwuid
 import re
 import datetime
 import tarfile
+import zipfile
 
 
 from django.conf import settings
@@ -31,9 +32,6 @@ def has_files_to_process():
                 tar_accepted_ext = ['tar.gz', '.tar']
 
                 if extension[-1] in tar_accepted_ext:
-                    print 'this is a tar file'
-
-                    # HANDLE tar files
                     tar_passed = False
                     try:
                         if tarfile.is_tarfile(file_path):
@@ -50,6 +48,17 @@ def has_files_to_process():
                         print 'tar has more than one top level'
                         continue
                     file_type = 'TAR'
+                elif extension[-1] == '.zip':
+                    print 'zip file'
+                    if not zipfile.is_zipfile(file_path):
+                        print 'zip failed'
+                        continue
+                    else:
+                        file_type = 'ZIP'
+                        bag_it_name = zip_has_top_level_only(file_path)
+                        if not bag_it_name:
+                            print 'zip has more than one top level'
+                            continue
 
                 else:
                     # DOES FILE CURRENTLY EXIST
@@ -106,11 +115,25 @@ def splitext_(path):
         return path.split('.')[0],'.'.join(path.split('.')[-2:])
     return splitext(path)
 
+def zip_has_top_level_only(file_path):
+    items = []
+    with zipfile.ZipFile(file_path, 'r') as zfile:
+
+        items = zfile.namelist()
+
+    top_dir = items[0].split('/')[0]
+
+    for item in items[1:]:
+        if item.split('/')[0] != top_dir:
+            return False
+
+    return top_dir
+
 def tar_has_top_level_only(file_path):
     items = []
     with tarfile.open(file_path,'r:*') as tfile:
         items = tfile.getnames()
-        if not tfile.getmembers()[0].isdir:
+        if not tfile.getmembers()[0].isdir():
             return False
     if not items:
         return False
@@ -120,6 +143,17 @@ def tar_has_top_level_only(file_path):
         if item.split('/')[0] != top_dir:
             return False
     return top_dir
+
+def zip_extract_all(file_path):
+    extracted = False
+    try:
+        zf = zipfile.ZipFile(file_path,'r')
+        zf.extractall('/data/tmp/')
+        zf.close()
+        extracted = True
+    except Exception as e:
+        print e
+    return extracted
 
 def tar_extract_all(file_path):
     extracted = False
