@@ -1,6 +1,8 @@
 from django_cron import CronJobBase, Schedule
 
 from transfer_app.lib import files_helper as FH
+from transfer_app.lib.bag_checker import bagChecker
+
 from orgs.models import Archives, Organization, User
 
 class MyCronJob(CronJobBase):
@@ -13,13 +15,16 @@ class MyCronJob(CronJobBase):
 
 
         to_process = FH.has_files_to_process()
+
         if (to_process):
             for upload_list in to_process:
+
+
                 
                 ## FILE ALREADY IN ARCHIVE / FIRST to prevent other processing
                 new_arc = Archives()
                 machine_file_identifier = new_arc.gen_identifier(
-                    upload_list['org'], upload_list['date'], upload_list['time']
+                    upload_list['file_name'],upload_list['org'], upload_list['date'], upload_list['time']
                 )
                 archive_exist = Archives.objects.filter(machine_file_identifier = machine_file_identifier)
                 if archive_exist:
@@ -42,12 +47,27 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_size =     upload_list['file_size']
                 new_arc.machine_file_upload_time =  upload_list['file_modtime']
                 new_arc.machine_file_identifier =   machine_file_identifier
+                new_arc.machine_file_type       =   upload_list['file_type']
+                new_arc.bag_it_name =               upload_list['bag_it_name']
 
                 new_arc.save()
                 print 'archive saved'
                 ####LOG SAVE
 
+                if upload_list['auto_fail']:
+                    # condition logged in file discovery
+                    continue
 
-        
+
+                ## EVEN THOUGH FILE IS SAVED, THAT DOESN'T MEAN IT PASS
 
 
+
+                ## NOW FOR BAG CHECK
+
+                bag = bagChecker(new_arc)
+                if bag.bag_passed_all():
+                    
+                    new_arc.bag_it_valid = True
+                    new_arc.save()
+                    print 'bagit passed and saved'

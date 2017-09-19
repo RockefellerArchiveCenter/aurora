@@ -116,6 +116,12 @@ class User(AbstractUser):
         return reverse('users-edit', kwargs={'pk': self.pk})
 
 class Archives(models.Model):
+    machine_file_types = (
+        ('ZIP', 'zip'),
+        ('TAR', 'tar'),
+        ('OTHER', 'OTHER')
+    )
+
 
     organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
@@ -123,9 +129,12 @@ class Archives(models.Model):
     machine_file_size =     models.CharField(max_length= 30)
     machine_file_upload_time = models.DateTimeField()
     machine_file_identifier = models.CharField(max_length=255,unique=True)
+    machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
+    bag_it_name =           models.CharField(max_length=60)
+    bag_it_valid =          models.BooleanField(default=False)
     
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
-    def gen_identifier(self,org,date,time):
-        return "{}{}{}".format(org,date,time)
+    def gen_identifier(self,fname,org,date,time):
+        return "{}{}{}{}".format(fname,org,date,time)
