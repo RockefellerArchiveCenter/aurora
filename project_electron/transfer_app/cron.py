@@ -50,7 +50,7 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_type       =   upload_list['file_type']
                 new_arc.bag_it_name =               upload_list['bag_it_name']
 
-                new_arc.save()
+                # new_arc.save()
                 print 'archive saved'
                 ####LOG SAVE
 
@@ -71,3 +71,9 @@ class MyCronJob(CronJobBase):
                     new_arc.bag_it_valid = True
                     new_arc.save()
                     print 'bagit passed and saved'
+                else:
+                    print 'bagit didnt pass'
+
+
+                ## CLEAN UP
+                FH.clean_tmp_dir(new_arc.bag_it_name)

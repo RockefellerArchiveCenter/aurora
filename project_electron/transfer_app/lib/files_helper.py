@@ -1,10 +1,12 @@
 from os import stat
-from os.path import isfile, getmtime, getsize, splitext
+from os.path import isdir, getmtime, getsize, splitext
 from pwd import getpwuid
 import re
 import datetime
 import tarfile
 import zipfile
+from distutils.dir_util import copy_tree
+from shutil import rmtree
 
 
 from django.conf import settings
@@ -36,8 +38,7 @@ def has_files_to_process():
                     try:
                         if tarfile.is_tarfile(file_path):
                             tar_passed = True
-                            
-                            
+                             
                     except Exception as e:
                         print e
                     if not tar_passed:
@@ -51,7 +52,9 @@ def has_files_to_process():
                 elif extension[-1] == '.zip':
                     print 'zip file'
                     if not zipfile.is_zipfile(file_path):
-                        print 'zip failed'
+
+                        print 'zip failed due to not being a zipfile'
+                        print file_path
                         continue
                     else:
                         file_type = 'ZIP'
@@ -61,19 +64,22 @@ def has_files_to_process():
                             continue
 
                 else:
-                    # DOES FILE CURRENTLY EXIST
-                    if not isfile(file_path):
-                        print get_uploads.group('file_path')
-                        print 'we have problems'
+                    # IS UNSERIALIZED DIR
+                    if not isdir(file_path):
+                        print file_path
+                        print 'we have problems isnt dir'
                         continue
                     file_type = 'OTHER'
+
+                    # handle dir ending in splash
+                    bag_it_name = file_path.split('/')[-1]
 
                 file_modtime =  file_modified_time(file_path)
                 file_size =     file_get_size(file_path)
                 file_own =    file_owner(file_path)
 
                 # GETTING ORGANIZATION
-                get_org = re.search('\/(?P<organization>org\d+)\/',get_uploads.group('file_path'))
+                get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
                 if not get_org:
                     print 'throw message in log'
                     continue
@@ -85,14 +91,12 @@ def has_files_to_process():
                     'file_name':            file_path.split('/')[-1],
                     'file_type' :           file_type,
                     'org':                  get_org.group('organization'),
-
                     'file_modtime':         file_modtime,
                     'file_size':            file_size,
                     'upload_user' :         file_own,
                     'auto_fail' :           False,
                     'bag_it_name':          bag_it_name,
                 }
-                print data
 
                 files_to_process.append(data)
             else:
@@ -166,3 +170,39 @@ def tar_extract_all(file_path):
         print e
 
     return extracted
+
+def dir_extract_all(file_path):
+    extracted = False
+    try:
+        # notice forward slash missing
+        print '!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+        copy_tree(file_path,'/data/tmp/{}'.format(file_path.split('/')[-1]), update=1)
+        extracted = True
+    except Exception as e:
+        print e
+    return extracted
+
+def clean_tmp_dir(bag):
+    try:
+        rmtree('/data/tmp/{}'.format(bag))
+    except Exception as e:
+        print e
+
+def get_fields_from_file(fpath):
+    fields = {}
+    try:
+        patterns = [
+            '(?P<key>[\w\-]+)',
+            '(?P<val>.+)'
+        ]
+        with open(fpath,'rb') as f:
+            for line in f.readlines():
+                line = line.strip('\n')
+
+                row_search = re.search(": ".join(patterns), line)
+                if row_search:
+                    fields[row_search.group('key').replace('-','_')] = row_search.group('val')
+    except Exception as e:
+        print e
+
+    return fields
