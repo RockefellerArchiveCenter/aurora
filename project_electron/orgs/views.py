@@ -51,5 +51,5 @@ class UsersCreateView(CreateView):
 class UsersEditView(UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
-    fields = ['is_active','username','email','organization']
+    fields = ['is_active','username','email','organization','machine_user']
 
