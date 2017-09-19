@@ -1,0 +1,16 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}{{ object.name }}{% endblock %}
+
+{% block content %}
+
+	{% for upload in uploads %}
+		<div>
+		{{ upload.bag_it_name }} -- {{ upload.created_time }} -- {{ upload.user_uploaded }}
+		</div>
+	{% empty %}
+		<div>No Uploads</div>
+	{% endfor %}
+
+{% endblock %}

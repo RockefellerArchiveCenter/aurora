@@ -50,7 +50,7 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_type       =   upload_list['file_type']
                 new_arc.bag_it_name =               upload_list['bag_it_name']
 
-                # new_arc.save()
+                new_arc.save()
                 print 'archive saved'
                 ####LOG SAVE
 

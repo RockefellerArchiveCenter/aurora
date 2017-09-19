@@ -23,7 +23,10 @@
         	<tbody>
         	{% for org in object_list %}
         	<tr>
-            <td><a href="{% url 'orgs-edit' org.pk %}"><i class="fa fa-edit"></i></a></td>
+            <td>
+              <a href="{% url 'orgs-edit' org.pk %}"><i class="fa fa-edit"></i></a>
+              <a href="{% url 'orgs-detail' org.pk %}"><i class="fa fa-file-text-o"></i></a>
+            </td>
         		<td>{{ org.name }}</td>
         		<td>{{ org.created_time|localtime }}</td>
         	</tr>

@@ -28,6 +28,7 @@ def has_files_to_process():
             get_uploads = re.search('.+'.join(patterns), line);
             if get_uploads:
                 file_path = str(get_uploads.group('file_path'))
+                print "staring file: {}".format(file_path)
 
                 extension = splitext_(file_path)
 
