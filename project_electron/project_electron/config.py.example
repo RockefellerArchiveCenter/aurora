@@ -3,6 +3,8 @@
 #   rename/save as to config.py
 ##
 
+DEBUG = True
+
 db_configs = {
   'ENGINE' :    'django.db.backends.mysql',
   'NAME' :  '',
@@ -11,6 +13,21 @@ db_configs = {
   'HOST':   '',
 }
 ALLOWED_HOSTS = ['localhost']
-TIME_ZONE = 'EST'
+TIME_ZONE = 'America/New_York'
+
+ORG_ROOT_DIR = '/data/'
 
 STATIC_ROOT = '/STATIC_FILES_LOCATION/'
+
+# LDAP GLOBALS
+
+LDAP_OPTIONS_X_TLS_REQUIRE_CERT = False
+LDAP_OPTIONS_REFERRALS = False
+AUTH_LDAP_SERVER_URI =      ""
+AUTH_LDAP_BIND_DN =         ""
+AUTH_LDAP_BIND_PASSWORD =   ""
+LDAP_SEARCH_DN =			""
+LDAP_SEARCH_REGEX =			"(uid=%(user)s)"
+AUTH_LDAP_ALWAYS_UPDATE_USER = False
+
+UPLOAD_LOG_FILE = '/data/uploads_to_process' 
