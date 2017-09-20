@@ -68,34 +68,34 @@ class User(AbstractUser):
 
             if self.is_machine_account:
                 self.machine_name = self.username
-                break
-
-
-                company_prefix = 'ra'
-                # get next RA to assign
-                last_machine_name = User.objects.filter(username__startswith=company_prefix).order_by('-machine_user')[:1]
                 
-                if last_machine_name:
-                    last_machine_num = last_machine_name[0].username[len(company_prefix):]
-                    last_machine_num_length = len(last_machine_num)
-                    actual_num = int(last_machine_num)
-                    actual_num_length = len(str(actual_num))
 
-                    pre_zeros = ['0' for z in range(last_machine_num_length-actual_num_length)]
+
+                # company_prefix = 'ra'
+                # # get next RA to assign
+                # last_machine_name = User.objects.filter(username__startswith=company_prefix).order_by('-machine_user')[:1]
+                
+                # if last_machine_name:
+                #     last_machine_num = last_machine_name[0].username[len(company_prefix):]
+                #     last_machine_num_length = len(last_machine_num)
+                #     actual_num = int(last_machine_num)
+                #     actual_num_length = len(str(actual_num))
+
+                #     pre_zeros = ['0' for z in range(last_machine_num_length-actual_num_length)]
                     
 
-                    new_machine_name = "{}{}{}".format(
-                        company_prefix, "".join(pre_zeros) , (actual_num + 1)
-                    )
+                #     new_machine_name = "{}{}{}".format(
+                #         company_prefix, "".join(pre_zeros) , (actual_num + 1)
+                #     )
 
-                    # checks then returns system user
-                    if (add_user(new_machine_name,self.organization.machine_name)):
+                #     # checks then returns system user
+                #     if (add_user(new_machine_name,self.organization.machine_name)):
 
-                        self.machine_user = self.username = new_machine_name
-                        print 'USER being Added: {}'.format(new_machine_name)
-                    else:
-                        # handle it not going as expected
-                        print 'dont create user'
+                #         self.machine_user = self.username = new_machine_name
+                #         print 'USER being Added: {}'.format(new_machine_name)
+                #     else:
+                #         # handle it not going as expected
+                #         print 'dont create user'
 
         super(User,self).save(*args,**kwargs)
 
