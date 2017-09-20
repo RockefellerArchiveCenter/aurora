@@ -7,7 +7,10 @@
 
 	{% for upload in uploads %}
 		<div>
+		
 		{{ upload.bag_it_name }} -- {{ upload.created_time }} -- {{ upload.user_uploaded }}
+	
+		<p>{% if upload.bag_it_valid %}YES!!{% else %}no{% endif %}</p>
 		</div>
 	{% empty %}
 		<div>No Uploads</div>
