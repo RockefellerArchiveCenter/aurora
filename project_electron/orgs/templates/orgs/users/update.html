@@ -1,6 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}Organization List{% endblock %}
+{% block h1_title %}User Edit: {{ object.username }}{% endblock %}
 
 {% block content %}
 <form action="" method="post">{% csrf_token %}

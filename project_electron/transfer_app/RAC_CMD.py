@@ -24,8 +24,25 @@ def add_org(org_name):
     return (0,'')
 
 def add_user(machine_user_id, organization_machine_name):
-    # try add add
+    # try add user
+    has_ERR = False
+    command = 'sudo /usr/local/bin/RACcreateuser {}'.format(machine_user_id)
+    try:
+        output = check_output(command, shell=True, stderr=STDOUT)
+    except CalledProcessError as e:
+        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output)
+        has_ERR = True
+        # raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output))
+
+    if has_ERR: return False
+
+    ## MANAGE USER LDAP PASSWORD
+    
+
+
     # possible check next account exist in LDAP
+
+
 
     command = 'sudo /usr/local/bin/RACadd2grp {} {}'.format(organization_machine_name,machine_user_id)
 

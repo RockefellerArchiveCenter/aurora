@@ -67,6 +67,9 @@ class User(AbstractUser):
         if self.pk is None:
 
             if self.is_machine_account:
+                self.machine_name = self.username
+                break
+
 
                 company_prefix = 'ra'
                 # get next RA to assign
@@ -92,7 +95,7 @@ class User(AbstractUser):
                         print 'USER being Added: {}'.format(new_machine_name)
                     else:
                         # handle it not going as expected
-                        go = 0
+                        print 'dont create user'
 
         super(User,self).save(*args,**kwargs)
 
