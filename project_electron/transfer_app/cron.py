@@ -1,3 +1,5 @@
+import datetime
+
 from django_cron import CronJobBase, Schedule
 
 from transfer_app.lib import files_helper as FH
@@ -12,6 +14,12 @@ class MyCronJob(CronJobBase):
     code = 'transfer_app.my_cron_job'    # a unique code
 
     def do(self):
+
+        print '############################'
+        print 'CRON START'
+        print datetime.datetime.now()
+        print '############################\n'
+
 
 
         to_process = FH.has_files_to_process()
@@ -77,3 +85,10 @@ class MyCronJob(CronJobBase):
 
                 ## CLEAN UP
                 FH.clean_tmp_dir(new_arc.bag_it_name)
+
+
+        print '############################'
+        print 'CRON END'
+        print datetime.datetime.now()
+        print '############################'
+        print '\n\n\n'

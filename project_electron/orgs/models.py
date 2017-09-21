@@ -67,8 +67,9 @@ class User(AbstractUser):
         if self.pk is None:
 
             if self.is_machine_account:
+                ## fine but need to check in LDAP Certainly AND in file SYSTEM possibly if folder exist
                 self.machine_name = self.username
-                
+
 
 
                 # company_prefix = 'ra'
@@ -97,6 +98,9 @@ class User(AbstractUser):
                 #         # handle it not going as expected
                 #         print 'dont create user'
 
+        ## NEED TO MAKE SURE THIS CHANGED
+        if add2grp(self.organization.machine_name, self.machine_name):
+            pass
         super(User,self).save(*args,**kwargs)
 
     @staticmethod

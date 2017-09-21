@@ -34,23 +34,20 @@ def add_user(machine_user_id, organization_machine_name):
         has_ERR = True
         # raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output))
 
-    if has_ERR: return False
-
-    ## MANAGE USER LDAP PASSWORD
+    return (True if not has_ERR else False)
     
 
 
     # possible check next account exist in LDAP
 
-
-
+def add2grp(organization_machine_name,machine_user_id):
+    has_ERR = False
     command = 'sudo /usr/local/bin/RACadd2grp {} {}'.format(organization_machine_name,machine_user_id)
 
     output = None
     try:
         output = check_output(command, shell=True,stderr=STDOUT)
     except CalledProcessError as e:
-        raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
-    # return results
-    return True
+        print e
+        has_ERR = True
+    return (True if not has_ERR else False)
