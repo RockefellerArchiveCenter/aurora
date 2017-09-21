@@ -99,8 +99,8 @@ class User(AbstractUser):
                 #         print 'dont create user'
 
         ## NEED TO MAKE SURE THIS CHANGED
-        if add2grp(self.organization.machine_name, self.machine_name):
-            pass
+        # if add2grp(self.organization.machine_name, self.machine_name):
+        #     pass
         super(User,self).save(*args,**kwargs)
 
     @staticmethod
