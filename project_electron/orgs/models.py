@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from transfer_app.RAC_CMD import *
@@ -59,6 +60,8 @@ class User(AbstractUser):
     organization = models.ForeignKey(Organization, null=True, blank=False)
     machine_user = models.CharField(max_length = 10, blank=True, null=True,unique=True)
     is_machine_account = models.BooleanField(default=True)
+
+    from_ldap = models.BooleanField(editable=False, default=False)
 
     AbstractUser._meta.get_field('email').blank = False
 
