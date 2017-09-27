@@ -84,7 +84,11 @@ class MyCronJob(CronJobBase):
 
 
                 ## CLEAN UP
-                FH.clean_tmp_dir(new_arc.bag_it_name)
+                # TMP DIR
+                FH.remove_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name))
+                # ORIG PATH
+                FH.remove_file_or_dir(new_arc.machine_file_path)
+
 
 
         print '############################'
