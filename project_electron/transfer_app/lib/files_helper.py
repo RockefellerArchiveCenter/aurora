@@ -1,5 +1,5 @@
-from os import stat
-from os.path import isdir, getmtime, getsize, splitext
+from os import stat, remove
+from os.path import isdir, getmtime, getsize, splitext, isfile
 from pwd import getpwuid
 import re
 import datetime
@@ -183,12 +183,6 @@ def dir_extract_all(file_path):
         print e
     return extracted
 
-def clean_tmp_dir(bag):
-    try:
-        rmtree('/data/tmp/{}'.format(bag))
-    except Exception as e:
-        print e
-
 def get_fields_from_file(fpath):
     fields = {}
     try:
@@ -207,3 +201,23 @@ def get_fields_from_file(fpath):
         print e
 
     return fields
+
+
+def remove_file_or_dir(path):
+    print 'delete it ------ {}'.format(path)
+    if isfile(path):
+        try:
+            remove(path)
+        except Exception as e:
+            print e
+            return False
+
+    elif isdir(path):
+        
+        try:
+            rmtree(path)
+        except Exception as e:
+            print e
+            return False
+
+    return True
