@@ -37,6 +37,13 @@ def has_files_to_process():
                 file_path = str(get_uploads.group('file_path'))
                 print "staring file: {}".format(file_path)
 
+                # DOES FILE STILL EXIST?
+                if not isfile(file_path):
+                    print 'file doesnt exist anymore'
+                    print 'LOG INTERNAL'
+                    continue
+
+
                 # CHECK FNAME BASED ON SPEC
                 if not is_filename_valid(file_path):
                     auto_fail = True
@@ -233,8 +240,9 @@ def remove_file_or_dir(path):
         except Exception as e:
             print e
             return False
-
     return True
+
+
 def is_filename_valid(filename):
     is_valid = re.match('^[a-zA-Z0-9\-\_\/\.]+$',filename.split('/')[-1])
     return (True if is_valid else False)
