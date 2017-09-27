@@ -18,11 +18,18 @@ def has_files_to_process():
     with open(settings.UPLOAD_LOG_FILE) as f:
         lines_with_data = []
         for line in f.readlines():
-            # lline = line.rstrip()
+
+            # Fail somewhere below and will not do processing
+            auto_fail = False
+            bag_it_name = ''
+            file_type = 'OTHER'
+
+
+
             patterns = [
                 'Date:(?P<date>\d{4}\-\d{2}\-\d{2})',
                 'Time:(?P<time>[\d\:\-\.]+)\s',
-                'File:(?P<file_path>[a-zA-Z0-9\-\_\/\.]+)'
+                'File:(?P<file_path>.+)'
             ]
 
             get_uploads = re.search('.+'.join(patterns), line);
@@ -30,50 +37,54 @@ def has_files_to_process():
                 file_path = str(get_uploads.group('file_path'))
                 print "staring file: {}".format(file_path)
 
-                extension = splitext_(file_path)
-
-                tar_accepted_ext = ['tar.gz', '.tar']
-
-                if extension[-1] in tar_accepted_ext:
-                    tar_passed = False
-                    try:
-                        if tarfile.is_tarfile(file_path):
-                            tar_passed = True
-                             
-                    except Exception as e:
-                        print e
-                    if not tar_passed:
-                        print 'we have a problem:Tar'
-                        continue
-                    bag_it_name = tar_has_top_level_only(file_path)
-                    if not bag_it_name:
-                        print 'tar has more than one top level'
-                        continue
-                    file_type = 'TAR'
-                elif extension[-1] == '.zip':
-                    print 'zip file'
-                    if not zipfile.is_zipfile(file_path):
-
-                        print 'zip failed due to not being a zipfile'
-                        print file_path
-                        continue
-                    else:
-                        file_type = 'ZIP'
-                        bag_it_name = zip_has_top_level_only(file_path)
-                        if not bag_it_name:
-                            print 'zip has more than one top level'
-                            continue
-
+                # CHECK FNAME BASED ON SPEC
+                if not is_filename_valid(file_path):
+                    auto_fail = True
                 else:
-                    # IS UNSERIALIZED DIR
-                    if not isdir(file_path):
-                        print file_path
-                        print 'we have problems isnt dir'
-                        continue
-                    file_type = 'OTHER'
+                    extension = splitext_(file_path)
+                    tar_accepted_ext = ['tar.gz', '.tar']
 
-                    # handle dir ending in splash
-                    bag_it_name = file_path.split('/')[-1]
+                    if extension[-1] in tar_accepted_ext:
+                        file_type = 'TAR'
+                        tar_passed = False
+                        try:
+                            if tarfile.is_tarfile(file_path):
+                                tar_passed = True
+                        except Exception as e:
+                            print e
+
+                        if not tar_passed:
+                            auto_fail = True
+                        else:
+                            bag_it_name = tar_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                print 'tar has more than one top level'
+                        
+
+                    elif extension[-1] == '.zip':
+                        print 'zip file'
+                        file_type = 'ZIP'
+                        if not zipfile.is_zipfile(file_path):
+                            print 'zip failed due to not being a zipfile'
+                            auto_fail = True
+                        else:
+                            bag_it_name = zip_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                print 'zip has more than one top level'
+
+                    else:
+                        # IS UNSERIALIZED DIR
+                        
+                        if not isdir(file_path):
+                            print file_path
+                            print 'we have problems isnt dir'
+                            auto_fail = True
+                        
+
+                        # handle dir ending in splash
+                        bag_it_name = file_path.split('/')[-1]
 
                 file_modtime =  file_modified_time(file_path)
                 file_size =     file_get_size(file_path)
@@ -83,7 +94,7 @@ def has_files_to_process():
                 get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
                 if not get_org:
                     print 'throw message in log'
-                    continue
+                    auto_fail = True
 
                 data = {
                     'date':                 get_uploads.group('date'),
@@ -95,9 +106,12 @@ def has_files_to_process():
                     'file_modtime':         file_modtime,
                     'file_size':            file_size,
                     'upload_user' :         file_own,
-                    'auto_fail' :           False,
+                    'auto_fail' :           auto_fail,
                     'bag_it_name':          bag_it_name,
                 }
+
+                print bag_it_name
+                print '!!!!!!'
 
                 files_to_process.append(data)
             else:
@@ -221,3 +235,6 @@ def remove_file_or_dir(path):
             return False
 
     return True
+def is_filename_valid(filename):
+    is_valid = re.match('^[a-zA-Z0-9\-\_\/\.]+$',filename.split('/')[-1])
+    return (True if is_valid else False)
