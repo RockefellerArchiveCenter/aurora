@@ -38,7 +38,7 @@ def has_files_to_process():
                 print "staring file: {}".format(file_path)
 
                 # DOES FILE STILL EXIST?
-                if not isfile(file_path):
+                if not is_dir_or_file(file_path):
                     print 'file doesnt exist anymore'
                     print 'LOG INTERNAL'
                     continue
@@ -246,3 +246,8 @@ def remove_file_or_dir(path):
 def is_filename_valid(filename):
     is_valid = re.match('^[a-zA-Z0-9\-\_\/\.]+$',filename.split('/')[-1])
     return (True if is_valid else False)
+
+def is_dir_or_file(path):
+    if isdir(path): return True
+    if isfile(path): return True
+    return False
