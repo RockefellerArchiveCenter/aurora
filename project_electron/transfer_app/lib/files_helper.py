@@ -38,7 +38,7 @@ def has_files_to_process():
                 print "staring file: {}".format(file_path)
 
                 # DOES FILE STILL EXIST?
-                if not is_dir_or_file(file_path):
+                if len(file_path) <=2 or not is_dir_or_file(file_path):
                     print 'file doesnt exist anymore'
                     print 'LOG INTERNAL'
                     continue
@@ -101,7 +101,9 @@ def has_files_to_process():
                 get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
                 if not get_org:
                     print 'throw message in log'
-                    auto_fail = True
+                    ## THIS HAPPENS OUTSIDE SCOPE OF A NORMAL SFTP
+                    continue
+
 
                 data = {
                     'date':                 get_uploads.group('date'),
