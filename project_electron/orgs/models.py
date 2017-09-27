@@ -143,5 +143,8 @@ class Archives(models.Model):
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
+    def bag_or_failed_name(self):
+        return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
+
     def gen_identifier(self,fname,org,date,time):
         return "{}{}{}{}".format(fname,org,date,time)
