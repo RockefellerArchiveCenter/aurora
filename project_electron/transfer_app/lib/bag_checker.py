@@ -36,11 +36,6 @@ class bagChecker():
             print e
         return is_bag
 
-
-    def _ck_checksums(self):
-
-        return True
-
     def _is_rac_bag(self):
 
         # LOAD bag-info.txt key var
@@ -72,10 +67,6 @@ class bagChecker():
             print 'didnt pass rac specs'
             return self.bag_failed()
 
-        if not self._ck_checksums():
-            print 'bag didnt pass checksums were False'
-            return self.bag_failed()
-
         if not self._is_generic_bag():
             print 'bag didnt pass due to not being valid bag'
             return self.bag_failed()
@@ -90,5 +81,3 @@ class bagChecker():
     def cleanup(self):
         # FH.remove_file_or_dir(self.archive_path)
         pass
-
-
