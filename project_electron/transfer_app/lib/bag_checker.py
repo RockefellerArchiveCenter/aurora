@@ -1,4 +1,5 @@
 import bagit
+import bagit_profile
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
@@ -45,14 +46,19 @@ class bagChecker():
             print 'couldnt read baginfo'
             return False
 
-        form = BagInfoForm(BI_fields)
-        if form.is_valid():
-            print 'I am a valid form'
-            return True
+        if not BI_fields.has_key('BagIt_Profile_Identifier'):
+            print 'No BagIt Profile to validate against'
+            return False
         else:
-            for e in form.errors:
-                print e
-            print 'I am not VALID'
+            bag = bagit.Bag(self.archive_path)
+            profile = bagit_profile.Profile(BI_fields['BagIt_Profile_Identifier'])
+
+            if profile.validate(bag):
+                print "Bag valid according to RAC profile"
+                return True
+            else:
+                print "Bag invalid according to RAC profile"
+                return False
 
 
 
