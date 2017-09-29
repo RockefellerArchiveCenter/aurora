@@ -6,6 +6,8 @@ from django.db import models
 from transfer_app.RAC_CMD import *
 from django.urls import reverse
 
+from transfer_app.lib.ldap_auth import LDAP_Manager
+
 class Organization(models.Model):
     is_active =     models.BooleanField(default=True)
     name =          models.CharField(max_length=60, unique=True)
@@ -53,6 +55,39 @@ class Organization(models.Model):
     def __unicode__(self): return self.name
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
+
+
+class LDapUsers(models.Model):
+    uid = models.CharField(max_length=10)
+    authorized = models.BooleanField(default=False)
+
+    @staticmethod
+    def refresh_ldap_accounts():
+        ldap_man = LDAP_Manager()
+        uids = ldap_man.get_all_users()
+
+        if uids:
+            ldapusers = LDapUsers.objects.values_list('uid',flat=True)
+
+
+            for uid in ldap_man.users:
+                if uid not in ldapusers:
+                    # add to ldap user
+                    new_user_found = LDapUsers(uid=uid)
+                    new_user_found.save()
+                    #CAN Print NEWLY FOUND to screen and to LOGS
+                    print 'just saved'
+    @staticmethod
+    def is_authorized_ldap_user(uid):
+        try:
+            is_user = LDapUsers.objects.get(uid=uid)
+            if is_user.authorized:
+                return True
+        except Exception as e:
+            print e
+        return False
+
+
 
 
 class User(AbstractUser):

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 
-from orgs.models import Organization, User
+from orgs.models import Organization, User, LDapUsers
 from django.utils import timezone
+from django.shortcuts import render
 
 from braces import views
 
@@ -42,6 +43,23 @@ class OrganizationListView(LoggedInMixinDefaults, ListView):
         context = super(OrganizationListView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         return context
+
+class LDAPUserManagementView(View):
+    template_name = 'orgs/users/manage_users.html'
+    def get(self, request, *args, **kwargs):
+        # check and resolve LDAP
+        ldapusers = LDapUsers()
+        ldapusers.refresh_ldap_accounts()
+
+        ldap_users_acitve = LDapUsers.objects.filter(authorized=True) 
+
+        return render(request, self.template_name, {
+            'auth_accounts' : LDapUsers.objects.filter(authorized=True),
+            'unauth_accounts' : LDapUsers.objects.filter(authorized=False),
+            
+
+        })
+
 
 class UsersListView(ListView):
     template_name = 'orgs/users/list.html'

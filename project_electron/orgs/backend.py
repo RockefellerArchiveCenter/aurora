@@ -1,5 +1,6 @@
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django.contrib.auth import get_user_model
+from orgs.models import LDapUsers
 
 class RACLDAPBackend(LDAPBackend):
     """ A custom LDAP authentication backend """
@@ -8,6 +9,13 @@ class RACLDAPBackend(LDAPBackend):
 
     def authenticate(self, request=None, username=None, password=None, **kwargs):
         if bool(password) or self.settings.PERMIT_EMPTY_PASSWORD:
+
+            # IF not authorized by RAC
+            ld = LDapUsers()
+            if not ld.is_authorized_ldap_user(username):
+                return None
+
+
             ldap_user = _LDAPUser(self, username=username.strip())
             user = ldap_user.authenticate(password)
         else:

@@ -85,7 +85,7 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     # 'django_auth_ldap.backend.LDAPBackend',
-    'racauth.backend.RACLDAPBackend',
+    'orgs.backend.RACLDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 

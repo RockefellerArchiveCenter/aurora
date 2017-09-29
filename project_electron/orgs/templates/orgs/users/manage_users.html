@@ -1,0 +1,65 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}LDAP USERS{% endblock %}
+
+{% block content %}
+
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Authorized LDAP Accounts</h3>
+      </div>
+      <div class="box-body">
+
+        <table class="table" id="">
+        	<thead>
+        		<tr>
+        			<th>UID</th>
+        			<!-- <th></th> -->
+        		</tr>
+        	<thead>
+        	<tbody>
+        	{% for u in auth_accounts %}
+        	<tr>
+        		<td>{{ u.uid }}</td>
+        		<!-- <td>{{ u.authorized }}</td> -->
+
+        	</tr>
+        	{% endfor %}
+        	</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">UnAuthorized LDAP Accounts</h3>
+      </div>
+      <div class="box-body">
+
+        <table class="table" id="">
+          <thead>
+            <tr>
+              <th>UID</th>
+              <!-- <th></th> -->
+            </tr>
+          <thead>
+          <tbody>
+          {% for u in unauth_accounts %}
+          <tr>
+            <td>{{ u.uid }}</td>
+            <!-- <td>{{ u.authorized }}</td> -->
+
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

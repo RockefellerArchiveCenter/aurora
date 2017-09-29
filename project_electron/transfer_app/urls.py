@@ -5,6 +5,8 @@ from orgs.views import *
 urlpatterns = [
     url(r'^$', 	MainView.as_view(), name='app_home'),
 
+    url(r'^ldap-users/$', LDAPUserManagementView.as_view(), name='ldap-users'),
+
     url(r'^orgs/add/$', OrganizationCreateView.as_view(), name='orgs-add'),
     url(r'^orgs/(?P<pk>\d+)/$', OrganizationDetailView.as_view(), name='orgs-detail'),
     url(r'^orgs/$', 	OrganizationListView.as_view(), name='orgs-list'),
