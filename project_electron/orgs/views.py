@@ -25,7 +25,7 @@ class OrganizationDetailView(DetailView):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
         print context
-        context['uploads'] = Archives.objects.filter(organization = context['object'])
+        context['uploads'] = Archives.objects.filter(organization = context['object']).order_by('-pk')
         return context
 
 class OrganizationEditView(UpdateView):
