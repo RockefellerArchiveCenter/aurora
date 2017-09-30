@@ -8,6 +8,8 @@ from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
+from django.contrib.messages.views import SuccessMessageMixin
+
 from braces import views
 
 from orgs.models import Archives
@@ -66,8 +68,11 @@ class UsersCreateView(CreateView):
     model = User
     fields = ['username','is_machine_account','email','organization']
 
-class UsersEditView(UpdateView):
+class UsersEditView(SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     fields = ['is_active','username','email','organization','machine_user']
+    success_url = '/app/users/'
+    success_message = "saved!"
+
 
