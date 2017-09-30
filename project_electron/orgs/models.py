@@ -6,6 +6,8 @@ from django.db import models
 from transfer_app.RAC_CMD import *
 from django.urls import reverse
 
+
+
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
@@ -56,40 +58,6 @@ class Organization(models.Model):
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
 
-
-class LDapUsers(models.Model):
-    uid = models.CharField(max_length=10)
-    authorized = models.BooleanField(default=False)
-
-    @staticmethod
-    def refresh_ldap_accounts():
-        ldap_man = LDAP_Manager()
-        uids = ldap_man.get_all_users()
-
-        if uids:
-            ldapusers = LDapUsers.objects.values_list('uid',flat=True)
-
-
-            for uid in ldap_man.users:
-                if uid not in ldapusers:
-                    # add to ldap user
-                    new_user_found = LDapUsers(uid=uid)
-                    new_user_found.save()
-                    #CAN Print NEWLY FOUND to screen and to LOGS
-                    print 'just saved'
-    @staticmethod
-    def is_authorized_ldap_user(uid):
-        try:
-            is_user = LDapUsers.objects.get(uid=uid)
-            if is_user.authorized:
-                return True
-        except Exception as e:
-            print e
-        return False
-
-
-
-
 class User(AbstractUser):
 
     organization = models.ForeignKey(Organization, null=True, blank=False)
@@ -97,6 +65,7 @@ class User(AbstractUser):
     is_machine_account = models.BooleanField(default=True)
 
     from_ldap = models.BooleanField(editable=False, default=False)
+    is_new_account = models.BooleanField(default=False)
 
     AbstractUser._meta.get_field('email').blank = False
 
@@ -140,6 +109,29 @@ class User(AbstractUser):
         # if add2grp(self.organization.machine_name, self.machine_name):
         #     pass
         super(User,self).save(*args,**kwargs)
+
+    @staticmethod
+    def refresh_ldap_accounts():
+        ldap_man = LDAP_Manager()
+
+        new_accounts = 0
+
+        if ldap_man.get_all_users():
+
+            ldapusers = [u.lower() for u in User.objects.filter(from_ldap=True).values_list('username',flat=True)]
+
+
+            for uid in ldap_man.users:
+                uid = uid.strip().lower()
+                if uid not in ldapusers:
+                    new_user = User.objects.create_user(uid,None,None)
+                    new_user.is_active = False
+                    new_user.from_ldap = True
+                    new_user.is_new_account = True
+                    new_user.save()
+                    new_accounts += 1
+        return new_accounts
+
 
     @staticmethod
     def is_user_active(u,org):

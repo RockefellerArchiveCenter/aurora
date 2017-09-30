@@ -1,6 +1,6 @@
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django.contrib.auth import get_user_model
-from orgs.models import LDapUsers
+from orgs.models import User
 
 class RACLDAPBackend(LDAPBackend):
     """ A custom LDAP authentication backend """
@@ -11,10 +11,12 @@ class RACLDAPBackend(LDAPBackend):
         if bool(password) or self.settings.PERMIT_EMPTY_PASSWORD:
 
             # IF not authorized by RAC
-            ld = LDapUsers()
-            if not ld.is_authorized_ldap_user(username):
+            try:
+                user_record = User.objects.get(username=username)
+            except Exception as e:
+                print e
+                print 'trying to sign in from ldap without RAC Authorization'
                 return None
-
 
             ldap_user = _LDAPUser(self, username=username.strip())
             user = ldap_user.authenticate(password)
