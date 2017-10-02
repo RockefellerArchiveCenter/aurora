@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^orgs/(?P<pk>\d+)/edit/$', OrganizationEditView.as_view(), name='orgs-edit'),
 
     url(r'^users/$', UsersListView.as_view(), name='users-list'),
+    url(r'^users/by/(?P<page_type>(unassigned|company))/$', UsersListView.as_view(), name='users-list-by'),
     url(r'^users/add/$', UsersCreateView.as_view(), name='users-add'),
     url(r'^users/(?P<pk>\d+)/$', UsersEditView.as_view(), name='users-edit'),
 ]

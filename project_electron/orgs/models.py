@@ -19,7 +19,8 @@ class Organization(models.Model):
     created_time =  models.DateTimeField(auto_now = True)
     modified_time = models.DateTimeField(auto_now_add = True)
 
-
+    def org_users(self):
+        return User.objects.filter(organization=self).order_by('username')
 
     def org_root_dir(self): 
         from django.conf import settings
@@ -34,8 +35,20 @@ class Organization(models.Model):
             else:
                 go = 1
                 # and when it fails
-
         super(Organization,self).save(*args,**kwargs)
+
+    @staticmethod
+    def users_by_org():
+        orgs = Organization.objects.all().order_by('name')
+        if not orgs: return False
+        data = []
+
+        for org in orgs:
+            data.append({
+                'org' : org,
+                'users': org.org_users()
+            })
+        return data
 
     @staticmethod
     def is_org_active(org):
@@ -63,7 +76,6 @@ class Organization(models.Model):
 class User(AbstractUser):
 
     organization = models.ForeignKey(Organization, null=True, blank=False)
-    machine_user = models.CharField(max_length = 10, blank=True, null=True,unique=True)
     is_machine_account = models.BooleanField(default=True)
 
     from_ldap = models.BooleanField(editable=False, default=False)
@@ -121,7 +133,7 @@ class User(AbstractUser):
         user = {}
         try:
             print 'i am here'
-            user = User.objects.get(machine_user = u, organization =org)
+            user = User.objects.get(username = u, organization =org)
         except User.DoesNotExist as e:
             print e
         if not user:
