@@ -1,14 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 
 from orgs.models import Organization, User
 from django.utils import timezone
+from django.shortcuts import render, redirect
+from django.http import JsonResponse
+
+from django.contrib.messages.views import SuccessMessageMixin
 
 from braces import views
 
 from orgs.models import Archives
+
+from django.contrib import messages
 
 class LoggedInMixinDefaults(views.LoginRequiredMixin):
     login_url = '/login'
@@ -50,6 +56,24 @@ class UsersListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(UsersListView, self).get_context_data(**kwargs)
         context['now'] = timezone.now()
+
+        refresh_ldap = User.refresh_ldap_accounts()
+        if refresh_ldap:
+            messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
+
+        context['users_list'] = [{'org' : {}, 'users' : []}]
+        page_type = self.kwargs.get('page_type',None)
+        if page_type:
+            if page_type == 'company':
+                context['users_list'] = Organization.users_by_org()
+            elif page_type == 'unassigned':
+                context['users_list'][0]['org'] = {'pass':'pass'}
+                context['users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True).order_by('username')
+        else:
+            context['users_list'][0]['org'] = {'pass':'pass'}
+            context['users_list'][0]['users'] = User.objects.all().order_by('username') 
+        context['page_type'] = page_type
+
         return context
 
 class UsersCreateView(CreateView):
@@ -57,8 +81,9 @@ class UsersCreateView(CreateView):
     model = User
     fields = ['username','is_machine_account','email','organization']
 
-class UsersEditView(UpdateView):
+class UsersEditView(SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
-    fields = ['is_active','username','email','organization','machine_user']
-
+    fields = ['is_active','email','organization']
+    success_url = '/app/users/'
+    success_message = "saved!"

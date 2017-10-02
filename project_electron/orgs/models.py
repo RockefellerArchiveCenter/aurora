@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from transfer_app.RAC_CMD import *
+from transfer_app import RAC_CMD
 from django.urls import reverse
+
+from django.contrib import messages
+
+
+
+from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
     is_active =     models.BooleanField(default=True)
@@ -12,7 +19,8 @@ class Organization(models.Model):
     created_time =  models.DateTimeField(auto_now = True)
     modified_time = models.DateTimeField(auto_now_add = True)
 
-
+    def org_users(self):
+        return User.objects.filter(organization=self).order_by('username')
 
     def org_root_dir(self): 
         from django.conf import settings
@@ -21,14 +29,26 @@ class Organization(models.Model):
     def save(self, *args, **kwargs):
         
         if self.pk is None:                         # Initial Save / Sync table
-            results = add_org(self.name)
+            results = RAC_CMD.add_org(self.name)
             if results[0]:
                 self.machine_name = results[1]
             else:
                 go = 1
                 # and when it fails
-
         super(Organization,self).save(*args,**kwargs)
+
+    @staticmethod
+    def users_by_org():
+        orgs = Organization.objects.all().order_by('name')
+        if not orgs: return False
+        data = []
+
+        for org in orgs:
+            data.append({
+                'org' : org,
+                'users': org.org_users()
+            })
+        return data
 
     @staticmethod
     def is_org_active(org):
@@ -53,62 +73,67 @@ class Organization(models.Model):
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
 
-
 class User(AbstractUser):
 
     organization = models.ForeignKey(Organization, null=True, blank=False)
-    machine_user = models.CharField(max_length = 10, blank=True, null=True,unique=True)
     is_machine_account = models.BooleanField(default=True)
+
+    from_ldap = models.BooleanField(editable=False, default=False)
+    is_new_account = models.BooleanField(default=False)
 
     AbstractUser._meta.get_field('email').blank = False
 
     def save(self, *args, **kwargs):
 
-        if self.pk is None:
+        if self.from_ldap:
+            orig = User.objects.get(pk=self.pk)
+            if orig.organization != self.organization:
 
-            if self.is_machine_account:
-                ## fine but need to check in LDAP Certainly AND in file SYSTEM possibly if folder exist
-                self.machine_name = self.username
+                ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
+                if orig.organization:
+                    # remove from ORG
+                    if RAC_CMD.del_from_org(self.username,orig.organization.machine_name):
+                        print 'here'
+                        if RAC_CMD.add2grp(self.organization.machine_name,self.username):
+                            print 'GROUP CHANGED'
+                else:
+                    if RAC_CMD.add2grp(self.organization.machine_name,self.username):
+                        print 'GROUP CHANGED'
 
 
-
-                # company_prefix = 'ra'
-                # # get next RA to assign
-                # last_machine_name = User.objects.filter(username__startswith=company_prefix).order_by('-machine_user')[:1]
-                
-                # if last_machine_name:
-                #     last_machine_num = last_machine_name[0].username[len(company_prefix):]
-                #     last_machine_num_length = len(last_machine_num)
-                #     actual_num = int(last_machine_num)
-                #     actual_num_length = len(str(actual_num))
-
-                #     pre_zeros = ['0' for z in range(last_machine_num_length-actual_num_length)]
-                    
-
-                #     new_machine_name = "{}{}{}".format(
-                #         company_prefix, "".join(pre_zeros) , (actual_num + 1)
-                #     )
-
-                #     # checks then returns system user
-                #     if (add_user(new_machine_name,self.organization.machine_name)):
-
-                #         self.machine_user = self.username = new_machine_name
-                #         print 'USER being Added: {}'.format(new_machine_name)
-                #     else:
-                #         # handle it not going as expected
-                #         print 'dont create user'
-
-        ## NEED TO MAKE SURE THIS CHANGED
-        # if add2grp(self.organization.machine_name, self.machine_name):
-        #     pass
         super(User,self).save(*args,**kwargs)
+
+    @staticmethod
+    def refresh_ldap_accounts():
+        ldap_man = LDAP_Manager()
+
+        new_accounts = 0
+
+        if ldap_man.get_all_users():
+
+            ldapusers = [u.lower() for u in User.objects.filter(from_ldap=True).values_list('username',flat=True)]
+
+
+            for uid in ldap_man.users:
+                uid = uid.strip().lower()
+                if uid not in ldapusers:
+                    # CREATE USER ACCOUNT ON SERVER
+                    if RAC_CMD.add_user(uid):
+                        new_user = User.objects.create_user(uid,None,None)
+                        new_user.is_active = False
+                        new_user.from_ldap = True
+                        new_user.is_new_account = True
+                        new_user.save()
+                        new_accounts += 1
+        return new_accounts
+
 
     @staticmethod
     def is_user_active(u,org):
         user = {}
         try:
             print 'i am here'
-            user = User.objects.get(machine_user = u, organization =org)
+            user = User.objects.get(username = u, organization =org)
         except User.DoesNotExist as e:
             print e
         if not user:
