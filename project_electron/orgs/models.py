@@ -158,7 +158,14 @@ class User(AbstractUser):
                         new_user.from_ldap = True
                         new_user.is_new_account = True
 
+                        
                         ## should AUTO SET TO RAC
+                        if uid[:2] == "va":
+                            primary_org = Organization.objects.filter(pk=1)
+                            if primary_org:
+                                new_user.organization = primary_org[0]
+                                print 'USER AUTO ADDED TO PRIMARY ORG'
+
 
                         new_user.save()
                         new_accounts += 1

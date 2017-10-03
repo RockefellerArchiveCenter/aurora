@@ -13,7 +13,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from braces import views
 
 from orgs.models import Archives
-from orgs.form import RACUserUpdateForm, RACSuperUserUpdateForm
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -116,7 +116,7 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     success_message = "saved!"
 
     def get_form_class(self):
-        return (RACSuperUserUpdateForm if self.if_editing_staffer() else RACUserUpdateForm)
+        return (RACSuperUserUpdateForm if self.if_editing_staffer() else OrgUserUpdateForm)
 
     def if_editing_staffer(self):
         return (True if self.object.username[:2] == "va" else False)
