@@ -27,6 +27,7 @@
           		<tr>
           			<!-- <th></th> -->
           			<th>Username</th>
+                <th>Active?</th>
   <!--         			<th>Organization</th> -->
           		</tr>
           	<thead>
@@ -35,6 +36,7 @@
           	<tr onclick="window.open('{% url 'users-edit' u.pk %}','_self')">
           		<!-- <td><a href="{% url 'users-edit' u.pk %}"><i class="fa fa-edit"></i></a></td> -->
           		<td>{{ u.username }}</td>
+              <td>{% if u.is_active %}{% else %}No{% endif %}</td>
           		<!-- <td>{% if u.organization %}{{ u.organization }}{% endif %}</td> -->
           	</tr>
           	{% endfor %}

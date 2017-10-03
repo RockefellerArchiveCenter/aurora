@@ -35,6 +35,18 @@ class Organization(models.Model):
             else:
                 go = 1
                 # and when it fails
+        else:
+
+            # SET USERS INACTIVE WHEN ORG IS SET TO INACTIVE
+            orig = Organization.objects.get(pk=self.pk)
+            if orig.is_active != self.is_active and not self.is_active:
+                # what if ORG is RAC
+                for u in self.org_users():
+                    if u.is_active:
+                        u.is_active = False
+                        u.save()
+                        print 'USER {} set to inactive!'.format(u.username)
+
         super(Organization,self).save(*args,**kwargs)
 
     @staticmethod
