@@ -76,10 +76,10 @@ class UsersListView(ListView):
 
         return context
 
-class UsersCreateView(CreateView):
-    template_name = 'orgs/users/create.html'
-    model = User
-    fields = ['username','is_machine_account','email','organization']
+# class UsersCreateView(CreateView):
+#     template_name = 'orgs/users/create.html'
+#     model = User
+#     fields = ['username','is_machine_account','email','organization']
 
 class UsersEditView(SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
