@@ -97,20 +97,28 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
 
-        if self.from_ldap:
-            orig = User.objects.get(pk=self.pk)
-            if orig.organization != self.organization:
+        if self.pk is None:
+            pass
+        else:
 
-                ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
-                if orig.organization:
-                    # remove from ORG
-                    if RAC_CMD.del_from_org(self.username,orig.organization.machine_name):
-                        print 'here'
+            if self.from_ldap:
+                orig = User.objects.get(pk=self.pk)
+                if orig.organization != self.organization:
+
+                    ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
+                    if orig.organization:
+                        # remove from ORG
+                        if RAC_CMD.del_from_org(self.username,orig.organization.machine_name):
+                            print 'here'
+                            if RAC_CMD.add2grp(self.organization.machine_name,self.username):
+                                print 'GROUP CHANGED'
+                    else:
                         if RAC_CMD.add2grp(self.organization.machine_name,self.username):
                             print 'GROUP CHANGED'
-                else:
-                    if RAC_CMD.add2grp(self.organization.machine_name,self.username):
-                        print 'GROUP CHANGED'
+
+                        # FIRST TIME an ORG is added this will set account to not new
+                        if self.is_new_account:
+                            self.is_new_account = False
 
 
         super(User,self).save(*args,**kwargs)
