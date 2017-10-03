@@ -37,9 +37,15 @@
                             <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
                             {% endfor %}
                         </select>
-
-
                     </div>
+
+                    {% if editing_staffer %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
+                      </label>
+                    </div>
+                    {% endif %}
 
 
                     <div class="box-footer">

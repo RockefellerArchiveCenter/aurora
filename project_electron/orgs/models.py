@@ -95,9 +95,14 @@ class User(AbstractUser):
 
     AbstractUser._meta.get_field('email').blank = False
 
+    def in_group(self,GRP):
+        return User.objects.filter(pk=self.pk, groups_name=GRP).exists()
+
     def save(self, *args, **kwargs):
 
         if self.pk is None:
+
+
             pass
         else:
 
@@ -120,8 +125,16 @@ class User(AbstractUser):
                         if self.is_new_account:
                             self.is_new_account = False
 
+        if self.username[:2] == "va":
+            if not self.is_staff:
+                self.is_staff = True
+                print 'SET to RAC USER!'
+
 
         super(User,self).save(*args,**kwargs)
+
+    def total_uploads(self):
+        return Archives.objects.filter(user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -139,10 +152,14 @@ class User(AbstractUser):
                 if uid not in ldapusers:
                     # CREATE USER ACCOUNT ON SERVER
                     if RAC_CMD.add_user(uid):
+
                         new_user = User.objects.create_user(uid,None,None)
                         new_user.is_active = False
                         new_user.from_ldap = True
                         new_user.is_new_account = True
+
+                        ## should AUTO SET TO RAC
+
                         new_user.save()
                         new_accounts += 1
         return new_accounts
@@ -165,7 +182,7 @@ class User(AbstractUser):
         return user
 
     def get_absolute_url(self):
-        return reverse('users-edit', kwargs={'pk': self.pk})
+        return reverse('users-detail', kwargs={'pk': self.pk})
 
 class Archives(models.Model):
     machine_file_types = (
