@@ -85,6 +85,9 @@ class Organization(models.Model):
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
 
+    class Meta:
+        ordering = ['name']
+
 class User(AbstractUser):
 
     organization = models.ForeignKey(Organization, null=True, blank=False)
