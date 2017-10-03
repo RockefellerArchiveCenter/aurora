@@ -1,7 +1,7 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}Users By Organization{% endblock %}
+{% block h1_title %}{{ page_title }}{% endblock %}
 
 {% block content %}
 
@@ -33,7 +33,7 @@
           	<thead>
           	<tbody>
           	{% for u in blk.users %}
-          	<tr onclick="window.open('{% url 'users-edit' u.pk %}','_self')">
+          	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')">
           		<!-- <td><a href="{% url 'users-edit' u.pk %}"><i class="fa fa-edit"></i></a></td> -->
           		<td>{{ u.username }}</td>
               <td>{% if u.is_active %}{% else %}No{% endif %}</td>
