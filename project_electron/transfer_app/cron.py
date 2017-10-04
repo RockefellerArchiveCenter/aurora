@@ -7,6 +7,7 @@ from transfer_app.lib.bag_checker import bagChecker
 
 from orgs.models import Archives, Organization, User
 from transfer_app.models import BAGLog
+from transfer_app.lib.mailer import Mailer
 
 class MyCronJob(CronJobBase):
     RUN_EVERY_MINS = 1 # every 2 hours
@@ -26,7 +27,7 @@ class MyCronJob(CronJobBase):
         if (to_process):
 
             for upload_list in to_process:
-                
+
                 ## FILE ALREADY IN ARCHIVE / FIRST to prevent other processing
                 new_arc = Archives()
                 machine_file_identifier = new_arc.gen_identifier(
@@ -38,6 +39,11 @@ class MyCronJob(CronJobBase):
                     ### log it
                     continue
 
+
+                email = Mailer()
+
+
+
                 ## IS ORG AND IS ACTIVE ORG
                 org = Organization().is_org_active(upload_list['org'])
                 if not org: 
@@ -47,6 +53,9 @@ class MyCronJob(CronJobBase):
                 user = User().is_user_active(upload_list['upload_user'],org)
                 if not user: 
                     user = None
+                else:
+                    email.to = [user.email]
+
 
                 ## Init / Save
                 new_arc.organization =          org
@@ -59,6 +68,11 @@ class MyCronJob(CronJobBase):
                 new_arc.bag_it_name =               upload_list['bag_it_name']
 
                 new_arc.save()
+
+                ## EMAIL: Receipt of transfer
+                email.setup_message('TRANS_RECEIPT')
+                email.send()
+
 
                 print 'archive saved'
                 BAGLog.log_it('ASAVE', new_arc)
@@ -75,10 +89,14 @@ class MyCronJob(CronJobBase):
                     new_arc.bag_it_valid = True
                     new_arc.save()
                     BAGLog.log_it('APASS',new_arc)
+                    email.setup_message('TRANS_PASS_ALL')
+                    email.send()
                 else:
                     pass
                     # errcode
                     BAGLog.log_it(bag.ecode, new_arc)
+                    email.setup_message('TRANS_FAIL_VAL')
+                    email.send()
 
 
                 ## CLEAN UP
