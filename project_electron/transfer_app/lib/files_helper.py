@@ -10,6 +10,7 @@ from shutil import rmtree
 
 
 from django.conf import settings
+from transfer_app.models import BAGLog
 
 
 def has_files_to_process():
@@ -21,10 +22,9 @@ def has_files_to_process():
 
             # Fail somewhere below and will not do processing
             auto_fail = False
+            auto_fail_code = ''
             bag_it_name = ''
             file_type = 'OTHER'
-
-
 
             patterns = [
                 'Date:(?P<date>\d{4}\-\d{2}\-\d{2})',
@@ -35,18 +35,18 @@ def has_files_to_process():
             get_uploads = re.search('.+'.join(patterns), line);
             if get_uploads:
                 file_path = str(get_uploads.group('file_path'))
-                print "staring file: {}".format(file_path)
 
                 # DOES FILE STILL EXIST?
                 if len(file_path) <=2 or not is_dir_or_file(file_path):
-                    print 'file doesnt exist anymore'
-                    print 'LOG INTERNAL'
+                    BAGLog.log_it('DEXT')
                     continue
 
+                print "staring file: {}".format(file_path)
 
                 # CHECK FNAME BASED ON SPEC
                 if not is_filename_valid(file_path):
                     auto_fail = True
+                    auto_fail_code = 'BFNM'
                 else:
                     extension = splitext_(file_path)
                     tar_accepted_ext = ['tar.gz', '.tar']
@@ -62,32 +62,34 @@ def has_files_to_process():
 
                         if not tar_passed:
                             auto_fail = True
+                            auto_fail_code = 'BTAR'
                         else:
                             bag_it_name = tar_has_top_level_only(file_path)
                             if not bag_it_name:
                                 auto_fail = True
-                                print 'tar has more than one top level'
+                                auto_fail_code = 'BTAR2'
+                                # print 'tar has more than one top level'
                         
 
                     elif extension[-1] == '.zip':
-                        print 'zip file'
                         file_type = 'ZIP'
                         if not zipfile.is_zipfile(file_path):
                             print 'zip failed due to not being a zipfile'
                             auto_fail = True
+                            auto_fail_code = 'BZIP'
                         else:
                             bag_it_name = zip_has_top_level_only(file_path)
                             if not bag_it_name:
                                 auto_fail = True
-                                print 'zip has more than one top level'
+                                auto_fail_code = 'BZIP2'
+                                # print 'zip has more than one top level'
 
                     else:
                         # IS UNSERIALIZED DIR
-                        
                         if not isdir(file_path):
-                            print file_path
-                            print 'we have problems isnt dir'
+                            # print 'we have problems isnt dir'
                             auto_fail = True
+                            auto_fail_code = 'BDIR'
                         
 
                         # handle dir ending in splash
@@ -100,8 +102,7 @@ def has_files_to_process():
                 # GETTING ORGANIZATION
                 get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
                 if not get_org:
-                    print 'throw message in log'
-                    ## THIS HAPPENS OUTSIDE SCOPE OF A NORMAL SFTP
+                    BAGLog.log_it('NORG')
                     continue
 
 
@@ -116,16 +117,13 @@ def has_files_to_process():
                     'file_size':            file_size,
                     'upload_user' :         file_own,
                     'auto_fail' :           auto_fail,
+                    'auto_fail_code' :      auto_fail_code,
                     'bag_it_name':          bag_it_name,
                 }
 
-                print bag_it_name
-                print '!!!!!!'
-
                 files_to_process.append(data)
             else:
-                # report to logs
-                go = 1
+                pass
     return files_to_process if files_to_process else False
 
 def file_owner(file_path):

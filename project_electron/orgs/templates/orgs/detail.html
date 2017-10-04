@@ -4,39 +4,39 @@
 {% block h1_title %}{{ object.name }}{% endblock %}
 
 {% block content %}
-	
-	{% if not uploads %}
-		<div>No Uploads</div>
-	{% else %}
-		<table>
-			<thead>
-				<tr>
-					<th>Bag Name</th>
-					<th>Is Bag?</th>
-					<th>Processing Time</th>
-					<th>User</th>
-					<th>Size</th>
-					<th>Uploaded At</th>
-					<th>Upload Path</th>
-				</tr>
-			</thead>
+{% if request.user.is_superuser %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="top-button-blk pull-right">
+			<a href="{% url 'orgs-edit' object.pk %}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit Organization</a>
+		</div>
+	</div>
+</div>
+{% endif %}
 
-			<tbody>
-			{% for upload in uploads %}
-				<tr>
-					<td>{{ upload.bag_or_failed_name }}</td>
-					<td>{% if upload.bag_it_valid %}YES{% else %}no{% endif %}</td>
-					<td>{{ upload.created_time }}</td>
-					<td>{{ upload.user_uploaded }}</td>
-					<td>{{ upload.machine_file_size}}</td>
-					<td>{{ upload.machine_file_upload_time}}</td>
-					<td>{{ upload.machine_file_path}}</td>
-				</tr>
-				
-			{% endfor %}
-			</tbody>
-		</table>
-
-	{% endif %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h3 class="box-title">Users</h3>
+			</div>
+			<div class="box-body">
+				<div class="row">
+					<div class="col-md-6">
+						{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
+					</div>
+					<div class="col-md-6">
+						{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="row">
+	<div class="col-md-12">
+		{% include 'parts/bag_tabs.html' %}
+	</div>
+</div>
 
 {% endblock %}

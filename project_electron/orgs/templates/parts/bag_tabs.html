@@ -1,0 +1,165 @@
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+		<li class="active"><a href="#tab_bags" data-toggle="tab">Recent Bags ({{ uploads_count }})</a></li>
+		<li class=""><a href="#tab_transfers" data-toggle="tab">Transfers</a></li>
+		<li><a href="#tab_errors" data-toggle="tab">Errors</a></li>
+    </ul>
+    <div class="tab-content">
+    	<div class="tab-pane active table-responsive" id="tab_bags">
+    		{% if not uploads %}
+				<div>No Uploads</div>
+			{% else %}
+				<table>
+					<thead>
+						<tr>
+							<th>Bag Name</th>
+							<th>Is Bag?</th>
+							<th>Processing Time</th>
+							<th>User</th>
+							<th>Size</th>
+							<th>Uploaded At</th>
+							<th>Upload Path</th>
+						</tr>
+					</thead>
+
+					<tbody>
+					{% for upload in uploads %}
+						<tr>
+							<td>{{ upload.bag_or_failed_name }}</td>
+							<td>{% if upload.bag_it_valid %}YES{% else %}no{% endif %}</td>
+							<td>{{ upload.created_time }}</td>
+							<td>{{ upload.user_uploaded }}</td>
+							<td>{{ upload.machine_file_size}}</td>
+							<td>{{ upload.machine_file_upload_time}}</td>
+							<td>{{ upload.machine_file_path}}</td>
+						</tr>
+						
+					{% endfor %}
+					</tbody>
+				</table>
+
+				<div class="mar-top20 text-center">
+					<a href="" class="btn btn-info">Full Bags Report</a>
+				</div>
+
+			{% endif %}
+    	</div>
+      	<div class="tab-pane" id="tab_transfers">
+
+       		<ul class="timeline timeline-inverse">
+       			{% for d,val in trans_lst.items %}
+       				<li class="time-label">
+                        <span class="bg-red">
+                          {{ d }}
+                        </span>
+                  	</li>
+
+       			{% endfor %}
+
+
+              <!-- timeline time label -->
+              <li class="time-label">
+                    <span class="bg-red">
+                      10 Feb. 2014
+                    </span>
+              </li>
+              <!-- /.timeline-label -->
+              <!-- timeline item -->
+              <li>
+                <i class="fa fa-envelope bg-blue"></i>
+
+                <div class="timeline-item">
+                  <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+
+                  <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
+
+                  <div class="timeline-body">
+                    Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
+                    weebly ning heekya handango imeem plugg dopplr jibjab, movity
+                    jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
+                    quora plaxo ideeli hulu weebly balihoo...
+                  </div>
+                  <div class="timeline-footer">
+                    <a class="btn btn-primary btn-xs">Read more</a>
+                    <a class="btn btn-danger btn-xs">Delete</a>
+                  </div>
+                </div>
+              </li>
+              <!-- END timeline item -->
+              <!-- timeline item -->
+              <li>
+                <i class="fa fa-user bg-aqua"></i>
+
+                <div class="timeline-item">
+                  <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                  <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
+                  </h3>
+                </div>
+              </li>
+              <!-- END timeline item -->
+              <!-- timeline item -->
+              <li>
+                <i class="fa fa-comments bg-yellow"></i>
+
+                <div class="timeline-item">
+                  <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
+
+                  <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+
+                  <div class="timeline-body">
+                    Take me to your leader!
+                    Switzerland is small and neutral!
+                    We are more like Germany, ambitious and misunderstood!
+                  </div>
+                  <div class="timeline-footer">
+                    <a class="btn btn-warning btn-flat btn-xs">View comment</a>
+                  </div>
+                </div>
+              </li>
+              <!-- END timeline item -->
+              <!-- timeline time label -->
+              <li class="time-label">
+                    <span class="bg-green">
+                      3 Jan. 2014
+                    </span>
+              </li>
+              <!-- /.timeline-label -->
+              <!-- timeline item -->
+              <li>
+                <i class="fa fa-camera bg-purple"></i>
+
+                <div class="timeline-item">
+                  <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+
+                  <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+
+                  <div class="timeline-body">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                    <img src="http://placehold.it/150x100" alt="..." class="margin">
+                  </div>
+                </div>
+              </li>
+              <!-- END timeline item -->
+              <li>
+                <i class="fa fa-clock-o bg-gray"></i>
+              </li>
+            </ul>
+
+      	</div>
+      <!-- /.tab-pane -->
+      <div class="tab-pane" id="tab_errors">
+        The European languages are members of the same family. Their separate existence is a myth.
+        For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
+        in their grammar, their pronunciation and their most common words. Everyone realizes why a
+        new common language would be desirable: one could refuse to pay expensive translators. To
+        achieve this, it would be necessary to have uniform grammar, pronunciation and more common
+        words. If several languages coalesce, the grammar of the resulting language is more simple
+        and regular than that of the individual languages.
+      </div>
+
+    </div>
+    <!-- /.tab-content -->
+  </div>

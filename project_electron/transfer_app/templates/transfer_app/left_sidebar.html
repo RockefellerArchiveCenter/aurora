@@ -7,11 +7,6 @@
       {% if request.user.is_staff or request.user.is_superuser %}
       <li class="header">Admin Pages</li>
       <li class="treeview">
-        <a href="{% url 'app_home' %}">
-          <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="treeview">
         <a href="#">
           <i class="fa fa-building-o"></i> <span>Organizations</span>
           <span class="pull-right-container">
@@ -49,6 +44,26 @@
         </ul>
       </li>
       {% endif %}
+
+      <li class="header">{{ request.user.organization.name }}</li>
+      <li class="treeview">
+        <a href="{% url 'app_home' %}">
+          <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+        </a>
+      </li>
+      <li class="treeview">
+        <a href="#">
+          <i class="fa fa-exchange"></i> <span>Transfers</span>
+        </a>
+        <ul class="treeview-menu">
+          <li>
+            <a href="{% url 'org-transfers' %}">My Organization</a>
+          </li>
+          <li>
+            <a href="{% url 'org-my-transfers' %}">My Transfers</a>
+          </li>
+        </ul>
+      </li>
 
     </ul>
   </section>
