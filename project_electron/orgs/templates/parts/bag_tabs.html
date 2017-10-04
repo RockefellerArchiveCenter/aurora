@@ -8,7 +8,7 @@
     	<div class="tab-pane active table-responsive" id="tab_bags">
     		{% if not uploads %}
 				<div>No Uploads</div>
-			{% else %}
+			 {% else %}
 				<table>
 					<thead>
 						<tr>
@@ -39,7 +39,7 @@
 				</table>
 
 				<div class="mar-top20 text-center">
-					<a href="" class="btn btn-info">Full Bags Report</a>
+					<a href="{% url 'orgs-transfers-report' pk=org.pk %}" class="btn btn-info">Full Bags Report</a>
 				</div>
 
 			{% endif %}

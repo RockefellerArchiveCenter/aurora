@@ -17,8 +17,7 @@ from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 
 from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin, LoginRequiredMixin
-
-
+from django.shortcuts import get_object_or_404
 
 class LoggedInMixinDefaults(LoginRequiredMixin):
     login_url = '/app'
@@ -61,7 +60,18 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin,UpdateView):
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-    
+class OrganizationTransfersView(RACUserMixin, ListView):
+
+    template_name = 'orgs/all_transfers.html'
+    def get_context_data(self,**kwargs):
+        context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
+        context['organization'] = self.organization
+        return context
+
+
+    def get_queryset(self):
+        self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
+        return Archives.objects.filter(organization=self.organization).order_by('-created_time')
 
 class OrganizationListView(RACUserMixin, ListView):
 

@@ -25,6 +25,7 @@
     <div class="navbar-custom-menu">
       <ul class="nav navbar-nav">
 
+        {% comment %}
         <!-- Notifications Menu -->
         <li class="dropdown notifications-menu">
           <!-- Menu toggle button -->
@@ -48,6 +49,7 @@
             <li class="footer"><a href="#">View all</a></li>
           </ul>
         </li>
+        {% endcomment %}
 
         <li>
           <h5 id="welcomeli">{{request.user.username}}</h5>
@@ -62,23 +64,25 @@
               <!-- The user image in the menu -->
               <li class="user-header">
                 <p>
-                  User Name
+                  {{ request.user.username }}
                 </p>
               </li>
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Profile</a>
+                  <a href="{% url 'users-detail' pk=request.user.id %}" class="btn btn-default btn-flat">Profile</a>
                 </div>
-                  <br>
+                {% if request.user.is_staff %}
+                  <br />
                 <div class="pull-left">
-                  <a href="#" class="btn btn-default btn-flat">Admin</a>
+                  <a href="{% url 'orgs-list' %}" class="btn btn-default btn-flat">Admin</a>
                 </div>
-                  <br>
+                {% endif %}
+                 <!--  <br />
                 <div class="pull-left">
                   <a href="#" class="btn btn-default btn-flat">Help</a>
-                </div>
-                  <br>
+                </div> -->
+                  <br />
                 <div class="pull-left">
                   <a href="/logout" class="btn btn-default btn-flat" id="signout">Sign out</a>
                 </div>

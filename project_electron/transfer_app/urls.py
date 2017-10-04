@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^orgs/(?P<pk>\d+)/$', OrganizationDetailView.as_view(), name='orgs-detail'),
     url(r'^orgs/$', 	OrganizationListView.as_view(), name='orgs-list'),
     url(r'^orgs/(?P<pk>\d+)/edit/$', OrganizationEditView.as_view(), name='orgs-edit'),
+    url(r'^orgs/(?P<pk>\d+)/transfers/$', OrganizationTransfersView.as_view(), name='orgs-transfers-report'),
 
     url(r'^users/$', UsersListView.as_view(), name='users-list'),
     url(r'^users/by/(?P<page_type>(unassigned|company))/$', UsersListView.as_view(), name='users-list-by'),
@@ -18,5 +19,4 @@ urlpatterns = [
 
     url(r'^transfers/$', OrgTransfersView.as_view(), name='org-transfers'),
     url(r'^my-transfers/$', MyTransfersView.as_view(), name='org-my-transfers'),
-
 ]

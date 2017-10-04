@@ -5,6 +5,9 @@
 .pointer-row{
 	cursor: pointer;
 }
+.pointer-row:hover{
+	background-color: #00c0ef;
+}
 
 .mar-top20{
 	margin-top: 20px;
