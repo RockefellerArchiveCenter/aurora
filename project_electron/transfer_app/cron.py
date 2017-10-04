@@ -5,8 +5,7 @@ from django_cron import CronJobBase, Schedule
 from transfer_app.lib import files_helper as FH
 from transfer_app.lib.bag_checker import bagChecker
 
-from orgs.models import Archives, Organization, User
-from transfer_app.models import BAGLog
+from orgs.models import Archives, Organization, User, BAGLog
 from transfer_app.lib.mailer import Mailer
 
 class MyCronJob(CronJobBase):

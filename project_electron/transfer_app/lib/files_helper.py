@@ -10,7 +10,7 @@ from shutil import rmtree
 
 
 from django.conf import settings
-from transfer_app.models import BAGLog
+from orgs.models import BAGLog
 
 
 def has_files_to_process():

@@ -14,11 +14,12 @@
 						<tr>
 							<th>Bag Name</th>
 							<th>Is Bag?</th>
-							<th>Processing Time</th>
+							<!-- <th>Processing Time</th> -->
 							<th>User</th>
 							<th>Size</th>
 							<th>Uploaded At</th>
-							<th>Upload Path</th>
+							<!-- <th>Upload Path</th> -->
+              <th>ERR?</th>
 						</tr>
 					</thead>
 
@@ -27,11 +28,17 @@
 						<tr>
 							<td>{{ upload.bag_or_failed_name }}</td>
 							<td>{% if upload.bag_it_valid %}YES{% else %}no{% endif %}</td>
-							<td>{{ upload.created_time }}</td>
+							<!-- <td>{{ upload.created_time }}</td> -->
 							<td>{{ upload.user_uploaded }}</td>
 							<td>{{ upload.machine_file_size}}</td>
 							<td>{{ upload.machine_file_upload_time}}</td>
-							<td>{{ upload.machine_file_path}}</td>
+							<!-- <td>{{ upload.machine_file_path}}</td> -->
+              <td>
+                {% for e in upload.get_errors %}
+                  {{ e }}<br />
+                {% endfor %}
+
+              </td>
 						</tr>
 						
 					{% endfor %}
@@ -55,6 +62,7 @@
                   	</li>
 
        			{% endfor %}
+            {% comment %}
 
 
               <!-- timeline time label -->
@@ -146,11 +154,13 @@
               <li>
                 <i class="fa fa-clock-o bg-gray"></i>
               </li>
+              {% endcomment %}
             </ul>
 
       	</div>
       <!-- /.tab-pane -->
       <div class="tab-pane" id="tab_errors">
+        {% comment %}
         The European languages are members of the same family. Their separate existence is a myth.
         For science, music, sport, etc, Europe uses the same vocabulary. The languages only differ
         in their grammar, their pronunciation and their most common words. Everyone realizes why a
@@ -158,6 +168,7 @@
         achieve this, it would be necessary to have uniform grammar, pronunciation and more common
         words. If several languages coalesce, the grammar of the resulting language is more simple
         and regular than that of the individual languages.
+        {% endcomment %}
       </div>
 
     </div>
