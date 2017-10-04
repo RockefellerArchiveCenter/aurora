@@ -1,5 +1,6 @@
 import sys
 from subprocess import *
+import grp, pwd 
 
 
 
@@ -23,7 +24,7 @@ def add_org(org_name):
                 return (1, orgname) 
     return (0,'')
 
-def add_user(machine_user_id, organization_machine_name):
+def add_user(machine_user_id):
     # try add user
     has_ERR = False
     command = 'sudo /usr/local/bin/RACcreateuser {}'.format(machine_user_id)
@@ -31,7 +32,13 @@ def add_user(machine_user_id, organization_machine_name):
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output)
-        has_ERR = True
+        # error codes not isolated.. 
+        if 'Account created' in e.output:
+            pass
+        elif 'already exists' in e.output:
+            pass
+        else:
+            has_ERR = True
         # raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output))
 
     return (True if not has_ERR else False)
@@ -48,6 +55,29 @@ def add2grp(organization_machine_name,machine_user_id):
     try:
         output = check_output(command, shell=True,stderr=STDOUT)
     except CalledProcessError as e:
-        print e
+        print e.output
         has_ERR = True
     return (True if not has_ERR else False)
+
+def del_from_org(machine_user_id):
+    ugroups = [g for g in user_groups(machine_user_id) if g[:3] == "org"]
+    has_ERR = False
+
+    for group in ugroups:
+        
+        command = 'sudo /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
+
+        output = None
+        try:
+            output = check_output(command, shell=True,stderr=STDOUT)
+        except CalledProcessError as e:
+            print e
+            print e.output
+            has_ERR = True
+    return (True if not has_ERR else False)
+
+def user_groups(user):
+    groups = [g.gr_name for g in grp.getgrall() if user in g.gr_mem]
+    gid = pwd.getpwnam(user).pw_gid
+    groups.append(grp.getgrgid(gid).gr_name)
+    return groups

@@ -1,10 +1,26 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}Add Organization{% endblock %}
+{% block h1_title %}Add an Organization{% endblock %}
 
 {% block content %}
-<form action="" method="post">{% csrf_token %}
-    {{ form.as_p }}
-    <input type="submit" value="Save" />
-</form>
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-body">
+				<form action="" method="post">{% csrf_token %}
+					
+					<div class="form-group">
+                      <label for="id_name">Organization Name</label>
+                      <input type="text" name="name" value="{{ object.name }}" class="form-control" id="id_name" placeholder="Enter Name of Organization" maxlength="60" required>
+                    </div>
+				
+					<div class="box-footer">
+	                    <button type="submit" class="btn btn-default">Create</button>
+	                </div>
+	            </form>
+			</div>
+
+		</div>
+	</div>
+</div>
 {% endblock %}

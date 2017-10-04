@@ -1,34 +1,24 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}Organization List{% endblock %}
+{% block h1_title %}Organizations{% endblock %}
 
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <div class="box box-solid">
-      <div class="box-header with-border">
-        <h3 class="box-title">Donor Organization</h3>
-      </div>
+    <div class="box box-default">
       <div class="box-body">
 
-        <table class="table" id="org-admin-table">
+        <table class="table table-bordered" id="org-admin-table">
         	<thead>
         		<tr>
-              <th></th>
-        			<th>col1</th>
-        			<th>col2</th>
+        			<th>Name</th>
         		</tr>
         	<thead>
         	<tbody>
         	{% for org in object_list %}
-        	<tr>
-            <td>
-              <a href="{% url 'orgs-edit' org.pk %}"><i class="fa fa-edit"></i></a>
-              <a href="{% url 'orgs-detail' org.pk %}"><i class="fa fa-file-text-o"></i></a>
-            </td>
+        	<tr onclick="window.open('{% url 'orgs-detail' org.pk %}','_self');">
         		<td>{{ org.name }}</td>
-        		<td>{{ org.created_time|localtime }}</td>
         	</tr>
         	{% endfor %}
         	</tbody>
