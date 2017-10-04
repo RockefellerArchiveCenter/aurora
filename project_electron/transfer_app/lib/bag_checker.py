@@ -9,6 +9,7 @@ class bagChecker():
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
         self.archive_path = '/data/tmp/{}'.format(self.archiveObj.bag_it_name)
+        self.ecode = ''
 
 
     def _extract_archive(self):
@@ -54,21 +55,22 @@ class bagChecker():
                 print e
             print 'I am not VALID'
 
-
-
         return False
 
     def bag_passed_all(self):
         if not self.archive_extracted:
+            self.ecode = 'EXERR'
             print 'bag didnt pass due to extract error'
             return self.bag_failed()
 
-        if not self._is_rac_bag():
-            print 'didnt pass rac specs'
+        if not self._is_generic_bag():
+            self.ecode = 'GBERR'
+            print 'bag didnt pass due to not being valid bag'
             return self.bag_failed()
 
-        if not self._is_generic_bag():
-            print 'bag didnt pass due to not being valid bag'
+        if not self._is_rac_bag():
+            self.ecode = 'RBERR'
+            print 'didnt pass rac specs'
             return self.bag_failed()
 
 

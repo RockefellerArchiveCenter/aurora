@@ -6,6 +6,7 @@ from transfer_app.lib import files_helper as FH
 from transfer_app.lib.bag_checker import bagChecker
 
 from orgs.models import Archives, Organization, User
+from transfer_app.models import BAGLog
 
 class MyCronJob(CronJobBase):
     RUN_EVERY_MINS = 1 # every 2 hours
@@ -19,13 +20,12 @@ class MyCronJob(CronJobBase):
         print 'CRON START'
         print datetime.datetime.now()
         print '############################\n'
+        BAGLog.log_it('CSTR')
 
         to_process = FH.has_files_to_process()
-
         if (to_process):
+
             for upload_list in to_process:
-
-
                 
                 ## FILE ALREADY IN ARCHIVE / FIRST to prevent other processing
                 new_arc = Archives()
@@ -59,17 +59,13 @@ class MyCronJob(CronJobBase):
                 new_arc.bag_it_name =               upload_list['bag_it_name']
 
                 new_arc.save()
+
                 print 'archive saved'
-                ####LOG SAVE
+                BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:
-                    # condition logged in file discovery
+                    BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
                     continue
-
-
-                ## EVEN THOUGH FILE IS SAVED, THAT DOESN'T MEAN IT PASS
-
-
 
                 ## NOW FOR BAG CHECK
 
@@ -78,9 +74,11 @@ class MyCronJob(CronJobBase):
 
                     new_arc.bag_it_valid = True
                     new_arc.save()
-                    print 'bagit passed and saved'
+                    BAGLog.log_it('APASS',new_arc)
                 else:
-                    print 'bagit didnt pass'
+                    pass
+                    # errcode
+                    BAGLog.log_it(bag.ecode, new_arc)
 
 
                 ## CLEAN UP
@@ -96,3 +94,4 @@ class MyCronJob(CronJobBase):
         print datetime.datetime.now()
         print '############################'
         print '\n\n\n'
+        BAGLog.log_it('CEND')
