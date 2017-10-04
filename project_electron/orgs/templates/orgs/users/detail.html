@@ -14,7 +14,11 @@
 
                 <h3 class="profile-username text-center">{{ object.username }}</h3>
 
-                <p class="text-muted text-center">{{ object.organization.name }}</p>
+                {% if object.organization %}
+                <p class="text-muted text-center">
+                    <a href="{% url 'orgs-detail' object.organization.pk %}">{{ object.organization.name }}</a>
+                </p>
+                {% endif %}
 
                 
                 <ul class="list-group list-group-unbordered">

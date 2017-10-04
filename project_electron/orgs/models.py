@@ -21,6 +21,10 @@ class Organization(models.Model):
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
+    def active_users(self):
+        return User.objects.filter(organization=self,is_active=True)
+    def inactive_users(self):
+        return User.objects.filter(organization=self,is_active=False)
 
     def org_root_dir(self): 
         from django.conf import settings
@@ -193,6 +197,9 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse('users-detail', kwargs={'pk': self.pk})
+
+    class Meta:
+        ordering = ['username']
 
 class Archives(models.Model):
     machine_file_types = (
