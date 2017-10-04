@@ -1,4 +1,5 @@
 import bagit
+import bagit_profile
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
@@ -10,6 +11,7 @@ class bagChecker():
         self.archive_extracted = self._extract_archive()
         self.archive_path = '/data/tmp/{}'.format(self.archiveObj.bag_it_name)
         self.ecode = ''
+        self.bag = {}
 
 
     def _extract_archive(self):
@@ -31,8 +33,8 @@ class bagChecker():
     def _is_generic_bag(self):
         is_bag = {}
         try:
-            bag = bagit.Bag(self.archive_path)
-            is_bag = bag.is_valid()
+            self.bag = bagit.Bag(self.archive_path)
+            is_bag = self.bag.is_valid()
         except Exception as e:
             print e
         return is_bag
@@ -46,14 +48,23 @@ class bagChecker():
             print 'couldnt read baginfo'
             return False
 
-        form = BagInfoForm(BI_fields)
-        if form.is_valid():
-            print 'I am a valid form'
-            return True
+        if not BI_fields.has_key('BagIt_Profile_Identifier'):
+            print 'No BagIt Profile to validate against'
+            return False
         else:
-            for e in form.errors:
-                print e
-            print 'I am not VALID'
+            if BI_fields['BagIt_Profile_Identifier'] != 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json':
+                print "Bag Identifier is not RAC version"
+                return False
+
+            # self.bag = bagit.Bag(self.archive_path)
+            profile = bagit_profile.Profile(BI_fields['BagIt_Profile_Identifier'])
+
+            if profile.validate(self.bag):
+                print "Bag valid according to RAC profile"
+                return True
+            else:
+                print "Bag invalid according to RAC profile"
+                return False
 
         return False
 
@@ -72,7 +83,6 @@ class bagChecker():
             self.ecode = 'RBERR'
             print 'didnt pass rac specs'
             return self.bag_failed()
-
 
         self.cleanup()
         return True
