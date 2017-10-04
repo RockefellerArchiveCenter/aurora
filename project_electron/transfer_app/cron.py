@@ -20,8 +20,6 @@ class MyCronJob(CronJobBase):
         print datetime.datetime.now()
         print '############################\n'
 
-
-
         to_process = FH.has_files_to_process()
 
         if (to_process):

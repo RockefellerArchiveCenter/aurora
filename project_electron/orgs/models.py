@@ -109,21 +109,24 @@ class User(AbstractUser):
 
         if self.pk is None:
 
-
             pass
         else:
 
             if self.from_ldap:
                 orig = User.objects.get(pk=self.pk)
                 if orig.organization != self.organization:
+                    if RAC_CMD.del_from_org(self.username):
+                        if RAC_CMD.add2grp(self.organization.machine_name,self.username):
+                                print 'GROUP CHANGED'
 
                     ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
                     if orig.organization:
+                        pass
                         # remove from ORG
-                        if RAC_CMD.del_from_org(self.username,orig.organization.machine_name):
-                            print 'here'
-                            if RAC_CMD.add2grp(self.organization.machine_name,self.username):
-                                print 'GROUP CHANGED'
+                        # if RAC_CMD.del_from_org(self.username,orig.organization.machine_name):
+
+                        #     if RAC_CMD.add2grp(self.organization.machine_name,self.username):
+                        #         print 'GROUP CHANGED'
                     else:
                         if RAC_CMD.add2grp(self.organization.machine_name,self.username):
                             print 'GROUP CHANGED'

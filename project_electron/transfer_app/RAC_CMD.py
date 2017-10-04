@@ -1,5 +1,6 @@
 import sys
 from subprocess import *
+import grp, pwd 
 
 
 
@@ -58,15 +59,25 @@ def add2grp(organization_machine_name,machine_user_id):
         has_ERR = True
     return (True if not has_ERR else False)
 
-def del_from_org(machine_user_id,organization_machine_name):
+def del_from_org(machine_user_id):
+    ugroups = [g for g in user_groups(machine_user_id) if g[:3] == "org"]
     has_ERR = False
-    command = 'sudo /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,organization_machine_name)
 
-    output = None
-    try:
-        output = check_output(command, shell=True,stderr=STDOUT)
-    except CalledProcessError as e:
-        print e
-        print e.output
-        has_ERR = True
+    for group in ugroups:
+        
+        command = 'sudo /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
+
+        output = None
+        try:
+            output = check_output(command, shell=True,stderr=STDOUT)
+        except CalledProcessError as e:
+            print e
+            print e.output
+            has_ERR = True
     return (True if not has_ERR else False)
+
+def user_groups(user):
+    groups = [g.gr_name for g in grp.getgrall() if user in g.gr_mem]
+    gid = pwd.getpwnam(user).pw_gid
+    groups.append(grp.getgrgid(gid).gr_name)
+    return groups
