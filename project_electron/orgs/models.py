@@ -85,6 +85,16 @@ class Organization(models.Model):
             return False
         return organization
 
+    def build_transfer_timeline_list(self):
+        arc_by_date = {}
+        org_arcs =  Archives.objects.filter(organization=self).order_by('-created_time')
+        for arc in org_arcs:
+            if arc.created_time.date() not in arc_by_date:
+                
+                arc_by_date[arc.created_time.date()] = []
+            arc_by_date[arc.created_time.date()].append(arc)
+        return arc_by_date
+
     def __unicode__(self): return self.name
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})

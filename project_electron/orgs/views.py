@@ -10,19 +10,17 @@ from django.http import JsonResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
 
-from braces import views
-
 from orgs.models import Archives
 from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 
-from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin
+from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin, LoginRequiredMixin
 
 
 
-class LoggedInMixinDefaults(views.LoginRequiredMixin):
+class LoggedInMixinDefaults(LoginRequiredMixin):
     login_url = '/app'
 
 class RACAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
@@ -47,9 +45,10 @@ class OrganizationDetailView(RACUserMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
-        print context
-        context['uploads'] = Archives.objects.filter(organization = context['object']).order_by('-pk')
+        context['trans_lst'] = self.object.build_transfer_timeline_list() 
+
+        context['uploads'] = Archives.objects.filter(organization = context['object']).order_by('-created_time')[:15]
+        context['uploads_count'] = Archives.objects.filter(organization = context['object']).count()
         return context
 
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin,UpdateView):
@@ -71,7 +70,6 @@ class OrganizationListView(RACUserMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
         return context
 
 class UsersListView(RACUserMixin, ListView):
@@ -80,7 +78,6 @@ class UsersListView(RACUserMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(UsersListView, self).get_context_data(**kwargs)
-        context['now'] = timezone.now()
 
         refresh_ldap = User.refresh_ldap_accounts()
         if refresh_ldap:
@@ -109,6 +106,12 @@ class UsersListView(RACUserMixin, ListView):
 class UsersDetailView(RACUserMixin, DetailView):
     template_name = 'orgs//users/detail.html'
     model = User
+    def get_context_data(self, **kwargs):
+        context = super(UsersDetailView, self).get_context_data(**kwargs)
+        context['uploads'] = Archives.objects.filter(organization = context['object'].organization).order_by('-created_time')[:5]
+        context['uploads_count'] = Archives.objects.filter(organization = context['object'].organization).count()
+        
+        return context
 
 class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
