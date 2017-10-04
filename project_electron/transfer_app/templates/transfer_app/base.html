@@ -17,10 +17,12 @@
         <!-- Content Header (Page header) -->
         <section class="content-header">
           <h1>{% block h1_title %}{% endblock %}</h1>
+          {% comment %}
           <ol id="breadcrumb" class="breadcrumb">
             <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
             <li class="active">Here</li>
           </ol>
+          {% endcomment %}
         </section>
 
         {% if messages %}
