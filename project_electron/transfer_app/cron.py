@@ -55,6 +55,7 @@ class MyCronJob(CronJobBase):
                     user = None
                 else:
                     email.to = [user.email]
+                    print user.email
 
 
                 ## Init / Save

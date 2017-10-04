@@ -15,17 +15,17 @@ class Mailer():
             print 'All Fields required werent present'
             return False
 
-
+        send_to = self.to
         if CF.EMAIL_OVERRIDE and CF.EMAIL_OVERRIDE_USERS:
 
-            self.text_content = "TEST EMAIL: SHOULD BE SENT TO {}\r\n{}".format(",".join(self.to), self.text_content)
-            self.to = CF.EMAIL_OVERRIDE_USERS
+            self.text_content = "TEST EMAIL: SHOULD BE SENT TO {}\r\n\r\n{}".format(",".join(self.to), self.text_content)
+            send_to = CF.EMAIL_OVERRIDE_USERS
 
         self.email = EmailMessage(
             self.subject,
             self.text_content,
             self.from_email,
-            self.to,
+            send_to,
             reply_to = [self.from_email]
         )
 
@@ -40,8 +40,7 @@ class Mailer():
     def setup_message(self, mess_code):
         if mess_code == 'TRANS_RECEIPT':
             self.subject = 'Your transfer reciept'
-            self.text_content = """
-                Your transfer has been recieved, and is being processed.
+            self.text_content = """Your transfer has been recieved, and is being processed.
             """
         elif mess_code == 'TRANS_PASS_ALL':
             self.subject = 'Your transfer passed all validation'
