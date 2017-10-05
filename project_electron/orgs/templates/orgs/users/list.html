@@ -1,0 +1,39 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}Users List{% endblock %}
+
+{% block content %}
+<a href="{% url 'users-add' %}">create user</a>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title"></h3>
+      </div>
+      <div class="box-body">
+
+        <table class="table" id="org-admin-table">
+        	<thead>
+        		<tr>
+        			<th></th>
+        			<th>Username</th>
+        			<th>Organization</th>
+        		</tr>
+        	<thead>
+        	<tbody>
+        	{% for u in object_list %}
+        	<tr>
+        		<td><a href="{% url 'users-edit' u.pk %}"><i class="fa fa-edit"></i></a></td>
+        		<td>{{ u.username }}</td>
+        		<td>{% if u.organization %}{{ u.organization }}{% endif %}</td>
+        	</tr>
+        	{% endfor %}
+        	</tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
