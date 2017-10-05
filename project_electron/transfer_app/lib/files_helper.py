@@ -27,9 +27,7 @@ def has_files_to_process():
             file_type = 'OTHER'
 
             patterns = [
-                'Date:(?P<date>\d{4}\-\d{2}\-\d{2})',
-                'Time:(?P<time>[\d\:\-\.]+)\s',
-                'File:(?P<file_path>.+)'
+                'New file: (?P<file_path>.+)'
             ]
 
             get_uploads = re.search('.+'.join(patterns), line);
@@ -42,6 +40,7 @@ def has_files_to_process():
                     continue
 
                 print "staring file: {}".format(file_path)
+
 
                 # CHECK FNAME BASED ON SPEC
                 if not is_filename_valid(file_path):
@@ -97,7 +96,11 @@ def has_files_to_process():
 
                 file_modtime =  file_modified_time(file_path)
                 file_size =     file_get_size(file_path)
-                file_own =    file_owner(file_path)
+                file_own =      file_owner(file_path)
+                file_date =     file_modtime.date()
+                file_time =     file_modtime.time()
+
+
 
                 # GETTING ORGANIZATION
                 get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
@@ -105,10 +108,9 @@ def has_files_to_process():
                     BAGLog.log_it('NORG')
                     continue
 
-
                 data = {
-                    'date':                 get_uploads.group('date'),
-                    'time':                 get_uploads.group('time'),
+                    'date':                 file_date,
+                    'time':                 file_time,
                     'file_path':            file_path,
                     'file_name':            file_path.split('/')[-1],
                     'file_type' :           file_type,
