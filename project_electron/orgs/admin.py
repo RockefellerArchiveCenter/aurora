@@ -6,7 +6,7 @@ from orgs.models import Organization,User,BAGLogCodes,BAGLog
 
 @admin.register(Organization)
 class OrganizationsAdmin(admin.ModelAdmin):
-	readonly_fields=('machine_name',)
+	pass
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
