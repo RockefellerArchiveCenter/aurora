@@ -50,6 +50,8 @@
 		            </div>
 		          {% endfor %}
 		          </div>
+		        {% else %}
+		        <p>There are no recent transfers...</p>
 		        {% endif %}
 		    </div>
 		</div>
@@ -84,11 +86,6 @@
 				</div>
 			</div>
 		</div>
-	</div>
-</div>
-<div class="row">
-	<div class="col-md-12">
-		{% include 'parts/bag_tabs.html' with org=object %}
 	</div>
 </div>
 
