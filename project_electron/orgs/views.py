@@ -56,7 +56,6 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin,UpdateView):
     fields =        ['is_active','name']
     success_message = "Organization Saved!"
 
-
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
@@ -67,7 +66,6 @@ class OrganizationTransfersView(RACUserMixin, ListView):
         context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
         context['organization'] = self.organization
         return context
-
 
     def get_queryset(self):
         self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])

@@ -1,18 +1,14 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}{{ object.name }}{% endblock %}
+{% block h1_title %}
+	{{ object.name }}
+	{% if request.user.is_superuser %}
+		<a href="{% url 'orgs-edit' object.pk %}" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Edit Organization</a>
+	{% endif %}
+{% endblock %}
 
 {% block content %}
-{% if request.user.is_superuser %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="top-button-blk pull-right">
-			<a href="{% url 'orgs-edit' object.pk %}" class="btn btn-primary"><i class="fa fa-edit"></i> Edit Organization</a>
-		</div>
-	</div>
-</div>
-{% endif %}
 
 <div class="row">
 	<div class="col-md-12">
@@ -22,10 +18,10 @@
 			</div>
 			<div class="box-body">
 				<div class="row">
-					<div class="col-md-6">
+					<div class="col-sm-6">
 						{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
 					</div>
-					<div class="col-md-6">
+					<div class="col-sm-6">
 						{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
 					</div>
 				</div>
