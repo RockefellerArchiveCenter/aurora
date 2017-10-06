@@ -42,9 +42,15 @@
 		                      {{ upload.bag_or_failed_name }}
 		                      <span class="text-muted pull-right">{{ upload.created_time }}</span>
 		                    </span><!-- /.username -->
-		                	
-		                	Transfer by <a href="{% url 'users-detail' pk=upload.user_uploaded.pk %}">{{ upload.user_uploaded.username }}</a> {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
-		                	
+		                	{% if upload.user_uploaded %}
+		                		Transfer by <a href="{% url 'users-detail' pk=upload.user_uploaded.pk %}">{{ upload.user_uploaded.username }}</a> {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
+		                	{% else %}
+		                		{% if upload.bag_it_valid %}
+		                			Transfer successful
+		                		{% else %}
+		                			Transfer Failed
+		                		{% endif %}
+		                	{% endif %}
 		              </div>
 		              <!-- /.comment-text -->
 		            </div>
