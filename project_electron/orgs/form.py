@@ -4,7 +4,7 @@ from orgs.models import User
 class OrgUserUpdateForm(forms.ModelForm):
 	class Meta:
 		model = User
-		fields = ['is_active','email','organization']
+		fields = ['is_active','email','organization','is_org_admin']
 
 # class RACUserUpdateForm(forms.ModelForm):
 # 	class Meta:

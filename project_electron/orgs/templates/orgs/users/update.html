@@ -47,11 +47,18 @@
                         <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
                       </label>
                     </div>
+                    {% else %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="is_org_admin" {% if object.is_org_admin %}checked{% endif %}> Org Admin?
+                      </label>
+                    </div>
+
                     {% endif %}
 
 
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info">Update</button>
+                        <button type="submit" class="btn btn-info">Save</button>
                     </div>
                 </form>
             </div>    

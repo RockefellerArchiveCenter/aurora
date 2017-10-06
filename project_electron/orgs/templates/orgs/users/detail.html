@@ -71,11 +71,15 @@
 
                 <p>
                     {% if object.is_superuser %}
-                        <span class="label label-success">RACadmin</span>
+                        <span class="label label-success">RACAdmin</span>
                     {% endif %}
                     {% if object.is_staff %}
                         <span class="label label-success">RACUser</span>
                     {% endif %}
+                    {% if object.is_org_admin %}
+                        <span class="label label-success">OrgAdmin</span>
+                    {% endif %}
+
                 </p>
 
                 <hr>
