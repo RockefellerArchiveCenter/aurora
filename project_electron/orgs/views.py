@@ -15,19 +15,9 @@ from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
-
-from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin, LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 
-class LoggedInMixinDefaults(LoginRequiredMixin):
-    login_url = '/app'
-
-class RACAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
-    authenticated_redirect_url = reverse_lazy(u"app_home")
-
-class RACUserMixin(LoggedInMixinDefaults, StaffuserRequiredMixin):
-    authenticated_redirect_url = reverse_lazy(u"app_home")
-
+from orgs.authmixins import *
 
 
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):

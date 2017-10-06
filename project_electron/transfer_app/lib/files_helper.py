@@ -246,7 +246,7 @@ def remove_file_or_dir(path):
 
 
 def is_filename_valid(filename):
-    is_valid = re.match('^[a-zA-Z0-9\-\_\/\.]+$',filename.split('/')[-1])
+    is_valid = re.match('^[a-zA-Z0-9\-\_\/\.\s]+$',filename.split('/')[-1])
     return (True if is_valid else False)
 
 def is_dir_or_file(path):
