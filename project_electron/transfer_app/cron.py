@@ -70,8 +70,8 @@ class MyCronJob(CronJobBase):
                 new_arc.save()
 
                 ## EMAIL: Receipt of transfer
-                email.setup_message('TRANS_RECEIPT')
-                email.send()
+                # email.setup_message('TRANS_RECEIPT')
+                # email.send()
 
 
                 print 'archive saved'
@@ -89,13 +89,13 @@ class MyCronJob(CronJobBase):
                     new_arc.bag_it_valid = True
                     new_arc.save()
                     BAGLog.log_it('APASS',new_arc)
-                    email.setup_message('TRANS_PASS_ALL')
+                    email.setup_message('TRANS_PASS_ALL',new_arc)
                     email.send()
                 else:
-                    pass
-                    # errcode
+
                     BAGLog.log_it(bag.ecode, new_arc)
-                    email.setup_message('TRANS_FAIL_VAL')
+                    email.setup_message('TRANS_FAIL_VAL',new_arc)
+
                     email.send()
 
 

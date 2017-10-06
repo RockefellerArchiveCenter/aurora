@@ -37,16 +37,45 @@ class Mailer():
         else:
             return True
 
-    def setup_message(self, mess_code):
+    def setup_message(self, mess_code, archive_obj={}):
         if mess_code == 'TRANS_RECEIPT':
             self.subject = 'Your transfer reciept'
             self.text_content = """Your transfer has been recieved, and is being processed.
             """
         elif mess_code == 'TRANS_PASS_ALL':
             self.subject = 'Your transfer passed all validation'
-            self.text_content = self.subject
+
+            lcodes = archive_obj.get_bag_validations()
+
+            eparts = [
+                'The transfer {} was received at {} and has passed all automated checks:',
+                'bag validation\t\t\t{}',
+                'bag profile validation\t\t{}',
+                'You can review the status of this transfer at any time by logging into {}'
+            ]
+            self.text_content =  "\r\n".join(eparts).format(
+                archive_obj.bag_or_failed_name(),
+                archive_obj.machine_file_upload_time,
+                (lcodes['PBAG'] if lcodes else '--'),
+                (lcodes['PBAGP'] if lcodes else '--'),
+                CF.BASE_URL + 'app'
+                   
+            )
         elif mess_code == 'TRANS_FAIL_VAL':
             self.subject = 'Your Transfer Failed Validation'
-            self.text_content = self.subject
+
+            eparts = [
+                'An error occurred for the transfer {} during {} at {}. The transfer has been deleted from our systems.',
+                'Please review the complete error log at {}, correct any errors, and try sending the transfer again.'
+            ]
+
+            error = archive_obj.get_bag_failure()
+
+            self.text_content = "\r\n\r\n".join(eparts).format(
+                archive_obj.bag_or_failed_name(),
+                (error.code.code_desc if error else '--'),
+                (error.created_time if error else '--'),
+                CF.BASE_URL + 'app/transfers/'
+            )
 
 

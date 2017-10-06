@@ -3,6 +3,7 @@ import bagit_profile
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
+from orgs.models import BAGLog
 
 class bagChecker():
 
@@ -78,11 +79,13 @@ class bagChecker():
             self.ecode = 'GBERR'
             print 'bag didnt pass due to not being valid bag'
             return self.bag_failed()
+        BAGLog.log_it('PBAG', self.archiveObj)
 
         if not self._is_rac_bag():
             self.ecode = 'RBERR'
             print 'didnt pass rac specs'
             return self.bag_failed()
+        BAGLog.log_it('PBAGP', self.archiveObj)
 
         self.cleanup()
         return True
