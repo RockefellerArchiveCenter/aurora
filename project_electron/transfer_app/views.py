@@ -6,3 +6,5 @@ from django.shortcuts import render
 
 class MainView(TemplateView):
     template_name = "transfer_app/main.html"
+
+

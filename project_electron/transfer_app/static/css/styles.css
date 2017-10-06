@@ -12,3 +12,19 @@
 .mar-top20{
 	margin-top: 20px;
 }
+.box-comment-icon{
+	width: 30px;
+	height: 30px;
+	float: left !important;
+	display: inline;
+}
+.box-comments .comment-text{
+	margin-left: 50px;
+}
+
+.green-bag{
+	color: #00a65a;
+}
+.red-bag{
+	color: #dd4b39;
+}
