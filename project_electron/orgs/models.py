@@ -181,7 +181,7 @@ class User(AbstractUser):
                         
                         ## should AUTO SET TO RAC
                         if uid[:2] == "va":
-                            primary_org = Organization.objects.filter(pk=1)
+                            primary_org = Organization.objects.all().order_by('pk')
                             if primary_org:
                                 new_user.organization = primary_org[0]
                                 print 'USER AUTO ADDED TO PRIMARY ORG'
