@@ -1,4 +1,4 @@
-from os import stat, remove
+from os import stat, remove, listdir
 from os.path import isdir, getmtime, getsize, splitext, isfile
 from pwd import getpwuid
 import re
@@ -6,127 +6,243 @@ import datetime
 import tarfile
 import zipfile
 from distutils.dir_util import copy_tree
-from shutil import rmtree
-
+from shutil import rmtree, move
+import psutil
 
 from django.conf import settings
-from orgs.models import BAGLog
+from orgs.models import BAGLog, Organization
 
 
 def has_files_to_process():
     files_to_process = []
 
-    with open(settings.UPLOAD_LOG_FILE) as f:
-        lines_with_data = []
-        for line in f.readlines():
+    #move over functions and replace file logic
+    discover_files_to_process()
+    uploads = uploads_to_process()
 
-            # Fail somewhere below and will not do processing
+    if uploads:
+        print '{} paths to upload'.format(len(uploads))
+        for file_path in uploads:
+            print file_path
+
             auto_fail = False
             auto_fail_code = ''
             bag_it_name = ''
             file_type = 'OTHER'
 
-            patterns = [
-                'New file: (?P<file_path>.+)'
-            ]
+            # DOES FILE STILL EXIST?
+            if len(file_path) <=2 or not is_dir_or_file(file_path):
+                BAGLog.log_it('DEXT')
+                continue
 
-            get_uploads = re.search('.+'.join(patterns), line);
-            if get_uploads:
-                file_path = str(get_uploads.group('file_path'))
-
-                # DOES FILE STILL EXIST?
-                if len(file_path) <=2 or not is_dir_or_file(file_path):
-                    BAGLog.log_it('DEXT')
-                    continue
-
-                print "staring file: {}".format(file_path)
+            print "staring file: {}".format(file_path)
 
 
-                # CHECK FNAME BASED ON SPEC
-                if not is_filename_valid(file_path):
-                    auto_fail = True
-                    auto_fail_code = 'BFNM'
-                else:
-                    extension = splitext_(file_path)
-                    tar_accepted_ext = ['tar.gz', '.tar']
-
-                    if extension[-1] in tar_accepted_ext:
-                        file_type = 'TAR'
-                        tar_passed = False
-                        try:
-                            if tarfile.is_tarfile(file_path):
-                                tar_passed = True
-                        except Exception as e:
-                            print e
-
-                        if not tar_passed:
-                            auto_fail = True
-                            auto_fail_code = 'BTAR'
-                        else:
-                            bag_it_name = tar_has_top_level_only(file_path)
-                            if not bag_it_name:
-                                auto_fail = True
-                                auto_fail_code = 'BTAR2'
-                                # print 'tar has more than one top level'
-                        
-
-                    elif extension[-1] == '.zip':
-                        file_type = 'ZIP'
-                        if not zipfile.is_zipfile(file_path):
-                            print 'zip failed due to not being a zipfile'
-                            auto_fail = True
-                            auto_fail_code = 'BZIP'
-                        else:
-                            bag_it_name = zip_has_top_level_only(file_path)
-                            if not bag_it_name:
-                                auto_fail = True
-                                auto_fail_code = 'BZIP2'
-                                # print 'zip has more than one top level'
-
-                    else:
-                        # IS UNSERIALIZED DIR
-                        if not isdir(file_path):
-                            # print 'we have problems isnt dir'
-                            auto_fail = True
-                            auto_fail_code = 'BDIR'
-                        
-
-                        # handle dir ending in splash
-                        bag_it_name = file_path.split('/')[-1]
-
-                file_modtime =  file_modified_time(file_path)
-                file_size =     file_get_size(file_path)
-                file_own =      file_owner(file_path)
-                file_date =     file_modtime.date()
-                file_time =     file_modtime.time()
-
-
-
-                # GETTING ORGANIZATION
-                get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
-                if not get_org:
-                    BAGLog.log_it('NORG')
-                    continue
-
-                data = {
-                    'date':                 file_date,
-                    'time':                 file_time,
-                    'file_path':            file_path,
-                    'file_name':            file_path.split('/')[-1],
-                    'file_type' :           file_type,
-                    'org':                  get_org.group('organization'),
-                    'file_modtime':         file_modtime,
-                    'file_size':            file_size,
-                    'upload_user' :         file_own,
-                    'auto_fail' :           auto_fail,
-                    'auto_fail_code' :      auto_fail_code,
-                    'bag_it_name':          bag_it_name,
-                }
-
-                files_to_process.append(data)
+            # CHECK FNAME BASED ON SPEC
+            if not is_filename_valid(file_path):
+                auto_fail = True
+                auto_fail_code = 'BFNM'
             else:
-                pass
+                extension = splitext_(file_path)
+                tar_accepted_ext = ['tar.gz', '.tar']
+
+                if extension[-1] in tar_accepted_ext:
+                    file_type = 'TAR'
+                    tar_passed = False
+                    try:
+                        if tarfile.is_tarfile(file_path):
+                            tar_passed = True
+                    except Exception as e:
+                        print e
+
+                    if not tar_passed:
+                        auto_fail = True
+                        auto_fail_code = 'BTAR'
+                    else:
+                        bag_it_name = tar_has_top_level_only(file_path)
+                        if not bag_it_name:
+                            auto_fail = True
+                            auto_fail_code = 'BTAR2'
+                            # print 'tar has more than one top level'
+                    
+
+                elif extension[-1] == '.zip':
+                    file_type = 'ZIP'
+                    if not zipfile.is_zipfile(file_path):
+                        print 'zip failed due to not being a zipfile'
+                        auto_fail = True
+                        auto_fail_code = 'BZIP'
+                    else:
+                        bag_it_name = zip_has_top_level_only(file_path)
+                        if not bag_it_name:
+                            auto_fail = True
+                            auto_fail_code = 'BZIP2'
+                            # print 'zip has more than one top level'
+
+                else:
+                    # IS UNSERIALIZED DIR
+                    if not isdir(file_path):
+                        # print 'we have problems isnt dir'
+                        auto_fail = True
+                        auto_fail_code = 'BDIR'
+                    
+
+                    # handle dir ending in splash
+                    bag_it_name = file_path.split('/')[-1]
+
+            file_modtime =  file_modified_time(file_path)
+            file_size =     file_get_size(file_path)
+            file_own =      file_owner(file_path)
+            file_date =     file_modtime.date()
+            file_time =     file_modtime.time()
+
+
+
+            # GETTING ORGANIZATION
+            get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
+            if not get_org:
+                BAGLog.log_it('NORG')
+                continue
+
+            data = {
+                'date':                 file_date,
+                'time':                 file_time,
+                'file_path':            file_path,
+                'file_name':            file_path.split('/')[-1],
+                'file_type' :           file_type,
+                'org':                  get_org.group('organization'),
+                'file_modtime':         file_modtime,
+                'file_size':            file_size,
+                'upload_user' :         file_own,
+                'auto_fail' :           auto_fail,
+                'auto_fail_code' :      auto_fail_code,
+                'bag_it_name':          bag_it_name,
+            }
+
+            files_to_process.append(data)
+    else:
+        pass
     return files_to_process if files_to_process else False
+
+def open_files_list():
+    
+    path_list = []
+
+    for proc in psutil.process_iter():
+        open_files = proc.open_files()
+        if open_files:
+            for fileObj in open_files:
+                path_list.append(fileObj.path)
+    return path_list
+
+def get_active_org_contents_dict():
+    root_path = '/data/{}/upload/'
+    target_dirs = []
+    org_dir_contents = {}
+
+    active_orgs = Organization.objects.filter(is_active=True)
+    if active_orgs:
+        for org in active_orgs:
+            upload_dir = root_path.format(org.machine_name)
+            target_dirs.append(upload_dir)
+
+            dir_content = listdir(upload_dir)
+            if dir_content:
+                for item in dir_content:
+                    item_path = "{}{}".format(upload_dir, item)
+                    if org.machine_name not in org_dir_contents:
+                        org_dir_contents[org.machine_name] = {
+                            'files' : [],
+                            'dirs'  : [],
+                            'count' : 0
+                        }
+
+                    if isfile(item_path):
+                        org_dir_contents[org.machine_name]['files'].append(item_path)
+                        org_dir_contents[org.machine_name]['count'] +=1
+                    elif isdir(item_path):
+                        org_dir_contents[org.machine_name]['dirs'].append(item_path)
+                        org_dir_contents[org.machine_name]['count'] +=1
+    return org_dir_contents
+
+def files_in_unserialized(dirpath):
+    files = []
+    # can in a full test check infinite levels
+    # this is a good MVP test
+    for f1 in listdir(dirpath):
+        if isfile(f1):
+            files.append(f1)
+    return files
+
+
+def org_contents_in_lsof(contents):
+    rm_list = []
+
+    for org, obj in contents.iteritems():
+        # GET OPEN FILES
+        open_files = open_files_list()
+        if obj['count'] < 1:
+            continue
+        # get files
+        for f in obj['files']:
+            if f in open_files:
+                rm_list.append((org,0,f))
+
+        # get directory
+        for d in obj['dirs']:
+            # ck files in directory are on list
+            for fls in files_in_unserialized(d):
+                if fls in open_files:
+                    rm_list.append((org,1,d))
+    return rm_list
+
+
+
+def rm_frm_contents(cObj,contents):
+    for obj in cObj:
+        if obj[1] == 0 and isfile(obj[2]):
+            contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
+            
+        elif obj[1] == 1 and isdir(obj[2]):
+            contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
+
+
+def mv_to_processing(contentsObj):
+    for org,obj in contentsObj.iteritems():
+        mergedlist = obj['files'] + obj['dirs']
+        for f in mergedlist:
+
+            processing_path = f.replace('upload','processing')
+            print "moving {} to \n{}".format(f, processing_path)
+            move(f,processing_path)
+
+def discover_files_to_process():
+    active_org_contents = get_active_org_contents_dict()
+
+    if active_org_contents:
+        rm_any = org_contents_in_lsof(active_org_contents)
+
+        if rm_any:
+            rm_frm_contents(rm_any,active_org_contents)
+
+        # HAVE FILE MOVE ALL TO PROCESSING DIR
+        print active_org_contents
+        mv_to_processing(active_org_contents)
+
+def uploads_to_process():
+    paths = []
+    active_orgs = active_orgs = Organization.objects.filter(is_active=True)
+    if active_orgs:
+        print 'Checking {} active org processing dir'.format(len(active_orgs))
+        for org in active_orgs:
+            org_processing = '/data/{}/processing/'.format(org.machine_name)
+            contents = listdir(org_processing)
+            
+            
+            org_paths = ["{}{}".format(org_processing,x) for x in contents]
+            paths = paths + org_paths
+            
+    return paths
 
 def file_owner(file_path):
     return getpwuid(stat(file_path).st_uid).pw_name
