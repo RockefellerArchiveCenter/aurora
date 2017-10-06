@@ -28,6 +28,7 @@ DEBUG = CF.DEBUG
 
 ALLOWED_HOSTS = CF.ALLOWED_HOSTS
 
+BASE_URL = CF.BASE_URL
 
 # Application definition
 

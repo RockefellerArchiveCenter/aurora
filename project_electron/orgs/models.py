@@ -246,6 +246,27 @@ class Archives(models.Model):
             return ''
         return [b.code.code_desc for b in BAGLog.objects.filter(archive=self).exclude(code__code_short='ASAVE')]
 
+    def get_bag_validations(self):
+        if not self.bag_it_valid:
+            return False
+        items = BAGLog.objects.filter(archive=self,code__code_short__in=['PBAG','PBAGP'])
+        if not items or len(items) < 2:
+            return False
+        data = {}
+        for item in items:
+            data[item.code.code_short] = item.created_time
+        return data
+    def get_bag_failure(self):
+        if self.bag_it_valid:
+            return False
+        flist = [
+            'NORG','BFNM','BTAR','BTAR2','BZIP','BZIP2','BDIR','EXERR','GBERR','RBERR'
+        ]
+        get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
+        if not get_error_obj or len(get_error_obj) > 1:
+            return False
+        return get_error_obj[0]
+
 class BAGLogCodes(models.Model):
     code_short = models.CharField(max_length=5)
     code_types = (
