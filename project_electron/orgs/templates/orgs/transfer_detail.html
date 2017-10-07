@@ -1,0 +1,73 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}{{ upload.bag_or_failed_name }}<small>{% if upload.bag_it_valid %}valid{% else %}invalid{% endif %}</small>{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <p>Uploaded by {{ upload.user_uploaded }} at {{ upload.machine_file_upload_time}} and processed at {{ upload.created_time }}.</p>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Metadata</h3>
+      </div>
+      <div class="box-body">
+        Bag Metadata from bag-info.txt goes here.
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Error Messages</h3>
+      </div>
+      <div class="box-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Date/Time</th>
+              <th>Summary</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-solid">
+      <div class="box-header with-border">
+        <h3 class="box-title">Log</h3>
+      </div>
+      <div class="box-body">
+        <table>
+          <thead>
+            <tr>
+              <th>Date/Time</th>
+              <th>Message</th>
+            </tr>
+          </thead>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
