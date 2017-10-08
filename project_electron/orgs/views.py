@@ -34,7 +34,7 @@ class OrganizationDetailView(RACUserMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-        context['trans_lst'] = self.object.build_transfer_timeline_list() 
+        context['trans_lst'] = self.object.build_transfer_timeline_list()
 
         context['uploads'] = Archives.objects.filter(organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(organization = context['object']).count()
@@ -108,7 +108,7 @@ class UsersDetailView(RACUserMixin, DetailView):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
         context['uploads'] = Archives.objects.filter(organization = context['object'].organization).order_by('-created_time')[:5]
         context['uploads_count'] = Archives.objects.filter(organization = context['object'].organization).count()
-        
+
         return context
 
 class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
@@ -129,3 +129,10 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+class TransferDetailView():
+    template_name = 'orgs/transfer_detail.html'
+    model = Archives
+
+    def get_context_data(self, **kwargs):
+        context = super(TransferDetailView, self).get_context_data(**kwargs)
