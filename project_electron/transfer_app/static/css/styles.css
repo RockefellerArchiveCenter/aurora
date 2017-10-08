@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Satisfy');
+
 .top-button-blk{
 	margin-bottom: 20px;
 }
@@ -48,4 +50,14 @@
 	left: 0;
 	right: 0;
 	text-align: center;
+}
+
+.login-logo {
+	font-family: "Satisfy", cursive;
+	font-size: 60px;
+}
+
+.main-header .logo {
+	font-family: "Satisfy", cursive;
+	font-size: 30px;
 }
