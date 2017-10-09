@@ -1,5 +1,7 @@
 import bagit
 import bagit_profile
+import json
+from os.path import isfile, join
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
@@ -69,6 +71,17 @@ class bagChecker():
 
         return False
 
+    def _has_valid_metadata_file(self):
+        # is this the right path?
+        metadata_file = join(self.bag, 'data', 'metadata.json')
+        # check to see if data/metadata.json exists
+        if isfile(metadata_file):
+            try:
+                return json.loads(metadata_file)
+            except ValueError as e:
+                print "invalid json: %s' % e"
+                return False
+
     def bag_passed_all(self):
         if not self.archive_extracted:
             self.ecode = 'EXERR'
@@ -84,6 +97,12 @@ class bagChecker():
         if not self._is_rac_bag():
             self.ecode = 'RBERR'
             print 'didnt pass rac specs'
+            return self.bag_failed()
+        BAGLog.log_it('PBAGP', self.archiveObj)
+
+        if not self._has_valid_metadata_file():
+            self.ecode = 'MDERR'
+            print 'optional metadata file is not valid json'
             return self.bag_failed()
         BAGLog.log_it('PBAGP', self.archiveObj)
 

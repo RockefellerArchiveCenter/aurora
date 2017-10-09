@@ -26,12 +26,12 @@ class Organization(models.Model):
     def inactive_users(self):
         return User.objects.filter(organization=self,is_active=False)
 
-    def org_root_dir(self): 
+    def org_root_dir(self):
         from django.conf import settings
         return "%s%s".format(settings.ORG_ROOT_DIR,self.machine_name)
 
     def save(self, *args, **kwargs):
-        
+
         if self.pk is None:                         # Initial Save / Sync table
             results = RAC_CMD.add_org(self.name)
             if results[0]:
@@ -68,7 +68,7 @@ class Organization(models.Model):
 
     @staticmethod
     def is_org_active(org):
-        
+
         ## DOES ORG EXIST
         organization = {}
         try:
@@ -90,7 +90,7 @@ class Organization(models.Model):
         org_arcs =  Archives.objects.filter(organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
-                
+
                 arc_by_date[arc.created_time.date()] = []
             arc_by_date[arc.created_time.date()].append(arc)
         return arc_by_date
@@ -178,7 +178,7 @@ class User(AbstractUser):
                         new_user.from_ldap = True
                         new_user.is_new_account = True
 
-                        
+
                         ## should AUTO SET TO RAC
                         if uid[:2] == "va":
                             primary_org = Organization.objects.all().order_by('pk')
@@ -231,7 +231,7 @@ class Archives(models.Model):
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
-    
+
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -260,7 +260,7 @@ class Archives(models.Model):
         if self.bag_it_valid:
             return False
         flist = [
-            'NORG','BFNM','BTAR','BTAR2','BZIP','BZIP2','BDIR','EXERR','GBERR','RBERR'
+            'NORG','BFNM','BTAR','BTAR2','BZIP','BZIP2','BDIR','EXERR','GBERR','RBERR', 'MDERR'
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj or len(get_error_obj) > 1:
