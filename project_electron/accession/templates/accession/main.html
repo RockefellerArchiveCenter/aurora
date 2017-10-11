@@ -17,19 +17,19 @@
 							<th>Organization</th>
 							<th>Record Creator</th>
 							<th>Record Type</th>
-							<th>Status</th>
-							<th>Action</th>
+							<th>Transfers</th>
+							<th>status</th>
 						</tr>
 					</thead>
 
 					<tbody>
 					{% for upload in uploads %}
 						<tr>
-							<td>org</td>
+							<td>org <span class="badge">25 transfers</span></td>
 							<td>creator(s)</td>
 							<td>record type</td>
 							<td>status</td>
-							<td><a href="#" class="btn btn-primary">Accession</a></td>
+							<td><a href="{% url 'accession-record' upload.pk %}" class="btn btn-primary">Accession</a></td>
 						</tr>
 
 					{% endfor %}
