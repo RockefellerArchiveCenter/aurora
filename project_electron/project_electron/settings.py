@@ -42,6 +42,8 @@ INSTALLED_APPS = [
     'rac_user',
     'transfer_app',
     'orgs',
+    'appraise',
+    'accession',
 ]
 
 MIDDLEWARE = [

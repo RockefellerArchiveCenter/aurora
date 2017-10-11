@@ -1,0 +1,47 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}Accessioning Queue{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-default">
+      <div class="box-body">
+      	{% with uploads=object_list%}
+	      	{% if not uploads %}
+				<div>No pending accessions</div>
+			 {% else %}
+				<table>
+					<thead>
+						<tr>
+							<th>Organization</th>
+							<th>Record Creator</th>
+							<th>Record Type</th>
+							<th>Status</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+
+					<tbody>
+					{% for upload in uploads %}
+						<tr>
+							<td>org</td>
+							<td>creator(s)</td>
+							<td>record type</td>
+							<td>status</td>
+							<td><a href="#" class="btn btn-primary">Accession</a></td>
+						</tr>
+
+					{% endfor %}
+					</tbody>
+				</table>
+			{% endif %}
+		{% endwith %}
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
