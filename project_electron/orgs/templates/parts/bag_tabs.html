@@ -25,7 +25,7 @@
 
 					<tbody>
 					{% for upload in uploads %}
-						<tr>
+						<tr onclick="window.open('{% url 'transfer-detail' upload.pk %}','_self')" class="pointer-row">
 							<td>{{ upload.bag_or_failed_name }}</td>
 							<td>{% if upload.bag_it_valid %}YES{% else %}no{% endif %}</td>
 							<!-- <td>{{ upload.created_time }}</td> -->
@@ -40,7 +40,7 @@
 
               </td>
 						</tr>
-						
+
 					{% endfor %}
 					</tbody>
 				</table>
