@@ -267,6 +267,9 @@ class Archives(models.Model):
             return False
         return get_error_obj[0]
 
+    class Meta:
+        ordering = ['machine_file_upload_time']
+
 class BAGLogCodes(models.Model):
     code_short = models.CharField(max_length=5)
     code_types = (
