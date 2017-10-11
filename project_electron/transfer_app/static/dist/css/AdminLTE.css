@@ -202,7 +202,7 @@ a:focus {
   border: none;
   min-height: 50px;
   border-radius: 0;
-  /*margin-left: 230px;*/
+  margin-left: 230px;
 }
 .layout-top-nav .main-header .navbar {
   margin-left: 0;

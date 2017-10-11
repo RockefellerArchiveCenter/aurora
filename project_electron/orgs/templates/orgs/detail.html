@@ -39,7 +39,9 @@
 
 		              <div class="comment-text">
 		                    <span class="username">
-		                      {{ upload.bag_or_failed_name }}
+		                    	<a href="{% url 'transfer-detail' pk=upload.pk %}">
+		                      		{{ upload.bag_or_failed_name }}
+		                      	</a>
 		                      <span class="text-muted pull-right">{{ upload.created_time }}</span>
 		                    </span><!-- /.username -->
 		                	{% if upload.user_uploaded %}
