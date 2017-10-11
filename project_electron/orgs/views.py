@@ -130,9 +130,9 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class TransferDetailView():
+class TransferDetailView(DetailView):
     template_name = 'orgs/transfer_detail.html'
     model = Archives
 
-    def get_context_data(self, **kwargs):
-        context = super(TransferDetailView, self).get_context_data(**kwargs)
+    # def get_context_data(self, **kwargs):
+    #     context = super(TransferDetailView, self).get_context_data(**kwargs)
