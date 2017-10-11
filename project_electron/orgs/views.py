@@ -133,6 +133,3 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 class TransferDetailView(DetailView):
     template_name = 'orgs/transfer_detail.html'
     model = Archives
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(TransferDetailView, self).get_context_data(**kwargs)
