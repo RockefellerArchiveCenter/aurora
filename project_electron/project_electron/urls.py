@@ -18,7 +18,7 @@ from django.contrib import admin
 from rac_user.views import SplashView
 from django.contrib.auth import views as auth_views
 from appraise.views import AppraiseView
-from accession.views import AccessionView
+from accession.views import *
 
 urlpatterns = [
     url(r'^admin/', 	admin.site.urls),
@@ -35,5 +35,6 @@ urlpatterns += [
 
 urlpatterns += [
     url(r'^accession/', 	AccessionView.as_view(), name='accession-main'),
+    url(r'^accession_record/', 	AccessionRecordView.as_view(), name='accession-record'),
 
 ]
