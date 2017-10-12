@@ -7,30 +7,14 @@
       {% if request.user.is_staff or request.user.is_superuser %}
       <li class="header">Admin Pages</li>
       <li>
-        <a href="#">
+        <a href="{% url 'orgs-list' %}">
           <i class="fa fa-building-o"></i> <span>Organizations</span>
         </a>
       </li>
-      <li class="treeview">
-        <a href="#">
+      <li>
+        <a href="{% url 'users-list' %}">
           <i class="fa fa-users"></i> <span>Users</span>
-          <span class="pull-right-container">
-            <i class="fa fa-angle-left pull-right"></i>
-          </span>
         </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="{% url 'users-list' %}"><i class="fa fa-circle-o"></i> All</a>
-          </li>
-          <li>
-            <a href="{% url 'users-list-by' page_type='company' %}"><i class="fa fa-circle-o"></i> By Org</a>
-          </li>
-          {% if request.user.is_superuser %}
-          <li>
-            <a href="{% url 'users-list-by' page_type='unassigned' %}"><i class="fa fa-circle-o"></i> Unassigned</a>
-          </li>
-          {% endif %}
-        </ul>
       </li>
       {% endif %}
 

@@ -101,8 +101,16 @@ class UsersListView(RACUserMixin, ListView):
 
         return context
 
+class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
+    template_name = 'orgs/users/create.html'
+    model = User
+    fields = ['is_new_account']
+    success_message = "New User Saved!"
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
+
 class UsersDetailView(RACUserMixin, DetailView):
-    template_name = 'orgs//users/detail.html'
+    template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
