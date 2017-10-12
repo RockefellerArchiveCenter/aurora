@@ -12,8 +12,9 @@
 
 <div class="nav-tabs-custom">
     <ul class="nav nav-tabs">
-		<li class="active"><a href="#tab_all_users" data-toggle="tab">All Users</a></li>
-		<li class=""><a href="#tab_org_users" data-toggle="tab">Users by Organization</a></li>
+  		<li class="active"><a href="#tab_all_users" data-toggle="tab">All Users</a></li>
+  		<li class=""><a href="#tab_org_users" data-toggle="tab">Users by Organization</a></li>
+      <li class=""><a href="#tab_unassigned_users" data-toggle="tab">Unassigned Users</a></li>
     </ul>
     <div class="tab-content">
     	<div class="tab-pane active table-responsive" id="tab_all_users">
@@ -37,7 +38,38 @@
         {% endfor %}
     	</div>
     	<div class="tab-pane" id="tab_org_users">
-        {% for blk in users_list %}
+        {% for blk in org_users_list %}
+        <div class="box">
+          <div class="box-header with-border">
+            <h3 class="box-title">{{ blk.org.name }}</h3>
+          </div>
+          <div class="box-body">
+            {% if not blk.users %}
+              <div class="info">There are no users at this organization.</div>
+            {% else %}
+              <table class="table table-bordered" id="org-admin-table">
+              	<thead>
+              		<tr>
+              			<th>Username</th>
+                    <th>Active?</th>
+              		</tr>
+              	<thead>
+              	<tbody>
+              	{% for u in blk.users %}
+              	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
+              		<td>{{ u.username }}</td>
+                  <td>{% if u.is_active %}{% else %}No{% endif %}</td>
+              	</tr>
+              	{% endfor %}
+              	</tbody>
+              </table>
+            {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+    	</div>
+      <div class="tab-pane" id="tab_unassigned_users">
+        {% for blk in unassigned_users_list %}
         <div class="box">
           <div class="box-header with-border">
             <h3 class="box-title">{{ blk.org.name }}</h3>

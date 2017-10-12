@@ -81,23 +81,16 @@ class UsersListView(RACUserMixin, ListView):
         if refresh_ldap:
             messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
 
-        page_title = 'All Users'
-
         context['users_list'] = [{'org' : {}, 'users' : []}]
-        page_type = self.kwargs.get('page_type',None)
-        if page_type:
-            if page_type == 'company':
-                context['users_list'] = Organization.users_by_org()
-                page_title = 'Users By Organization'
-            elif page_type == 'unassigned':
-                context['users_list'][0]['org'] = {'pass':'pass'}
-                context['users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
-                page_title = 'UnAssigned Users'
-        else:
-            context['users_list'][0]['org'] = {'pass':'pass'}
-            context['users_list'][0]['users'] = User.objects.all().order_by('username')
-        context['page_type'] = page_type
-        context['page_title'] = page_title
+        context['users_list'][0]['org'] = {'pass':'pass'}
+        context['users_list'][0]['users'] = User.objects.all().order_by('username')
+
+        context['org_users_list'] = [{'org' : {}, 'users' : []}]
+        context['org_users_list'] = Organization.users_by_org()
+
+        context['unassigned_users_list'] = [{'org' : {}, 'users' : []}]
+        context['unassigned_users_list'][0]['org'] = {'pass':'pass'}
+        context['unassigned_users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
 
         return context
 
