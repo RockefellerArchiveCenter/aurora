@@ -1,7 +1,12 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}Organizations{% endblock %}
+{% block h1_title %}
+  Organizations
+  {% if request.user.is_superuser %}
+    <a href="{% url 'orgs-add' %}" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Add Organization</a>
+  {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -31,7 +36,7 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-  
+
 $(document).ready(function(){
 	// $('#org-admin-table').DataTable({
 		// data: org_admin,
