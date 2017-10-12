@@ -11,29 +11,34 @@
 	      	{% if not uploads %}
 				<div>No transfers to appraise</div>
 			 {% else %}
-				<table>
+				<table class="table table-striped">
 					<thead>
 						<tr>
 							<th>Organization</th>
 							<th>Record Creator</th>
 							<th>Transfer File Name</th>
 							<th>Record Type</th>
-							<th>Status</th>
 							<th>Transfer Date</th>
-							<th>Action</th>
+							<th></th>
 						</tr>
 					</thead>
 
 					<tbody>
 					{% for upload in uploads %}
-						<tr>
-							<td>org</td>
-							<td>creator(s)</td>
+						<tr class="pointer-row">
+							<td>Ford Foundation</td>
+							<td>Darren Walker</td>
 							<td>bag_or_failed_name</td>
-							<td>record type</td>
-							<td>status</td>
+							<td>grant records</td>
 							<td>{{ user_uploaded }}</td>
-							<td><a href="#" class="btn btn-primary">Accept</a><a href="#" class="btn btn-danger">Reject</a></td>
+							<td>
+                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-reject">
+                    Reject
+                </button>
+                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-accept">
+                    Accept
+                </button>
+              </td>
 						</tr>
 
 					{% endfor %}
@@ -42,7 +47,78 @@
 			{% endif %}
 		{% endwith %}
 
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Organization</th>
+          <th>Record Creator</th>
+          <th>Transfer File Name</th>
+          <th>Record Type</th>
+          <th>Transfer Date</th>
+          <th></th>
+        </tr>
+      </thead>
 
+      <tbody>
+        <tr>
+          <td>org</td>
+          <td>creator(s)</td>
+          <td>bag_or_failed_name</td>
+          <td>record type</td>
+          <td>{{ object.user_uploaded }}</td>
+          <td>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-reject">
+                Reject
+            </button>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-accept">
+                Accept
+            </button>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-accept">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">Appraisal note</h4>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="3"></textarea>
+        <p class="text-muted">{{request.user.username}} accepted this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Submit</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal-reject">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">Appraisal note</h4>
+      </div>
+      <div class="modal-body">
+        <textarea class="form-control" rows="3"></textarea>
+        <p class="text-muted">{{request.user.username}} rejected this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary">Submit</button>
       </div>
     </div>
   </div>
