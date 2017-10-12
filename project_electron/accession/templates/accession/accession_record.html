@@ -1,17 +1,21 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}Accession Record{% endblock %}
+{% block h1_title %}Accession Number <small>132 files, 527 MB</small>{% endblock %}
 
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <div class="box box-default">
+    <div class="box box-primary">
       <div class="box-body">
         <form role="form">
           <div class="form-group">
             <label>Related Resource</label>
-            <input type="text" class="form-control" placeholder="Resource record autocomplete"/>
-            <button type="submit">Search</button>
+            <div class="input-group">
+              <input type="text" class="form-control">
+              <span class="input-group-btn">
+                <button type="button" class="btn btn-primary">Go!</button>
+              </span>
+            </div>
           </div>
         </form>
       </div>
@@ -19,154 +23,130 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="box box-default">
-      <div class="box-body">
-
-        <form role="form">
-
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Accession number</label>
-                <input type="text" class="form-control" disabled="">
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label>Accession date</label>
-                <input type="date" class="form-control" disabled="">
-              </div>
-            </div>
-          </div>
-          <div class="form-group">
-            <label>Extent</label>
-            <input type="text" class="form-control" disabled="">
-            <input type="text" class="form-control" disabled="">
-          </div>
-
-          <div class="form-group">
-            <label>Title</label>
-            <input type="text" class="form-control" required="">
-          </div>
+<form role="form">
+  <div class="box box-primary">
+    <div class="box-body">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" class="form-control" required="">
+      </div>
+      <div class="row">
+        <div class="col-md-6">
           <div class="form-group">
             <label>Identified Creators</label>
-            <span class="label label-default">Identified creator</span>
-            <span class="label label-default">Identified creator</span>
-            <span class="label label-default">Identified creator</span>
+            <div class="help-block">Agent records for these creators were found in ArchivesSpace</div>
+            <h4>
+              <span class="label label-primary">Identified creator</span>
+              <span class="label label-primary">Identified creator</span>
+              <span class="label label-primary">Identified creator</span>
+            </h4>
           </div>
+        </div>
+
+        <div class="col-md-6">
           <div class="form-group">
             <label>Unidentified Creators</label>
             <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
             <div class="row">
-              <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Unidentified creator"/>
+              <div class="col-md-8">
+                <input type="text" class="form-control" placeholder="Unidentified creator" />
               </div>
-              <div class="col-md-6">
-                <input type="select" class="form-control">
-                  <option value="person"></option>
-                  <option value="corporate body"></option>
-                  <option value="family"></option>
-                </select>
-              </div>
-          </div>
-          <div class="form-group">
-            <label>Content Description</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Access Restrictions Note</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
-          <div class="form-group">
-            <label>Use Restrictions Note</label>
-            <textarea class="form-control" rows="3"></textarea>
-          </div>
-
-          <div class="box-group" id="accordion">
-            <div class="panel box box-primary">
-              <div class="box-header with-border">
-                <h4 class="box-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseRights">
-                    Rights Statements
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseRights" class="panel-collapse collapse in">
-                <div class="box-body">
-                  <table>
-                    <thead>
-          						<tr>
-          							<th>basis</th>
-          							<th>status</th>
-          							<th>determination_date</th>
-          							<th>jurisdiction</th>
-          							<th>start_date</th>
-                        <th>end_date</th>
-                        <th>terms</th>
-                        <th>citation</th>
-                        <th>note</th>
-                        <th>grant_act</th>
-                        <th>grant_restriction</th>
-                        <th>grant_start_date</th>
-                        <th>grant_end_date</th>
-                        <th>grant_note</th>
-                        <th>doc_id_type</th>
-                        <th>doc_id_value</th>
-                        <th>doc_id_role</th>
-          						</tr>
-          					</thead>
-
-          					<tbody>
-          						<tr>
-                        <td>basis</td>
-          							<td>status</td>
-          							<td>determination_date</td>
-          							<td>jurisdiction</td>
-          							<td>start_date</td>
-                        <td>end_date</td>
-                        <td>terms</td>
-                        <td>citation</td>
-                        <td>note</td>
-                        <td>grant_act</td>
-                        <td>grant_restriction</td>
-                        <td>grant_start_date</td>
-                        <td>grant_end_date</td>
-                        <td>grant_note</td>
-                        <td>doc_id_type</td>
-                        <td>doc_id_value</td>
-                        <td>doc_id_role</td>
-          						</tr>
-          					</tbody>
-                  </table>
-                </div>
-              </div>
-            </div>
-            <div class="panel box box-primary">
-              <div class="box-header with-border">
-                <h4 class="box-title">
-                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTransfers">
-                    Transfers Included
-                  </a>
-                </h4>
-              </div>
-              <div id="collapseTransfers" class="panel-collapse collapse">
-                <!-- Include transfers -->
+              <div class="col-md-4">
+                <select class="form-control">
+                    <option>person</option>
+                    <option>corporate body</option>
+                    <option>family</option>
+                  </select>
               </div>
             </div>
           </div>
-
-          <div class="box-footer">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <button type="cancel" class="btn btn-danger">Cancel</button>
-          </div>
-
-        </form>
-
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Content Description</label>
+        <textarea class="form-control" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Access Restrictions Note</label>
+        <textarea class="form-control" rows="3"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Use Restrictions Note</label>
+        <textarea class="form-control" rows="3"></textarea>
       </div>
     </div>
   </div>
-</div>
+
+  <div class="box box-primary collapsed-box">
+    <div class="box-header with-border">
+      <h3 class="box-title">Rights Statements</h3>
+      <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+      </div>
+    </div>
+    <div class="box-body">
+      <table>
+        <thead>
+          <tr>
+            <th>basis</th>
+            <th>status</th>
+            <th>determination_date</th>
+            <th>jurisdiction</th>
+            <th>start_date</th>
+            <th>end_date</th>
+            <th>terms</th>
+            <th>citation</th>
+            <th>note</th>
+            <th>grant_act</th>
+            <th>grant_restriction</th>
+            <th>grant_start_date</th>
+            <th>grant_end_date</th>
+            <th>grant_note</th>
+            <th>doc_id_type</th>
+            <th>doc_id_value</th>
+            <th>doc_id_role</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>basis</td>
+            <td>status</td>
+            <td>determination_date</td>
+            <td>jurisdiction</td>
+            <td>start_date</td>
+            <td>end_date</td>
+            <td>terms</td>
+            <td>citation</td>
+            <td>note</td>
+            <td>grant_act</td>
+            <td>grant_restriction</td>
+            <td>grant_start_date</td>
+            <td>grant_end_date</td>
+            <td>grant_note</td>
+            <td>doc_id_type</td>
+            <td>doc_id_value</td>
+            <td>doc_id_role</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box box-primary collapsed-box">
+    <div class="box-header with-border">
+      <h3 class="box-title">Transfers</h3>
+      <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+      </div>
+    </div>
+    <div class="box-body">
+      Table of all transfers included in this accession.
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <button type="cancel" class="btn btn-danger">Cancel</button>
+
+</form>
 
 {% endblock %}
