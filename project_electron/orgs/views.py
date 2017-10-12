@@ -101,6 +101,19 @@ class UsersListView(RACUserMixin, ListView):
 
         return context
 
+class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
+    template_name = 'orgs/users/update.html'
+    model = User
+    fields = ['is_new_account']
+    success_message = "New User Saved!"
+    def get_context_data(self, **kwargs):
+        context = super(UsersCreateView, self).get_context_data(**kwargs)
+        context['page_title'] = "Add User"
+        return context
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+
 class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
@@ -114,6 +127,7 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
 class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
+    page_title = "Edit User"
     success_message = "saved!"
 
     def get_form_class(self):
@@ -125,6 +139,7 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
         context['editing_staffer'] = self.if_editing_staffer()
+        context['page_title'] = "Edit User"
         return context
 
     def get_success_url(self):
