@@ -47,38 +47,6 @@
 			{% endif %}
 		{% endwith %}
 
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Organization</th>
-          <th>Record Creator</th>
-          <th>Transfer File Name</th>
-          <th>Record Type</th>
-          <th>Transfer Date</th>
-          <th></th>
-        </tr>
-      </thead>
-
-      <tbody>
-        <tr>
-          <td>org</td>
-          <td>creator(s)</td>
-          <td>bag_or_failed_name</td>
-          <td>record type</td>
-          <td>{{ object.user_uploaded }}</td>
-          <td>
-            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-reject">
-                Reject
-            </button>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-accept">
-                Accept
-            </button>
-          </td>
-        </tr>
-
-      </tbody>
-    </table>
-
       </div>
     </div>
   </div>
