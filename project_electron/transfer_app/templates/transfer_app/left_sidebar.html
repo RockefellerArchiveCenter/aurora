@@ -39,6 +39,21 @@
             <a href="{% url 'org-my-transfers' %}">My Transfers</a>
           </li>
         </ul>
+
+        {% if request.user.is_staff or request.user.is_superuser %}
+        <li class="header">Queues</li>
+        <li>
+          <a href="{% url 'appraise-main' %}">
+            <i class="fa fa-check-square-o"></i> <span>Appraise</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'accession-main' %}">
+            <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
+          </a>
+        </li>
+        {% endif %}
+
       </li>
 
     </ul>
