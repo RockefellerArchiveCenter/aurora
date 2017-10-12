@@ -106,7 +106,6 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-
 class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
