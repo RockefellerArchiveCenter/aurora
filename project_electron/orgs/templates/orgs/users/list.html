@@ -19,84 +19,17 @@
     <div class="tab-content">
     	<div class="tab-pane active table-responsive" id="tab_all_users">
         {% for blk in users_list %}
-        <table class="table table-bordered" id="org-admin-table">
-        	<thead>
-        		<tr>
-        			<th>Username</th>
-              <th>Active?</th>
-        		</tr>
-        	<thead>
-        	<tbody>
-        	{% for u in blk.users %}
-        	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
-        		<td>{{ u.username }}</td>
-            <td>{% if u.is_active %}{% else %}No{% endif %}</td>
-        	</tr>
-        	{% endfor %}
-        	</tbody>
-        </table>
+          {% include "orgs/users/user_table.html" %}
         {% endfor %}
     	</div>
     	<div class="tab-pane" id="tab_org_users">
         {% for blk in org_users_list %}
-        <div class="box">
-          <div class="box-header with-border">
-            <h3 class="box-title">{{ blk.org.name }}</h3>
-          </div>
-          <div class="box-body">
-            {% if not blk.users %}
-              <div class="info">There are no users at this organization.</div>
-            {% else %}
-              <table class="table table-bordered" id="org-admin-table">
-              	<thead>
-              		<tr>
-              			<th>Username</th>
-                    <th>Active?</th>
-              		</tr>
-              	<thead>
-              	<tbody>
-              	{% for u in blk.users %}
-              	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
-              		<td>{{ u.username }}</td>
-                  <td>{% if u.is_active %}{% else %}No{% endif %}</td>
-              	</tr>
-              	{% endfor %}
-              	</tbody>
-              </table>
-            {% endif %}
-          </div>
-        </div>
+          {% include "orgs/users/user_table.html" with list_type="org" %}
         {% endfor %}
     	</div>
       <div class="tab-pane" id="tab_unassigned_users">
         {% for blk in unassigned_users_list %}
-        <div class="box">
-          <div class="box-header with-border">
-            <h3 class="box-title">{{ blk.org.name }}</h3>
-          </div>
-          <div class="box-body">
-            {% if not blk.users %}
-              <div class="info">There are no users at this organization.</div>
-            {% else %}
-              <table class="table table-bordered" id="org-admin-table">
-              	<thead>
-              		<tr>
-              			<th>Username</th>
-                    <th>Active?</th>
-              		</tr>
-              	<thead>
-              	<tbody>
-              	{% for u in blk.users %}
-              	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
-              		<td>{{ u.username }}</td>
-                  <td>{% if u.is_active %}{% else %}No{% endif %}</td>
-              	</tr>
-              	{% endfor %}
-              	</tbody>
-              </table>
-            {% endif %}
-          </div>
-        </div>
+          {% include "orgs/users/user_table.html" %}
         {% endfor %}
     	</div>
 
