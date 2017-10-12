@@ -9,4 +9,4 @@ class AccessionView(TemplateView):
     template_name = "accession/main.html"
 
 class AccessionRecordView(TemplateView):
-    template_name = "accession/accession_record.html"
+    template_name = "accession/create.html"
