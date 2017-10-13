@@ -10,8 +10,7 @@
 
     <div class="box box-info">
       <div class="box-header with-border">
-        <h3 class="box-title">Transfers from past year</h3>
-
+        <h3 class="box-title">Transfers</h3>
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
           </button>
@@ -23,7 +22,6 @@
           <canvas id="lineChart" style="height: 249px; width: 542px;" width="542" height="249"></canvas>
         </div>
       </div>
-      <!-- /.box-body -->
     </div>
 
   </div>
@@ -77,12 +75,9 @@
 
   <div class="col-md-6">
 
-    {% comment %}
-      Bar chart for number of transfers in the current month versus the average transfers per month
-    {% endcomment %}
     <div class="box box-success">
       <div class="box-header with-border">
-        <h3 class="box-title">Transfers in {{month}}/Average transfers</h3>
+        <h3 class="box-title">Transfers in {% now "F" %}/Average transfers</h3>
 
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -97,13 +92,9 @@
       </div>
     </div>
 
-
-    {% comment %}
-      Bar chart for size of transfers in the current month versus the average transfer size
-    {% endcomment %}
     <div class="box box-success">
       <div class="box-header with-border">
-        <h3 class="box-title">Transfer size in {{month}}/Average transfer size</h3>
+        <h3 class="box-title">Transfer size in {% now "F" %}/Average transfer size</h3>
 
         <div class="box-tools pull-right">
           <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
@@ -118,9 +109,6 @@
       </div>
     </div>
 
-    {% comment %}
-      Donut/pie chart for record types in transfers
-    {% endcomment %}
     <div class="box box-info">
       <div class="box-header with-border">
         <h3 class="box-title">Record types in transfers</h3>
@@ -147,19 +135,6 @@
 
 <script>
   $(function () {
-    /* ChartJS
-     * -------
-     * Here we will create a few charts using ChartJS
-     */
-
-    //--------------
-    //- AREA CHART -
-    //--------------
-
-    // Get context with jQuery - using jQuery's .get() method.
-    // var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
-    // This will get the first returned node in the jQuery collection.
-    // var areaChart       = new Chart(areaChartCanvas)
 
     var areaChartData = {
       labels  : ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
