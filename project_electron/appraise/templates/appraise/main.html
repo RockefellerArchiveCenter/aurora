@@ -7,11 +7,10 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-      	{% with uploads=object_list%}
-	      	{% if not uploads %}
+       {% if not uploads %}
 				<div>No transfers to appraise</div>
 			 {% else %}
-				<table class="table table-striped">
+				<table class="table table-bordered">
 					<thead>
 						<tr>
 							<th>Organization</th>
@@ -25,17 +24,17 @@
 
 					<tbody>
 					{% for upload in uploads %}
-						<tr class="pointer-row">
-							<td>Ford Foundation</td>
-							<td>Darren Walker</td>
-							<td>bag_or_failed_name</td>
-							<td>grant records</td>
-							<td>{{ user_uploaded }}</td>
+						<tr>
+							<td>{{ upload.source_organization }}</td>
+							<td>{{ upload.record_creator }}</td>
+							<td>{{ upload.bag_or_failed_name }}</td>
+							<td>{{ upload.record_type }}</td>
+							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
-                <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#modal-reject">
+                <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal-reject">
                     Reject
                 </button>
-                <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#modal-accept">
+                <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modal-accept">
                     Accept
                 </button>
               </td>
@@ -45,8 +44,6 @@
 					</tbody>
 				</table>
 			{% endif %}
-		{% endwith %}
-
       </div>
     </div>
   </div>
