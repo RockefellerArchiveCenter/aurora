@@ -138,6 +138,14 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class TransferDetailView(DetailView):
-    template_name = 'orgs/transfer_detail.html'
-    model = Archives
+class UsersTransfersView(RACUserMixin, ListView):
+
+    template_name = 'orgs/all_transfers.html'
+    def get_context_data(self,**kwargs):
+        context = super(UsersTransfersView, self).get_context_data(**kwargs)
+        context['user'] = self.user
+        return context
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
