@@ -1,7 +1,14 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}{{ organization.name }} <small>All Transfers</small>{% endblock %}
+{% block h1_title %}
+  {% if organization %}
+  {{ organization.name }}
+  {% else %}
+  My Transfers
+  {% endif %}
+  <small>All Transfers</small>
+{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -9,41 +16,8 @@
     <div class="box box-default">
       <div class="box-body">
       	{% with uploads=object_list%}
-	      	{% if not uploads %}
-				<div>No Uploads</div>
-			 {% else %}
-				<table>
-					<thead>
-						<tr>
-							<th>Bag Name</th>
-							<th>Is Bag?</th>
-							<th>Processing Time</th>
-							<th>User</th>
-							<th>Size</th>
-							<th>Uploaded At</th>
-							<th>Upload Path</th>
-						</tr>
-					</thead>
-
-					<tbody>
-					{% for upload in uploads %}
-						<tr onclick="window.open('{% url 'transfer-detail' upload.pk %}','_self')" class="pointer-row">
-							<td>{{ upload.bag_or_failed_name }}</td>
-							<td>{% if upload.bag_it_valid %}YES{% else %}no{% endif %}</td>
-							<td>{{ upload.created_time }}</td>
-							<td>{{ upload.user_uploaded }}</td>
-							<td>{{ upload.machine_file_size}}</td>
-							<td>{{ upload.machine_file_upload_time}}</td>
-							<td>{{ upload.machine_file_path}}</td>
-						</tr>
-
-					{% endfor %}
-					</tbody>
-				</table>
-			{% endif %}
-		{% endwith %}
-
-
+          {% include 'parts/transfer_table.html' %}
+		    {% endwith %}
       </div>
     </div>
   </div>
