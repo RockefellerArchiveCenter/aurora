@@ -19,27 +19,16 @@
       {% endif %}
 
       <li class="header">{{ request.user.organization.name }}</li>
-      <li class="treeview">
-        <a href="{% url 'app_home' %}">
-          <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="treeview">
-        <a href="#">
-          <i class="fa fa-exchange"></i> <span>Transfers</span>
-          <span class="pull-right-container">
-            <i class="fa fa-angle-left pull-right"></i>
-          </span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="{% url 'org-transfers' %}">My Organization</a>
-          </li>
-          <li>
-            <a href="{% url 'org-my-transfers' %}">My Transfers</a>
-          </li>
-        </ul>
-
+        <li class="treeview">
+          <a href="{% url 'app_home' %}">
+            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="treeview">
+          <a href="{% url 'org-transfers' %}">
+            <i class="fa fa-exchange"></i> <span>Transfers</span>
+          </a>
+        </li>
         {% if request.user.is_staff or request.user.is_superuser %}
         <li class="header">Queues</li>
         <li>
