@@ -1,6 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}Appraisal Queue{% endblock %}
+{% block h1_title %}Appraisal Queue <small>{{uploads|length}} transfers</small>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -13,9 +13,9 @@
 				<table class="table table-bordered">
 					<thead>
 						<tr>
-							<th>Organization</th>
-							<th>Record Creator</th>
 							<th>Transfer File Name</th>
+              <th>Organization</th>
+							<th>Record Creator</th>
 							<th>Record Type</th>
 							<th>Transfer Date</th>
 							<th></th>
@@ -25,9 +25,9 @@
 					<tbody>
 					{% for upload in uploads %}
 						<tr>
-							<td>{{ upload.source_organization }}</td>
+              <td><a href="{% url 'transfer-detail' upload.pk %}">{{ upload.bag_or_failed_name }}</a></td>
+              <td>{{ upload.source_organization }}</td>
 							<td>{{ upload.record_creator }}</td>
-							<td>{{ upload.bag_or_failed_name }}</td>
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
