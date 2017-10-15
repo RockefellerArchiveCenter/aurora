@@ -16,7 +16,7 @@
     <div class="box box-default">
       <div class="box-body">
       	{% with uploads=object_list%}
-          {% include 'parts/transfer_table.html' %}
+          {% include 'parts/transfer_table.html' with table_id='all_transfers'%}
 		    {% endwith %}
       </div>
     </div>
