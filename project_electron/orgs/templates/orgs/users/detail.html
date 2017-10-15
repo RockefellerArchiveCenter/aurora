@@ -7,10 +7,8 @@
 <div class="row">
     <div class="col-md-3">
 
-        <!-- Profile Image -->
         <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
             <div class="box-body box-profile">
-                <!-- <img class="profile-user-img img-responsive img-circle" src="../../dist/img/user4-128x128.jpg" alt="User profile picture"> -->
 
                 <h3 class="profile-username text-center">{{ object.username }}</h3>
 
@@ -20,7 +18,7 @@
                 </p>
                 {% endif %}
 
-                
+
                 <ul class="list-group list-group-unbordered">
                     <li class="list-group-item">
                         <b>Last login</b> <a class="pull-right">{{ object.last_login }}</a>
@@ -34,22 +32,18 @@
                     </li>
                     {% endcomment %}
                 </ul>
-                
+
 
                 {% if request.user.is_superuser %}
                 <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
                 {% endif %}
             </div>
-            <!-- /.box-body -->
         </div>
-        <!-- /.box -->
 
-        <!-- About Me Box -->
         <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
             <div class="box-header with-border">
                 <h3 class="box-title">Details</h3>
             </div>
-            <!-- /.box-header -->
             <div class="box-body">
                 <strong><i class="fa fa-user margin-r-5"></i> Active?</strong>
 
@@ -79,26 +73,20 @@
                     {% if object.is_org_admin %}
                         <span class="label label-success">OrgAdmin</span>
                     {% endif %}
-
                 </p>
-
-                <hr>
-
-                <!-- <strong><i class="fa fa-file-text-o margin-r-5"></i> Notes</strong>
-
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam fermentum enim neque.</p> -->
-
             </div>
-            <!-- /.box-body -->
         </div>
-        <!-- /.box -->
     </div>
-    <!-- /.col -->
     <div class="col-md-9">
-        
-        {% include 'parts/bag_tabs.html' with org=object.organization %}
+      <div class="box box-primary">
+          <div class="box-header with-border">
+              <h3 class="box-title">Recent Uploads</h3>
+          </div>
+          <div class="box-body">
+            {% include 'parts/transfer_table.html' with org=object.organization %}
+          </div>
+        </div>
     </div>
-    <!-- /.col -->
 </div>
 
 {% endblock %}
