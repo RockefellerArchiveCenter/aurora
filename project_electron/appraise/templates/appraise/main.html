@@ -10,7 +10,7 @@
        {% if not uploads %}
 				<div>No transfers to appraise</div>
 			 {% else %}
-				<table class="table table-bordered">
+				<table id="appraise_table" class="table table-bordered dataTable">
 					<thead>
 						<tr>
 							<th>Transfer File Name</th>
@@ -89,4 +89,20 @@
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  $(function () {
+    $('#appraise_table').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25
+    })
+  })
+</script>
 {% endblock %}

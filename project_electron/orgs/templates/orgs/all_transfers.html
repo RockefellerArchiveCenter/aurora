@@ -16,10 +16,26 @@
     <div class="box box-default">
       <div class="box-body">
       	{% with uploads=object_list%}
-          {% include 'parts/transfer_table.html' %}
+          {% include 'parts/transfer_table.html' with table_id='all_transfers'%}
 		    {% endwith %}
       </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  $(function () {
+    $('#all_transfers').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25
+    })
+  })
+</script>
 {% endblock %}
