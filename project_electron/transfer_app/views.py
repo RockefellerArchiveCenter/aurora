@@ -13,6 +13,6 @@ class MainView(LoggedInMixinDefaults, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
 
-        context['uploads'] = Archives.objects.filter(organization = self.request.user.organization).order_by('-created_time')[:15]
-        context['uploads_count'] = Archives.objects.filter(organization = self.request.user.organization).count()
+        context['uploads'] = Archives.objects.filter(process_status=99, organization = self.request.user.organization).order_by('-created_time')[:15]
+        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = self.request.user.organization).count()
         return context

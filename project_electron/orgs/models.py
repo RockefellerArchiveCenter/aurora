@@ -87,7 +87,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status=99, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
                 
@@ -154,7 +154,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(user_uploaded=self).count()
+        return Archives.objects.filter(process_status=99, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
