@@ -231,6 +231,7 @@ class Archives(models.Model):
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
+    process_status =        models.PositiveSmallIntegerField(default=0)
     
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
