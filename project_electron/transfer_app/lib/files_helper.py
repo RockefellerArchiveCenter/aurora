@@ -165,13 +165,57 @@ def get_active_org_contents_dict():
                         org_dir_contents[org.machine_name]['count'] +=1
     return org_dir_contents
 
-def files_in_unserialized(dirpath):
+def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     files = []
-    # can in a full test check infinite levels
-    # this is a good MVP test
-    for f1 in listdir(dirpath):
-        if isfile(f1):
-            files.append(f1)
+
+    if CK_SUBDIRS:
+        dirpaths = []
+        to_check = [dirpath]
+        checked_dirs = []
+
+        # build list from all files in Infinite sub dirs
+        while True:
+            
+            #resolve new dir to check
+            if not to_check:
+                break
+            live_dir = to_check[0]
+
+            for path in listdir(live_dir):
+                fullpath = "{}/{}".format(live_dir,path)
+                if isdir(fullpath):
+                    dirpaths.append(fullpath)
+
+                    if fullpath not in checked_dirs:
+                        to_check.append(fullpath) 
+
+            checked_dirs.append(live_dir)
+            if live_dir in to_check:
+                to_check = [x for x in to_check if x != live_dir]
+
+        # check all dirs -- can narrow to /data since payload requirement or not
+        if dirpaths:
+            for dire in dirpaths:
+
+                d = listdir(dire)
+                if d:
+                    for contents in d:
+                        fullpath = "{}/{}".format(dire,contents)
+                        if isfile(fullpath):
+                            files.append(fullpath)
+
+            #print to console
+            if files:
+                print "\n\nCURRENT FILES STILL OPEN"
+                for f in files:
+                    print f
+                print '\n'
+
+    else:
+        for f1 in listdir(dirpath):
+            if isfile(f1):
+                files.append(f1)
+
     return files
 
 
@@ -191,7 +235,7 @@ def org_contents_in_lsof(contents):
         # get directory
         for d in obj['dirs']:
             # ck files in directory are on list
-            for fls in files_in_unserialized(d):
+            for fls in files_in_unserialized(d,True):
                 if fls in open_files:
                     rm_list.append((org,1,d))
     return rm_list
