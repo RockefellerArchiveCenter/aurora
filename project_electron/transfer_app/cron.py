@@ -35,13 +35,12 @@ class MyCronJob(CronJobBase):
                 archive_exist = Archives.objects.filter(machine_file_identifier = machine_file_identifier)
                 if archive_exist:
                     print 'shouldnt overwrite file, need to make sure this file doesnt get discovered again'
-                    ### log it
                     continue
 
-
+                # Init Mailer
                 email = Mailer()
 
-
+                new_arc.process_status = 10
 
                 ## IS ORG AND IS ACTIVE ORG
                 org = Organization().is_org_active(upload_list['org'])
@@ -55,7 +54,6 @@ class MyCronJob(CronJobBase):
                 else:
                     email.to = [user.email]
                     print user.email
-
 
                 ## Init / Save
                 new_arc.organization =          org
@@ -82,12 +80,10 @@ class MyCronJob(CronJobBase):
                     continue
 
                 ## NOW FOR BAG CHECK
-
                 bag = bagChecker(new_arc)
                 if bag.bag_passed_all():
 
                     new_arc.bag_it_valid = True
-                    new_arc.save()
                     BAGLog.log_it('APASS',new_arc)
                     email.setup_message('TRANS_PASS_ALL',new_arc)
                     email.send()
@@ -95,8 +91,10 @@ class MyCronJob(CronJobBase):
 
                     BAGLog.log_it(bag.ecode, new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
-
                     email.send()
+
+                new_arc.process_status = 99
+                new_arc.save()
 
 
                 ## CLEAN UP
