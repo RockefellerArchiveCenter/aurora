@@ -31,7 +31,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
             context['upload_count_by_month'].append(upload_count)
             upload_size = Archives.objects.filter(process_status=99, organization = self.request.user.organization, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month).aggregate(Sum('machine_file_size'))
             if upload_size['machine_file_size__sum']:
-                context['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000000)
+                context['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000)
             else:
                 context['upload_size_by_month'].append(0)
             current += relativedelta(months=1)
