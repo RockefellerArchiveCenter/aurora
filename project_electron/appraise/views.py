@@ -4,10 +4,10 @@ from django.views.generic import TemplateView
 
 from django.shortcuts import render
 from orgs.models import Archives
-from orgs.authmixins import LoggedInMixinDefaults
+from orgs.authmixins import RACUserMixin
 
 
-class AppraiseView(TemplateView):
+class AppraiseView(RACUserMixin, TemplateView):
     template_name = "appraise/main.html"
 
     def get_context_data(self, **kwargs):
