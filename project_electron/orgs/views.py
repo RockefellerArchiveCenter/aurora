@@ -101,8 +101,8 @@ class UsersListView(RACUserMixin, ListView):
 
         return context
 
-class UsersDetailView(RACUserMixin, DetailView):
-    template_name = 'orgs//users/detail.html'
+class UsersDetailView(SelfOrSuperUserMixin, DetailView):
+    template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
@@ -111,7 +111,7 @@ class UsersDetailView(RACUserMixin, DetailView):
 
         return context
 
-class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
+class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     success_message = "saved!"
