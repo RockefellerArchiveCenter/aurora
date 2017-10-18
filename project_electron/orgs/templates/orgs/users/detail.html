@@ -20,7 +20,7 @@
                 </p>
                 {% endif %}
 
-                
+
                 <ul class="list-group list-group-unbordered">
                     <li class="list-group-item">
                         <b>Last login</b> <a class="pull-right">{{ object.last_login }}</a>
@@ -34,9 +34,8 @@
                     </li>
                     {% endcomment %}
                 </ul>
-                
 
-                {% if request.user.is_superuser %}
+                {% if request.user.is_superuser or request.user.pk == object.pk %}
                 <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
                 {% endif %}
             </div>
@@ -47,7 +46,7 @@
         <!-- About Me Box -->
         <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
             <div class="box-header with-border">
-                <h3 class="box-title">Details</h3>
+                <h3 class="box-title">Details </h3>
             </div>
             <!-- /.box-header -->
             <div class="box-body">
@@ -59,7 +58,7 @@
 
                 <hr>
 
-                <strong><i class="fa fa-envelope margin-r-5"></i> Email</strong>
+                <strong><i class="fa fa-envelope margin-r-5"></i> Email </strong>
 
                 <p class="text-muted">
                     {{ object.email }}
@@ -95,7 +94,7 @@
     </div>
     <!-- /.col -->
     <div class="col-md-9">
-        
+
         {% include 'parts/bag_tabs.html' with org=object.organization %}
     </div>
     <!-- /.col -->
