@@ -295,39 +295,6 @@
     }
     pieChart.Doughnut(PieData, pieOptions)
 
-    //-------------
-    //- BAR CHARTS -
-    //-------------
-    var barChartCanvas                   = $('#transferNumberBarChart').get(0).getContext('2d')
-    var barChart                         = new Chart(barChartCanvas)
-    var barChartData                     = previousMonthCountData
-    barChart.Bar(barChartData, barChartOptions)
-
-    var barChartSizeCanvas                   = $('#transferSizeBarChart').get(0).getContext('2d')
-    var barChartSize                         = new Chart(barChartSizeCanvas)
-    var barChartData                         = previousMonthSizeData
-    barChartSize.Bar(barChartData, barChartOptions)
-
-    barChartData.datasets[1].fillColor   = '#00a65a'
-    barChartData.datasets[1].strokeColor = '#00a65a'
-    barChartData.datasets[1].pointColor  = '#00a65a'
-    var barChartOptions                  = {
-      scaleBeginAtZero        : true,
-      scaleShowGridLines      : true,
-      scaleGridLineColor      : 'rgba(0,0,0,.05)',
-      scaleGridLineWidth      : 1,
-      scaleShowHorizontalLines: true,
-      scaleShowVerticalLines  : true,
-      barShowStroke           : true,
-      barStrokeWidth          : 2,
-      barValueSpacing         : 5,
-      barDatasetSpacing       : 1,
-      legendTemplate          : '',
-      responsive              : true,
-      maintainAspectRatio     : true
-    }
-
-    barChartOptions.datasetFill = false
 
   })
 </script>
