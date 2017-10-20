@@ -9,7 +9,7 @@ Aurora is a Django web application that can receive, virus check and validate tr
 3.  Run `python project_electron/manage.py migrate`
 4.  For a local development server run `python project_electron/manage.py runserver`
 
-Application functionality currently assumes a SLES serveer and a particular LDAP configuration. Future development will include improving the portability of the application.
+Application functionality currently assumes a SLES server and a particular LDAP configuration. Future development will include improving the portability of the application.
 
 ## Scripts
 
