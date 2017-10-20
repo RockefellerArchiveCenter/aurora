@@ -1,0 +1,51 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}Appraisal Queue{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-default">
+      <div class="box-body">
+      	{% with uploads=object_list%}
+	      	{% if not uploads %}
+				<div>No transfers to appraise</div>
+			 {% else %}
+				<table>
+					<thead>
+						<tr>
+							<th>Organization</th>
+							<th>Record Creator</th>
+							<th>Transfer File Name</th>
+							<th>Record Type</th>
+							<th>Status</th>
+							<th>Transfer Date</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+
+					<tbody>
+					{% for upload in uploads %}
+						<tr>
+							<td>org</td>
+							<td>creator(s)</td>
+							<td>bag_or_failed_name</td>
+							<td>record type</td>
+							<td>status</td>
+							<td>{{ user_uploaded }}</td>
+							<td><a href="#" class="btn btn-primary">Accept</a><a href="#" class="btn btn-danger">Reject</a></td>
+						</tr>
+
+					{% endfor %}
+					</tbody>
+				</table>
+			{% endif %}
+		{% endwith %}
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

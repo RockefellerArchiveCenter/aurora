@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css?family=Satisfy');
+
+.top-button-blk{
+	margin-bottom: 20px;
+}
+
+.pointer-row{
+	cursor: pointer;
+}
+.pointer-row:hover{
+	background-color: #00c0ef;
+}
+
+.mar-top20{
+	margin-top: 20px;
+}
+.box-comment-icon{
+	width: 30px;
+	height: 30px;
+	float: left !important;
+	display: inline;
+}
+.box-comments .comment-text{
+	margin-left: 50px;
+}
+
+.green-bag{
+	color: #00a65a;
+}
+.red-bag{
+	color: #dd4b39;
+}
+
+.login-page {
+	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+}
+
+.login-logo a {
+	color: #fff;
+}
+
+.login-credit {
+	color: #fff;
+	position: fixed;
+	bottom: 10px;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+
+.login-logo {
+	font-family: "Satisfy", cursive;
+	font-size: 60px;
+}
+
+.main-header .logo {
+	font-family: "Satisfy", cursive;
+	font-size: 30px;
+}

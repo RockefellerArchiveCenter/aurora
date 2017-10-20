@@ -1,0 +1,75 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}User Edit: {{ object.username }}{% endblock %}
+
+{% block content %}
+<div class="row">
+
+    <div class="col-md-12">
+
+        <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-info{% endif %}">
+            <div class="box-header with-border">
+              <!-- <h3 class="box-title">Quick Example</h3> -->
+            </div>
+            <div class="box-body">
+                <form role="form" action="" method="post">
+                    {% csrf_token %}
+                    {% if object.is_new_account %}
+                        <div class="callout callout-info">
+                            <h4>Unassigned Account!</h4>
+                            <p>Updating the user record will remove them from unassigned list.</p>
+                        </div>
+                    {% endif %}
+
+                    {% if user.is_superuser %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
+                      </label>
+                    </div>
+                    {% endif %}
+                    <div class="form-group">
+                      <label for="id_email">Email address</label>
+                      <input type="email" name="email" value="{{ object.email }}" class="form-control" id="id_email" placeholder="Enter email" required>
+                    </div>
+                    {% if user.is_superuser %}
+                    {% if not editing_staffer %}
+                    <div class="form-group">
+                        <label>Organization</label>
+                        <select class="form-control" name="organization" required>
+                            {% for org in form.fields.organization.choices %}
+                            <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% endif %}
+                    {% endif %}
+
+                    {% if user.is_superuser %}
+                    {% if editing_staffer %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
+                      </label>
+                    </div>
+                    {% else %}
+                    <div class="checkbox">
+                      <label>
+                        <input type="checkbox" name="is_org_admin" {% if object.is_org_admin %}checked{% endif %}> Org Admin?
+                      </label>
+                    </div>
+
+                    {% endif %}
+                    {% endif %}
+
+
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-info">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

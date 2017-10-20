@@ -1,0 +1,100 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}
+	{{ object.name }}
+	{% if request.user.is_superuser %}
+		<a href="{% url 'orgs-edit' object.pk %}" class="btn btn-primary pull-right"><i class="fa fa-edit"></i> Edit Organization</a>
+	{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+	<div class="col-md-6">
+		<div class="small-box bg-aqua">
+        <div class="inner">
+          <h3>{{ uploads_count }}</h3>
+
+          <p>Lifetime Transfers</p>
+        </div>
+        <div class="icon">
+          <i class="fa fa-exchange"></i>
+        </div>
+        <a href="{% url 'orgs-transfers-report' pk=object.pk %}" class="small-box-footer">Full transfer report <i class="fa fa-arrow-circle-right"></i></a>
+      	</div>
+		<div class="box">
+			<div class="box-header">
+				<h3 class="box-title">Recent Transfers</h3>
+			</div>
+			<div class="box-body">
+				{% if uploads %}
+		          <div class="box-comments">
+		          {% for upload in uploads %}
+		            <div class="box-comment">
+		              <!-- User image -->
+		              <div class="box-comment-icon">
+		                <span class="fa fa-archive fa-3x {% if upload.bag_it_valid %}green-bag{% else %}red-bag{% endif %}"></span>
+		              </div>
+
+		              <div class="comment-text">
+		                    <span class="username">
+		                    	<a href="{% url 'transfer-detail' pk=upload.pk %}">
+		                      		{{ upload.bag_or_failed_name }}
+		                      	</a>
+		                      <span class="text-muted pull-right">{{ upload.created_time }}</span>
+		                    </span><!-- /.username -->
+		                	{% if upload.user_uploaded %}
+		                		Transfer by <a href="{% url 'users-detail' pk=upload.user_uploaded.pk %}">{{ upload.user_uploaded.username }}</a> {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
+		                	{% else %}
+		                		{% if upload.bag_it_valid %}
+		                			Transfer successful
+		                		{% else %}
+		                			Transfer Failed
+		                		{% endif %}
+		                	{% endif %}
+		              </div>
+		              <!-- /.comment-text -->
+		            </div>
+		          {% endfor %}
+		          </div>
+		        {% else %}
+		        <p>There are no recent transfers...</p>
+		        {% endif %}
+		    </div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="small-box bg-yellow">
+            <div class="inner">
+              <h3>{{ object.org_users|length }} </h3>
+
+              <p>Users</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-person"></i>
+            </div>
+            <a href="#" class="small-box-footer">All Users <i class="fa fa-arrow-circle-right"></i></a>
+        </div>
+
+		<div class="box box-default">
+			<div class="box-header with-border">
+				<h3 class="box-title">Users</h3>
+			</div>
+			<div class="box-body">
+				<div class="row">
+					<div class="col-sm-12">
+						{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+						{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

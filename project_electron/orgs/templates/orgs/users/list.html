@@ -1,0 +1,52 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-12">
+    {% for blk in users_list %}
+
+
+    <div class="box">
+      {% if page_type == 'company' %}
+      <div class="box-header with-border">
+        <h3 class="box-title">{{ blk.org.name }}</h3>
+      </div>
+      {% endif %}
+
+      <div class="box-body">
+        {% if not blk.users %}
+          <div class="info">There are no users at this organization.</div>
+        {% else %}
+
+          <table class="table table-bordered" id="org-admin-table">
+          	<thead>
+          		<tr>
+          			<!-- <th></th> -->
+          			<th>Username</th>
+                <th>Active?</th>
+  <!--         			<th>Organization</th> -->
+          		</tr>
+          	<thead>
+          	<tbody>
+          	{% for u in blk.users %}
+          	<tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
+          		<!-- <td><a href="{% url 'users-edit' u.pk %}"><i class="fa fa-edit"></i></a></td> -->
+          		<td>{{ u.username }}</td>
+              <td>{% if u.is_active %}{% else %}No{% endif %}</td>
+          		<!-- <td>{% if u.organization %}{{ u.organization }}{% endif %}</td> -->
+          	</tr>
+          	{% endfor %}
+          	</tbody>
+          </table>
+        {% endif %}
+      </div>
+    </div>
+
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
