@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, View, PasswordChangeView
 
 from orgs.models import Organization, User
 from django.utils import timezone
@@ -148,3 +148,16 @@ class UsersTransfersView(RACUserMixin, ListView):
     def get_queryset(self):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
         return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
+
+class PasswordChangeView(PasswordChangeView, SuccessMessageMixin):
+    template_name = 'orgs/users/password_change.html'
+    model = User
+    success_message = "New password saved."
+
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+class TransferDetailView(DetailView):
+    template_name = 'orgs/transfer_detail.html'
+    model = Archives
+>>>>>>> password change basics
