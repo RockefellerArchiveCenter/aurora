@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, PasswordResetView
 from django.core.urlresolvers import reverse_lazy
 
 from django.shortcuts import render, redirect
@@ -13,3 +13,7 @@ class SplashView(AnonymousRequiredMixin, TemplateView):
 
     def get(self,request):
         return redirect('login')
+
+
+class PasswordResetView(PasswordResetView):
+    template_name = 'rac_user/password_reset.html'
