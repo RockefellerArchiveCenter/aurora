@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, View, PasswordChangeView
 
 from orgs.models import Organization, User
 from django.utils import timezone
@@ -126,6 +126,14 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
         context = super(UsersEditView, self).get_context_data(**kwargs)
         context['editing_staffer'] = self.if_editing_staffer()
         return context
+
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+class PasswordChangeView(PasswordChangeView, SuccessMessageMixin):
+    template_name = 'orgs/users/password_change.html'
+    model = User
+    success_message = "New password saved."
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})

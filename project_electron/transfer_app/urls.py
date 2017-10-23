@@ -18,6 +18,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/edit/$', UsersEditView.as_view(), name='users-edit'),
 
     url(r'^password/reset$', PasswordResetView.as_view(), name='password-reset'),
+    url(r'^password/change$', PasswordChangeView.as_view(), name='password-change'),
 
     url(r'^transfers/(?P<pk>\d+)$', TransferDetailView.as_view(), name='transfer-detail'),
 
