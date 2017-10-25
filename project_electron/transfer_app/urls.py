@@ -19,6 +19,9 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/edit/$', UsersEditView.as_view(), name='users-edit'),
 
     url(r'^password/reset$', PasswordResetView.as_view(), name='password-reset'),
+    url(r'^password/reset/done$', PasswordResetDoneView.as_view(), name='password-reset-done'),
+    url(r'^users/password/reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})$', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    url(r'^password/reset/complete$', PasswordResetCompleteView.as_view(), name='password-reset-complete'),
     url(r'^users/(?P<pk>\d+)/password/change$', UserPasswordChangeView.as_view(), name='password-change'),
 
     url(r'^transfers/(?P<pk>\d+)$', TransferDetailView.as_view(), name='transfer-detail'),
