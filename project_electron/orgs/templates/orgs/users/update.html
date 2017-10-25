@@ -34,7 +34,7 @@
                     </div>
                     <div class="form-group">
                       <label for="change_password">Password</label>
-                      <a id="change_password" href="{% url 'password-change' %}" class="btn btn-default">Change Password</a>
+                      <a id="change_password" href="{% url 'password-change' object.pk %}" class="btn btn-default btn-xs">Change Password</a>
                     </div>
                     {% if user.is_superuser %}
                     <div class="form-group">
