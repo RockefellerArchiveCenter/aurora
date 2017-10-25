@@ -2,6 +2,7 @@ from django.conf.urls import url
 from transfer_app.views import MainView
 from orgs.views import *
 from orgs.gviews import *
+from rac_user.views import *
 
 urlpatterns = [
     url(r'^$', 	MainView.as_view(), name='app_home'),
@@ -18,7 +19,7 @@ urlpatterns = [
     url(r'^users/(?P<pk>\d+)/edit/$', UsersEditView.as_view(), name='users-edit'),
 
     url(r'^password/reset$', PasswordResetView.as_view(), name='password-reset'),
-    url(r'^password/change$', PasswordChangeView.as_view(), name='password-change'),
+    url(r'^users/(?P<pk>\d+)/password/change$', UserPasswordChangeView.as_view(), name='password-change'),
 
     url(r'^transfers/(?P<pk>\d+)$', TransferDetailView.as_view(), name='transfer-detail'),
 
