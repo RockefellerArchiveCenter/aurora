@@ -24,11 +24,11 @@ class UserPasswordResetForm(PasswordResetForm):
                   error_messages={
                     'required': 'Please enter your email'})
 
-class UserPasswordResetView(PasswordResetView):
+class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
     template_name = 'rac_user/password_reset.html'
     form_class = UserPasswordResetForm
 
-class UserPasswordResetDoneView(PasswordResetDoneView):
+class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
     template_name = 'rac_user/password_reset_done.html'
 
 class UserPasswordResetConfirmForm(SetPasswordForm):
@@ -43,9 +43,9 @@ class UserPasswordResetConfirmForm(SetPasswordForm):
                   error_messages={
                     'required': 'Please confirm your new password'})
 
-class UserPasswordResetConfirmView(PasswordResetConfirmView):
+class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
     template_name = 'rac_user/password_reset_confirm.html'
     form_class = UserPasswordResetConfirmForm
 
-class UserPasswordResetCompleteView(PasswordResetCompleteView):
+class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):
     template_name = 'rac_user/password_reset_complete.html'
