@@ -17,21 +17,21 @@ class SplashView(AnonymousRequiredMixin, TemplateView):
     def get(self,request):
         return redirect('login')
 
-class PasswordResetForm(PasswordResetForm):
+class UserPasswordResetForm(PasswordResetForm):
     email = forms.EmailField(required=True,
                   widget=forms.EmailInput(attrs={
                     'class': 'form-control has-feedback'}),
                   error_messages={
                     'required': 'Please enter your email'})
 
-class PasswordResetView(PasswordResetView):
+class UserPasswordResetView(PasswordResetView):
     template_name = 'rac_user/password_reset.html'
-    form_class = PasswordResetForm
+    form_class = UserPasswordResetForm
 
-class PasswordResetDoneView(PasswordResetDoneView):
+class UserPasswordResetDoneView(PasswordResetDoneView):
     template_name = 'rac_user/password_reset_done.html'
 
-class PasswordResetConfirmForm(SetPasswordForm):
+class UserPasswordResetConfirmForm(SetPasswordForm):
     new_password1 = forms.CharField(required=True, label='New Password',
                   widget=forms.PasswordInput(attrs={
                     'class': 'form-control'}),
@@ -43,9 +43,9 @@ class PasswordResetConfirmForm(SetPasswordForm):
                   error_messages={
                     'required': 'Please confirm your new password'})
 
-class PasswordResetConfirmView(PasswordResetConfirmView):
+class UserPasswordResetConfirmView(PasswordResetConfirmView):
     template_name = 'rac_user/password_reset_confirm.html'
-    form_class = PasswordResetConfirmForm
+    form_class = UserPasswordResetConfirmForm
 
-class PasswordResetCompleteView(PasswordResetCompleteView):
+class UserPasswordResetCompleteView(PasswordResetCompleteView):
     template_name = 'rac_user/password_reset_complete.html'
