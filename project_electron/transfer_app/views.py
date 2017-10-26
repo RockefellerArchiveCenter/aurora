@@ -2,7 +2,7 @@
 from __future__ import unicode_literals, division
 import datetime
 from dateutil.relativedelta import relativedelta
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, View, DetailView
 
 from django.db.models import Sum
 from django.shortcuts import render
@@ -39,3 +39,19 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['average_size'] = sum(context['upload_size_by_month'])/len(context['upload_size_by_month'])
         context['average_count'] = sum(context['upload_count_by_month'])/len(context['upload_count_by_month'])
         return context
+
+class RecentTransfersView(LoggedInMixinDefaults, View):
+    template_name = 'orgs/recent_transfers.html'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name, {
+            'page_title' : 'Organization Transfers',
+            'org_uploads' : Archives.objects.filter(organization = request.user.organization).order_by('-created_time')[:25],
+            'org_uploads_count' : Archives.objects.filter(organization = request.user.organization).count(),
+            'user_uploads' : Archives.objects.filter(organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25],
+            'user_uploads_count' : Archives.objects.filter(organization = request.user.organization, user_uploaded = request.user).count(),
+        })
+
+class TransferDetailView(DetailView):
+    template_name = 'transfer_app/transfer_detail.html'
+    model = Archives

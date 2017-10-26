@@ -81,25 +81,30 @@ class UsersListView(RACUserMixin, ListView):
         if refresh_ldap:
             messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
 
-        page_title = 'All Users'
-
         context['users_list'] = [{'org' : {}, 'users' : []}]
-        page_type = self.kwargs.get('page_type',None)
-        if page_type:
-            if page_type == 'company':
-                context['users_list'] = Organization.users_by_org()
-                page_title = 'Users By Organization'
-            elif page_type == 'unassigned':
-                context['users_list'][0]['org'] = {'pass':'pass'}
-                context['users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
-                page_title = 'UnAssigned Users'
-        else:
-            context['users_list'][0]['org'] = {'pass':'pass'}
-            context['users_list'][0]['users'] = User.objects.all().order_by('username')
-        context['page_type'] = page_type
-        context['page_title'] = page_title
+        context['users_list'][0]['org'] = {'pass':'pass'}
+        context['users_list'][0]['users'] = User.objects.all().order_by('username')
+
+        context['org_users_list'] = [{'org' : {}, 'users' : []}]
+        context['org_users_list'] = Organization.users_by_org()
+
+        context['unassigned_users_list'] = [{'org' : {}, 'users' : []}]
+        context['unassigned_users_list'][0]['org'] = {'pass':'pass'}
+        context['unassigned_users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
 
         return context
+
+class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
+    template_name = 'orgs/users/update.html'
+    model = User
+    fields = ['is_new_account']
+    success_message = "New User Saved!"
+    def get_context_data(self, **kwargs):
+        context = super(UsersCreateView, self).get_context_data(**kwargs)
+        context['page_title'] = "Add User"
+        return context
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
 
 class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     template_name = 'orgs/users/detail.html'
@@ -114,6 +119,7 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
 class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
+    page_title = "Edit User"
     success_message = "saved!"
 
     def get_form_class(self):
@@ -125,11 +131,20 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
         context['editing_staffer'] = self.if_editing_staffer()
+        context['page_title'] = "Edit User"
         return context
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class TransferDetailView(DetailView):
-    template_name = 'orgs/transfer_detail.html'
-    model = Archives
+class UsersTransfersView(RACUserMixin, ListView):
+
+    template_name = 'orgs/all_transfers.html'
+    def get_context_data(self,**kwargs):
+        context = super(UsersTransfersView, self).get_context_data(**kwargs)
+        context['user'] = self.user
+        return context
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')

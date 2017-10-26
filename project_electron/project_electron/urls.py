@@ -17,23 +17,17 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from rac_user.views import SplashView
 from django.contrib.auth import views as auth_views
-from appraise.views import AppraiseView
-from accession.views import AccessionView
+from transfer_app.views import MainView
 
 urlpatterns = [
-    url(r'^admin/', 	admin.site.urls),
-    url(r'^app/', 		include('transfer_app.urls')),
-    url(r'^$',			SplashView.as_view()),
-    url(r'^login/$',	auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
-    url(r'^logout/$', 	auth_views.logout, {'next_page': '/login'}, name='logout'),
-]
-
-urlpatterns += [
-    url(r'^appraise/', 	AppraiseView.as_view(), name='appraise-main'),
-
-]
-
-urlpatterns += [
-    url(r'^accession/', 	AccessionView.as_view(), name='accession-main'),
-
+    url(r'^admin/',             admin.site.urls),
+    url(r'^app/$',              MainView.as_view(), name='app_home'),
+    url(r'^app/transfers/',     include('transfer_app.urls')),
+    url(r'^app/orgs/',          include('orgs.urls')),
+    url(r'^app/users/',         include('orgs.user_urls')),
+    url(r'^app/accession/',     include('accession.urls')),
+    url(r'^app/appraise/',      include('appraise.urls')),
+    url(r'^$',                  SplashView.as_view()),
+    url(r'^login/$',            auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
+    url(r'^logout/$',           auth_views.logout, {'next_page': '/login'}, name='logout'),
 ]

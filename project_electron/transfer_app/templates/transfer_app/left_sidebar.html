@@ -3,66 +3,46 @@
   <section class="sidebar" style="height: auto;">
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu">
-      
+
       {% if request.user.is_staff or request.user.is_superuser %}
       <li class="header">Admin Pages</li>
-      <li class="treeview">
-        <a href="#">
+      <li>
+        <a href="{% url 'orgs-list' %}">
           <i class="fa fa-building-o"></i> <span>Organizations</span>
-          <span class="pull-right-container">
-            <i class="fa fa-angle-left pull-right"></i>
-          </span>
         </a>
-        <ul class="treeview-menu">
-          <li><a href="{% url 'orgs-list' %}"><i class="fa fa-circle-o"></i> List</a></li>
-          {% if request.user.is_superuser %}
-          <li>
-            <a href="{% url 'orgs-add' %}"><i class="fa fa-circle-o"></i> Add</a>
-          </li>
-          {% endif %}
-        </ul>
       </li>
-      <li class="treeview">
-        <a href="#">
+      <li>
+        <a href="{% url 'users-list' %}">
           <i class="fa fa-users"></i> <span>Users</span>
-          <span class="pull-right-container">
-            <i class="fa fa-angle-left pull-right"></i>
-          </span>
         </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="{% url 'users-list' %}"><i class="fa fa-circle-o"></i> All</a>
-          </li>
-          <li>
-            <a href="{% url 'users-list-by' page_type='company' %}"><i class="fa fa-circle-o"></i> By Org</a>
-          </li>
-          {% if request.user.is_superuser %}
-          <li>
-            <a href="{% url 'users-list-by' page_type='unassigned' %}"><i class="fa fa-circle-o"></i> Unassigned</a>
-          </li>
-          {% endif %}
-        </ul>
       </li>
       {% endif %}
 
       <li class="header">{{ request.user.organization.name }}</li>
-      <li class="treeview">
-        <a href="{% url 'app_home' %}">
-          <i class="fa fa-dashboard"></i> <span>Dashboard</span>
-        </a>
-      </li>
-      <li class="treeview">
-        <a href="#">
-          <i class="fa fa-exchange"></i> <span>Transfers</span>
-        </a>
-        <ul class="treeview-menu">
-          <li>
-            <a href="{% url 'org-transfers' %}">My Organization</a>
-          </li>
-          <li>
-            <a href="{% url 'org-my-transfers' %}">My Transfers</a>
-          </li>
-        </ul>
+        <li class="treeview">
+          <a href="{% url 'app_home' %}">
+            <i class="fa fa-dashboard"></i> <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="treeview">
+          <a href="{% url 'org-transfers' %}">
+            <i class="fa fa-exchange"></i> <span>Transfers</span>
+          </a>
+        </li>
+        {% if request.user.is_staff or request.user.is_superuser %}
+        <li class="header">Queues</li>
+        <li>
+          <a href="{% url 'appraise-main' %}">
+            <i class="fa fa-check-square-o"></i> <span>Appraise</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'accession-main' %}">
+            <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
+          </a>
+        </li>
+        {% endif %}
+
       </li>
 
     </ul>

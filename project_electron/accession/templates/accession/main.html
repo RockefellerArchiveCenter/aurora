@@ -8,40 +8,54 @@
     <div class="box box-default">
       <div class="box-body">
       	{% with uploads=object_list%}
-	      	{% if not uploads %}
-				<div>No pending accessions</div>
-			 {% else %}
-				<table>
-					<thead>
-						<tr>
-							<th>Organization</th>
-							<th>Record Creator</th>
-							<th>Record Type</th>
-							<th>Status</th>
-							<th>Action</th>
-						</tr>
-					</thead>
+          {% if not uploads %}
+        <div>No pending accessions</div>
+          {% else %}
+        <table id="accession_table" class="table table-bordered dataTable">
+          <thead>
+            <tr>
+              <th>Organization</th>
+              <th>Record Creator(s)</th>
+              <th>Record Type</th>
+              <th>Status</th>
+              <th></th>
+            </tr>
+          </thead>
 
-					<tbody>
-					{% for upload in uploads %}
-						<tr>
-							<td>org</td>
-							<td>creator(s)</td>
-							<td>record type</td>
-							<td>status</td>
-							<td><a href="#" class="btn btn-primary">Accession</a></td>
-						</tr>
+          <tbody>
+            {% for upload in uploads %}
+            <tr>
+              <td>Ford Foundation</td>
+              <td>Darren Walker</td>
+              <td>grant records</td>
+              <td><a href="{% url 'accession-record' %}" class="btn btn-primary pull-right">Accession <span class="badge">25 transfers</span></a></td>
+            </tr>
 
-					{% endfor %}
-					</tbody>
-				</table>
-			{% endif %}
-		{% endwith %}
-
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+        {% endwith %}
 
       </div>
     </div>
   </div>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  $(function () {
+    $('#accession_table').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25
+    })
+  })
+</script>
 {% endblock %}
