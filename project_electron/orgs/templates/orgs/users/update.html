@@ -7,7 +7,7 @@
 
     <div class="col-md-12">
 
-        <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-info{% endif %}">
+        <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
             <div class="box-header with-border">
               <!-- <h3 class="box-title">Quick Example</h3> -->
             </div>
@@ -32,8 +32,11 @@
                       <label for="id_email">Email address</label>
                       <input type="email" name="email" value="{{ object.email }}" class="form-control" id="id_email" placeholder="Enter email" required>
                     </div>
+                    <div class="form-group">
+                      <label for="change_password">Password</label>
+                      <a id="change_password" href="{% url 'password-change' object.pk %}" class="btn btn-default btn-xs">Change Password</a>
+                    </div>
                     {% if user.is_superuser %}
-                    {% if not editing_staffer %}
                     <div class="form-group">
                         <label>Organization</label>
                         <select class="form-control" name="organization" required>
@@ -42,11 +45,7 @@
                             {% endfor %}
                         </select>
                     </div>
-                    {% endif %}
-                    {% endif %}
 
-                    {% if user.is_superuser %}
-                    {% if editing_staffer %}
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
@@ -60,11 +59,9 @@
                     </div>
 
                     {% endif %}
-                    {% endif %}
-
 
                     <div class="box-footer">
-                        <button type="submit" class="btn btn-info">Save</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </form>
             </div>
