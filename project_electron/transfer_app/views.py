@@ -16,6 +16,8 @@ class MainView(LoggedInMixinDefaults, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
 
+        context['meta_page_title'] = "Dashboard"
+
         context['uploads'] = Archives.objects.filter(process_status=99, organization = self.request.user.organization).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status=99, organization = self.request.user.organization).count()
         context['month_labels'] = []
@@ -45,7 +47,7 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
 
     def get(self, request, *args, **kwargs):
         return render(request, self.template_name, {
-            'page_title' : 'Organization Transfers',
+            'meta_page_title' : 'Recent Transfers',
             'org_uploads' : Archives.objects.filter(organization = request.user.organization).order_by('-created_time')[:25],
             'org_uploads_count' : Archives.objects.filter(organization = request.user.organization).count(),
             'user_uploads' : Archives.objects.filter(organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25],
@@ -55,3 +57,9 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
 class TransferDetailView(DetailView):
     template_name = 'transfer_app/transfer_detail.html'
     model = Archives
+
+    def get_context_data(self, **kwargs):
+        context = super(DetailView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = self.object.bag_or_failed_name
+
+        return context
