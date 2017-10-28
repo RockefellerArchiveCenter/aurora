@@ -14,7 +14,6 @@
     <ul class="nav nav-tabs">
   		<li class="active"><a href="#tab_all_users" data-toggle="tab">All Users</a></li>
   		<li class=""><a href="#tab_org_users" data-toggle="tab">Users by Organization</a></li>
-      <li class=""><a href="#tab_unassigned_users" data-toggle="tab">Unassigned Users</a></li>
     </ul>
     <div class="tab-content">
     	<div class="tab-pane active table-responsive" id="tab_all_users">
@@ -25,11 +24,6 @@
     	<div class="tab-pane" id="tab_org_users">
         {% for blk in org_users_list %}
           {% include "orgs/users/user_table.html" with list_type="org" %}
-        {% endfor %}
-    	</div>
-      <div class="tab-pane" id="tab_unassigned_users">
-        {% for blk in unassigned_users_list %}
-          {% include "orgs/users/user_table.html" %}
         {% endfor %}
     	</div>
 

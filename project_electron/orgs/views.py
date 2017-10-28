@@ -106,10 +106,6 @@ class UsersListView(RACUserMixin, ListView):
         context['org_users_list'] = [{'org' : {}, 'users' : []}]
         context['org_users_list'] = Organization.users_by_org()
 
-        context['unassigned_users_list'] = [{'org' : {}, 'users' : []}]
-        context['unassigned_users_list'][0]['org'] = {'pass':'pass'}
-        context['unassigned_users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
-
         context['next_unassigned_user'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
 
         return context
