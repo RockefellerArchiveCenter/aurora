@@ -4,7 +4,7 @@
 {% block h1_title %}
   Users
   {% if request.user.is_superuser %}
-    <a href="{% url 'users-add' %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add User</a>
+    <a href="{% url 'users-add' pk=next_unassigned_user.pk %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add User</a>
   {% endif %}
 {% endblock %}
 
