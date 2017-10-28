@@ -28,6 +28,12 @@ class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     model = Organization
     fields = ['name']
     success_message = "New Organization Saved!"
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Add Organization'
+        return context
+
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
@@ -37,17 +43,22 @@ class OrganizationDetailView(RACUserMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = self.object.name
         context['trans_lst'] = self.object.build_transfer_timeline_list()
-
         context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object']).count()
         return context
 
-class OrganizationEditView(RACAdminMixin, SuccessMessageMixin,UpdateView):
+class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
     model =         Organization
     fields =        ['is_active','name']
     success_message = "Organization Saved!"
+
+    def get_context_data(self, **kwargs):
+        context = super(UpdateView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Edit Organization'
+        return context
 
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
@@ -58,6 +69,7 @@ class OrganizationTransfersView(RACUserMixin, ListView):
     def get_context_data(self,**kwargs):
         context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
         context['organization'] = self.organization
+        context['meta_page_title'] = self.organization.name + ' transfers'
         return context
 
     def get_queryset(self):
@@ -71,6 +83,7 @@ class OrganizationListView(RACUserMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationListView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Organizations'
         return context
 
 class UsersListView(RACUserMixin, ListView):
@@ -79,6 +92,8 @@ class UsersListView(RACUserMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(UsersListView, self).get_context_data(**kwargs)
+
+        context['meta_page_title'] = 'Users'
 
         refresh_ldap = User.refresh_ldap_accounts()
         if refresh_ldap:
@@ -102,10 +117,13 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     model = User
     fields = ['is_new_account']
     success_message = "New User Saved!"
+
     def get_context_data(self, **kwargs):
         context = super(UsersCreateView, self).get_context_data(**kwargs)
         context['page_title'] = "Add User"
+        context['meta_page_title'] = "Add User"
         return context
+
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
@@ -114,6 +132,7 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     model = User
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = self.object.username
         context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).order_by('-created_time')[:5]
         context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
 
@@ -135,10 +154,23 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
         context = super(UsersEditView, self).get_context_data(**kwargs)
         context['editing_staffer'] = self.if_editing_staffer()
         context['page_title'] = "Edit User"
+        context['meta_page_title'] = "Edit User"
         return context
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+class UsersTransfersView(RACUserMixin, ListView):
+    template_name = 'orgs/all_transfers.html'
+    def get_context_data(self,**kwargs):
+        context = super(UsersTransfersView, self).get_context_data(**kwargs)
+        context['user'] = self.user
+        context['meta_page_title'] = 'My Transfers'
+        return context
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
 
 class UserPasswordChangeForm(PasswordChangeForm):
     error_css_class = 'has-error'
@@ -164,6 +196,11 @@ class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
     model = User
     success_message = "New password saved."
     form_class = UserPasswordChangeForm
+
+    def get_context_data(self,**kwargs):
+        context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Change Password'
+        return context
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
