@@ -9,5 +9,13 @@ from orgs.authmixins import RACUserMixin
 class AccessionView(RACUserMixin, TemplateView):
     template_name = "accession/main.html"
 
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Accessioning Queue'
+
 class AccessionRecordView(RACUserMixin, TemplateView):
     template_name = "accession/create.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Accession Record'
