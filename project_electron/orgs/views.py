@@ -120,6 +120,9 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     fields = ['is_new_account']
     success_message = "New User Saved!"
 
+    def get_form_class(self):
+        return (OrgUserUpdateForm)
+
     def get_context_data(self, **kwargs):
         context = super(UsersCreateView, self).get_context_data(**kwargs)
         context['object'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
