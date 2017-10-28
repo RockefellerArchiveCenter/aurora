@@ -110,6 +110,8 @@ class UsersListView(RACUserMixin, ListView):
         context['unassigned_users_list'][0]['org'] = {'pass':'pass'}
         context['unassigned_users_list'][0]['users'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username')
 
+        context['next_unassigned_user'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
+
         return context
 
 class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
@@ -120,6 +122,7 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(UsersCreateView, self).get_context_data(**kwargs)
+        context['object'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
         context['page_title'] = "Add User"
         context['meta_page_title'] = "Add User"
         return context
@@ -142,7 +145,7 @@ class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     page_title = "Edit User"
-    success_message = "saved!"
+    success_message = "Your changes have been saved!"
 
     def get_form_class(self):
         return (RACSuperUserUpdateForm if self.if_editing_staffer() else OrgUserUpdateForm)
