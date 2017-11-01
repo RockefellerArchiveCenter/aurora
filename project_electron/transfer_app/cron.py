@@ -8,6 +8,8 @@ from transfer_app.lib.bag_checker import bagChecker
 from orgs.models import Archives, Organization, User, BAGLog
 from transfer_app.lib.mailer import Mailer
 
+import transfer_app.lib.log_print as Pter
+
 class MyCronJob(CronJobBase):
     RUN_EVERY_MINS = 1 # every 2 hours
 
@@ -15,11 +17,7 @@ class MyCronJob(CronJobBase):
     code = 'transfer_app.my_cron_job'    # a unique code
 
     def do(self):
-
-        print '############################'
-        print 'CRON START'
-        print datetime.datetime.now()
-        print '############################\n'
+        Pter.cron_open()
         BAGLog.log_it('CSTR')
 
         to_process = FH.has_files_to_process()

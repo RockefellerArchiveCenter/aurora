@@ -12,18 +12,27 @@ import psutil
 from django.conf import settings
 from orgs.models import BAGLog, Organization
 
+import transfer_app.lib.log_print as Pter
+
 
 def has_files_to_process():
-    files_to_process = []
+    """Return objects of files that will need processing"""
+    
+    Pter.plines(['Starting "has_files_to_process"'],2)
 
-    #move over functions and replace file logic
+    files_to_process = []
     discover_files_to_process()
     uploads = uploads_to_process()
 
     if uploads:
-        print '{} paths to upload'.format(len(uploads))
+        Pter.plines(['Starting Transfer Processing'],2,tab=1)
+        Pter.plines(['{} uploads to process'.format(len(uploads))],tab=1, line_after=True)
+
         for file_path in uploads:
-            print file_path
+
+
+
+            Pter.flines([file_path],pref='upload path STR')
 
             auto_fail = False
             auto_fail_code = ''
@@ -33,9 +42,10 @@ def has_files_to_process():
             # DOES FILE STILL EXIST?
             if len(file_path) <=2 or not is_dir_or_file(file_path):
                 BAGLog.log_it('DEXT')
+                Pter.flines(['file didn\'t exist anymore'])
                 continue
 
-            print "staring file: {}".format(file_path)
+            Pter.flines(["staring file".format(file_path)], tab=3)
 
 
             # CHECK FNAME BASED ON SPEC
@@ -120,8 +130,16 @@ def has_files_to_process():
             }
 
             files_to_process.append(data)
+
+            Pter.flines(['added to files_to_process list'],tab=3)
+            Pter.flines([file_path],pref='upload path END', line_after=True)
+
+        Pter.plines(['Ending Transfer Processing'],3, tab=1)
     else:
         pass
+
+    Pter.plines(['Ending "has_files_to_process"'],3)
+
     return files_to_process if files_to_process else False
 
 def open_files_list():
@@ -136,17 +154,28 @@ def open_files_list():
     return path_list
 
 def get_active_org_contents_dict():
+    """Returns contents (file/dirs) of active org uploads dir"""
+
+    Pter.flines(['get_active_org_contents_dict'],start=True)
+
     root_path = '/data/{}/upload/'
     target_dirs = []
     org_dir_contents = {}
 
     active_orgs = Organization.objects.filter(is_active=True)
+    Pter.flines(['active orgs:{}'.format(len(active_orgs))])
+
     if active_orgs:
+
         for org in active_orgs:
+            Pter.flines(['({})'.format(org.machine_name)])
+
             upload_dir = root_path.format(org.machine_name)
             target_dirs.append(upload_dir)
 
             dir_content = listdir(upload_dir)
+            Pter.flines(dir_content,tab=3)
+
             if dir_content:
                 for item in dir_content:
                     item_path = "{}{}".format(upload_dir, item)
@@ -163,6 +192,8 @@ def get_active_org_contents_dict():
                     elif isdir(item_path):
                         org_dir_contents[org.machine_name]['dirs'].append(item_path)
                         org_dir_contents[org.machine_name]['count'] +=1
+
+    Pter.flines(['get_active_org_contents_dict'],end=True)
     return org_dir_contents
 
 def files_in_unserialized(dirpath, CK_SUBDIRS=False):
@@ -220,6 +251,8 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
 
 
 def org_contents_in_lsof(contents):
+    """Returns list of files to remove from current processing, based on lsof log (open files)"""
+    
     rm_list = []
 
     for org, obj in contents.iteritems():
@@ -243,15 +276,22 @@ def org_contents_in_lsof(contents):
 
 
 def rm_frm_contents(cObj,contents):
+    """Removes items from processing list"""
+    Pter.flines(['rm_frm_contents'],start=True)
+
     for obj in cObj:
         if obj[1] == 0 and isfile(obj[2]):
             contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
             
         elif obj[1] == 1 and isdir(obj[2]):
             contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
-
+    Pter.flines(['rm_frm_contents'],end=True)
 
 def mv_to_processing(contentsObj):
+    """Move files/dirs discovered to Orgs processing directory"""
+    
+    Pter.flines(['mv_to_processing'], start=True)
+
     for org,obj in contentsObj.iteritems():
         mergedlist = obj['files'] + obj['dirs']
         for f in mergedlist:
@@ -260,32 +300,48 @@ def mv_to_processing(contentsObj):
             print "moving {} to \n{}".format(f, processing_path)
             move(f,processing_path)
 
+    Pter.flines(['mv_to_processing'], end=True)
+
 def discover_files_to_process():
+    """Discovers files and moves them to org/processing dir"""
+
+    Pter.flines(['discover_files_to_process'],start=True)
+
     active_org_contents = get_active_org_contents_dict()
 
     if active_org_contents:
         rm_any = org_contents_in_lsof(active_org_contents)
 
-        if rm_any:
-            rm_frm_contents(rm_any,active_org_contents)
 
-        # HAVE FILE MOVE ALL TO PROCESSING DIR
-        print active_org_contents
+        if rm_any:
+            Pter.flines(['{} files/dirs are being removed from processing'.format(len(rm_any))],tab=3)
+            rm_frm_contents(rm_any,active_org_contents)
         mv_to_processing(active_org_contents)
 
+    Pter.flines(['discover_files_to_process'],end=True)
+
 def uploads_to_process():
+    """Returns paths transfers in orgs processing dir"""
+
+    Pter.spacer()
+    Pter.flines(['uploads_to_process'], start=True)
+
     paths = []
     active_orgs = active_orgs = Organization.objects.filter(is_active=True)
     if active_orgs:
-        print 'Checking {} active org processing dir'.format(len(active_orgs))
+        
         for org in active_orgs:
+            Pter.flines(["({})".format(org.machine_name)])
+
             org_processing = '/data/{}/processing/'.format(org.machine_name)
             contents = listdir(org_processing)
+            Pter.flines(contents,tab=3)
             
             
             org_paths = ["{}{}".format(org_processing,x) for x in contents]
             paths = paths + org_paths
             
+    Pter.flines(['uploads_to_process'], end=True)
     return paths
 
 def file_owner(file_path):
