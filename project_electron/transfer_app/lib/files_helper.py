@@ -64,7 +64,7 @@ def has_files_to_process():
                             auto_fail = True
                             auto_fail_code = 'BTAR2'
                             # print 'tar has more than one top level'
-                    
+
 
                 elif extension[-1] == '.zip':
                     file_type = 'ZIP'
@@ -85,7 +85,7 @@ def has_files_to_process():
                         # print 'we have problems isnt dir'
                         auto_fail = True
                         auto_fail_code = 'BDIR'
-                    
+
 
                     # handle dir ending in splash
                     bag_it_name = file_path.split('/')[-1]
@@ -125,7 +125,7 @@ def has_files_to_process():
     return files_to_process if files_to_process else False
 
 def open_files_list():
-    
+
     path_list = []
 
     for proc in psutil.process_iter():
@@ -165,13 +165,57 @@ def get_active_org_contents_dict():
                         org_dir_contents[org.machine_name]['count'] +=1
     return org_dir_contents
 
-def files_in_unserialized(dirpath):
+def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     files = []
-    # can in a full test check infinite levels
-    # this is a good MVP test
-    for f1 in listdir(dirpath):
-        if isfile(f1):
-            files.append(f1)
+
+    if CK_SUBDIRS:
+        dirpaths = []
+        to_check = [dirpath]
+        checked_dirs = []
+
+        # build list from all files in Infinite sub dirs
+        while True:
+
+            #resolve new dir to check
+            if not to_check:
+                break
+            live_dir = to_check[0]
+
+            for path in listdir(live_dir):
+                fullpath = "{}/{}".format(live_dir,path)
+                if isdir(fullpath):
+                    dirpaths.append(fullpath)
+
+                    if fullpath not in checked_dirs:
+                        to_check.append(fullpath)
+
+            checked_dirs.append(live_dir)
+            if live_dir in to_check:
+                to_check = [x for x in to_check if x != live_dir]
+
+        # check all dirs -- can narrow to /data since payload requirement or not
+        if dirpaths:
+            for dire in dirpaths:
+
+                d = listdir(dire)
+                if d:
+                    for contents in d:
+                        fullpath = "{}/{}".format(dire,contents)
+                        if isfile(fullpath):
+                            files.append(fullpath)
+
+            #print to console
+            if files:
+                print "\n\nCURRENT FILES STILL OPEN"
+                for f in files:
+                    print f
+                print '\n'
+
+    else:
+        for f1 in listdir(dirpath):
+            if isfile(f1):
+                files.append(f1)
+
     return files
 
 
@@ -191,7 +235,7 @@ def org_contents_in_lsof(contents):
         # get directory
         for d in obj['dirs']:
             # ck files in directory are on list
-            for fls in files_in_unserialized(d):
+            for fls in files_in_unserialized(d,True):
                 if fls in open_files:
                     rm_list.append((org,1,d))
     return rm_list
@@ -202,7 +246,7 @@ def rm_frm_contents(cObj,contents):
     for obj in cObj:
         if obj[1] == 0 and isfile(obj[2]):
             contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
-            
+
         elif obj[1] == 1 and isdir(obj[2]):
             contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
 
@@ -237,11 +281,11 @@ def uploads_to_process():
         for org in active_orgs:
             org_processing = '/data/{}/processing/'.format(org.machine_name)
             contents = listdir(org_processing)
-            
-            
+
+
             org_paths = ["{}{}".format(org_processing,x) for x in contents]
             paths = paths + org_paths
-            
+
     return paths
 
 def file_owner(file_path):
@@ -333,7 +377,7 @@ def get_fields_from_file(fpath):
             for line in f.readlines():
                 line = line.strip('\n')
 
-                row_search = re.search(": ".join(patterns), line)
+                row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
                     fields[row_search.group('key').replace('-','_')] = row_search.group('val')
     except Exception as e:
@@ -352,7 +396,7 @@ def remove_file_or_dir(path):
             return False
 
     elif isdir(path):
-        
+
         try:
             rmtree(path)
         except Exception as e:

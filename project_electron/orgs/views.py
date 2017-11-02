@@ -34,10 +34,10 @@ class OrganizationDetailView(RACUserMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-        context['trans_lst'] = self.object.build_transfer_timeline_list() 
+        context['trans_lst'] = self.object.build_transfer_timeline_list()
 
-        context['uploads'] = Archives.objects.filter(organization = context['object']).order_by('-created_time')[:15]
-        context['uploads_count'] = Archives.objects.filter(organization = context['object']).count()
+        context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object']).order_by('-created_time')[:15]
+        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object']).count()
         return context
 
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin,UpdateView):
@@ -59,7 +59,7 @@ class OrganizationTransfersView(RACUserMixin, ListView):
 
     def get_queryset(self):
         self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        return Archives.objects.filter(organization=self.organization).order_by('-created_time')
+        return Archives.objects.filter(process_status=99, organization=self.organization).order_by('-created_time')
 
 class OrganizationListView(RACUserMixin, ListView):
 
@@ -101,17 +101,17 @@ class UsersListView(RACUserMixin, ListView):
 
         return context
 
-class UsersDetailView(RACUserMixin, DetailView):
-    template_name = 'orgs//users/detail.html'
+class UsersDetailView(SelfOrSuperUserMixin, DetailView):
+    template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
-        context['uploads'] = Archives.objects.filter(organization = context['object'].organization).order_by('-created_time')[:5]
-        context['uploads_count'] = Archives.objects.filter(organization = context['object'].organization).count()
-        
+        context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).order_by('-created_time')[:5]
+        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
+
         return context
 
-class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
+class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     success_message = "saved!"
@@ -129,3 +129,7 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
+
+class TransferDetailView(DetailView):
+    template_name = 'orgs/transfer_detail.html'
+    model = Archives
