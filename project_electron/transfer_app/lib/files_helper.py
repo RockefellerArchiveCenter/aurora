@@ -64,7 +64,7 @@ def has_files_to_process():
                             auto_fail = True
                             auto_fail_code = 'BTAR2'
                             # print 'tar has more than one top level'
-                    
+
 
                 elif extension[-1] == '.zip':
                     file_type = 'ZIP'
@@ -85,7 +85,7 @@ def has_files_to_process():
                         # print 'we have problems isnt dir'
                         auto_fail = True
                         auto_fail_code = 'BDIR'
-                    
+
 
                     # handle dir ending in splash
                     bag_it_name = file_path.split('/')[-1]
@@ -125,7 +125,7 @@ def has_files_to_process():
     return files_to_process if files_to_process else False
 
 def open_files_list():
-    
+
     path_list = []
 
     for proc in psutil.process_iter():
@@ -175,7 +175,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
 
         # build list from all files in Infinite sub dirs
         while True:
-            
+
             #resolve new dir to check
             if not to_check:
                 break
@@ -187,7 +187,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                     dirpaths.append(fullpath)
 
                     if fullpath not in checked_dirs:
-                        to_check.append(fullpath) 
+                        to_check.append(fullpath)
 
             checked_dirs.append(live_dir)
             if live_dir in to_check:
@@ -246,7 +246,7 @@ def rm_frm_contents(cObj,contents):
     for obj in cObj:
         if obj[1] == 0 and isfile(obj[2]):
             contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
-            
+
         elif obj[1] == 1 and isdir(obj[2]):
             contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
 
@@ -281,11 +281,11 @@ def uploads_to_process():
         for org in active_orgs:
             org_processing = '/data/{}/processing/'.format(org.machine_name)
             contents = listdir(org_processing)
-            
-            
+
+
             org_paths = ["{}{}".format(org_processing,x) for x in contents]
             paths = paths + org_paths
-            
+
     return paths
 
 def file_owner(file_path):
@@ -377,7 +377,7 @@ def get_fields_from_file(fpath):
             for line in f.readlines():
                 line = line.strip('\n')
 
-                row_search = re.search(": ".join(patterns), line)
+                row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
                     fields[row_search.group('key').replace('-','_')] = row_search.group('val')
     except Exception as e:
@@ -396,7 +396,7 @@ def remove_file_or_dir(path):
             return False
 
     elif isdir(path):
-        
+
         try:
             rmtree(path)
         except Exception as e:
