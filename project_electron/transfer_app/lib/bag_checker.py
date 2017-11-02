@@ -53,12 +53,12 @@ class bagChecker():
             print 'No BagIt Profile to validate against'
             return False
         else:
-            if BI_fields['BagIt_Profile_Identifier'] != 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json':
+            if BI_fields['BagIt_Profile_Identifier'].strip() != 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json':
                 print "Bag Identifier is not RAC version"
                 return False
 
             # self.bag = bagit.Bag(self.archive_path)
-            profile = bagit_profile.Profile(BI_fields['BagIt_Profile_Identifier'])
+            profile = bagit_profile.Profile(BI_fields['BagIt_Profile_Identifier'].strip())
 
             if profile.validate(self.bag):
                 print "Bag valid according to RAC profile"
