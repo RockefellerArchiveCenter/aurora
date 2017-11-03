@@ -416,7 +416,7 @@ def is_dir_or_file(path):
 
 def get_file_contents(f):
     """returns contents of file as str"""
-    
+
     data = ''
     try:
         with open(f,'r') as open_file:

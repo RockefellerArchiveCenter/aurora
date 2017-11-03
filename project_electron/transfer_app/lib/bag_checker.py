@@ -170,8 +170,3 @@ class bagChecker():
             return False
 
         self.bag_info_data = FH.get_fields_from_file('{}/{}'.format(self.archive_path,'bag-info.txt'))
-
-
-
-
-
