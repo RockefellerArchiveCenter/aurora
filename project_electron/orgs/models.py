@@ -260,7 +260,7 @@ class Archives(models.Model):
         if self.bag_it_valid:
             return False
         flist = [
-            'NORG','BFNM','BTAR','BTAR2','BZIP','BZIP2','BDIR','EXERR','GBERR','RBERR', 'MDERR'
+            'NORG','BFNM','BTAR','BTAR2','BZIP','BZIP2','BDIR','EXERR','GBERR','RBERR', 'MDERR', 'DTERR'
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj or len(get_error_obj) > 1:
