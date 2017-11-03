@@ -87,7 +87,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status=99, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
 
@@ -154,7 +154,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(user_uploaded=self).count()
+        return Archives.objects.filter(process_status=99, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -232,6 +232,7 @@ class Archives(models.Model):
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
 
+    process_status =        models.PositiveSmallIntegerField(default=0)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -266,6 +267,9 @@ class Archives(models.Model):
         if not get_error_obj or len(get_error_obj) > 1:
             return False
         return get_error_obj[0]
+
+    class Meta:
+        ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
     code_short = models.CharField(max_length=5)
