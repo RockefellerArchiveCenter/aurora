@@ -379,7 +379,7 @@ def get_fields_from_file(fpath):
 
                 row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
-                    fields[row_search.group('key').replace('-','_')] = row_search.group('val')
+                    fields[row_search.group('key').replace('-','_').strip()] = row_search.group('val').strip()
     except Exception as e:
         print e
 
@@ -413,3 +413,15 @@ def is_dir_or_file(path):
     if isdir(path): return True
     if isfile(path): return True
     return False
+
+def get_file_contents(f):
+    """returns contents of file as str"""
+
+    data = ''
+    try:
+        with open(f,'r') as open_file:
+            data = open_file.read()
+    except Exception as e:
+        print e
+    finally:
+        return data
