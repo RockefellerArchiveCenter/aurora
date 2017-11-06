@@ -1,4 +1,5 @@
-from os import stat, remove, listdir
+import os
+from os import stat, remove, listdir, walk
 from os.path import isdir, getmtime, getsize, splitext, isfile
 from pwd import getpwuid
 import re
@@ -29,6 +30,7 @@ def has_files_to_process():
             auto_fail_code = ''
             bag_it_name = ''
             file_type = 'OTHER'
+            file_size = 0
 
             # DOES FILE STILL EXIST?
             if len(file_path) <=2 or not is_dir_or_file(file_path):
@@ -90,8 +92,19 @@ def has_files_to_process():
                     # handle dir ending in splash
                     bag_it_name = file_path.split('/')[-1]
 
+
+                file_size = file_get_size(file_path, file_type)
+                transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
+                print "\nFile is {}\n".format(file_size)
+
+                if int(file_size) > transfer_max:
+                    auto_fail = True
+                    auto_fail_code = 'FSERR'
+
+                # END of Pre lim Checks
+
             file_modtime =  file_modified_time(file_path)
-            file_size =     file_get_size(file_path)
+            file_size =     file_size
             file_own =      file_owner(file_path)
             file_date =     file_modtime.date()
             file_time =     file_modtime.time()
@@ -294,8 +307,24 @@ def file_owner(file_path):
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
 
-def file_get_size(file_path):
-    return getsize(file_path)
+def file_get_size(file_path,file_type):
+    """returns file size of archive, or of directory"""
+
+    filesize = 0
+    if isfile(file_path):
+        filesize = getsize(file_path)
+    elif isdir(file_path):
+        filesize = get_dir_size(file_path)
+    return filesize
+
+def get_dir_size(start_path):
+    """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
+    total_size = 0
+    for dirpath, dirnames, filenames in walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += getsize(fp)
+    return (total_size / 1000)
 
 def splitext_(path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly

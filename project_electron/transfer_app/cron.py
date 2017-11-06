@@ -77,21 +77,24 @@ class MyCronJob(CronJobBase):
 
                 if upload_list['auto_fail']:
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
-                    continue
-
-                ## NOW FOR BAG CHECK
-                bag = bagChecker(new_arc)
-                if bag.bag_passed_all():
-
-                    new_arc.bag_it_valid = True
-                    BAGLog.log_it('APASS',new_arc)
-                    email.setup_message('TRANS_PASS_ALL',new_arc)
-                    email.send()
-                else:
-
-                    BAGLog.log_it(bag.ecode, new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
+                    
+                else:
+
+                    ## NOW FOR BAG CHECK
+                    bag = bagChecker(new_arc)
+                    if bag.bag_passed_all():
+
+                        new_arc.bag_it_valid = True
+                        BAGLog.log_it('APASS',new_arc)
+                        email.setup_message('TRANS_PASS_ALL',new_arc)
+                        email.send()
+                    else:
+
+                        BAGLog.log_it(bag.ecode, new_arc)
+                        email.setup_message('TRANS_FAIL_VAL',new_arc)
+                        email.send()
 
                 new_arc.process_status = 99
                 new_arc.save()
