@@ -47,13 +47,6 @@ def has_files_to_process():
             file_date =     file_modtime.date()
             file_time =     file_modtime.time()
 
-            print file_modtime
-            print '3432442432'
-            print getmtime(file_path)
-            
-            print 34324324234
-
-
             # CHECK FNAME BASED ON SPEC
             if not is_filename_valid(file_path):
                 auto_fail = True
@@ -75,12 +68,14 @@ def has_files_to_process():
                 except ConnectionError as e:
                     print e
                     BAGLog.log_it('VCON2')
+                    continue
 
                 except Exception as e:
                     ## more than likely Socket
                     BAGLog.log_it('VSOCK')
                     print e
                     continue
+                # ALL The continues Above actually should yield attention to APP Team
 
                 if scanresult:
                     print 'VIRUS IDENTIFIED'
