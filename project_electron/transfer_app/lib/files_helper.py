@@ -9,6 +9,8 @@ from distutils.dir_util import copy_tree
 from shutil import rmtree, move
 import psutil
 
+from transfer_app.lib.virus_scanner import VirusScan
+
 from django.conf import settings
 from orgs.models import BAGLog, Organization
 
@@ -27,7 +29,7 @@ def has_files_to_process():
 
             auto_fail = False
             auto_fail_code = ''
-            bag_it_name = ''
+            bag_it_name = file_path.split('/')[-1]
             file_type = 'OTHER'
 
             # DOES FILE STILL EXIST?
@@ -38,64 +40,104 @@ def has_files_to_process():
             print "staring file: {}".format(file_path)
 
 
+            # convert this into a transfer file object !!! lot less code D.L.
+            file_size =     file_get_size(file_path)
+            file_own =      file_owner(file_path)
+            file_modtime =  file_modified_time(file_path)
+            file_date =     file_modtime.date()
+            file_time =     file_modtime.time()
+
+            print file_modtime
+            print '3432442432'
+            print getmtime(file_path)
+            
+            print 34324324234
+
+
             # CHECK FNAME BASED ON SPEC
             if not is_filename_valid(file_path):
                 auto_fail = True
                 auto_fail_code = 'BFNM'
             else:
-                extension = splitext_(file_path)
-                tar_accepted_ext = ['tar.gz', '.tar']
 
-                if extension[-1] in tar_accepted_ext:
-                    file_type = 'TAR'
-                    tar_passed = False
-                    try:
-                        if tarfile.is_tarfile(file_path):
-                            tar_passed = True
-                    except Exception as e:
-                        print e
+                scanresult = None
+                try:
+                    # Virus Scanning First
+                    virus_checker = VirusScan()
+                except ValueError as e:
+                    print e
+                    BAGLog.log_it('VCONN')
+                    continue
 
-                    if not tar_passed:
-                        auto_fail = True
-                        auto_fail_code = 'BTAR'
-                    else:
-                        bag_it_name = tar_has_top_level_only(file_path)
-                        if not bag_it_name:
-                            auto_fail = True
-                            auto_fail_code = 'BTAR2'
-                            # print 'tar has more than one top level'
+                try:
+                    scanresult = virus_checker.scan(file_path)
+                
+                except ConnectionError as e:
+                    print e
+                    BAGLog.log_it('VCON2')
 
+                except Exception as e:
+                    ## more than likely Socket
+                    BAGLog.log_it('VSOCK')
+                    print e
+                    continue
 
-                elif extension[-1] == '.zip':
-                    file_type = 'ZIP'
-                    if not zipfile.is_zipfile(file_path):
-                        print 'zip failed due to not being a zipfile'
-                        auto_fail = True
-                        auto_fail_code = 'BZIP'
-                    else:
-                        bag_it_name = zip_has_top_level_only(file_path)
-                        if not bag_it_name:
-                            auto_fail = True
-                            auto_fail_code = 'BZIP2'
-                            # print 'zip has more than one top level'
+                if scanresult:
+                    print 'VIRUS IDENTIFIED'
+                    #quarantine or move
 
+                    remove_file_or_dir(file_path)
+                    auto_fail = True
+                    auto_fail_code = 'VIRUS'
+
+                    
                 else:
-                    # IS UNSERIALIZED DIR
-                    if not isdir(file_path):
-                        # print 'we have problems isnt dir'
-                        auto_fail = True
-                        auto_fail_code = 'BDIR'
+                    extension = splitext_(file_path)
+                    tar_accepted_ext = ['tar.gz', '.tar']
+
+                    if extension[-1] in tar_accepted_ext:
+                        file_type = 'TAR'
+                        tar_passed = False
+                        try:
+                            if tarfile.is_tarfile(file_path):
+                                tar_passed = True
+                        except Exception as e:
+                            print e
+
+                        if not tar_passed:
+                            auto_fail = True
+                            auto_fail_code = 'BTAR'
+                        else:
+                            bag_it_name = tar_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                auto_fail_code = 'BTAR2'
+                                # print 'tar has more than one top level'
 
 
-                    # handle dir ending in splash
-                    bag_it_name = file_path.split('/')[-1]
+                    elif extension[-1] == '.zip':
+                        file_type = 'ZIP'
+                        if not zipfile.is_zipfile(file_path):
+                            print 'zip failed due to not being a zipfile'
+                            auto_fail = True
+                            auto_fail_code = 'BZIP'
+                        else:
+                            bag_it_name = zip_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                auto_fail_code = 'BZIP2'
+                                # print 'zip has more than one top level'
 
-            file_modtime =  file_modified_time(file_path)
-            file_size =     file_get_size(file_path)
-            file_own =      file_owner(file_path)
-            file_date =     file_modtime.date()
-            file_time =     file_modtime.time()
+                    else:
+                        # IS UNSERIALIZED DIR
+                        if not isdir(file_path):
+                            # print 'we have problems isnt dir'
+                            auto_fail = True
+                            auto_fail_code = 'BDIR'
 
+
+                        # handle dir ending in splash
+                        bag_it_name = file_path.split('/')[-1]
 
 
             # GETTING ORGANIZATION
@@ -387,7 +429,7 @@ def get_fields_from_file(fpath):
 
 
 def remove_file_or_dir(path):
-    print 'delete it ------ {}'.format(path)
+    print '@@@-- deleting file/dir ------ {}'.format(path)
     if isfile(path):
         try:
             remove(path)
