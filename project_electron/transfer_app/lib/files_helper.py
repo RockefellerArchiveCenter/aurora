@@ -92,14 +92,21 @@ def has_files_to_process():
                     # handle dir ending in splash
                     bag_it_name = file_path.split('/')[-1]
 
-
+                #returns filesize in kbs
                 file_size = file_get_size(file_path, file_type)
-                transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
-                print "\nFile is {}\n".format(file_size)
-
-                if int(file_size) > transfer_max:
+                if not file_size:
                     auto_fail = True
                     auto_fail_code = 'FSERR'
+                    filesize = 0
+
+                else:
+
+                    transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
+                    print "\nFile is {}\n".format(file_size)
+
+                    if file_size > transfer_max:
+                        auto_fail = True
+                        auto_fail_code = 'FSERR'
 
                 # END of Pre lim Checks
 
@@ -308,11 +315,33 @@ def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
 
 def file_get_size(file_path,file_type):
-    """returns file size of archive, or of directory"""
+    """returns file size of archive, or of directory; expects top level validation to run already"""
 
     filesize = 0
     if isfile(file_path):
-        filesize = getsize(file_path)
+        if file_type == 'TAR':
+            top_level_dir = tar_has_top_level_only(file_path)
+            if not top_level_dir:
+                return False
+
+            if tar_extract_all(file_path):
+                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                filesize = get_dir_size(tmp_dir_path)
+                remove_file_or_dir(tmp_dir_path)
+        elif file_type == 'ZIP':
+            top_level_dir = zip_has_top_level_only(file_path)
+            if not top_level_dir:
+                return False
+            if zip_extract_all(file_path):
+                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                filesize = get_dir_size(tmp_dir_path)
+                remove_file_or_dir(tmp_dir_path)
+
+        elif file_type == OTHER:
+            filesize = getsize(file_path)
+        else:
+            return False
+
     elif isdir(file_path):
         filesize = get_dir_size(file_path)
     return filesize
@@ -324,7 +353,10 @@ def get_dir_size(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
             total_size += getsize(fp)
-    return (total_size / 1000)
+        for d in dirnames:
+            dp = os.path.join(dirpath,d)
+            total_size += getsize(dp)
+    return ((total_size / 1000) if total_size else False)
 
 def splitext_(path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
