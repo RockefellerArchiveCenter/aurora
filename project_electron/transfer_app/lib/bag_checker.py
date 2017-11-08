@@ -16,7 +16,7 @@ class bagChecker():
     def __init__(self,archiveObj):
 
         self.RAC_profile_identifier = 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json'
-        self.bag_dates_to_validate = ['Date-Start', 'Date-End', 'Bagging-Date']
+        self.bag_dates_to_validate = ['Date_Start', 'Date_End', 'Bagging_Date']
 
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
@@ -85,7 +85,7 @@ class bagChecker():
         for k,v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:
                 dates.append(v)
-            if k == 'Languages':
+            if k == 'Language':
                 langz.append(v)
 
         if dates:
