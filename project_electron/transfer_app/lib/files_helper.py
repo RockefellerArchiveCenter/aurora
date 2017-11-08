@@ -131,24 +131,24 @@ def has_files_to_process():
                             auto_fail = True
                             auto_fail_code = 'BDIR'
 
-                #returns filesize in kbs -- need type so moved logic down here
-                file_size = file_get_size(file_path, file_type)
-                if not file_size:
-                    auto_fail = True
-                    auto_fail_code = 'FSERR'
-                    filesize = 0
-
-                else:
-
-                    transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
-                    print "\nFile is {}\n".format(file_size)
-
-                    if file_size > transfer_max:
+                    #returns filesize in kbs -- need type so moved logic down here
+                    file_size = file_get_size(file_path, file_type)
+                    if not file_size:
                         auto_fail = True
                         auto_fail_code = 'FSERR'
+                        filesize = 0
 
-                        # handle dir ending in splash
-                        bag_it_name = file_path.split('/')[-1]
+                    else:
+
+                        transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
+                        print "\nFile is {}\n".format(file_size)
+
+                        if file_size > transfer_max:
+                            auto_fail = True
+                            auto_fail_code = 'FSERR'
+
+                            # handle dir ending in splash
+                            bag_it_name = file_path.split('/')[-1]
 
 
             # GETTING ORGANIZATION
