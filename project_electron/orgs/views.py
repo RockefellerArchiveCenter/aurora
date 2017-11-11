@@ -119,13 +119,6 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     def get_form_class(self):
         return (OrgUserUpdateForm)
 
-    def get_context_data(self, **kwargs):
-        context = super(UsersCreateView, self).get_context_data(**kwargs)
-        context['object'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
-        context['page_title'] = "Add User"
-        context['meta_page_title'] = "Add User"
-        return context
-
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
@@ -137,7 +130,6 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
         context['meta_page_title'] = self.object.username
         context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).order_by('-created_time')[:5]
         context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
-
         return context
 
 class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
@@ -207,6 +199,47 @@ class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class TransferDetailView(DetailView):
-    template_name = 'orgs/transfer_detail.html'
-    model = Archives
+class UsersTransfersView(RACUserMixin, ListView):
+    template_name = 'orgs/all_transfers.html'
+    def get_context_data(self,**kwargs):
+        context = super(UsersTransfersView, self).get_context_data(**kwargs)
+        context['user'] = self.user
+        context['meta_page_title'] = 'My Transfers'
+        return context
+
+    def get_queryset(self):
+        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
+        return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
+
+class UserPasswordChangeForm(PasswordChangeForm):
+    error_css_class = 'has-error'
+    error_messages = {'password_incorrect': "You entered your current password incorrectly"}
+    old_password = forms.CharField(required=True, label='Current Password',
+                  widget=forms.PasswordInput(attrs={
+                    'class': 'form-control'}),
+                  error_messages={
+                    'required': 'Please enter your current password'})
+    new_password1 = forms.CharField(required=True, label='New Password',
+                  widget=forms.PasswordInput(attrs={
+                    'class': 'form-control'}),
+                  error_messages={
+                    'required': 'Please enter your new password'})
+    new_password2 = forms.CharField(required=True, label='New Password (repeat)',
+                  widget=forms.PasswordInput(attrs={
+                    'class': 'form-control'}),
+                  error_messages={
+                    'required': 'Please confirm your new password'})
+
+class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
+    template_name = 'orgs/users/password_change.html'
+    model = User
+    success_message = "New password saved."
+    form_class = UserPasswordChangeForm
+
+    def get_context_data(self,**kwargs):
+        context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
+        context['meta_page_title'] = 'Change Password'
+        return context
+
+    def get_success_url(self):
+        return reverse('users-detail', kwargs={'pk': self.object.pk})
