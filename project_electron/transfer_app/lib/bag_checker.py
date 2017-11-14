@@ -112,6 +112,7 @@ class bagChecker():
 
         if not isfile(metadata_file):
             print 'no metadata file'
+            return True
         else:
             try:
                 return json.loads(FH.get_file_contents(metadata_file))
