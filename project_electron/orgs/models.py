@@ -8,8 +8,6 @@ from django.urls import reverse
 
 from django.contrib import messages
 
-
-
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
@@ -214,6 +212,22 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+class ProcessingStatus(models.Model):
+    status_short = models.PositiveSmallIntegerField(default=0)
+    status_desc = models.CharField(max_length=25)
+    def __unicode__(self):
+        return "{} : {}".format(self.status_short,self.status_desc)
+
+    def get_status_class(self):
+        if self.status_short == 10 or self.status_short == 20:
+            return "label-info"
+        elif self.status_short == 30 or self.status_short == 60:
+            return "label-danger"
+        elif self.status_short == 40 or self.status_short == 70 or self.status_short == 90:
+            return "label-danger"
+        else:
+            return "label-default"
+
 class Archives(models.Model):
     machine_file_types = (
         ('ZIP', 'zip'),
@@ -221,8 +235,7 @@ class Archives(models.Model):
         ('OTHER', 'OTHER')
     )
 
-
-    organization =          models.ForeignKey(Organization)
+    organization =          models.ForeignKey(Organization, default=0)
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =          models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
@@ -275,12 +288,6 @@ class Archives(models.Model):
 
     class Meta:
         ordering = ['machine_file_upload_time']
-
-class ProcessingStatus(models.Model):
-    status_short = models.PositiveSmallIntegerField(default=0)
-    status_desc = models.CharField(max_length=25)
-    def __unicode__(self):
-        return "{} : {}".format(self.status_short,self.status_desc)
 
 class BAGLogCodes(models.Model):
     code_short = models.CharField(max_length=5)
