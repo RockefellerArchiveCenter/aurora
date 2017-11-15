@@ -7,3 +7,8 @@ from django.shortcuts import render
 
 class AppraiseView(TemplateView):
     template_name = "appraise/main.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(AppraiseView, self).get_context_data(**kwargs)
+        context['uploads'] = Archives.objects.filter(process_status=40, organization = context['object']).order_by('created_time')
+        return context
