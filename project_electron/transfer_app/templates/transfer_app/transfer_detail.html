@@ -1,13 +1,13 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}{{ object.bag_or_failed_name }}<small>{% if object.bag_it_valid %}<span class="label label-success">valid</span>{% else %}<span class="label label-danger">invalid</span>{% endif %}</small>{% endblock %}
+{% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label {{object.process_status.get_status_class}}">{{ object.process_status.status_desc }}</span></small>{% endblock %}
 
 {% block content %}
 
 <div class="row">
 	<div class="col-md-12">
-		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}.</p>
+		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}</p>
 	</div>
 </div>
 
