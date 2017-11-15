@@ -224,7 +224,7 @@ class ProcessingStatus(models.Model):
         elif self.status_short == 30 or self.status_short == 60:
             return "label-danger"
         elif self.status_short == 40 or self.status_short == 70 or self.status_short == 90:
-            return "label-danger"
+            return "label-success"
         else:
             return "label-default"
 
