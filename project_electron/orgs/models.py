@@ -232,7 +232,7 @@ class Archives(models.Model):
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
 
-    process_status =        models.PositiveSmallIntegerField(default=0)
+    process_status =        models.ForeignKey(ProcessingStatus)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -257,6 +257,7 @@ class Archives(models.Model):
         for item in items:
             data[item.code.code_short] = item.created_time
         return data
+
     def get_bag_failure(self):
         if self.bag_it_valid:
             return False
@@ -274,6 +275,12 @@ class Archives(models.Model):
 
     class Meta:
         ordering = ['machine_file_upload_time']
+
+class ProcessingStatus(models.Model):
+    status_short = models.PositiveSmallIntegerField(default=0)
+    status_desc = models.CharField(max_length=25)
+    def __unicode__(self):
+        return "{} : {}".format(self.status_short,self.status_desc)
 
 class BAGLogCodes(models.Model):
     code_short = models.CharField(max_length=5)
