@@ -20,8 +20,8 @@ class OrgTransfersView(LoggedInMixinDefaults, View):
 
         return render(request, self.template_name, {
             'page_title' : 'Organization Transfers',
-            'uploads' : Archives.objects.filter(process_status=99, organization = request.user.organization).order_by('-created_time')[:25],
-            'uploads_count' : Archives.objects.filter(process_status=99, organization = request.user.organization).count()
+            'uploads' : Archives.objects.filter(process_status__status_short__gte=20, organization = request.user.organization).order_by('-created_time')[:25],
+            'uploads_count' : Archives.objects.filter(process_status__status_short__gte=20, organization = request.user.organization).count()
         })
 
 class MyTransfersView(LoggedInMixinDefaults, View):
@@ -32,6 +32,6 @@ class MyTransfersView(LoggedInMixinDefaults, View):
 
         return render(request, self.template_name, {
             'page_title' : 'My Transfers',
-            'uploads' : Archives.objects.filter(process_status=99, organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25],
-            'uploads_count' : Archives.objects.filter(process_status=99, organization = request.user.organization,user_uploaded = request.user).count()
+            'uploads' : Archives.objects.filter(process_status__status_short__gte=20, organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25],
+            'uploads_count' : Archives.objects.filter(process_status__status_short__gte=20, organization = request.user.organization,user_uploaded = request.user).count()
         })

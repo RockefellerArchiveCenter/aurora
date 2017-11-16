@@ -10,5 +10,5 @@ class AppraiseView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AppraiseView, self).get_context_data(**kwargs)
-        context['uploads'] = Archives.objects.filter(process_status=40, organization = context['object']).order_by('created_time')
+        context['uploads'] = Archives.objects.filter(process_status__status_short=40, organization = context['object']).order_by('created_time')
         return context

@@ -10,5 +10,5 @@ class AccessionView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(AccessionView, self).get_context_data(**kwargs)
-        context['uploads'] = Archives.objects.filter(process_status=70, organization = context['object']).order_by('created_time')
+        context['uploads'] = Archives.objects.filter(process_status__status_short=20, organization = context['object']).order_by('created_time')
         return context
