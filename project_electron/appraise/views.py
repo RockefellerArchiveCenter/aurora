@@ -15,5 +15,5 @@ class AppraiseView(RACUserMixin, TemplateView):
         context['meta_page_title'] = 'Appraisal Queue'
 
         # This should filter by transfer status too
-        context['uploads'] = Archives.objects.filter(organization = self.request.user.organization).order_by('created_time')
+        context['uploads'] = Archives.objects.filter(process_status__status_short=40, organization = self.request.user.organization).order_by('created_time')
         return context
