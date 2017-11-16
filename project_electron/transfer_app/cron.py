@@ -5,7 +5,7 @@ from django_cron import CronJobBase, Schedule
 from transfer_app.lib import files_helper as FH
 from transfer_app.lib.bag_checker import bagChecker
 
-from orgs.models import Archives, Organization, User, BAGLog
+from orgs.models import Archives, Organization, User, BAGLog, ProcessingStatus
 from transfer_app.lib.mailer import Mailer
 
 class MyCronJob(CronJobBase):
@@ -40,7 +40,7 @@ class MyCronJob(CronJobBase):
                 # Init Mailer
                 email = Mailer()
 
-                new_arc.process_status = 10
+                new_arc.process_status = ProcessingStatus.objects.get(status_short=10)
 
                 ## IS ORG AND IS ACTIVE ORG
                 org = Organization().is_org_active(upload_list['org'])
@@ -65,7 +65,7 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_type       =   upload_list['file_type']
                 new_arc.bag_it_name =               upload_list['bag_it_name']
 
-                new_arc.process_status = 20
+                new_arc.process_status = ProcessingStatus.objects.get(status_short=20)
                 new_arc.save()
 
                 ## EMAIL: Receipt of transfer
@@ -77,7 +77,7 @@ class MyCronJob(CronJobBase):
                 BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:
-                    new_arc.process_status = 30
+                    new_arc.process_status = ProcessingStatus.objects.get(status_short=30)
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
@@ -87,13 +87,13 @@ class MyCronJob(CronJobBase):
                     ## NOW FOR BAG CHECK
                     bag = bagChecker(new_arc)
                     if bag.bag_passed_all():
-                        new_arc.process_status = 40
+                        new_arc.process_status = ProcessingStatus.objects.get(status_short=40)
                         new_arc.bag_it_valid = True
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
                     else:
-                        new_arc.process_status = 30
+                        new_arc.process_status = ProcessingStatus.objects.get(status_short=30)
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
