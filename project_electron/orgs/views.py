@@ -128,15 +128,9 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     model = User
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
-<<<<<<< HEAD
         context['meta_page_title'] = self.object.username
-        context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).order_by('-created_time')[:5]
-        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
-=======
         context['uploads'] = Archives.objects.filter(process_status__status_short__gte=20, organization = context['object'].organization).order_by('-created_time')[:5]
         context['uploads_count'] = Archives.objects.filter(process_status__status_short__gte=20, organization = context['object'].organization).count()
-
->>>>>>> adding process status into views
         return context
 
 class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
