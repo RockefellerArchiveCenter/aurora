@@ -7,17 +7,44 @@
 	<div class="col-md-12">
 		<div class="box box-info">
 			<div class="box-body">
-				<form action="" method="post">{% csrf_token %}
-					
+				<form action="" method="post">
+					{% csrf_token %}
+
 					<div class="form-group">
-                      <label for="id_name">Organization Name</label>
-                      <input type="text" name="name" value="{{ object.name }}" class="form-control" id="id_name" placeholder="Enter Name of Organization" maxlength="60" required>
-                    </div>
-				
+						<label for="id_name">Organization Name</label>
+						<input type="text" name="name" value="{{ object.name }}" class="form-control" id="id_name" placeholder="Enter Name of Organization" maxlength="60" required>
+					</div>
+
+					<div class="form-group">
+						<label for="acquisition_type">Acquisition Type</label>
+						<select id="acquisition_type" class="form-control">
+              <option>option 1</option>
+              <option>option 2</option>
+              <option>option 3</option>
+              <option>option 4</option>
+              <option>option 5</option>
+            </select>
+					</div>
+
+					<div class="box box-default expanded-box box-solid">
+            <div class="box-header with-border">
+              <h3 class="box-title">Rights Statements</h3>
+
+              <div class="box-tools pull-right">
+                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <div class="box-body">
+              Rights statements go here
+            </div>
+          </div>
+
 					<div class="box-footer">
-	                    <button type="submit" class="btn btn-default">Create</button>
-	                </div>
-	            </form>
+						<button type="submit" class="btn btn-primary">Create</button>
+						<button type="reset" class="btn btn-danger" onclick="window.open('{% url 'orgs-list' %}','_self')">Cancel</button>
+					</div>
+				</form>
 			</div>
 
 		</div>

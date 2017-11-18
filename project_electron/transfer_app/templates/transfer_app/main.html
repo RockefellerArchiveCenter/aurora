@@ -10,13 +10,7 @@
 
     <div class="box box-primary">
       <div class="box-header with-border">
-        <h3 class="box-title">Transfers from past year</h3>
-
-        <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-        </div>
+        <h3 class="box-title">Transfers</h3>
       </div>
       <div class="box-body">
         <div class="chart">
@@ -59,43 +53,6 @@
 </div>
 
 <div class="row">
-
-    <!-- <div class="box box-success">
-      <div class="box-header with-border">
-        <h3 class="box-title">Transfers in {% now "F" %}/Average transfers</h3>
-
-        <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-        </div>
-      </div>
-      <div class="box-body">
-        <div class="chart">
-          <canvas id="transferNumberBarChart" style="height: 229px; width: 542px;" width="542" height="229"></canvas>
-        </div>
-      </div>
-    </div> -->
-
-  <!-- <div class="col-md-4">
-
-    <div class="box box-success">
-      <div class="box-header with-border">
-        <h3 class="box-title">Transfer size in {% now "F" %}/Average transfer size</h3>
-
-        <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-        </div>
-      </div>
-      <div class="box-body">
-        <div class="chart">
-          <canvas id="transferSizeBarChart" style="height: 229px; width: 542px;" width="542" height="229"></canvas>
-        </div>
-      </div>
-    </div>
-  </div> -->
 
   <div class="col-md-6">
 
@@ -144,12 +101,6 @@
     <div class="box box-primary">
       <div class="box-header with-border">
         <h3 class="box-title">Record types in transfers</h3>
-
-        <div class="box-tools pull-right">
-          <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-          </button>
-          <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
-        </div>
       </div>
       <div class="box-body">
         <canvas id="recordTypesPieChart" style="height: 281px; width: 562px;" width="562" height="281"></canvas>
@@ -333,39 +284,6 @@
     }
     pieChart.Doughnut(PieData, pieOptions)
 
-    //-------------
-    //- BAR CHARTS -
-    //-------------
-    var barChartCanvas                   = $('#transferNumberBarChart').get(0).getContext('2d')
-    var barChart                         = new Chart(barChartCanvas)
-    var barChartData                     = previousMonthCountData
-    barChart.Bar(barChartData, barChartOptions)
-
-    var barChartSizeCanvas                   = $('#transferSizeBarChart').get(0).getContext('2d')
-    var barChartSize                         = new Chart(barChartSizeCanvas)
-    var barChartData                         = previousMonthSizeData
-    barChartSize.Bar(barChartData, barChartOptions)
-
-    barChartData.datasets[1].fillColor   = '#00a65a'
-    barChartData.datasets[1].strokeColor = '#00a65a'
-    barChartData.datasets[1].pointColor  = '#00a65a'
-    var barChartOptions                  = {
-      scaleBeginAtZero        : true,
-      scaleShowGridLines      : true,
-      scaleGridLineColor      : 'rgba(0,0,0,.05)',
-      scaleGridLineWidth      : 1,
-      scaleShowHorizontalLines: true,
-      scaleShowVerticalLines  : true,
-      barShowStroke           : true,
-      barStrokeWidth          : 2,
-      barValueSpacing         : 5,
-      barDatasetSpacing       : 1,
-      legendTemplate          : '',
-      responsive              : true,
-      maintainAspectRatio     : true
-    }
-
-    barChartOptions.datasetFill = false
 
   })
 </script>
