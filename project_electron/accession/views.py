@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.views.generic import TemplateView
 
 from django.shortcuts import render
+from orgs.models import Archives
 from orgs.authmixins import RACUserMixin
 
 
