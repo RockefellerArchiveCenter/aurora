@@ -215,24 +215,8 @@ class User(AbstractUser):
 class RecordCreators(models.Model):
     name = models.CharField(max_length=100)
 
-    @classmethod
-    def save_creator(cls, name):
-        print name
-        try:
-            RecordCreators.objects.get_or_create(name=name)
-        except Exception as e:
-            print e
-
 class LanguageCode(models.Model):
     code = models.CharField(max_length=3)
-
-    @classmethod
-    def save_language(cls, code):
-        print code
-        try:
-            LanguageCode.objects.get_or_create(code=code)
-        except Exception as e:
-            print e
 
 class Archives(models.Model):
     machine_file_types = (
@@ -353,9 +337,9 @@ class BagInfoMetadata(models.Model):
     title =                         models.CharField(max_length=256)
     date_start =                    models.DateTimeField()
     date_end =                      models.DateTimeField()
-    record_creators =               models.ForeignKey(RecordCreators, blank=True,null=True)
+    record_creators =               models.ManyToManyField(RecordCreators, blank=True)
     record_type =                   models.CharField(max_length=30)
-    language =                      models.ForeignKey(LanguageCode, blank=True,null=True)
+    language =                      models.ManyToManyField(LanguageCode, blank=True)
     bagging_date =                  models.DateTimeField()
     bag_count =                     models.CharField(max_length=10)
     bag_group_identifier =          models.CharField(max_length=256)
@@ -365,14 +349,23 @@ class BagInfoMetadata(models.Model):
     @classmethod
     def save_metadata(cls, metadata, archive=None):
         try:
+            creators_list = []
+            language_list = []
             if 'Record_Creators' in metadata:
-                for creator in metadata['Record_Creators']:
-                    RecordCreators.save_creator(creator)
+                if type(metadata['Record_Creators']) is list:
+                    for creator in metadata['Record_Creators']:
+                        new_creator = RecordCreators.objects.get_or_create(name=creator)[0]
+                        creators_list.append(new_creator)
+                else:
+                    new_creator = RecordCreators.objects.get_or_create(name=metadata['Record_Creators'])[0]
+                    creators_list.append(new_creator)
             if type(metadata['Language']) is list:
                 for language in metadata['Language']:
-                    LanguageCode.save_language(language)
+                    new_code = LanguageCode.objects.get_or_create(code=language)[0]
+                    language_list.append(new_code)
             else:
-                LanguageCode.save_language(metadata['Language'])
+                new_code = LanguageCode.objects.get_or_create(code=metadata['Language'])[0]
+                language_list.append(new_code)
             item = cls(
                 archive = archive,
                 source_organization = Organization.objects.get(name=metadata['Source_Organization']),
@@ -381,14 +374,20 @@ class BagInfoMetadata(models.Model):
                 title = metadata.get('Title', ''),
                 date_start = metadata.get('Date_Start', ''),
                 date_end = metadata.get('Date_End', ''),
-                # record_creators = RecordCreators.objects.get(name=metadata['Record_Creators']),
+                # record_creators = creators_list,
                 record_type = metadata.get('Record_Type', ''),
-                # language = LanguageCode.objects.get(code=metadata['Language']),
+                # language = language_list,
                 bagging_date = metadata.get('Bagging_Date', ''),
                 bag_count = metadata.get('Bag_Count', ''),
                 bag_group_identifier = metadata.get('Bag_Group_Identifier', ''),
                 payload_oxum = metadata.get('Payload_Oxum', ''),
                 bagit_profile_identifier = metadata.get('BagIt_Profile_Identifier', '')
-            ).save()
+            )
+            item.save()
+            for c in creators_list:
+                item.record_creators.add(c)
+            for l in language_list:
+                item.language.add(l)
+            item.save()
         except Exception as e:
             print e
