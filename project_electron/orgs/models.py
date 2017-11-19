@@ -212,6 +212,28 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+class RecordCreators(models.Model):
+    name = models.CharField(max_length=100)
+
+    @classmethod
+    def save_creator(cls, name):
+        print name
+        try:
+            RecordCreators.objects.get_or_create(name=name)
+        except Exception as e:
+            print e
+
+class LanguageCode(models.Model):
+    code = models.CharField(max_length=3)
+
+    @classmethod
+    def save_language(cls, code):
+        print code
+        try:
+            LanguageCode.objects.get_or_create(code=code)
+        except Exception as e:
+            print e
+
 class Archives(models.Model):
     machine_file_types = (
         ('ZIP', 'zip'),
@@ -230,7 +252,7 @@ class Archives(models.Model):
 
     organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
-    machine_file_path =          models.CharField(max_length=100)
+    machine_file_path =     models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
     machine_file_upload_time = models.DateTimeField()
     machine_file_identifier = models.CharField(max_length=255,unique=True)
@@ -322,3 +344,51 @@ class BAGLog(models.Model):
 
     class Meta:
         ordering = ['-created_time']
+
+class BagInfoMetadata(models.Model):
+    archive =                       models.ForeignKey(Archives, blank=True,null=True)
+    source_organization =           models.ForeignKey(Organization, blank=True,null=True)
+    external_identifier =           models.CharField(max_length=256)
+    internal_sender_description =   models.TextField()
+    title =                         models.CharField(max_length=256)
+    date_start =                    models.DateTimeField()
+    date_end =                      models.DateTimeField()
+    record_creators =               models.ForeignKey(RecordCreators, blank=True,null=True)
+    record_type =                   models.CharField(max_length=30)
+    language =                      models.ForeignKey(LanguageCode, blank=True,null=True)
+    bagging_date =                  models.DateTimeField()
+    bag_count =                     models.CharField(max_length=10)
+    bag_group_identifier =          models.CharField(max_length=256)
+    payload_oxum =                  models.CharField(max_length=20)
+    bagit_profile_identifier =      models.URLField()
+
+    @classmethod
+    def save_metadata(cls, metadata, archive=None):
+        try:
+            if 'Record_Creators' in metadata:
+                for creator in metadata['Record_Creators']:
+                    RecordCreators.save_creator(creator)
+            if type(metadata['Language']) is list:
+                for language in metadata['Language']:
+                    LanguageCode.save_language(language)
+            else:
+                LanguageCode.save_language(metadata['Language'])
+            item = cls(
+                archive = archive,
+                source_organization = Organization.objects.get(name=metadata['Source_Organization']),
+                external_identifier = metadata.get('External_Identifier', ''),
+                internal_sender_description = metadata.get('Internal_Sender_Description', ''),
+                title = metadata.get('Title', ''),
+                date_start = metadata.get('Date_Start', ''),
+                date_end = metadata.get('Date_End', ''),
+                # record_creators = RecordCreators.objects.get(name=metadata['Record_Creators']),
+                record_type = metadata.get('Record_Type', ''),
+                # language = LanguageCode.objects.get(code=metadata['Language']),
+                bagging_date = metadata.get('Bagging_Date', ''),
+                bag_count = metadata.get('Bag_Count', ''),
+                bag_group_identifier = metadata.get('Bag_Group_Identifier', ''),
+                payload_oxum = metadata.get('Payload_Oxum', ''),
+                bagit_profile_identifier = metadata.get('BagIt_Profile_Identifier', '')
+            ).save()
+        except Exception as e:
+            print e
