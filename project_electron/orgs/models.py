@@ -285,6 +285,16 @@ class Archives(models.Model):
             return False
         return get_error_obj[0]
 
+    def get_bag_data(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        excluded_fields = ['id', 'pk', 'archive']
+        field_names = [field.name for field in BagInfoMetadata._meta.get_fields() if field.name not in excluded_fields]
+        values = {}
+        for field_name in field_names:
+            values[field_name] = getattr(bag_data, field_name, None)
+
+        return values
+
     class Meta:
         ordering = ['machine_file_upload_time']
 
