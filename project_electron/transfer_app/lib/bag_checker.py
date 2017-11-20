@@ -112,13 +112,13 @@ class bagChecker():
 
         if not isfile(metadata_file):
             print 'no metadata file'
+            return True
         else:
             try:
                 return json.loads(FH.get_file_contents(metadata_file))
             except ValueError as e:
                 print "invalid json: {}".format(e)
-
-        return False
+                return False
 
     def bag_passed_all(self):
         if not self.archive_extracted:
