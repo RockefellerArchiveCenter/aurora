@@ -26,9 +26,9 @@
 					{% for upload in uploads %}
 						<tr>
               <td><a href="{% url 'transfer-detail' upload.pk %}">{{ upload.bag_or_failed_name }}</a></td>
-              <td>{{ upload.source_organization }}</td>
-							<td>{{ upload.record_creator }}</td>
-							<td>{{ upload.record_type }}</td>
+              <td>{{ upload.get_bag_data.source_organization }}</td>
+							<td>{{ upload.get_bag_data.record_creator }}</td>
+							<td>{{ upload.get_bag_data.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
                 <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal-reject">

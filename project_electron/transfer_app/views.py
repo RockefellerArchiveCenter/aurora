@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, View, DetailView
 
 from django.db.models import Sum
 from django.shortcuts import render
-from orgs.models import Archives
+from orgs.models import Archives, BagInfoMetadata
 from orgs.authmixins import LoggedInMixinDefaults
 
 class MainView(LoggedInMixinDefaults, TemplateView):
