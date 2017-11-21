@@ -31,11 +31,14 @@
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
-                <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal-reject">
+                <button type="button" class="btn btn-xs btn-danger">
                     Reject
                 </button>
-                <a type="button" class="accept btn btn-xs btn-primary" data-toggle="modal" data-target="#modal-accept" data-form="{% url 'accept-transfer' upload.pk %}" >
+                <a type="button" class="btn btn-xs btn-primary">
                     Accept
+                </a>
+                <a type="button" class="appraisal-note btn btn-xs btn-secondary" data-toggle="modal" data-target="#modal-appraisal-note" data-form="{% url 'appraise-note' upload.pk %}" >
+                    {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
                 </a>
               </td>
 						</tr>
@@ -48,27 +51,7 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-accept"></div>
-
-<div class="modal fade" id="modal-reject">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">Appraisal note</h4>
-      </div>
-      <div class="modal-body">
-        <textarea class="form-control" rows="3"></textarea>
-        <p class="text-muted">{{request.user.username}} rejected this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="modal fade" id="modal-appraisal-note"></div>
 
 {% endblock %}
 
@@ -88,26 +71,34 @@
 </script>
 
 <script>
-    $(".accept").click(function(e) {
+    $(".appraisal-note").click(function(e) {
         e.preventDefault();
         var url = $(this).data("form");
-        $("#modal-accept").load(url, function() {
+        $("#modal-appraisal-note").load(url, function() {
             $(this).modal('show');
         });
         return false;
     });
 
-    // $('.contact-form').live('submit', function() {
-    //     $.ajax({
-    //         type: $(this).attr('method'),
-    //         url: this.action,
-    //         data: $(this).serialize(),
-    //         context: this,
-    //         success: function(data, status) {
-    //             $('#contactModal').html(data);
-    //         }
-    //     });
-    //     return false;
-    // });
+    $('#appraisal-note-form').live('submit', function() {
+        $.ajax({
+            type: $(this).attr('method'),
+            url: this.action,
+            data: $(this).serialize(),
+            context: this,
+            success: function(data, status) {
+                console.log("success!")
+                console.log(data)
+                console.log(status)
+                $('#modal-appraisal-note').html(data);
+                //destroy modal
+                setTimeout(function() { $('#modal-appraisal-note').modal('hide'); }, 1000);
+                $('body').on('hidden.bs.modal', '.modal', function () {
+                  $(this).removeData('bs.modal');
+                });
+            }
+        });
+        return false;
+    });
 </script>
 {% endblock %}

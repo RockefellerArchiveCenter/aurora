@@ -1,30 +1,29 @@
 <div class="modal-dialog">
   <div class="modal-content">
-    <form id="appraisal_note_update_form" method='post' class="form" role="form" action='{% url 'accept-transfer' object.id %}'>
+    <form id="appraisal-note-form" method='post' class="form" role="form" action='{% url 'accept-transfer' object.id %}'>
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">Appraisal note</h4>
+        <h4 class="modal-title">{% if object.appraisal_note %}Edit{% else %}Add{% endif %} appraisal note for {{ object.bag_it_name }}</h4>
       </div>
       <div class="modal-body">
         {% csrf_token %}
         {% for field in form %}
             <div class="form-group">
-                {{{% if field.errors %}
+                {% if field.errors %}
                     <ul class="form-errors">
                     {% for error in field.errors %}
-                        <li><span class="fa fa-exclamation-triangle"></span> <strong>{{ error|escape }}</strong></li>
+                        <li>{{ error|escape }}</li>
                     {% endfor %}
                     </ul>
                 {% endif %}
                 {{ field }}
             </div>
         {% endfor %}
-        <p class="text-muted">{{request.user.username}} accepted this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Submit</button>
+        <input type="cancel" class="btn btn-danger" data-dismiss="modal" name="Cancel"/>
+        <input type="submit" class="btn btn-primary" name="Submit"/>
       </div>
     </form>
   </div>
