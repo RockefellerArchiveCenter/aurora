@@ -57,6 +57,8 @@
 				<h3 class="box-title">Error Messages</h3>
 			</div>
 			<div class="box-body">
+
+				{% if object.get_errors %}
 				<table>
 					<thead>
 						<tr>
@@ -65,7 +67,19 @@
 							<th>Result</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for err in object.get_errors %}
+						<tr>
+							<td>{{ err.created_time }}</td>
+							<td>{{ err.code.code_desc }}</td>
+							<td></td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
+				{% else %}
+				<p>No errors</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -85,6 +99,14 @@
 							<th>Message</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for tlog in object.get_transfer_logs %}
+						<tr>
+							<td>{{ tlog.created_time }}</td>
+							<td>{{ tlog.code.code_desc }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 		</div>

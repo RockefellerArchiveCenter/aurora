@@ -242,10 +242,16 @@ class Archives(models.Model):
     def gen_identifier(self,fname,org,date,time):
         return "{}{}{}{}".format(fname,org,date,time)
 
-    def get_errors(self):
+    def get_error_codes(self):
         if self.bag_it_valid:
             return ''
-        return [b.code.code_desc for b in BAGLog.objects.filter(archive=self).exclude(code__code_short='ASAVE')]
+        return [b.code.code_desc for b in self.get_errors()]
+
+    def get_errors(self):
+        if self.bag_it_valid:
+            return None
+        return [b for b in BAGLog.objects.filter(archive=self).exclude(code__code_short='ASAVE')]
+
 
     def get_bag_validations(self):
         if not self.bag_it_valid:
@@ -270,7 +276,10 @@ class Archives(models.Model):
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj or len(get_error_obj) > 1:
             return False
-        return get_error_obj[0]
+        return get_error_obj
+
+    def get_transfer_logs(self):
+        return BAGLog.objects.filter(archive=self)
 
     class Meta:
         ordering = ['machine_file_upload_time']

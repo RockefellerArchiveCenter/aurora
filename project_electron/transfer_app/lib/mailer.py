@@ -64,12 +64,14 @@ class Mailer():
         elif mess_code == 'TRANS_FAIL_VAL':
             self.subject = 'Your Transfer Failed Validation'
 
+
+
             eparts = [
                 'An error occurred for the transfer {} during {} at {}. The transfer has been deleted from our systems.',
                 'Please review the complete error log at {}, correct any errors, and try sending the transfer again.'
             ]
 
-            error = archive_obj.get_bag_failure()
+            error = archive_obj.get_bag_failure()[0]
 
             self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),
@@ -78,4 +80,5 @@ class Mailer():
                 CF.BASE_URL + 'app/transfers/'
             )
 
+            #additional errs
 
