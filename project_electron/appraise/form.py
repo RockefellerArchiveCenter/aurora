@@ -7,6 +7,5 @@ class AppraisalNoteUpdateForm(forms.ModelForm):
         fields = ['appraisal_note']
 
     def __init__(self, *args, **kwargs):
-        form = super(AppraisalNoteUpdateForm, self).__init__(*args, **kwargs)
-        for visible in form.visible_fields():
-            visible.field.widget.attrs['class'] = 'form-control'
+        super(AppraisalNoteUpdateForm, self).__init__(*args, **kwargs)
+        self.fields['appraisal_note'].widget = forms.Textarea(attrs={'class': 'form-control'})

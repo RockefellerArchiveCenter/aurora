@@ -37,7 +37,7 @@
                 <a type="button" class="btn btn-xs btn-primary">
                     Accept
                 </a>
-                <a type="button" class="appraisal-note btn btn-xs btn-secondary" data-toggle="modal" data-target="#modal-appraisal-note" data-form="{% url 'appraise-note' upload.pk %}" >
+                <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info{% else %}default{% endif %}" data-toggle="modal" data-target="#modal-appraisal-note" data-form="{% url 'appraise-note' upload.pk %}" >
                     {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
                 </a>
               </td>
@@ -76,27 +76,6 @@
         var url = $(this).data("form");
         $("#modal-appraisal-note").load(url, function() {
             $(this).modal('show');
-        });
-        return false;
-    });
-
-    $('#appraisal-note-form').live('submit', function() {
-        $.ajax({
-            type: $(this).attr('method'),
-            url: this.action,
-            data: $(this).serialize(),
-            context: this,
-            success: function(data, status) {
-                console.log("success!")
-                console.log(data)
-                console.log(status)
-                $('#modal-appraisal-note').html(data);
-                //destroy modal
-                setTimeout(function() { $('#modal-appraisal-note').modal('hide'); }, 1000);
-                $('body').on('hidden.bs.modal', '.modal', function () {
-                  $(this).removeData('bs.modal');
-                });
-            }
         });
         return false;
     });
