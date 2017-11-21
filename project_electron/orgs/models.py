@@ -244,6 +244,7 @@ class Archives(models.Model):
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
+    appraisal_note =        models.TextField(blank=True)
 
     process_status =        models.ForeignKey(ProcessingStatus)
     created_time =          models.DateTimeField(auto_now=True) # process time
