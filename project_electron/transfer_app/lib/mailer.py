@@ -71,14 +71,21 @@ class Mailer():
                 'Please review the complete error log at {}, correct any errors, and try sending the transfer again.'
             ]
 
-            error = archive_obj.get_bag_failure()[0]
+            error_obj = archive_obj.get_bag_failure(LAST_ONLY=True)
+
 
             self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),
-                (error.code.code_desc if error else '--'),
-                (error.created_time if error else '--'),
+                (error_obj.code.code_desc if error_obj else '--'),
+                (error_obj.created_time if error_obj else '--'),
                 CF.BASE_URL + 'app/transfers/'
             )
 
             #additional errs
+            additional_errors = archive_obj.get_additional_errors()
+            if additional_errors:
+                self.text_content += '\r\n\r\nAdditional Error Information:\r\n\r\n'
+                for err in additional_errors:
+                    self.text_content += '{}\r\n\r\n'.format(err)
+
 

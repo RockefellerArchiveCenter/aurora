@@ -7,6 +7,7 @@ from transfer_app import RAC_CMD
 from django.urls import reverse
 
 from django.contrib import messages
+from django.conf import settings
 
 
 
@@ -27,7 +28,6 @@ class Organization(models.Model):
         return User.objects.filter(organization=self,is_active=False)
 
     def org_root_dir(self):
-        from django.conf import settings
         return "%s%s".format(settings.ORG_ROOT_DIR,self.machine_name)
 
     def save(self, *args, **kwargs):
@@ -233,6 +233,8 @@ class Archives(models.Model):
     bag_it_valid =          models.BooleanField(default=False)
 
     process_status =        models.PositiveSmallIntegerField(default=0)
+
+    additional_error_info = models.CharField(max_length=255,null=True,blank=True)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -267,27 +269,53 @@ class Archives(models.Model):
         if self.bag_it_valid:
             return False
         flist = [
-            'NORG','BFNM','BTAR',
-            'BTAR2','BZIP','BZIP2',
-            'BDIR','EXERR','GBERR',
-            'RBERR', 'MDERR', 'DTERR',
+            'NORG','BFNM',
+            'BTAR','BTAR2','BZIP','BZIP2',
+            'BDIR','EXERR',
+            'GBERR', 'RBERR', 
+            'MDERR', 'DTERR', 'FSERR',
             'VIRUS',
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
-        if not get_error_obj or len(get_error_obj) > 1:
+        if not get_error_obj:
             return False
         return get_error_obj[0] if LAST_ONLY else get_error_obj
 
+    def get_additional_errors(self):
+        errs = []
+        codes = []
+        failures = self.get_bag_failure(LAST_ONLY=False)
+        for fails in failures:
+            codes.append(fails.code.code_short)
+
+        if 'BZIP2' in codes or 'BTAR2' in codes:
+            errs.append('Transfer contained more than one top level directory')
+
+
+
+        if self.additional_error_info:
+            errs.append(self.additional_error_info)
+        return errs
+
     def get_transfer_logs(self):
         return BAGLog.objects.filter(archive=self)
+
+    def setup_save(self, obj):
+        """Builds additional info where more info is required than ecode short"""
+
+        if obj['auto_fail_code'] == 'VIRUS':
+            # IF CONTAINS a VIRUS, BUILD additional info
+            self.additional_error_info = 'Virus found in: {}'.format([k for k in obj['virus_scanresult']][0])
+        elif obj['auto_fail_code'] == 'FSERR':
+            self.additional_error_info = 'Bag size ({}) is larger then maximum allow size ({})'.format(obj['file_size'], (settings.TRANSFER_FILESIZE_MAX * 1000))
 
     class Meta:
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
 
-    # eCat_bagit = []
-    # eCat_rac_profile = ['BTAR2','BZIP2',]
+    eCat_bagit_validation = ['BTAR2','BZIP2',]
+    eCat_rac_profile = ['FSERR','MDERR','DTERR']
 
     code_short = models.CharField(max_length=5)
     code_types = (
@@ -317,22 +345,25 @@ class BAGLog(models.Model):
     @classmethod
     def log_it(cls, code, archive = None):
         try:
+            print code
             item = cls(
                 code = BAGLogCodes.objects.get(code_short=code),
                 archive = archive
             ).save()
 
-            # if code in BAGLogCodes.eCat_rac_profile:
-            #     cls.log_it('RBERR',archive)
+
+            if archive:
+                if code in BAGLogCodes.eCat_bagit_validation:
+                    cls.log_it('GBERR',archive)
+
+                if code in BAGLogCodes.eCat_rac_profile:
+                    cls.log_it('RBERR',archive)
+
             return True
         except Exception as e:
             print e
         else:
             return False
-
-    # @classmethod
-    # def chain_error_by_category(cls, ECODE, archive):
-    #     cls.log_it(ECODE, archive)
 
     class Meta:
         ordering = ['-created_time']
