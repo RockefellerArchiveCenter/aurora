@@ -5,7 +5,7 @@ from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render, redirect
 from orgs.models import Archives
 from orgs.authmixins import RACUserMixin
-from appraise.form import AppraisalNoteUpdateForm
+from appraise.form import AppraisalNoteUpdateForm,AppraiseTransferForm
 
 class AppraiseView(RACUserMixin, TemplateView):
     template_name = "appraise/main.html"
@@ -24,3 +24,19 @@ class AppraisalNoteUpdateView(UpdateView):
     def form_valid(self, form):
         form.save()
         return redirect('appraise-main')
+
+class AppraiseTransferView(UpdateView):
+    template_name = "appraise/main.html"
+    model = Archives
+    form_class = AppraiseTransferForm
+    action = ''
+
+    def post(self, request, *args, **kwargs):
+        print self.kwargs
+        if self.kwargs.get('action'):
+            obj = Archives.objects.get(pk=self.kwargs.get('pk'))
+            obj.process_status = self.kwargs.get('action')
+            obj.save()
+            return redirect('appraise-main')
+        else:
+            return redirect('appraise-main')
