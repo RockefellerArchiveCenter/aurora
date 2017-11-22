@@ -292,6 +292,7 @@ class Archives(models.Model):
         values = {}
         for field_name in field_names:
             values[field_name] = getattr(bag_data, field_name, '')
+            values[field_name] = getattr(bag_data, field_name, None)
 
         return values
 
