@@ -64,21 +64,15 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_identifier =   machine_file_identifier
                 new_arc.machine_file_type       =   upload_list['file_type']
                 new_arc.bag_it_name =               upload_list['bag_it_name']
-
                 new_arc.save()
-
-                ## EMAIL: Receipt of transfer
-                # email.setup_message('TRANS_RECEIPT')
-                # email.send()
-
 
                 print 'archive saved'
                 BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:
+                    new_arc.setup_save(upload_list)
 
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
-
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
                     
