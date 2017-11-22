@@ -85,7 +85,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status__status_short__gte=20, organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
 
@@ -152,7 +152,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(process_status__status_short__gte=20, user_uploaded=self).count()
+        return Archives.objects.filter(process_status__gte=20, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -212,30 +212,23 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
-class ProcessingStatus(models.Model):
-    status_short = models.PositiveSmallIntegerField(default=0)
-    status_desc = models.CharField(max_length=25)
-    def __unicode__(self):
-        return "{} : {}".format(self.status_short,self.status_desc)
-
-    def get_status_class(self):
-        if self.status_short == 10 or self.status_short == 20:
-            return "label-info"
-        elif self.status_short == 30 or self.status_short == 60:
-            return "label-danger"
-        elif self.status_short == 40 or self.status_short == 70 or self.status_short == 90:
-            return "label-success"
-        else:
-            return "label-default"
-
 class Archives(models.Model):
     machine_file_types = (
         ('ZIP', 'zip'),
         ('TAR', 'tar'),
         ('OTHER', 'OTHER')
     )
+    processing_statuses = (
+        (10, 'Transfer Started'),
+        (20, 'Transfer Completed'),
+        (30, 'Invalid'),
+        (40, 'Validated'),
+        (60, 'Rejected'),
+        (70, 'Accepted'),
+        (90, 'Accessioned')
+    )
 
-    organization =          models.ForeignKey(Organization, default=0)
+    organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =          models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
@@ -246,7 +239,7 @@ class Archives(models.Model):
     bag_it_valid =          models.BooleanField(default=False)
     appraisal_note =        models.TextField(blank=True)
 
-    process_status =        models.ForeignKey(ProcessingStatus)
+    process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
