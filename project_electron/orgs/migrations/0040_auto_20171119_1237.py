@@ -27,10 +27,5 @@ class Migration(migrations.Migration):
             model_name='baginfometadata',
             name='source_organization',
             field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='orgs.Organization'),
-        ),
-        migrations.AlterField(
-            model_name='processingstatus',
-            name='status_short',
-            field=models.PositiveSmallIntegerField(),
-        ),
+        )
     ]

@@ -291,7 +291,7 @@ class Archives(models.Model):
         field_names = [field.name for field in BagInfoMetadata._meta.get_fields() if field.name not in excluded_fields]
         values = {}
         for field_name in field_names:
-            values[field_name] = getattr(bag_data, field_name, None)
+            values[field_name] = getattr(bag_data, field_name, '')
 
         return values
 
