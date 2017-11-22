@@ -263,7 +263,7 @@ class Archives(models.Model):
         for item in items:
             data[item.code.code_short] = item.created_time
         return data
-    def get_bag_failure(self):
+    def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
         flist = [
@@ -276,7 +276,7 @@ class Archives(models.Model):
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj or len(get_error_obj) > 1:
             return False
-        return get_error_obj
+        return get_error_obj[0] if LAST_ONLY else get_error_obj
 
     def get_transfer_logs(self):
         return BAGLog.objects.filter(archive=self)
@@ -285,6 +285,10 @@ class Archives(models.Model):
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
+
+    # eCat_bagit = []
+    # eCat_rac_profile = ['BTAR2','BZIP2',]
+
     code_short = models.CharField(max_length=5)
     code_types = (
         ('T', 'Transfer'),
@@ -298,6 +302,7 @@ class BAGLogCodes(models.Model):
         return "{} : {}".format(self.code_short,self.code_desc)
 
 class BAGLog(models.Model):
+
     code = models.ForeignKey(BAGLogCodes)
     archive = models.ForeignKey(Archives, blank=True,null=True)
     log_info = models.CharField(max_length=255, null=True, blank=True)
@@ -310,17 +315,24 @@ class BAGLog(models.Model):
         return val
 
     @classmethod
-    def log_it(cls, code, archive=None):
+    def log_it(cls, code, archive = None):
         try:
             item = cls(
                 code = BAGLogCodes.objects.get(code_short=code),
                 archive = archive
             ).save()
+
+            # if code in BAGLogCodes.eCat_rac_profile:
+            #     cls.log_it('RBERR',archive)
             return True
         except Exception as e:
             print e
         else:
             return False
+
+    # @classmethod
+    # def chain_error_by_category(cls, ECODE, archive):
+    #     cls.log_it(ECODE, archive)
 
     class Meta:
         ordering = ['-created_time']

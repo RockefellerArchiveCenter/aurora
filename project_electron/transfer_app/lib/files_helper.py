@@ -108,7 +108,7 @@ def has_files_to_process():
                             if not bag_it_name:
                                 auto_fail = True
                                 auto_fail_code = 'BTAR2'
-                                # print 'tar has more than one top level'
+                                
 
 
                     elif extension[-1] == '.zip':
@@ -122,7 +122,6 @@ def has_files_to_process():
                             if not bag_it_name:
                                 auto_fail = True
                                 auto_fail_code = 'BZIP2'
-                                # print 'zip has more than one top level'
 
                     else:
                         # IS UNSERIALIZED DIR
