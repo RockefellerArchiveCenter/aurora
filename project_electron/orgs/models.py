@@ -85,7 +85,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status>=20, organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
 
@@ -152,7 +152,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(process_status>=20, user_uploaded=self).count()
+        return Archives.objects.filter(process_status__gte=20, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -228,7 +228,7 @@ class Archives(models.Model):
         (90, 'Accessioned')
     )
 
-    organization =          models.ForeignKey(Organization, default=0)
+    organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =          models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
@@ -238,7 +238,7 @@ class Archives(models.Model):
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
 
-    process_status =        models.PositiveSmallIntegerField(max_length=2,choices=processing_statuses,default=20)
+    process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
