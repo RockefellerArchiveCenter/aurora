@@ -76,7 +76,9 @@ class MyCronJob(CronJobBase):
                 BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:
+
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
+
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
                     
