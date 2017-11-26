@@ -31,10 +31,10 @@
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
-                <a type=button class="btn btn-xs btn-primary" href="{% url 'accept-transfer' upload.pk %}">
+                <a type=button class="btn btn-xs btn-primary" href="{% url 'appraise-accept' upload.pk %}">
                   Accept
                 </a>
-                <a type="button" class="btn btn-xs btn-danger" href="{% url 'reject-transfer' upload.pk %}">
+                <a type="button" class="btn btn-xs btn-danger" href="{% url 'appraise-reject' upload.pk %}">
                   Reject
                 </a>
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info{% else %}default{% endif %}" data-toggle="modal" data-target="#modal-appraisal-note" data-form="{% url 'appraise-note' upload.pk %}" >

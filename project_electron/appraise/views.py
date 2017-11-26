@@ -3,11 +3,10 @@ from __future__ import unicode_literals
 from django.views.generic import TemplateView, UpdateView
 
 from django.shortcuts import render, redirect
-from django.contrib.messages.views import SuccessMessageMixin
 
 from orgs.models import Archives
 from orgs.authmixins import RACUserMixin
-from appraise.form import AppraisalNoteUpdateForm,AppraiseTransferForm
+from appraise.form import AppraisalNoteUpdateForm
 
 class AppraiseView(RACUserMixin, TemplateView):
     template_name = "appraise/main.html"
@@ -27,7 +26,7 @@ class AppraisalNoteUpdateView(UpdateView):
         form.save()
         return redirect('appraise-main')
 
-class RejectTransferView(SuccessMessageMixin, UpdateView):
+class RejectTransferView(UpdateView):
     template_name = "appraise/main.html"
     model = Archives
 
@@ -36,7 +35,7 @@ class RejectTransferView(SuccessMessageMixin, UpdateView):
         Archives.reject_transfer(obj)
         return redirect('appraise-main')
 
-class AcceptTransferView(SuccessMessageMixin, UpdateView):
+class AcceptTransferView(UpdateView):
     template_name = "appraise/main.html"
     model = Archives
 

@@ -5,7 +5,7 @@ urlpatterns = [
 
     url(r'^$', 	AppraiseView.as_view(), name='appraise-main'),
     url(r'^(?P<pk>\d+)/note/$', AppraisalNoteUpdateView.as_view(), name='appraise-note'),
-    url(r'^(?P<pk>\d+)/accept/$', AcceptTransferView.as_view(), name='accept-transfer'),
-    url(r'^(?P<pk>\d+)/reject/$', RejectTransferView.as_view(), name='reject-transfer'),
+    url(r'^(?P<pk>\d+)/accept/$', AcceptTransferView.as_view(), name='appraise-accept'),
+    url(r'^(?P<pk>\d+)/reject/$', RejectTransferView.as_view(), name='appraise-reject'),
 
 ]
