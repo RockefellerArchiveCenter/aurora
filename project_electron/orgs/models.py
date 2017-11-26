@@ -215,8 +215,14 @@ class User(AbstractUser):
 class RecordCreators(models.Model):
     name = models.CharField(max_length=100)
 
+    def __unicode__(self):
+        return self.name
+
 class LanguageCode(models.Model):
     code = models.CharField(max_length=3)
+
+    def __unicode__(self):
+        return self.code
 
 class Archives(models.Model):
     machine_file_types = (
@@ -288,12 +294,21 @@ class Archives(models.Model):
     def get_bag_data(self):
         bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
         excluded_fields = ['id', 'pk', 'archive']
+        mtm_fields = ['record_creators', 'language']
         field_names = [field.name for field in BagInfoMetadata._meta.get_fields() if field.name not in excluded_fields]
         values = {}
         for field_name in field_names:
-            values[field_name] = getattr(bag_data, field_name, '')
-            values[field_name] = getattr(bag_data, field_name, None)
-
+            if field_name in mtm_fields:
+                strings = []
+                try:
+                    objects = getattr(bag_data, field_name).all()
+                    for creator in objects:
+                        strings.append(str(creator))
+                    values[field_name] = ', '.join(strings)
+                except Exception as e:
+                    print e
+            else:
+                values[field_name] = getattr(bag_data, field_name, '')
         return values
 
     class Meta:
