@@ -300,15 +300,15 @@ class Archives(models.Model):
         for field_name in field_names:
             if field_name in mtm_fields:
                 strings = []
-                try:
-                    objects = getattr(bag_data, field_name).all()
-                    for creator in objects:
+                objects = getattr(bag_data, field_name, None)
+                if objects:
+                    for creator in objects.all():
                         strings.append(str(creator))
-                    values[field_name] = ', '.join(strings)
-                except Exception as e:
-                    print e
+                    values[field_name] = ', '.join(sorted(strings))
             else:
-                values[field_name] = getattr(bag_data, field_name, '')
+                field_value = getattr(bag_data, field_name, None)
+                if field_value:
+                    values[field_name] = getattr(bag_data, field_name, None)
         return values
 
     class Meta:
