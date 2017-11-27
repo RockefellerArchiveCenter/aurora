@@ -132,7 +132,7 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
         context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
         return context
 
-class UsersEditView(SelfOrSuperUserMixin, SuccessMessageMixin, UpdateView):
+class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     page_title = "Edit User"
