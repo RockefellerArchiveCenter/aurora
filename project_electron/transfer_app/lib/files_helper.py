@@ -30,6 +30,7 @@ def has_files_to_process():
 
             auto_fail = False
             auto_fail_code = ''
+            # auto_fail_data = ''
             bag_it_name = file_path.split('/')[-1]
             file_type = 'OTHER'
             file_size = 0
@@ -79,9 +80,10 @@ def has_files_to_process():
                 # ALL The continues Above actually should yield attention to APP Team
 
                 if scanresult:
+                    print scanresult
                     print 'VIRUS IDENTIFIED'
-                    #quarantine or move
 
+                    #quarantine or move
                     remove_file_or_dir(file_path)
                     auto_fail = True
                     auto_fail_code = 'VIRUS'
@@ -108,7 +110,7 @@ def has_files_to_process():
                             if not bag_it_name:
                                 auto_fail = True
                                 auto_fail_code = 'BTAR2'
-                                # print 'tar has more than one top level'
+                                
 
 
                     elif extension[-1] == '.zip':
@@ -122,7 +124,6 @@ def has_files_to_process():
                             if not bag_it_name:
                                 auto_fail = True
                                 auto_fail_code = 'BZIP2'
-                                # print 'zip has more than one top level'
 
                     else:
                         # IS UNSERIALIZED DIR
@@ -133,10 +134,12 @@ def has_files_to_process():
 
                     #returns filesize in kbs -- need type so moved logic down here
                     file_size = file_get_size(file_path, file_type)
-                    if not file_size:
+
+                    if not file_size or (type(file_size) is tuple and not file_size[0]):
+
                         auto_fail = True
-                        auto_fail_code = 'FSERR'
-                        filesize = 0
+                        auto_fail_code = ('FSERR' if type(file_size) is not tuple else file_size[1])
+                        file_size = 0
 
                     else:
 
@@ -169,7 +172,9 @@ def has_files_to_process():
                 'upload_user' :         file_own,
                 'auto_fail' :           auto_fail,
                 'auto_fail_code' :      auto_fail_code,
+                # 'auto_fail_data' :      auto_fail_data,
                 'bag_it_name':          bag_it_name,
+                'virus_scanresult' :    scanresult
             }
 
             files_to_process.append(data)
@@ -355,7 +360,7 @@ def file_get_size(file_path,file_type):
         if file_type == 'TAR':
             top_level_dir = tar_has_top_level_only(file_path)
             if not top_level_dir:
-                return False
+                return (0, 'BTAR2')
 
             if tar_extract_all(file_path):
                 tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
@@ -364,7 +369,7 @@ def file_get_size(file_path,file_type):
         elif file_type == 'ZIP':
             top_level_dir = zip_has_top_level_only(file_path)
             if not top_level_dir:
-                return False
+                return (0, 'BZIP2')
             if zip_extract_all(file_path):
                 tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
                 filesize = get_dir_size(tmp_dir_path)
@@ -372,8 +377,6 @@ def file_get_size(file_path,file_type):
 
         elif file_type == OTHER:
             filesize = getsize(file_path)
-        else:
-            return False
 
     elif isdir(file_path):
         filesize = get_dir_size(file_path)
