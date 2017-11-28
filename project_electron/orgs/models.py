@@ -9,8 +9,6 @@ from django.urls import reverse
 from django.contrib import messages
 from django.conf import settings
 
-
-
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
@@ -87,7 +85,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status=99, organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
 
@@ -154,7 +152,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(process_status=99, user_uploaded=self).count()
+        return Archives.objects.filter(process_status__gte=20, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -220,7 +218,15 @@ class Archives(models.Model):
         ('TAR', 'tar'),
         ('OTHER', 'OTHER')
     )
-
+    processing_statuses = (
+        (10, 'Transfer Started'),
+        (20, 'Transfer Completed'),
+        (30, 'Invalid'),
+        (40, 'Validated'),
+        (60, 'Rejected'),
+        (70, 'Accepted'),
+        (90, 'Accessioned')
+    )
 
     organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
@@ -232,9 +238,8 @@ class Archives(models.Model):
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
 
-    process_status =        models.PositiveSmallIntegerField(default=0)
-
     additional_error_info = models.CharField(max_length=255,null=True,blank=True)
+    process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -265,7 +270,8 @@ class Archives(models.Model):
         for item in items:
             data[item.code.code_short] = item.created_time
         return data
-    def get_bag_failure(self, LAST_ONLY = True):
+
+      def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
         flist = [

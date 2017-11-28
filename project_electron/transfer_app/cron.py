@@ -44,12 +44,12 @@ class MyCronJob(CronJobBase):
 
                 ## IS ORG AND IS ACTIVE ORG
                 org = Organization().is_org_active(upload_list['org'])
-                if not org: 
+                if not org:
                     org = None
 
                 ## IS USER / IN ORG / AND ACITVE
                 user = User().is_user_active(upload_list['upload_user'],org)
-                if not user: 
+                if not user:
                     user = None
                 else:
                     email.to = [user.email]
@@ -64,6 +64,8 @@ class MyCronJob(CronJobBase):
                 new_arc.machine_file_identifier =   machine_file_identifier
                 new_arc.machine_file_type       =   upload_list['file_type']
                 new_arc.bag_it_name =               upload_list['bag_it_name']
+
+                new_arc.process_status = 20
                 new_arc.save()
 
                 print 'archive saved'
@@ -71,28 +73,27 @@ class MyCronJob(CronJobBase):
 
                 if upload_list['auto_fail']:
                     new_arc.setup_save(upload_list)
-
+                    new_arc.process_status = 30
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
-                    
+
                 else:
 
                     ## NOW FOR BAG CHECK
                     bag = bagChecker(new_arc)
                     if bag.bag_passed_all():
-
+                        new_arc.process_status = 40
                         new_arc.bag_it_valid = True
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
                     else:
-
+                        new_arc.process_status = 30
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
 
-                new_arc.process_status = 99
                 new_arc.save()
 
 
