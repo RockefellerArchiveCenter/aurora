@@ -252,7 +252,7 @@ class Archives(models.Model):
     def get_errors(self):
         if self.bag_it_valid:
             return None
-        return [b for b in BAGLog.objects.filter(archive=self).exclude(code__code_short='ASAVE')]
+        return [b for b in BAGLog.objects.filter(archive=self).exclude(code__code_short__in=['ASAVE','PBAG'])]
 
 
     def get_bag_validations(self):
