@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
-from django.contrib.auth.forms import PasswordChangeForm
 
 from orgs.models import Organization, User
 from django.utils import timezone
@@ -15,12 +14,13 @@ from django.contrib.messages.views import SuccessMessageMixin
 from orgs.models import Archives
 from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
-from django import forms
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404
 
 from orgs.authmixins import *
+
+from orgs.form import UserPasswordChangeForm
 
 
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
@@ -166,26 +166,8 @@ class UsersTransfersView(RACUserMixin, ListView):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
         return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
 
-class UserPasswordChangeForm(PasswordChangeForm):
-    error_css_class = 'has-error'
-    error_messages = {'password_incorrect': "You entered your current password incorrectly"}
-    old_password = forms.CharField(required=True, label='Current Password',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please enter your current password'})
-    new_password1 = forms.CharField(required=True, label='New Password',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please enter your new password'})
-    new_password2 = forms.CharField(required=True, label='New Password (repeat)',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please confirm your new password'})
 
-class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
+class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'orgs/users/password_change.html'
     model = User
     success_message = "New password saved."
@@ -197,49 +179,4 @@ class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
         return context
 
     def get_success_url(self):
-        return reverse('users-detail', kwargs={'pk': self.object.pk})
-
-class UsersTransfersView(RACUserMixin, ListView):
-    template_name = 'orgs/all_transfers.html'
-    def get_context_data(self,**kwargs):
-        context = super(UsersTransfersView, self).get_context_data(**kwargs)
-        context['user'] = self.user
-        context['meta_page_title'] = 'My Transfers'
-        return context
-
-    def get_queryset(self):
-        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
-        return Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
-
-class UserPasswordChangeForm(PasswordChangeForm):
-    error_css_class = 'has-error'
-    error_messages = {'password_incorrect': "You entered your current password incorrectly"}
-    old_password = forms.CharField(required=True, label='Current Password',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please enter your current password'})
-    new_password1 = forms.CharField(required=True, label='New Password',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please enter your new password'})
-    new_password2 = forms.CharField(required=True, label='New Password (repeat)',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please confirm your new password'})
-
-class UserPasswordChangeView(PasswordChangeView, SuccessMessageMixin):
-    template_name = 'orgs/users/password_change.html'
-    model = User
-    success_message = "New password saved."
-    form_class = UserPasswordChangeForm
-
-    def get_context_data(self,**kwargs):
-        context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Change Password'
-        return context
-
-    def get_success_url(self):
-        return reverse('users-detail', kwargs={'pk': self.object.pk})
+        return reverse('users-detail', kwargs={'pk': self.request.user.pk})

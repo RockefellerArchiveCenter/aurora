@@ -45,4 +45,10 @@ class LDAP_Manager():
             self.users.append(result[1]['uid'][0])
         return True
 
+    def set_password(self, username, password):
+
+        results = self.lconn.passwd_s("uid={},ou=People,dc=ROCK,dc=org,dc=gke".format(username.strip()),None,password)
+        self.lconn.unbind_s()
+        # make sure it reset
+
         
