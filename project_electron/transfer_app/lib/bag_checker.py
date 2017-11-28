@@ -7,7 +7,7 @@ from pycountry import languages
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
-from orgs.models import BAGLog, BagInfoMetadata
+from orgs.models import BAGLog, Archives
 
 
 
@@ -136,7 +136,7 @@ class bagChecker():
             # log internal error here
             return self.bag_failed()
 
-        BagInfoMetadata.save_metadata(self.bag_info_data, self.archiveObj)
+        Archives.save_bag_data(self.archiveObj, self.bag_info_data)
 
         BAGLog.log_it('PBAG', self.archiveObj)
 
