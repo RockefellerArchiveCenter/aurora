@@ -286,7 +286,7 @@ class Archives(models.Model):
             'BDIR','EXERR',
             'GBERR', 'RBERR', 
             'MDERR', 'DTERR', 'FSERR',
-            'VIRUS',
+            'VIRUS','BIERR'
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj:
@@ -334,29 +334,38 @@ class Archives(models.Model):
         return obj_list
 
     def save_bag_data(self, metadata):
-        creators_list = self.save_mtm_fields(RecordCreators, 'Record_Creators', 'name', metadata)
-        language_list = self.save_mtm_fields(LanguageCode, 'Language', 'code', metadata)
-        item = BagInfoMetadata(
-            archive = self,
-            source_organization = Organization.objects.get(name=metadata['Source_Organization']),
-            external_identifier = metadata.get('External_Identifier', ''),
-            internal_sender_description = metadata.get('Internal_Sender_Description', ''),
-            title = metadata.get('Title', ''),
-            date_start = metadata.get('Date_Start', ''),
-            date_end = metadata.get('Date_End', ''),
-            record_type = metadata.get('Record_Type', ''),
-            bagging_date = metadata.get('Bagging_Date', ''),
-            bag_count = metadata.get('Bag_Count', ''),
-            bag_group_identifier = metadata.get('Bag_Group_Identifier', ''),
-            payload_oxum = metadata.get('Payload_Oxum', ''),
-            bagit_profile_identifier = metadata.get('BagIt_Profile_Identifier', '')
-        )
-        item.save()
-        for c in creators_list:
-            item.record_creators.add(c)
-        for l in language_list:
-            item.language.add(l)
-        item.save()
+        if not metadata:
+            return False
+
+        try:
+            creators_list = self.save_mtm_fields(RecordCreators, 'Record_Creators', 'name', metadata)
+            language_list = self.save_mtm_fields(LanguageCode, 'Language', 'code', metadata)
+            item = BagInfoMetadata(
+                archive = self,
+                source_organization = Organization.objects.get(name=metadata['Source_Organization']),
+                external_identifier = metadata.get('External_Identifier', ''),
+                internal_sender_description = metadata.get('Internal_Sender_Description', ''),
+                title = metadata.get('Title', ''),
+                date_start = metadata.get('Date_Start', ''),
+                date_end = metadata.get('Date_End', ''),
+                record_type = metadata.get('Record_Type', ''),
+                bagging_date = metadata.get('Bagging_Date', ''),
+                bag_count = metadata.get('Bag_Count', ''),
+                bag_group_identifier = metadata.get('Bag_Group_Identifier', ''),
+                payload_oxum = metadata.get('Payload_Oxum', ''),
+                bagit_profile_identifier = metadata.get('BagIt_Profile_Identifier', '')
+            )
+            item.save()
+            for c in creators_list:
+                item.record_creators.add(c)
+            for l in language_list:
+                item.language.add(l)
+            item.save()
+        except Exception as e:
+            print e
+            return False
+        else:
+            return True # this at least assumes nothing blew up
 
     def get_bag_data(self):
         bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()

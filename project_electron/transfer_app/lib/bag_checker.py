@@ -177,8 +177,10 @@ class bagChecker():
             print 'couldnt read baginfo'
             # log internal error here
             return self.bag_failed()
+        if not self.archiveObj.save_bag_data(self.bag_info_data):
+            self.ecode = 'BIERR'
+            return self.bag_failed()
 
-        Archives.save_bag_data(self.archiveObj, self.bag_info_data)
 
         BAGLog.log_it('PBAG', self.archiveObj)
 
@@ -203,7 +205,9 @@ class bagChecker():
     def bag_failed(self):
         self.cleanup()
         return False
+        
     def cleanup(self):
+        """called on success of failure of bag_checker routine"""
         if self.bag_exception:
             self.archiveObj.additional_error_info = self.bag_exception
 
