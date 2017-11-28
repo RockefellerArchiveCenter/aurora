@@ -271,7 +271,7 @@ class Archives(models.Model):
             data[item.code.code_short] = item.created_time
         return data
 
-      def get_bag_failure(self, LAST_ONLY = True):
+    def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
         flist = [
