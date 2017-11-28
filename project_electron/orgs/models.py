@@ -123,14 +123,12 @@ class User(AbstractUser):
     def set_password_ldap(self, raw_password):
         from orgs.ldap_mixin import _LDAPUserExtension
         ldap_interface = _LDAPUserExtension()
-        try:
-            ldap_interface.set_password(username=self.username,password=raw_password)
+        if ldap_interface.set_password(username=self.username,password=raw_password):
+            self.password = make_password(raw_password)
+            self._password = raw_password
             return True
-        except Exception as e:
-            print e
-            return False
-        # self.password = make_password(raw_password)
-        # self._password = raw_password
+        return False
+        
 
     def save(self, *args, **kwargs):
 

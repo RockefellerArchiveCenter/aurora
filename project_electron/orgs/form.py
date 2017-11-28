@@ -1,6 +1,7 @@
 from django import forms
 
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
+from django.utils.translation import ugettext, ugettext_lazy as _
 
 from orgs.models import User
 
@@ -25,22 +26,31 @@ class RACSuperUserUpdateForm(forms.ModelForm):
 
 class UserPasswordChangeForm(PasswordChangeForm):
 	error_css_class = 'has-error'
-	error_messages = {'password_incorrect': "You entered your current password incorrectly"}
-	old_password = forms.CharField(required=True, label='Current Password',
-				  widget=forms.PasswordInput(attrs={
-					'class': 'form-control'}),
-				  error_messages={
-					'required': 'Please enter your current password'})
-	new_password1 = forms.CharField(required=True, label='New Password',
-				  widget=forms.PasswordInput(attrs={
-					'class': 'form-control'}),
-				  error_messages={
-					'required': 'Please enter your new password'})
-	new_password2 = forms.CharField(required=True, label='New Password (repeat)',
-				  widget=forms.PasswordInput(attrs={
-					'class': 'form-control'}),
-				  error_messages={
-					'required': 'Please confirm your new password'})
+	# error_messages['password_incorrect'] = "You entered your current password incorrectly"
+
+	error_messages = dict(PasswordChangeForm.error_messages, **{
+        'password_incorrect': _("You entered your current password incorrectly"),
+    })
+
+	old_password = forms.CharField(
+		required=True,
+		label='Current Password',
+		widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+		error_messages={'required': 'Please enter your current password'}
+	)
+
+	new_password1 = forms.CharField(
+		required=True,
+		label='New Password',
+		widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+		error_messages={'required': 'Please enter your new password'}
+	)
+	new_password2 = forms.CharField(
+		required=True,
+		label='New Password (repeat)',
+		widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+		error_messages={'required': 'Please confirm your new password'}
+	)
 
 	def clean_old_password(self):
 		if self.user.from_ldap:
@@ -66,3 +76,4 @@ class UserPasswordChangeForm(PasswordChangeForm):
 			if commit:
 				self.user.save()
 			return self.user
+		return None

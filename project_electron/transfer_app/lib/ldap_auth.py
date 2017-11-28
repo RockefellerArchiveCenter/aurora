@@ -46,9 +46,21 @@ class LDAP_Manager():
         return True
 
     def set_password(self, username, password):
+        WAS_RESET = False
+        try:
+            results = self.lconn.passwd_s("uid={},ou=People,dc=ROCK,dc=org,dc=gke".format(username.strip()),None,password)
+        except Exception as e:
+            print e
+        else:
+            print result
+            if type(result) is tuple:
+                if not result[0] and not result[1]:
+                    WAS_RESET = True
+            # don't need to do anything cause will return false
+        finally:
+            self.lconn.unbind_s()
 
-        results = self.lconn.passwd_s("uid={},ou=People,dc=ROCK,dc=org,dc=gke".format(username.strip()),None,password)
-        self.lconn.unbind_s()
-        # make sure it reset
+        return WAS_RESET
+
 
         
