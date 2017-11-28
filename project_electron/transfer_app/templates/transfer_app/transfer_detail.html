@@ -1,13 +1,13 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}{{ object.bag_or_failed_name }}<small>{% if object.bag_it_valid %}<span class="label label-success">valid</span>{% else %}<span class="label label-danger">invalid</span>{% endif %}</small>{% endblock %}
+{% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span></small>{% endblock %}
 
 {% block content %}
 
 <div class="row">
 	<div class="col-md-12">
-		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}.</p>
+		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}</p>
 	</div>
 </div>
 
@@ -57,6 +57,8 @@
 				<h3 class="box-title">Error Messages</h3>
 			</div>
 			<div class="box-body">
+
+				{% if object.get_errors %}
 				<table>
 					<thead>
 						<tr>
@@ -65,11 +67,39 @@
 							<th>Result</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for err in object.get_errors %}
+						<tr>
+							<td>{{ err.created_time }}</td>
+							<td>{{ err.code.code_desc }}</td>
+							<td></td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
+				{% else %}
+				<p>No errors</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
 </div>
+
+
+{% if object.additional_error_info %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-danger">
+			<div class="box-header with-border">
+				<h3 class="box-title">Additional Error Info</h3>
+			</div>
+			<div class="box-body">
+				<p>{{ object.additional_error_info }}</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
 
 <div class="row">
 	<div class="col-md-12">
@@ -85,6 +115,14 @@
 							<th>Message</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for tlog in object.get_transfer_logs %}
+						<tr>
+							<td>{{ tlog.created_time }}</td>
+							<td>{{ tlog.code.code_desc }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 		</div>

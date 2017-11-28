@@ -45,8 +45,9 @@ class OrganizationDetailView(RACUserMixin, DetailView):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
         context['trans_lst'] = self.object.build_transfer_timeline_list()
-        context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object']).order_by('-created_time')[:15]
-        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object']).count()
+
+        context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
         return context
 
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
@@ -74,7 +75,7 @@ class OrganizationTransfersView(RACUserMixin, ListView):
 
     def get_queryset(self):
         self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        return Archives.objects.filter(process_status=99, organization=self.organization).order_by('-created_time')
+        return Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
 
 class OrganizationListView(RACUserMixin, ListView):
 
@@ -128,8 +129,8 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.username
-        context['uploads'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).order_by('-created_time')[:5]
-        context['uploads_count'] = Archives.objects.filter(process_status=99, organization = context['object'].organization).count()
+        context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).order_by('-created_time')[:5]
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).count()
         return context
 
 class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):

@@ -7,8 +7,7 @@ from transfer_app import RAC_CMD
 from django.urls import reverse
 
 from django.contrib import messages
-
-
+from django.conf import settings
 
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
@@ -27,7 +26,6 @@ class Organization(models.Model):
         return User.objects.filter(organization=self,is_active=False)
 
     def org_root_dir(self):
-        from django.conf import settings
         return "%s%s".format(settings.ORG_ROOT_DIR,self.machine_name)
 
     def save(self, *args, **kwargs):
@@ -87,7 +85,7 @@ class Organization(models.Model):
 
     def build_transfer_timeline_list(self):
         arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status=99, organization=self).order_by('-created_time')
+        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
         for arc in org_arcs:
             if arc.created_time.date() not in arc_by_date:
 
@@ -173,7 +171,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(process_status=99, user_uploaded=self).count()
+        return Archives.objects.filter(process_status__gte=20, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -239,7 +237,15 @@ class Archives(models.Model):
         ('TAR', 'tar'),
         ('OTHER', 'OTHER')
     )
-
+    processing_statuses = (
+        (10, 'Transfer Started'),
+        (20, 'Transfer Completed'),
+        (30, 'Invalid'),
+        (40, 'Validated'),
+        (60, 'Rejected'),
+        (70, 'Accepted'),
+        (90, 'Accessioned')
+    )
 
     organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
@@ -251,7 +257,8 @@ class Archives(models.Model):
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
 
-    process_status =        models.PositiveSmallIntegerField(default=0)
+    additional_error_info = models.CharField(max_length=255,null=True,blank=True)
+    process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
@@ -261,10 +268,16 @@ class Archives(models.Model):
     def gen_identifier(self,fname,org,date,time):
         return "{}{}{}{}".format(fname,org,date,time)
 
-    def get_errors(self):
+    def get_error_codes(self):
         if self.bag_it_valid:
             return ''
-        return [b.code.code_desc for b in BAGLog.objects.filter(archive=self).exclude(code__code_short='ASAVE')]
+        return [b.code.code_desc for b in self.get_errors()]
+
+    def get_errors(self):
+        if self.bag_it_valid:
+            return None
+        return [b for b in BAGLog.objects.filter(archive=self).exclude(code__code_short__in=['ASAVE','PBAG'])]
+
 
     def get_bag_validations(self):
         if not self.bag_it_valid:
@@ -276,25 +289,59 @@ class Archives(models.Model):
         for item in items:
             data[item.code.code_short] = item.created_time
         return data
-    def get_bag_failure(self):
+
+      def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
         flist = [
-            'NORG','BFNM','BTAR',
-            'BTAR2','BZIP','BZIP2',
-            'BDIR','EXERR','GBERR',
-            'RBERR', 'MDERR', 'DTERR',
+            'NORG','BFNM',
+            'BTAR','BTAR2','BZIP','BZIP2',
+            'BDIR','EXERR',
+            'GBERR', 'RBERR', 
+            'MDERR', 'DTERR', 'FSERR',
             'VIRUS',
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
-        if not get_error_obj or len(get_error_obj) > 1:
+        if not get_error_obj:
             return False
-        return get_error_obj[0]
+        return get_error_obj[0] if LAST_ONLY else get_error_obj
+
+    def get_additional_errors(self):
+        errs = []
+        codes = []
+        failures = self.get_bag_failure(LAST_ONLY=False)
+        for fails in failures:
+            codes.append(fails.code.code_short)
+
+        if 'BZIP2' in codes or 'BTAR2' in codes:
+            errs.append('Transfer contained more than one top level directory')
+
+
+
+        if self.additional_error_info:
+            errs.append(self.additional_error_info)
+        return errs
+
+    def get_transfer_logs(self):
+        return BAGLog.objects.filter(archive=self)
+
+    def setup_save(self, obj):
+        """Builds additional info where more info is required than ecode short"""
+
+        if obj['auto_fail_code'] == 'VIRUS':
+            # IF CONTAINS a VIRUS, BUILD additional info
+            self.additional_error_info = 'Virus found in: {}'.format([k for k in obj['virus_scanresult']][0])
+        elif obj['auto_fail_code'] == 'FSERR':
+            self.additional_error_info = 'Bag size ({}) is larger then maximum allow size ({})'.format(obj['file_size'], (settings.TRANSFER_FILESIZE_MAX * 1000))
 
     class Meta:
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
+
+    eCat_bagit_validation = ['BTAR2','BZIP2',]
+    eCat_rac_profile = ['FSERR','MDERR','DTERR']
+
     code_short = models.CharField(max_length=5)
     code_types = (
         ('T', 'Transfer'),
@@ -308,6 +355,7 @@ class BAGLogCodes(models.Model):
         return "{} : {}".format(self.code_short,self.code_desc)
 
 class BAGLog(models.Model):
+
     code = models.ForeignKey(BAGLogCodes)
     archive = models.ForeignKey(Archives, blank=True,null=True)
     log_info = models.CharField(max_length=255, null=True, blank=True)
@@ -320,12 +368,22 @@ class BAGLog(models.Model):
         return val
 
     @classmethod
-    def log_it(cls, code, archive=None):
+    def log_it(cls, code, archive = None):
         try:
+            print code
             item = cls(
                 code = BAGLogCodes.objects.get(code_short=code),
                 archive = archive
             ).save()
+
+
+            if archive:
+                if code in BAGLogCodes.eCat_bagit_validation:
+                    cls.log_it('GBERR',archive)
+
+                if code in BAGLogCodes.eCat_rac_profile:
+                    cls.log_it('RBERR',archive)
+
             return True
         except Exception as e:
             print e
