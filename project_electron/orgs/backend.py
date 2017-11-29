@@ -21,7 +21,7 @@ class RACLDAPBackend(LDAPBackend):
             ldap_user = _LDAPUser(self, username=username.strip())
             user = ldap_user.authenticate(password)
         else:
-            logger.debug('Rejecting empty password for %s' % username)
+            # logger.debug('Rejecting empty password for %s' % username)
             user = None
 
         return user

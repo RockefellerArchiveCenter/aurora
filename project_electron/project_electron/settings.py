@@ -89,7 +89,7 @@ DATABASES = {
 AUTHENTICATION_BACKENDS = (
     # 'django_auth_ldap.backend.LDAPBackend',
     'orgs.backend.RACLDAPBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend', removing local account access
 )
 
 # Password validation
