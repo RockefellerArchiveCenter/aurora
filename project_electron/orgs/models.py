@@ -128,7 +128,7 @@ class User(AbstractUser):
             self._password = raw_password
             return True
         return False
-        
+
 
     def save(self, *args, **kwargs):
 
@@ -307,7 +307,7 @@ class Archives(models.Model):
             'NORG','BFNM',
             'BTAR','BTAR2','BZIP','BZIP2',
             'BDIR','EXERR',
-            'GBERR', 'RBERR', 
+            'GBERR', 'RBERR',
             'MDERR', 'DTERR', 'FSERR',
             'VIRUS',
         ]
@@ -357,7 +357,7 @@ class Archives(models.Model):
                 if objects:
                     for creator in objects.all():
                         strings.append(str(creator))
-                    values[field_name] = ', '.join(sorted(strings))
+                    values[field_name] = sorted(strings)
             else:
                 field_value = getattr(bag_data, field_name, None)
                 if field_value:
