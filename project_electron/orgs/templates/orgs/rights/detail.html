@@ -1,0 +1,94 @@
+{% extends 'transfer_app/base.html' %}
+{% load tz %}
+
+{% block h1_title %}Organization Name <small>PREMIS Rights Details</small>{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+
+    <ul class="timeline">
+      <li class="time-label">
+        <span class="bg-blue">Copyright <small>Rights Basis</small></span>
+      </li>
+      <li>
+        <i class="fa fa-envelope bg-blue"></i>
+        <div class="timeline-item">
+
+          <h3 class="timeline-header">Rights Basis</h3>
+
+          <div class="timeline-body">
+            <dl class="dl-horizontal">
+              <dt>Copyright status</dt>
+              <dd>copyrighted</dd>
+              <dt>Determination date</dt>
+              <dd>June 22, 2017</dd>
+              <dt>Jurisdiction</dt>
+              <dd>us</dd>
+              <dt>Copyright Start Date</dt>
+              <dd>January 1, 1982</dd>
+              <dt>Copyright End Date</dt>
+              <dd>open</dd>
+              <dt>Copyright Note</dt>
+              <dd>Copyright held by The Helpful Foundation</dd>
+            </dl>
+          </div>
+
+        </div>
+      </li>
+
+      <li class="time-label">
+        <span class="bg-aqua">Disseminate <small>Act</small></span>
+      </li>
+      <li>
+        <i class="fa fa-check bg-green"></i>
+
+        <div class="timeline-item">
+
+          <h3 class="timeline-header">Publish</h3>
+
+          <div class="timeline-body">
+            <dl class="dl-horizontal">
+              <dt>Grant/Restriction</dt>
+              <dd>allow</dd>
+              <dt>Grant start date</dt>
+              <dd>June 22, 2017</dd>
+              <dt>Grant end date</dt>
+              <dd>open</dd>
+              <dt>Grant/Restriction Note</dt>
+              <dd>Records from The Helpful Foundation are available for research</dd>
+            </dl>
+          </div>
+        </div>
+      </li>
+
+      <li class="time-label">
+        <span class="bg-aqua">Publish <small>Act</small></span>
+      </li>
+      <li>
+        <i class="fa fa-times bg-red"></i>
+
+        <div class="timeline-item">
+
+          <h3 class="timeline-header">Publish</h3>
+
+          <div class="timeline-body">
+            <dl class="dl-horizontal">
+              <dt>Grant/Restriction</dt>
+              <dd>disallow</dd>
+              <dt>Grant start date</dt>
+              <dd>June 22, 2017</dd>
+              <dt>Grant end date</dt>
+              <dd>open</dd>
+              <dt>Grant/Restriction Note</dt>
+              <dd>Permission to publish has not been provided by The Helpful Foundation</dd>
+            </dl>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+{% endblock %}

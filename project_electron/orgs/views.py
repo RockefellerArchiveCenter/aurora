@@ -202,9 +202,10 @@ class RightsCreateView(RACAdminMixin, CreateView):
 
 class RightsDetailView(RACAdminMixin, DetailView):
     template_name = 'orgs/rights/detail.html'
+    model = Organization
 
 class RightsUpdateView(RACAdminMixin, UpdateView):
     template_name = 'orgs/rights/update.html'
 
 class RightsDeleteView(RACAdminMixin, DeleteView):
-    template_name = 'orgs/rights/delete.html'
+    template_name = 'orgs/rights/update.html'
