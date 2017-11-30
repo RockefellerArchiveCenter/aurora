@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView, View
 from django.contrib.auth.views import PasswordChangeView
 
 from orgs.models import Organization, User
@@ -186,7 +186,7 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     #             return self.form_invalid(form)
     #     except ValidationError as e:
     #         print e
-        
+
     #     return self.form_invalid(form)
 
     def get_context_data(self,**kwargs):
@@ -196,3 +196,15 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.request.user.pk})
+
+class RightsCreateView(RACAdminMixin, CreateView):
+    template_name = 'orgs/rights/create.html'
+
+class RightsDetailView(RACAdminMixin, DetailView):
+    template_name = 'orgs/rights/detail.html'
+
+class RightsUpdateView(RACAdminMixin, UpdateView):
+    template_name = 'orgs/rights/update.html'
+
+class RightsDeleteView(RACAdminMixin, DeleteView):
+    template_name = 'orgs/rights/delete.html'
