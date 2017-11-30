@@ -34,8 +34,9 @@
                 </ul>
 
                 {% if request.user.is_superuser or request.user.pk == object.pk %}
-                <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
+                    <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
                 {% endif %}
+
             </div>
         </div>
 
