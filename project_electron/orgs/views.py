@@ -198,14 +198,14 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
         return reverse('users-detail', kwargs={'pk': self.request.user.pk})
 
 class RightsCreateView(RACAdminMixin, CreateView):
-    template_name = 'orgs/rights/create.html'
+    template_name = 'orgs/rights/manage.html'
 
 class RightsDetailView(RACAdminMixin, DetailView):
     template_name = 'orgs/rights/detail.html'
     model = Organization
 
 class RightsUpdateView(RACAdminMixin, UpdateView):
-    template_name = 'orgs/rights/update.html'
+    template_name = 'orgs/rights/manage.html'
 
 class RightsDeleteView(RACAdminMixin, DeleteView):
-    template_name = 'orgs/rights/update.html'
+    template_name = 'orgs/rights/manage.html'
