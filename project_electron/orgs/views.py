@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.contrib.messages.views import SuccessMessageMixin
 
 from orgs.models import Archives
-from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, RightsForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -199,10 +199,11 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
 class RightsCreateView(RACAdminMixin, CreateView):
     template_name = 'orgs/rights/manage.html'
+    model = Organization
+    form_class = RightsForm
 
 class RightsDetailView(RACAdminMixin, DetailView):
     template_name = 'orgs/rights/detail.html'
-    model = Organization
 
 class RightsUpdateView(RACAdminMixin, UpdateView):
     template_name = 'orgs/rights/manage.html'
