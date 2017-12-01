@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, DeleteView, View
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 
 from orgs.models import Organization, User
@@ -12,7 +12,7 @@ from django.http import JsonResponse
 from django.contrib.messages.views import SuccessMessageMixin
 
 from orgs.models import Archives
-from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, RightsForm
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -196,17 +196,3 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.request.user.pk})
-
-class RightsCreateView(RACAdminMixin, CreateView):
-    template_name = 'orgs/rights/manage.html'
-    model = Organization
-    form_class = RightsForm
-
-class RightsDetailView(RACAdminMixin, DetailView):
-    template_name = 'orgs/rights/detail.html'
-
-class RightsUpdateView(RACAdminMixin, UpdateView):
-    template_name = 'orgs/rights/manage.html'
-
-class RightsDeleteView(RACAdminMixin, DeleteView):
-    template_name = 'orgs/rights/manage.html'

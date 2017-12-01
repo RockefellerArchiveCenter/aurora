@@ -77,8 +77,3 @@ class UserPasswordChangeForm(PasswordChangeForm):
 				self.user.save()
 			return self.user
 		return None
-
-class RightsForm(forms.ModelForm):
-	class Meta:
-		model = User
-		fields = ['is_active']

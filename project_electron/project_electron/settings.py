@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'orgs',
     'appraise',
     'accession',
+    'rights',
 ]
 
 MIDDLEWARE = [
