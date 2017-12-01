@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from orgs.models import Organization, Archives
 
 # Create your models here.
 
