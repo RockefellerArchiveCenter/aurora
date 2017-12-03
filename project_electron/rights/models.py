@@ -19,8 +19,6 @@ class RightsStatement(models.Model):
         ('Copyright', 'Copyright'),
         ('Statute', 'Statute'),
         ('License', 'License'),
-        ('Donor', 'Donor'),
-        ('Policy', 'Policy'),
         ('Other', 'Other')
     )
     rightsbasis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
@@ -84,7 +82,11 @@ class RightsStatementStatuteInformation(models.Model):
 
 class RightsStatementOtherRightsInformation(models.Model):
     rightsstatement = models.ForeignKey(RightsStatement)
-    otherrightsbasis = models.CharField(max_length=64, default='Donor')
+    OTHER_RIGHTS_BASIS_CHOICES = (
+        ('Donor', 'Donor'),
+        ('Policy', 'Policy'),
+    )
+    otherrightsbasis = models.CharField(choices=OTHER_RIGHTS_BASIS_CHOICES, max_length=64)
     donorembargoperiod = models.PositiveSmallIntegerField()
     otherrightsapplicablestartdate = models.DateField(blank=True, null=True)
     otherrightsapplicableenddate = models.DateField(blank=True, null=True)

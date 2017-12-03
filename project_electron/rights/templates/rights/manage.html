@@ -12,14 +12,102 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
+            {{ basis_form.as_p }}
+            <div id='copyright_formset'>
+              {{ copyright_form.management_form }}
+              {{ copyright_form.non_form_errors }}
+              {% for form in copyright_form %}
+                  {{ form.as_p }}
+              {% endfor %}
+              <div class="well">
+                {% for form in granted_form %}
+                  {{ form.as_p }}
+                {% endfor %}
+              </div>
+            </div>
+            <div id='license_formset'>
+              {{ license_form.management_form }}
+              {{ license_form.non_form_errors }}
+              {% for form in license_form %}
+                  {{ form.as_p }}
+              {% endfor %}
+              <div class="well">
+                {% for form in granted_form %}
+                  {{ form.as_p }}
+                {% endfor %}
+              </div>
+            </div>
+            <div id='statute_formset'>
+              {{ statute_form.management_form }}
+              {{ statute_form.non_form_errors }}
+              {% for form in statute_form %}
+                  {{ form.as_p }}
+              {% endfor %}
+              <div class="well">
+                {% for form in granted_form %}
+                  {{ form.as_p }}
+                {% endfor %}
+              </div>
+            </div>
+            <div id='other_formset'>
+              {{ other_form.management_form }}
+              {{ other_form.non_form_errors }}
+              {% for form in other_form %}
+                  {{ form.as_p }}
+              {% endfor %}
+              <div class="well">
+                {% for form in granted_form %}
+                  {{ form.as_p }}
+                {% endfor %}
+              </div>
+            </div>
           </div>
-            {{form.as_p}}
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>
           </div>
         </form>
       </div>
     </div>
+
   </div>
 
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  // logic to show appropriate subform
+  function revealSelectedBasis() {
+    var basis = $('#id_rightsbasis').val()
+    var formsets = {
+        'Copyright': 'copyright_formset',
+        'Statute':   'statute_formset',
+        'License':   'license_formset',
+        'Other':     'other_formset'
+    }
+
+    // hide all formsets except basis
+    for (var key in formsets) {
+      console.log(key)
+      console.log(basis)
+      console.log(formsets[key])
+      if (key != basis && formsets[key]) {
+        $('#' + formsets[key]).hide();
+      }
+    }
+
+    // if basis has a formset, show it
+    if (formsets[basis]) {
+      $('#' + formsets[basis]).show();
+    }
+
+  }
+
+
+  $(document).ready(function() {
+    // active formset changer
+    $('#id_rightsbasis').change(revealSelectedBasis);
+    revealSelectedBasis();
+  });
+</script>
 {% endblock %}
