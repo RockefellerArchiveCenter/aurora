@@ -93,7 +93,9 @@ class Organization(models.Model):
             arc_by_date[arc.created_time.date()].append(arc)
         return arc_by_date
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
+
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
 
@@ -128,7 +130,7 @@ class User(AbstractUser):
             self._password = raw_password
             return True
         return False
-        
+
 
     def save(self, *args, **kwargs):
 
@@ -295,7 +297,7 @@ class Archives(models.Model):
             'NORG','BFNM',
             'BTAR','BTAR2','BZIP','BZIP2',
             'BDIR','EXERR',
-            'GBERR', 'RBERR', 
+            'GBERR', 'RBERR',
             'MDERR', 'DTERR', 'FSERR',
             'VIRUS',
         ]

@@ -8,16 +8,17 @@
     </tr>
   </thead>
   <tbody>
+    {% for statement in rights_statements %}
     <tr>
-      <td>annual reports</td>
-      <td>copyright</td>
-      <td>rights basis note + act note</td>
-      <td class="text-right">
-        <button href="#" class="btn btn-primary btn-sm">View</button>
-        <button href="#" class="btn btn-warning btn-sm">Edit</button>
-        <button href="#" class="btn btn-danger btn-sm">Delete</button>
+      <td>{{statement.applies_to_type}}</td>
+      <td>{{statement.rights_basis}}</td>
+      <td>{{statement.get_table_data.notes}}</td>
+      <td class="text-right col-md-2">
+        <a href="{% url 'rights-detail' statement.organization.pk statement.pk %}" class="btn btn-primary btn-sm">View</a>
+        <a href="#" class="btn btn-warning btn-sm">Edit</a>
+        <a href="#" class="btn btn-danger btn-sm">Delete</a>
       </td>
     </tr>
-
+    {% endfor %}
   </tbody>
 </table>

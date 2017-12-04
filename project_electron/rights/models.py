@@ -27,6 +27,26 @@ class RightsStatement(models.Model):
     def __unicode__(self):
         return '{}: {}: {}'.format(self.organization, self.applies_to_type, self.rights_basis)
 
+    def get_rights_info_object(self):
+        if self.rights_basis == 'Copyright':
+            data = RightsStatementCopyright.objects.get(rights_statement=self.pk)
+        elif self.rights_basis == 'License':
+            data = RightsStatementLicense.objects.get(rights_statement=self.pk)
+        elif self.rights_basis == 'Statute':
+            data = RightsStatementStatute.objects.get(rights_statement=self.pk)
+        else:
+            data = RightsStatementOther.objects.get(rights_statement=self.pk)
+        return data
+
+    def get_rights_granted_objects(self):
+        return RightsStatementRightsGranted.objects.filter(rights_statement=self.pk)
+
+    def get_table_data(self):
+        data = {}
+        rights_info = self.get_rights_info_object()
+        data['notes'] = ', '.join([value for key, value in rights_info.__dict__.items() if '_note' in key.lower()])
+        return data
+
 class RightsStatementCopyright(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     PREMIS_COPYRIGHT_STATUSES = (
