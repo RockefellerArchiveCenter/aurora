@@ -14,7 +14,7 @@ class RightsCreateView(RACAdminMixin, CreateView):
     model = RightsStatement
     form_class = RightsForm
 
-class RightsDetailView(RACAdminMixin, DetailView):
+class RightsDetailView(DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
 
