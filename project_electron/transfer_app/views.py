@@ -7,6 +7,7 @@ from django.views.generic import TemplateView, View, DetailView
 from django.db.models import Sum
 from django.shortcuts import render
 from orgs.models import Archives
+from rights.models import RightsStatement
 from orgs.authmixins import LoggedInMixinDefaults
 
 class MainView(LoggedInMixinDefaults, TemplateView):
@@ -59,6 +60,7 @@ class TransferDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
+        context['rights_statements'] = RightsStatement.objects.filter(archive = context['object'])
         context['meta_page_title'] = self.object.bag_or_failed_name
 
         return context

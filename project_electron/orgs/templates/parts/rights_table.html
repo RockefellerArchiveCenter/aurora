@@ -1,4 +1,5 @@
 <table class="table table-striped">
+  {% if request.user.is_superuser %}
   <thead>
     <tr>
       <th>Record Type</th>
@@ -21,4 +22,22 @@
     </tr>
     {% endfor %}
   </tbody>
+  {% else %}
+  <thead>
+    <tr>
+      <th>Record Type</th>
+      <th>Basis</th>
+      <th>Rights Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for statement in rights_statements %}
+    <tr>
+      <td>{{statement.applies_to_type}}</td>
+      <td>{{statement.rights_basis}}</td>
+      <td>{{statement.get_table_data.notes}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  {% endif %}
 </table>
