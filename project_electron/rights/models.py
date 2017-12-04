@@ -24,6 +24,9 @@ class RightsStatement(models.Model):
     )
     rights_basis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
 
+    def __unicode__(self):
+        return '{}: {}: {}'.format(self.organization, self.applies_to_type, self.rights_basis)
+
 class RightsStatementCopyright(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     PREMIS_COPYRIGHT_STATUSES = (
@@ -42,7 +45,7 @@ class RightsStatementCopyright(models.Model):
 
 class RightsStatementLicense(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
-    licence_period = models.PositiveSmallIntegerField()
+    license_period = models.PositiveSmallIntegerField()
     license_terms = models.TextField(blank=True, null=True)
     license_applicable_start_date = models.DateField(blank=True, null=True)
     license_applicable_end_date = models.DateField(blank=True, null=True)
@@ -73,6 +76,9 @@ class RightsStatementRightsGranted(models.Model):
     )
     restriction = models.CharField(choices=RESTRICTION_CHOICES, max_length=64)
 
+    def __unicode__(self):
+        return '{}: {}'.format(self.act, self.restriction)
+
 class RightsStatementStatute(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     statute_period = models.PositiveSmallIntegerField()
@@ -85,7 +91,7 @@ class RightsStatementStatute(models.Model):
     statute_note = models.TextField()
 
 class RightsStatementOther(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
+    rights_statement = models.ForeignKey(RightsStatement)
     OTHER_RIGHTS_BASIS_CHOICES = (
         ('Donor', 'Donor'),
         ('Policy', 'Policy'),
