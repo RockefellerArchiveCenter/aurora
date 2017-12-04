@@ -96,10 +96,9 @@
 	</div>
 </div>
 
-{% if request.user.is_superuser %}
 <div class="row">
 	<div class="col-md-12">
-		<div class="box box-default">
+		<div class="box box-info">
 			<div class="box-header with-border">
 				<h3 class="box-title">Administrative information</h3>
 				<div class="box-body">
@@ -107,10 +106,23 @@
 						<div class="col-sm-12">
 							<h4>Acquisition Type</h4>
 							<p>acquisition type goes here.</p>
-							<h4>Rights Statements</h4>
-							{% include 'parts/rights_table.html' %}
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+{% if rights_statements %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">Rights Statements</h3>
+			</div>
+			<div class="box-body no-padding">
+				{% include 'parts/rights_table.html' %}
 			</div>
 		</div>
 	</div>

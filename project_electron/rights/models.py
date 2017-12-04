@@ -7,48 +7,74 @@ from orgs.models import Organization, Archives
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
-    APPLIES_TO_TYPE_CHOICES = ( # Eventually this should be replaced by a call to get record types associated with this organization
+    # Eventually these choices should be replaced by a call to get record types associated with this organization
+    APPLIES_TO_TYPE_CHOICES = (
         ('administrative records', 'Administrative Records'),
         ('annual reports', 'Annual Reports'),
         ('board materials', 'Board Materials'),
         ('communications and publications', 'Communications and Publications'),
         ('grant records', 'Grant Records'),
     )
-    appliestotype = models.CharField(choices=APPLIES_TO_TYPE_CHOICES, max_length=100)
+    applies_to_type = models.CharField(choices=APPLIES_TO_TYPE_CHOICES, max_length=100)
     RIGHTS_BASIS_CHOICES = (
         ('Copyright', 'Copyright'),
         ('Statute', 'Statute'),
         ('License', 'License'),
         ('Other', 'Other')
     )
-    rightsbasis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
+    rights_basis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
+
+    def __unicode__(self):
+        return '{}: {}: {}'.format(self.organization, self.applies_to_type, self.rights_basis)
+
+    def get_rights_info_object(self):
+        if self.rights_basis == 'Copyright':
+            data = RightsStatementCopyright.objects.get(rights_statement=self.pk)
+        elif self.rights_basis == 'License':
+            data = RightsStatementLicense.objects.get(rights_statement=self.pk)
+        elif self.rights_basis == 'Statute':
+            data = RightsStatementStatute.objects.get(rights_statement=self.pk)
+        else:
+            data = RightsStatementOther.objects.get(rights_statement=self.pk)
+        return data
+
+    def get_rights_granted_objects(self):
+        return RightsStatementRightsGranted.objects.filter(rights_statement=self.pk)
+
+    def get_table_data(self):
+        data = {}
+        rights_info = self.get_rights_info_object()
+        data['notes'] = ', '.join([value for key, value in rights_info.__dict__.items() if '_note' in key.lower()])
+        return data
 
 class RightsStatementCopyright(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
+    rights_statement = models.ForeignKey(RightsStatement)
     PREMIS_COPYRIGHT_STATUSES = (
         ('copyrighted', 'copyrighted'),
         ('public domain', 'public domain'),
         ('unknown', 'unknown'),
     )
-    copyrightstatus = models.CharField(choices=PREMIS_COPYRIGHT_STATUSES, default='unknown', max_length=64)
-    copyrightjurisdiction = models.CharField(max_length=2)
-    copyrightexpirationperiod = models.PositiveSmallIntegerField()
-    copyrightstatusdeterminationdate = models.DateField(blank=True, null=True)
-    copyrightapplicablestartdate = models.DateField(blank=True, null=True)
-    copyrightapplicableenddate = models.DateField(blank=True, null=True)
-    copyrightenddateopen = models.BooleanField(default=False)
-    copyrightnote = models.TextField()
+    copyright_status = models.CharField(choices=PREMIS_COPYRIGHT_STATUSES, default='unknown', max_length=64)
+    copyright_jurisdiction = models.CharField(max_length=2)
+    copyright_period = models.PositiveSmallIntegerField()
+    copyright_status_determination_date = models.DateField(blank=True, null=True)
+    copyright_applicable_start_date = models.DateField(blank=True, null=True)
+    copyright_applicable_end_date = models.DateField(blank=True, null=True)
+    copyright_end_date_open = models.BooleanField(default=False)
+    copyright_note = models.TextField()
 
 class RightsStatementLicense(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
-    licenseterms = models.TextField(blank=True, null=True)
-    licenseapplicablestartdate = models.DateField(blank=True, null=True)
-    licenseapplicableenddate = models.DateField(blank=True, null=True)
-    licenseenddateopen = models.BooleanField(default=False)
-    licensenote = models.TextField()
+    rights_statement = models.ForeignKey(RightsStatement)
+    license_period = models.PositiveSmallIntegerField()
+    license_terms = models.TextField(blank=True, null=True)
+    license_applicable_start_date = models.DateField(blank=True, null=True)
+    license_applicable_end_date = models.DateField(blank=True, null=True)
+    license_end_date_open = models.BooleanField(default=False)
+    license_note = models.TextField()
 
 class RightsStatementRightsGranted(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
+    rights_statement = models.ForeignKey(RightsStatement)
+    rights_granted_period = models.PositiveSmallIntegerField()
     ACT_CHOICES = (
         ('publish', 'Publish'),
         ('disseminate', 'Disseminate'),
@@ -59,10 +85,10 @@ class RightsStatementRightsGranted(models.Model):
         ('delete', 'Delete'),
     )
     act = models.CharField(choices=ACT_CHOICES, max_length=64)
-    startdate = models.DateField(blank=True, null=True)
-    enddate = models.DateField(blank=True, null=True)
-    enddateopen = models.BooleanField(default=False)
-    rightsgrantednote = models.TextField()
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    end_date_open = models.BooleanField(default=False)
+    rights_granted_note = models.TextField()
     RESTRICTION_CHOICES = (
         ('allow', 'Allow'),
         ('disallow', 'Disallow'),
@@ -70,25 +96,29 @@ class RightsStatementRightsGranted(models.Model):
     )
     restriction = models.CharField(choices=RESTRICTION_CHOICES, max_length=64)
 
-class RightsStatementStatuteInformation(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
-    statutejurisdiction = models.CharField(max_length=2)
-    statutecitation = models.TextField()
-    statutedeterminationdate = models.DateField(blank=True, null=True)
-    statuteapplicablestartdate = models.DateField(blank=True, null=True)
-    statuteapplicableenddate = models.DateField(blank=True, null=True)
-    statuteenddateopen = models.BooleanField(default=False)
-    statutenote = models.TextField()
+    def __unicode__(self):
+        return '{}: {}'.format(self.act, self.restriction)
 
-class RightsStatementOtherRightsInformation(models.Model):
-    rightsstatement = models.ForeignKey(RightsStatement)
+class RightsStatementStatute(models.Model):
+    rights_statement = models.ForeignKey(RightsStatement)
+    statute_period = models.PositiveSmallIntegerField()
+    statute_jurisdiction = models.CharField(max_length=2)
+    statute_citation = models.TextField()
+    statute_determination_date = models.DateField(blank=True, null=True)
+    statute_applicable_start_date = models.DateField(blank=True, null=True)
+    statute_applicable_end_date = models.DateField(blank=True, null=True)
+    statute_end_date_open = models.BooleanField(default=False)
+    statute_note = models.TextField()
+
+class RightsStatementOther(models.Model):
+    rights_statement = models.ForeignKey(RightsStatement)
     OTHER_RIGHTS_BASIS_CHOICES = (
         ('Donor', 'Donor'),
         ('Policy', 'Policy'),
     )
-    otherrightsbasis = models.CharField(choices=OTHER_RIGHTS_BASIS_CHOICES, max_length=64)
-    donorembargoperiod = models.PositiveSmallIntegerField()
-    otherrightsapplicablestartdate = models.DateField(blank=True, null=True)
-    otherrightsapplicableenddate = models.DateField(blank=True, null=True)
-    otherrightsenddateopen = models.BooleanField(default=False)
-    otherrightsnote = models.TextField()
+    other_rights_basis = models.CharField(choices=OTHER_RIGHTS_BASIS_CHOICES, max_length=64)
+    other_rights_period = models.PositiveSmallIntegerField()
+    other_rights_applicable_start_date = models.DateField(blank=True, null=True)
+    other_rights_applicable_end_date = models.DateField(blank=True, null=True)
+    other_rights_end_date_open = models.BooleanField(default=False)
+    other_rights_note = models.TextField()

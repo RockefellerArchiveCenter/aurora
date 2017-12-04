@@ -93,7 +93,9 @@ class Organization(models.Model):
             arc_by_date[arc.created_time.date()].append(arc)
         return arc_by_date
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
+
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
 
@@ -128,7 +130,7 @@ class User(AbstractUser):
             self._password = raw_password
             return True
         return False
-        
+
 
     def save(self, *args, **kwargs):
 
@@ -260,6 +262,9 @@ class Archives(models.Model):
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
 
+    def __unicode__(self):
+        return '{}: {}'.format(self.pk, self.bag_or_failed_name())
+
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
 
@@ -295,7 +300,7 @@ class Archives(models.Model):
             'NORG','BFNM',
             'BTAR','BTAR2','BZIP','BZIP2',
             'BDIR','EXERR',
-            'GBERR', 'RBERR', 
+            'GBERR', 'RBERR',
             'MDERR', 'DTERR', 'FSERR',
             'VIRUS',
         ]
@@ -313,8 +318,6 @@ class Archives(models.Model):
 
         if 'BZIP2' in codes or 'BTAR2' in codes:
             errs.append('Transfer contained more than one top level directory')
-
-
 
         if self.additional_error_info:
             errs.append(self.additional_error_info)
