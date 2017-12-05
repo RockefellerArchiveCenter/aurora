@@ -11,16 +11,19 @@ class RightsForm(forms.ModelForm):
 		fields = ('applies_to_type', 'rights_basis')
 		labels = {
 			'rights_basis': 'Rights Basis',
-			'applies_to_type': 'Applies to Type'
+			'applies_to_type': 'Applies to Record Type(s)'
 		}
-        widgets = {
-			'applies_to_type': forms.widgets.CheckboxInput(attrs={'class': 'form-control',}),
-			'rights_basis': forms.widgets.TextInput(attrs={'class': 'form-control',}),}
+
+	def __init__(self, *args, **kwargs):
+		super(RightsForm, self).__init__(*args, **kwargs)
+		for field in iter(self.fields):
+			self.fields[field].widget.attrs.update({
+			'class': 'form-control'})
 
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementRightsGranted
-		fields = ('act', 'start_date', 'end_date', 'end_date_open', 'rights_granted_note')
+		fields = ('act', 'restriction', 'start_date', 'end_date', 'end_date_open', 'rights_granted_note')
 		labels = {
 			'act': 'Act',
 			'restriction': 'Restriction(s)',
@@ -35,10 +38,10 @@ class RightsGrantedForm(forms.ModelForm):
 			'end_date': "The ending date of the rights or restrictions granted",
 			'rights_granted_note': 'Note',}
 		widgets = {
-            'act': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'restriction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'start_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'end_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'act': forms.widgets.Select(attrs={'class': 'form-control'}),
+            'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
+            'start_date': forms.widgets.SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), attrs={'class': 'form-control'}),
+            'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
 			'rights_granted_note': forms.widgets.TextInput(attrs={'class': 'form-control', 'rows': 2}), }
 
 class RightsCopyrightForm(forms.ModelForm):

@@ -12,16 +12,16 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
-            {{ basis_form.as_p }}
-            <div id='copyright_formset'>
+            {% include 'rights/form_fields.html' with form=basis_form %}
+            <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
               {% for form in copyright_form %}
-                  {{ form.as_p }}
+                {% include 'rights/form_fields.html' %}
               {% endfor %}
               <div class="well">
                 {% for form in granted_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
                 {% endfor %}
               </div>
             </div>
@@ -29,11 +29,11 @@
               {{ license_form.management_form }}
               {{ license_form.non_form_errors }}
               {% for form in license_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
               {% endfor %}
               <div class="well">
                 {% for form in granted_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
                 {% endfor %}
               </div>
             </div>
@@ -41,11 +41,11 @@
               {{ statute_form.management_form }}
               {{ statute_form.non_form_errors }}
               {% for form in statute_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
               {% endfor %}
               <div class="well">
                 {% for form in granted_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
                 {% endfor %}
               </div>
             </div>
@@ -53,11 +53,11 @@
               {{ other_form.management_form }}
               {{ other_form.non_form_errors }}
               {% for form in other_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
               {% endfor %}
               <div class="well">
                 {% for form in granted_form %}
-                  {{ form.as_p }}
+                  {% include 'rights/form_fields.html' %}
                 {% endfor %}
               </div>
             </div>
