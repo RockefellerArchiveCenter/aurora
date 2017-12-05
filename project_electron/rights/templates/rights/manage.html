@@ -78,7 +78,7 @@
 <script type="text/javascript">
   // logic to show appropriate subform
   function revealSelectedBasis() {
-    var basis = $('#id_rightsbasis').val()
+    var basis = $('#id_rights_basis').val()
     var formsets = {
         'Copyright': 'copyright_formset',
         'Statute':   'statute_formset',
@@ -88,9 +88,6 @@
 
     // hide all formsets except basis
     for (var key in formsets) {
-      console.log(key)
-      console.log(basis)
-      console.log(formsets[key])
       if (key != basis && formsets[key]) {
         $('#' + formsets[key]).hide();
       }
@@ -106,7 +103,7 @@
 
   $(document).ready(function() {
     // active formset changer
-    $('#id_rightsbasis').change(revealSelectedBasis);
+    $('#id_rights_basis').change(revealSelectedBasis);
     revealSelectedBasis();
   });
 </script>
