@@ -72,7 +72,7 @@ class RightsCopyrightForm(forms.ModelForm):
 class RightsStatuteForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementStatute
-		fields = ('statute_jurisdiction', 'statute_citation', 'statute_determination_date', 'statute_applicable_start_date', 'statute_applicable_end_date', 'statute_end_date_open', 'statute_note')
+		fields = ('statute_jurisdiction', 'statute_citation', 'statute_determination_date', 'statute_applicable_start_date', 'statute_applicable_end_date', 'statute_period', 'statute_end_date_open', 'statute_note')
 		labels = {
 			'statute_jurisdiction': 'Statute Jurisdiction',
             'statute_citation': 'Statute Citation',
@@ -98,7 +98,7 @@ class RightsStatuteForm(forms.ModelForm):
 class RightsOtherRightsForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementOther
-		fields = ('other_rights_basis', 'other_rights_applicable_start_date', 'other_rights_applicable_end_date', 'other_rights_end_date_open', 'other_rights_note')
+		fields = ('other_rights_basis', 'other_rights_applicable_start_date', 'other_rights_applicable_end_date', 'other_rights_period', 'other_rights_end_date_open', 'other_rights_note')
 		labels = {
 			'other_rights_basis': 'Other Rights Basis',
 			'other_rights_applicable_start_date': 'Start Date',
@@ -119,7 +119,7 @@ class RightsOtherRightsForm(forms.ModelForm):
 class RightsLicenseForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementLicense
-		fields = ('license_terms', 'license_applicable_start_date', 'license_applicable_end_date', 'license_end_date_open', 'license_note')
+		fields = ('license_terms', 'license_applicable_start_date', 'license_applicable_end_date', 'license_end_date_open', 'license_period', 'license_note')
 		labels = {
 			'license_terms': 'Licence Terms',
             'license_applicable_start_date': 'Start Date',

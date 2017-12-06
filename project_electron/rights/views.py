@@ -21,7 +21,6 @@ class RightsCreateView(RACAdminMixin, CreateView):
         context['license_form'] = LicenseFormSet()
         context['statute_form'] = StatuteFormSet()
         context['other_form'] = OtherFormSet()
-        context['granted_form'] = RightsGrantedFormSet()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -44,9 +43,12 @@ class RightsCreateView(RACAdminMixin, CreateView):
             formset_key = 'other_form'
         if formset.is_valid():
             formset.save()
+            # return redirect('rights-detail', self.kwargs.get('pk'), rights_form.pk )
+            return render(request,'rights/manage.html', {'saved_formset': formset, 'granted_form': RightsGrantedForm()})
         else:
+            rights_statement.delete()
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
-        return redirect('rights-detail', self.kwargs.get('pk'), rights_form.pk )
+
 
 class RightsDetailView(DetailView):
     template_name = 'rights/detail.html'

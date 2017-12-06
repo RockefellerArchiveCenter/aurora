@@ -12,6 +12,14 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
+            {% if saved_formset %}
+            {% for form in saved_formset %}
+              {% for field in form %}
+                <p>{{field.label}}: {{ field.value }}</p>
+              {% endfor %}
+            {% endfor %}
+            {% endif %}
+
             {{ basis_form }}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
@@ -19,11 +27,6 @@
               {% for form in copyright_form %}
                 {% include 'rights/form_fields.html' %}
               {% endfor %}
-              <!-- <div class="well">
-                {% for form in granted_form %}
-                  {% include 'rights/form_fields.html' %}
-                {% endfor %}
-              </div> -->
             </div>
             <div id='license_formset'>
               {{ license_form.management_form }}
@@ -31,11 +34,6 @@
               {% for form in license_form %}
                   {% include 'rights/form_fields.html' %}
               {% endfor %}
-              <!-- <div class="well">
-                {% for form in granted_form %}
-                  {% include 'rights/form_fields.html' %}
-                {% endfor %}
-              </div> -->
             </div>
             <div id='statute_formset'>
               {{ statute_form.management_form }}
@@ -43,11 +41,6 @@
               {% for form in statute_form %}
                   {% include 'rights/form_fields.html' %}
               {% endfor %}
-              <!-- <div class="well">
-                {% for form in granted_form %}
-                  {% include 'rights/form_fields.html' %}
-                {% endfor %}
-              </div> -->
             </div>
             <div id='other_formset'>
               {{ other_form.management_form }}
@@ -55,11 +48,12 @@
               {% for form in other_form %}
                   {% include 'rights/form_fields.html' %}
               {% endfor %}
-              <!-- <div class="well">
-                {% for form in granted_form %}
-                  {% include 'rights/form_fields.html' %}
-                {% endfor %}
-              </div> -->
+            </div>
+            <div id='granted_formset' class="well">
+              <!-- {{ granted_form }} -->
+              <!-- {% for form in granted_form %} -->
+                {% include 'rights/form_fields.html' with form=granted_form %}
+              <!-- {% endfor %} -->
             </div>
           </div>
           <div class="box-footer">
