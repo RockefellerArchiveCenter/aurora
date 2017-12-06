@@ -4,6 +4,7 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.forms.models import inlineformset_factory
 
 from rights.models import *
+from orgs.models import Organization
 
 class RightsForm(forms.ModelForm):
 	class Meta:
@@ -13,12 +14,10 @@ class RightsForm(forms.ModelForm):
 			'rights_basis': 'Rights Basis',
 			'applies_to_type': 'Applies to Record Type(s)'
 		}
-
-	def __init__(self, *args, **kwargs):
-		super(RightsForm, self).__init__(*args, **kwargs)
-		for field in iter(self.fields):
-			self.fields[field].widget.attrs.update({
-			'class': 'form-control'})
+		widgets = {
+			'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
+			'applies_to_type': forms.widgets.Select(attrs={'class': 'form-control'}),
+		}
 
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:
