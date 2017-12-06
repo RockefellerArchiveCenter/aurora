@@ -7,7 +7,7 @@ from rights.models import *
 from rights.forms import *
 from orgs.authmixins import *
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 
 class RightsCreateView(RACAdminMixin, CreateView):
     template_name = 'rights/manage.html'
@@ -29,6 +29,23 @@ class RightsCreateView(RACAdminMixin, CreateView):
         rights_form = form.save(commit=False)
         rights_form.organization = Organization.objects.get(pk=self.kwargs.get('pk'))
         rights_form.save()
+        rights_statement = RightsStatement.objects.get(pk=rights_form.pk)
+        if rights_statement.rights_basis == 'Copyright':
+            formset = CopyrightFormSet(request.POST, instance=rights_statement)
+            formset_key = 'copyright_form'
+        elif rights_statement.rights_basis == 'License':
+            formset = LicenseFormSet(request.POST, instance=rights_statement)
+            formset_key = 'license_form'
+        elif rights_statement.rights_basis == 'Statute':
+            formset = StatuteFormSet(request.POST, instance=rights_statement)
+            formset_key = 'statute_form'
+        else:
+            formset = OtherFormSet(request.POST, instance=rights_statement)
+            formset_key = 'other_form'
+        if formset.is_valid():
+            formset.save()
+        else:
+            return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
         return redirect('rights-detail', self.kwargs.get('pk'), rights_form.pk )
 
 class RightsDetailView(DetailView):

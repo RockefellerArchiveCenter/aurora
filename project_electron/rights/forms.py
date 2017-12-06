@@ -46,7 +46,7 @@ class RightsGrantedForm(forms.ModelForm):
 class RightsCopyrightForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementCopyright
-		fields = ('copyright_status', 'copyright_jurisdiction', 'copyright_status_determination_date', 'copyright_applicable_start_date', 'copyright_applicable_end_date', 'copyright_end_date_open', 'copyright_note')
+		fields = ('copyright_status', 'copyright_jurisdiction', 'copyright_status_determination_date', 'copyright_applicable_start_date', 'copyright_applicable_end_date', 'copyright_period', 'copyright_end_date_open', 'copyright_note')
 		labels = {
 			'copyright_status': 'Copyright Status',
 			'copyright_jurisdiction': 'Copyright Jurisdiction',
