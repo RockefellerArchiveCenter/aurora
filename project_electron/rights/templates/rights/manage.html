@@ -1,6 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}{{page_title}}{% endblock %}
+{% block h1_title %}{{organization}} <small>PREMIS Rights Statement</small>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -12,7 +12,7 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
-            {{basis_form}}
+            {% include 'rights/form_fields.html' with form=basis_form %}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
@@ -42,8 +42,9 @@
               {% endfor %}
             </div>
             {% if granted_formset %}
-            <h3>Rights Statement</h3>
-            <p>Rights Statement/basis info would go here</p>
+            <h3>Rights Basis</h3>
+            <p>{% include 'rights/rights_basis_info.html' with object=rights_statement %}</p>
+            <h3>Rights Granted or Restricted</h3>
             <div id='granted_formset' class="well">
               {{ granted_formset.management_form }}
               {% for form in granted_formset %}
