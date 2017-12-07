@@ -12,15 +12,7 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
-            {% if saved_formset %}
-            {% for form in saved_formset %}
-              {% for field in form %}
-                <p>{{field.label}}: {{ field.value }}</p>
-              {% endfor %}
-            {% endfor %}
-            {% endif %}
-
-            {{ basis_form }}
+            {{basis_form}}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
@@ -49,12 +41,16 @@
                   {% include 'rights/form_fields.html' %}
               {% endfor %}
             </div>
+            {% if granted_formset %}
+            <h3>Rights Statement</h3>
+            <p>Rights Statement/basis info would go here</p>
             <div id='granted_formset' class="well">
-              <!-- {{ granted_form }} -->
-              <!-- {% for form in granted_form %} -->
-                {% include 'rights/form_fields.html' with form=granted_form %}
-              <!-- {% endfor %} -->
+              {{ granted_formset.management_form }}
+              {% for form in granted_formset %}
+                {% include 'rights/form_fields.html' %}
+              {% endfor %}
             </div>
+            {% endif %}
           </div>
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>

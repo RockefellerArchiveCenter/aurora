@@ -22,7 +22,7 @@ class RightsForm(forms.ModelForm):
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementRightsGranted
-		fields = ('act', 'restriction', 'start_date', 'end_date', 'end_date_open', 'rights_granted_note')
+		fields = ('act', 'restriction', 'start_date', 'end_date', 'rights_granted_period', 'end_date_open', 'rights_granted_note')
 		labels = {
 			'act': 'Act',
 			'restriction': 'Restriction(s)',
@@ -39,7 +39,7 @@ class RightsGrantedForm(forms.ModelForm):
 		widgets = {
             'act': forms.widgets.Select(attrs={'class': 'form-control'}),
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
-            'start_date': forms.widgets.SelectDateWidget(empty_label=("Choose Year", "Choose Month", "Choose Day"), attrs={'class': 'form-control'}),
+            'start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
             'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
 			'rights_granted_note': forms.widgets.TextInput(attrs={'class': 'form-control', 'rows': 2}), }
 
