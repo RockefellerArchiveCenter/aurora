@@ -9,13 +9,13 @@ from orgs.authmixins import *
 
 from django.shortcuts import render, redirect, render_to_response
 
-class RightsCreateView(RACAdminMixin, CreateView):
+class RightsManageView(RACAdminMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
 
     def get_context_data(self, *args, **kwargs):
-        context = super(RightsCreateView, self).get_context_data(**kwargs)
+        context = super(RightsManageView, self).get_context_data(**kwargs)
         context['basis_form'] = RightsForm()
         context['copyright_form'] = CopyrightFormSet()
         context['license_form'] = LicenseFormSet()
@@ -27,34 +27,32 @@ class RightsCreateView(RACAdminMixin, CreateView):
         form = RightsForm(request.POST)
         rights_form = form.save(commit=False)
         rights_form.organization = Organization.objects.get(pk=self.kwargs.get('pk'))
-        rights_form.save()
-        rights_statement = RightsStatement.objects.get(pk=rights_form.pk)
-        if rights_statement.rights_basis == 'Copyright':
-            formset = CopyrightFormSet(request.POST, instance=rights_statement)
+        if rights_form.rights_basis == 'Copyright':
+            formset = CopyrightFormSet(request.POST, instance=rights_form)
             formset_key = 'copyright_form'
-        elif rights_statement.rights_basis == 'License':
-            formset = LicenseFormSet(request.POST, instance=rights_statement)
+        elif rights_form.rights_basis == 'License':
+            formset = LicenseFormSet(request.POST, instance=rights_form)
             formset_key = 'license_form'
-        elif rights_statement.rights_basis == 'Statute':
-            formset = StatuteFormSet(request.POST, instance=rights_statement)
+        elif rights_form.rights_basis == 'Statute':
+            formset = StatuteFormSet(request.POST, instance=rights_form)
             formset_key = 'statute_form'
         else:
-            formset = OtherFormSet(request.POST, instance=rights_statement)
+            formset = OtherFormSet(request.POST, instance=rights_form)
             formset_key = 'other_form'
         if formset.is_valid():
+            rights_form.save()
             formset.save()
             return redirect('rights-grants', self.kwargs.get('pk'), rights_form.pk)
         else:
-            rights_statement.delete()
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
 
-class RightsGrantsCreateView(RACAdminMixin, CreateView):
+class RightsGrantsManageView(RACAdminMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
 
     def get_context_data(self, *args, **kwargs):
-        context = super(RightsGrantsCreateView, self).get_context_data(**kwargs)
+        context = super(RightsGrantsManageView, self).get_context_data(**kwargs)
         context['granted_formset'] = RightsGrantedFormSet()
         return context
 
