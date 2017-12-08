@@ -1,6 +1,6 @@
 {% for field in form.visible_fields %}
 <div class="form-group {% if field.errors %}has-error{% endif %}">
-  <label for="{{field.id}}">{{field.label}}</label>
+  <label for="{{field.id}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
   {{ field }}
   {% if field.help_text %}
   <p class="help-block">{{field.help_text}}</p>
