@@ -9,8 +9,10 @@
     <dt>Applicable Dates</dt>
     {% if rights_basis_info.copyright_applicable_start_date and rights_basis_info.copyright_applicable_end_date %}
     <dd>{{ rights_basis_info.copyright_applicable_start_date }} - {{ rights_basis_info.copyright_applicable_end_date }}</dd>
+    {% elif rights_basis_info.copyright_start_date_period %}
+    <dd>{{ rights_basis_info.copyright_start_date_period }} years after start date</dd>
     {% else %}
-    <dd>{{ rights_basis_info.copyright_period }} years after date of creation</dd>
+    <dd>{{ rights_basis_info.copyright_end_date_period }} years after end date</dd>
     {% endif %}
     <dt>Open End Date?</dt>
     <dd>{{ rights_basis_info.copyright_end_date_open }}</dd>
