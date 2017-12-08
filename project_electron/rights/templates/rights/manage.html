@@ -47,6 +47,7 @@
             <h3>Rights Granted or Restricted</h3>
             <div id='granted_formset' class="well">
               {{ granted_formset.management_form }}
+              {{ granted_formset.non_form_errors }}
               {% for form in granted_formset %}
                 {% include 'rights/form_fields.html' %}
               {% endfor %}
@@ -55,6 +56,7 @@
           </div>
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>
+            <a type="reset" class="btn btn-danger" href="{% url 'app_home' %}">Cancel</a>
           </div>
         </form>
       </div>
