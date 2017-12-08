@@ -45,13 +45,23 @@
             {% if granted_formset %}
             <p>{% include 'rights/rights_basis_info.html' with object=rights_statement %}</p>
             <h3>Rights Granted or Restricted</h3>
-            <div id='granted_formset' class="well">
-              {{ granted_formset.management_form }}
               {{ granted_formset.non_form_errors }}
+              {{ granted_formset.management_form }}
               {% for form in granted_formset %}
-                {% include 'rights/form_fields.html' %}
-              {% endfor %}
-            </div>
+                <div id="{{ form.prefix }}-row" class="dynamic-form">
+                  <div id='granted_formset' class="well">
+                    <div class="row{% if forloop.first %} hidden{% endif %}">
+                      <div class="col-xs-12">
+                        <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
+                      </div>
+                    </div>
+        	        {% include 'rights/form_fields.html' %}
+                </div>
+              </div>
+        	    {% endfor %}
+              <div>
+      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default pull-right"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
+      	       </div>
             {% endif %}
           </div>
           <div class="box-footer">
@@ -93,11 +103,57 @@
 
   }
 
+  function updateElementIndex(el, prefix, ndx) {
+    console.log(el)
+		var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    console.log(id_regex)
+		var replacement = prefix + '-' + ndx;
+    console.log(replacement)
+		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+		if (el.id) el.id = el.id.replace(id_regex, replacement);
+		if (el.name) el.name = el.name.replace(id_regex, replacement);
+	}
+
+  function addForm(btn, prefix) {
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    var row = $('.dynamic-form:first').clone(true).get(0);
+    $(row).removeAttr('id').insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
+    $(row).children().children().children().each(function() {
+	    updateElementIndex(this, prefix, formCount);
+	    $(this).val('');
+    });
+    $(row).find('.delete-row').click(function() {
+	    deleteForm(this, prefix);
+    });
+    $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+    return false;
+  }
+
+  function deleteForm(btn, prefix) {
+    $(btn).parents('.dynamic-form').remove();
+    var forms = $('.dynamic-form');
+    $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+    for (var i=0, formCount=forms.length; i<formCount; i++) {
+	    $(forms.get(i)).children().not(':last').children().each(function() {
+	        updateElementIndex(this, prefix, i);
+	    });
+    }
+    return false;
+  }
+
 
   $(document).ready(function() {
     // active formset changer
     $('#id_rights_basis').change(revealSelectedBasis);
     revealSelectedBasis();
+
+    $('.add-row').click(function() {
+	    return addForm(this, 'rightsstatementrightsgranted_set');
+    });
+    $('.delete-row').click(function() {
+	    return deleteForm(this, 'form');
+    })
+
   });
 </script>
 {% endblock %}
