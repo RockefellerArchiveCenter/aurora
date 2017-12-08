@@ -86,5 +86,13 @@ class RightsUpdateView(RACAdminMixin, UpdateView):
     model = RightsStatement
 
 class RightsDeleteView(RACAdminMixin, DeleteView):
-    template_name = 'rights/manage.html'
     model = RightsStatement
+    success_url = reverse_lazy('app_home')
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(RightsDeleteView, self).get_context_data(**kwargs)
+        context['object'] = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
+        context['meta_page_title'] = '{} PREMIS rights statement'.format(self.object.organization)
+        context['rights_basis_info'] = context['object'].get_rights_info_object
+        context['rights_granted_info'] = context['object'].get_rights_granted_objects
+        return context
