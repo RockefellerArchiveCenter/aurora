@@ -7,8 +7,9 @@
 
   <div class="col-md-12">
 
-    <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
+    <div class="box box-primary">
       <div class="box-header with-border">
+        <h3>Rights Basis</h3>
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
@@ -42,7 +43,6 @@
               {% endfor %}
             </div>
             {% if granted_formset %}
-            <h3>Rights Basis</h3>
             <p>{% include 'rights/rights_basis_info.html' with object=rights_statement %}</p>
             <h3>Rights Granted or Restricted</h3>
             <div id='granted_formset' class="well">

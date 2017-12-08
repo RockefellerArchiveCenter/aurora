@@ -36,8 +36,7 @@ class RightsGrantedForm(forms.ModelForm):
 			'act': "The action the preservation repository is allowed to take; eg replicate, migrate, modify, use, disseminate, delete",
 			'restriction': 'Restriction(s)',
 			'start_date': "The beginning date of the rights or restrictions granted",
-			'end_date': "The ending date of the rights or restrictions granted",
-			'rights_granted_note': 'Note',}
+			'end_date': "The ending date of the rights or restrictions granted",}
 		widgets = {
             'act': forms.widgets.Select(attrs={'class': 'form-control'}),
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
@@ -45,7 +44,7 @@ class RightsGrantedForm(forms.ModelForm):
             'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
 			'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'rights_granted_note': forms.widgets.TextInput(attrs={'class': 'form-control', 'rows': 3}), }
+			'rights_granted_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsCopyrightForm(forms.ModelForm):
 	class Meta:
