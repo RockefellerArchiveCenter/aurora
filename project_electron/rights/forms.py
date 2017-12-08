@@ -36,7 +36,9 @@ class RightsGrantedForm(forms.ModelForm):
 			'act': "The action the preservation repository is allowed to take; eg replicate, migrate, modify, use, disseminate, delete",
 			'restriction': 'Restriction(s)',
 			'start_date': "The beginning date of the rights or restrictions granted",
-			'end_date': "The ending date of the rights or restrictions granted",}
+			'end_date': "The ending date of the rights or restrictions granted",
+			'start_date_period': "The number of years after the start date for which this grant or restriction applies. Will be used to calculate date ranges based on dates for each transfer",
+            'end_date_period': "The number of years after the end date for which this grant or restriction applies. Will be used to calculate date ranges based on dates for each transfer",}
 		widgets = {
             'act': forms.widgets.Select(attrs={'class': 'form-control'}),
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
@@ -65,7 +67,9 @@ class RightsCopyrightForm(forms.ModelForm):
 			'copyright_jurisdiction': "The country whose copyright laws apply [ISO 3166]",
 			'copyright_status_determination_date': "The date that the copyright status recorded in 'copyright status' was determined.",
 			'copyright_applicable_start_date': "The date when the particular copyright applies or is applied to the content.",
-			'copyright_applicable_end_date': "The date when the particular copyright no longer applies or is applied to the content.",}
+			'copyright_applicable_end_date': "The date when the particular copyright no longer applies or is applied to the content.",
+			'copyright_start_date_period': "The number of years after the start date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",
+            'copyright_end_date_period': "The number of years after the end date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",}
 		widgets = {
             'copyright_status': forms.widgets.Select(attrs={'class': 'form-control'}),
             'copyright_jurisdiction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
@@ -95,7 +99,9 @@ class RightsStatuteForm(forms.ModelForm):
 			'statute_citation': "An identifying designation for the statute.",
 			'statute_determination_date': "The date that the determination was made that the statue authorized the permission(s) noted.",
 			'statute_applicable_start_date': "The date when the statute begins to apply or is applied to the content.",
-			'statute_applicable_end_date': "The date when the statute ceasees to apply or be applied to the content.",}
+			'statute_applicable_end_date': "The date when the statute ceasees to apply or be applied to the content.",
+			'statute_start_date_period': "The number of years after the start date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",
+            'statute_end_date_period': "The number of years after the end date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",}
 		widgets = {
             'statute_jurisdiction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_citation': forms.widgets.TextInput(attrs={'class': 'form-control'}),
@@ -122,7 +128,8 @@ class RightsOtherRightsForm(forms.ModelForm):
 			'other_rights_basis': "The designation of the basis for the other right or permission described in the rights statement identifier.",
             'other_rights_applicable_start_date': "The date when the other right applies or is applied to the content.",
             'other_rights_applicable_end_date': "The date when the other right no longer applies or is applied to the content.",
-		}
+			'other_rights_start_date_period': "The number of years after the start date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",
+            'other_rights_end_date_period': "The number of years after the end date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",}
 		widgets = {
             'other_rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
             'other_rights_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
@@ -149,7 +156,8 @@ class RightsLicenseForm(forms.ModelForm):
 			'license_terms': "Text describing the license or agreement by which permission as granted.",
             'license_applicable_start_date': "The date at which the license first applies or is applied to the content.",
             'license_applicable_end_date': "The end date at which the license no longer applies or is applied to the content.",
-		}
+			'license_start_date_period': "The number of years after the start date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",
+            'license_end_date_period': "The number of years after the end date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",}
 		widgets = {
             'license_terms': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
