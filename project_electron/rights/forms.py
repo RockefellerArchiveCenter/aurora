@@ -22,12 +22,14 @@ class RightsForm(forms.ModelForm):
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementRightsGranted
-		fields = ('act', 'restriction', 'start_date', 'end_date', 'rights_granted_period', 'end_date_open', 'rights_granted_note')
+		fields = ('act', 'restriction', 'start_date', 'end_date', 'start_date_period', 'end_date_period', 'end_date_open', 'rights_granted_note')
 		labels = {
 			'act': 'Act',
 			'restriction': 'Restriction(s)',
 			'start_date': 'Start Date',
 			'end_date': 'End Date',
+			'start_date_period': 'Start Date Period',
+			'end_date_period': 'End Date Period',
 			'end_date_open': 'Open end date?',
 			'rights_granted_note': 'Note',}
 		help_texts = {
@@ -41,18 +43,22 @@ class RightsGrantedForm(forms.ModelForm):
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
             'start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
             'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-			'rights_granted_note': forms.widgets.TextInput(attrs={'class': 'form-control', 'rows': 2}), }
+			'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+			'rights_granted_note': forms.widgets.TextInput(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsCopyrightForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementCopyright
-		fields = ('copyright_status', 'copyright_jurisdiction', 'copyright_status_determination_date', 'copyright_applicable_start_date', 'copyright_applicable_end_date', 'copyright_period', 'copyright_end_date_open', 'copyright_note')
+		fields = ('copyright_status', 'copyright_jurisdiction', 'copyright_status_determination_date', 'copyright_applicable_start_date', 'copyright_applicable_end_date', 'copyright_start_date_period', 'copyright_end_date_period', 'copyright_end_date_open', 'copyright_note')
 		labels = {
 			'copyright_status': 'Copyright Status',
 			'copyright_jurisdiction': 'Copyright Jurisdiction',
 			'copyright_status_determination_date': 'Copyright Status Determination Date',
 			'copyright_applicable_start_date': 'Start Date',
 			'copyright_applicable_end_date': 'End Date',
+			'copyright_start_date_period': 'Start Date Period',
+			'copyright_end_date_period': 'End Date Period',
 			'copyright_end_date_open': 'Open end date?',
 			'copyright_note': 'Note',}
 		help_texts = {
@@ -67,18 +73,22 @@ class RightsCopyrightForm(forms.ModelForm):
             'copyright_status_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
             'copyright_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
             'copyright_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-			'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 2}), }
+			'copyright_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
+			'copyright_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
+			'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsStatuteForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementStatute
-		fields = ('statute_jurisdiction', 'statute_citation', 'statute_determination_date', 'statute_applicable_start_date', 'statute_applicable_end_date', 'statute_period', 'statute_end_date_open', 'statute_note')
+		fields = ('statute_jurisdiction', 'statute_citation', 'statute_determination_date', 'statute_applicable_start_date', 'statute_applicable_end_date', 'statute_start_date_period', 'statute_end_date_period', 'statute_end_date_open', 'statute_note')
 		labels = {
 			'statute_jurisdiction': 'Statute Jurisdiction',
             'statute_citation': 'Statute Citation',
             'statute_determination_date': 'Statute Determination Date',
             'statute_applicable_start_date': 'Start Date',
             'statute_applicable_end_date': 'End Date',
+			'statute_start_date_period': 'Start Date Period',
+            'statute_end_date_period': 'End Date Period',
 			'statute_end_date_open': 'Open end date?',
 			'statute_note': 'Note'}
 		help_texts = {
@@ -91,18 +101,22 @@ class RightsStatuteForm(forms.ModelForm):
             'statute_jurisdiction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_citation': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_determination_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'statute_applicable_start_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'statute_applicable_end_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 2}) }
+            'statute_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+            'statute_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+			'statute_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'statute_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+			'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}) }
 
 class RightsOtherRightsForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementOther
-		fields = ('other_rights_basis', 'other_rights_applicable_start_date', 'other_rights_applicable_end_date', 'other_rights_period', 'other_rights_end_date_open', 'other_rights_note')
+		fields = ('other_rights_basis', 'other_rights_applicable_start_date', 'other_rights_applicable_end_date', 'other_rights_start_date_period', 'other_rights_end_date_period', 'other_rights_end_date_open', 'other_rights_note')
 		labels = {
 			'other_rights_basis': 'Other Rights Basis',
 			'other_rights_applicable_start_date': 'Start Date',
 			'other_rights_applicable_end_date': 'End Date',
+			'other_rights_start_date_period': 'Start Date Period',
+			'other_rights_end_date_period': 'End Date Period',
 			'other_rights_end_date_open': 'Open end date?',
 			'other_rights_note': 'Note', }
 		help_texts = {
@@ -112,18 +126,23 @@ class RightsOtherRightsForm(forms.ModelForm):
 		}
 		widgets = {
             'other_rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
-            'other_rights_applicable_start_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'other_rights_applicable_end_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'other_rights_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 2}), }
+            'other_rights_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+            'other_rights_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+			'other_rights_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'other_rights_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+			'other_rights_end_date_open': forms.widgets.CheckboxInput(attrs={'class': 'form-control'}),
+			'other_rights_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsLicenseForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatementLicense
-		fields = ('license_terms', 'license_applicable_start_date', 'license_applicable_end_date', 'license_end_date_open', 'license_period', 'license_note')
+		fields = ('license_terms', 'license_applicable_start_date', 'license_applicable_end_date', 'license_start_date_period', 'license_end_date_period', 'license_end_date_open', 'license_note')
 		labels = {
 			'license_terms': 'Licence Terms',
             'license_applicable_start_date': 'Start Date',
             'license_applicable_end_date': 'End Date',
+			'license_start_date': 'Start Date Period',
+            'license_end_date': 'End Date Period',
 			'license_end_date_open': 'Open end date?',
 			'license_note': 'Note',
 		}
@@ -134,9 +153,11 @@ class RightsLicenseForm(forms.ModelForm):
 		}
 		widgets = {
             'license_terms': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'license_applicable_start_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'license_applicable_end_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 2}), }
+            'license_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+            'license_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+			'license_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'license_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+			'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 # create inline formsets for child elements
 CopyrightFormSet = inlineformset_factory(
