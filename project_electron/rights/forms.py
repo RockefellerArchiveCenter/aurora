@@ -171,6 +171,7 @@ CopyrightFormSet = inlineformset_factory(
 	RightsStatement,
 	RightsStatementCopyright,
 	extra=1,
+	max_num=1,
 	can_delete=False,
 	form=RightsCopyrightForm
 )
@@ -179,6 +180,7 @@ StatuteFormSet = inlineformset_factory(
 	RightsStatement,
 	RightsStatementStatute,
 	extra=1,
+	max_num=1,
 	can_delete=False,
 	form=RightsStatuteForm
 )
@@ -187,6 +189,7 @@ LicenseFormSet = inlineformset_factory(
 	RightsStatement,
 	RightsStatementLicense,
 	extra=1,
+	max_num=1,
 	can_delete=False,
 	form=RightsLicenseForm
 )
@@ -195,6 +198,7 @@ OtherFormSet = inlineformset_factory(
 	RightsStatement,
 	RightsStatementOther,
 	extra=1,
+	max_num=1,
 	can_delete=False,
 	form=RightsOtherRightsForm
 )
@@ -203,6 +207,7 @@ RightsGrantedFormSet = inlineformset_factory(
 	RightsStatement,
 	RightsStatementRightsGranted,
 	extra=1,
+	max_num=1,
 	can_delete=False,
 	form=RightsGrantedForm
 )

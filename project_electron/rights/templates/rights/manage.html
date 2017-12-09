@@ -13,7 +13,11 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
+            {{ basis_form.management_form }}
             {% include 'rights/form_fields.html' with form=basis_form %}
+            {% for field in basis_form.hidden_fields %}
+              {{field}}
+            {% endfor %}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
