@@ -1,16 +1,19 @@
 <div class="modal-dialog">
   <div class="modal-content">
-    <form id="appraisal-note-form" method='post' class="form" role="form" action='{% url 'appraise-note' object.id %}'>
+    <form id="appraisal-note-form" method='get' class="form" role="form" action='.' >
+      <input type="hidden" name="upload_id" class="upload_id" />
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">{% if object.appraisal_note %}Edit{% else %}Add{% endif %} appraisal note for {{ object.bag_it_name }}</h4>
+        <h4 class="modal-title">
+          <span class="add-or-edit-label">Add</span> appraisal note for <span class="bag-name"></span>
+        </h4>
       </div>
       <div class="modal-body">
-        {% csrf_token %}
-        {% for field in form %}
-          {{ field }}
-        {% endfor %}
+        <div class="form-group">
+          <label for="appraisal_note">Appraisal Note</label>
+          <textarea class="form-control appraisal_note" id="appraisal_note" rows="5"></textarea>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
