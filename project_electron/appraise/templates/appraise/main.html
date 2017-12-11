@@ -24,18 +24,18 @@
 
 					<tbody>
 					{% for upload in uploads %}
-						<tr>
+						<tr class="upload-row" rel="{{ upload.pk }}">
               <td><a href="{% url 'transfer-detail' upload.pk %}" class="bag-name">{{ upload.bag_or_failed_name }}</a></td>
               <td>{{ upload.source_organization }}</td>
 							<td>{{ upload.record_creator }}</td>
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
-                <button type="button" class="btn btn-xs btn-danger">
-                    Reject
-                </button>
-                <a type="button" class="btn btn-xs btn-primary">
-                    Accept
+                <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
+                  Accept
+                </a>
+                <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">
+                  Reject
                 </a>
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
                     {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
@@ -61,9 +61,10 @@
 <script type="text/javascript">
 var amodal = $("#modal-appraisal-note");
 var url = '{% url 'appraise-main' %}';
+var appraise_table = '';
 
   $(function () {
-    $('#appraise_table').DataTable({
+    appraise_table = $('#appraise_table').DataTable({
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
@@ -128,6 +129,34 @@ var url = '{% url 'appraise-main' %}';
 
       return false;
     });
+
+    $('.appraisal-accept, .appraisal-reject').click(function(e){
+      e.preventDefault();
+      var upload_row = $(this).closest('.upload-row');
+      var upload_id = upload_row.attr('rel');
+      var appraisal_decision = 0; // reject
+      if ($(this).hasClass('appraisal-accept')){
+        appraisal_decision = 1; //accept
+      }
+      var data = {
+        'req_form': 'appraise',
+        'req_type': 'decision',
+        'upload_id': upload_id,
+        'appraisal_decision': appraisal_decision
+      }
+
+      $.get(url, data, function(resp){
+        if (resp.success){
+          // remove row
+          appraise_table.row( upload_row ).remove().draw();
+
+        } else {
+          alert('Something went wrong.. Please try again..');
+        }
+      });
+
+    });
+
   })
 
 var activateModal = function(uid,label,bag_name,appraisal_note){
