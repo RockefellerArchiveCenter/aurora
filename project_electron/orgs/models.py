@@ -396,27 +396,6 @@ class Archives(models.Model):
 
         return values
 
-    @classmethod
-    def reject_transfer(cls, self):
-        try:
-            self.process_status = 60
-            self.save()
-            # send email
-            return True
-        except Exception as e:
-            print e
-            return False
-
-    @classmethod
-    def accept_transfer(cls, self):
-        try:
-            self.process_status = 70
-            self.save()
-            return True
-        except Exception as e:
-            print e
-            return False
-
     class Meta:
         ordering = ['machine_file_upload_time']
 
