@@ -14,12 +14,6 @@ from appraise.form import AppraisalNoteUpdateForm
 class AppraiseView(RACUserMixin, View):
     template_name = "appraise/main.html"
 
-    # def get_context_data(self, **kwargs):
-    #     context = super(TemplateView, self).get_context_data(**kwargs)
-    #     context['meta_page_title'] = 'Appraisal Queue'
-    #     context['uploads'] = Archives.objects.filter(process_status=40, organization = self.request.user.organization).order_by('created_time')
-    #     return context
-
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             rdata = {}
@@ -53,13 +47,3 @@ class AppraiseView(RACUserMixin, View):
         data = json.dumps(context)
         response_kwargs['content_type'] = 'application/json'
         return HttpResponse(data, **response_kwargs)
-
-
-class AppraisalNoteUpdateView(UpdateView):
-    model = Archives
-    form_class = AppraisalNoteUpdateForm
-    template_name = 'appraise/edit_note.html'
-
-    def form_valid(self, form):
-        form.save()
-        return redirect('appraise-main')
