@@ -18,12 +18,18 @@
 				<h3 class="box-title">Metadata</h3>
 			</div>
 			<div class="box-body">
+				{% if object.get_bag_data %}
 				<dl class="dl-horizontal">
-					<dt>Key</dt>
-					<dd>Value</dd>
-					<dt>Key</dt>
-					<dd>Value</dd>
+					{% for k,v in object.get_bag_data.items %}
+						{% if v != '' %}
+							<dt>{{k}}</dt>
+							<dd>{{v}}</dd>
+						{% endif %}
+					{% endfor %}
 				</dl>
+				{% else %}
+				<p>No metadata available</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -57,6 +63,8 @@
 				<h3 class="box-title">Error Messages</h3>
 			</div>
 			<div class="box-body">
+
+				{% if object.get_errors %}
 				<table>
 					<thead>
 						<tr>
@@ -65,11 +73,39 @@
 							<th>Result</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for err in object.get_errors %}
+						<tr>
+							<td>{{ err.created_time }}</td>
+							<td>{{ err.code.code_desc }}</td>
+							<td></td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
+				{% else %}
+				<p>No errors</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
 </div>
+
+
+{% if object.additional_error_info %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-danger">
+			<div class="box-header with-border">
+				<h3 class="box-title">Additional Error Info</h3>
+			</div>
+			<div class="box-body">
+				<p>{{ object.additional_error_info }}</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
 
 <div class="row">
 	<div class="col-md-12">
@@ -85,6 +121,14 @@
 							<th>Message</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for tlog in object.get_transfer_logs %}
+						<tr>
+							<td>{{ tlog.created_time }}</td>
+							<td>{{ tlog.code.code_desc }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 		</div>

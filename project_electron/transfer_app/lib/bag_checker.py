@@ -7,7 +7,7 @@ from pycountry import languages
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
-from orgs.models import BAGLog
+from orgs.models import BAGLog, Archives
 
 
 
@@ -24,6 +24,7 @@ class bagChecker():
         self.ecode = ''
         self.bag = {}
         self.bag_info_data = []
+        self.bag_exception = ''
 
 
 
@@ -44,36 +45,75 @@ class bagChecker():
         return True
 
     def _is_generic_bag(self):
-        is_bag = {}
         try:
             self.bag = bagit.Bag(self.archive_path)
-            is_bag = self.bag.is_valid()
-            self._retrieve_bag_info_key_val() # run now to prevent multiple calls below
+            self.bag.validate()
 
         except Exception as e:
             print e
-        return is_bag
+            self.bag_exception = e
+            return False
+        else:
+            self._retrieve_bag_info_key_val() # run now to prevent multiple calls below
+            return True
 
     def _is_rac_bag(self):
         """Assumes a valid bag/bag info; returns true if passes rac profile"""
 
         if not 'BagIt_Profile_Identifier' in self.bag_info_data:
-            print 'No BagIt Profile to validate against'
+            self.bag_exception = 'No BagIt Profile to validate against'
             return False
         else:
 
             if self.bag_info_data['BagIt_Profile_Identifier'] != self.RAC_profile_identifier:
-                print "Bag Identifier is not RAC version"
+                self.bag_exception = "Bag Identifier is not RAC version"
                 return False
 
-            profile = bagit_profile.Profile(self.bag_info_data['BagIt_Profile_Identifier'])
+            try:
+                profile = bagit_profile.Profile(self.bag_info_data['BagIt_Profile_Identifier'])
 
-            if profile.validate(self.bag):
+            except Exception as e:
+                self.bag_exception = e
+            else:
+
+                # RE IMPLEMENTING  validate() SINCE VALIDATION MESSAGES ARE PRINTED
+                # https://github.com/ruebot/bagit-profiles-validator/blob/master/bagit_profile.py
+                # line 76
+
+                try:
+                    profile.validate_bag_info(self.bag)
+                except Exception as e:
+                    print e
+                    self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_manifests_required(self.bag)
+                except Exception as e:
+                    self.bag_exception = "Required manifests not found: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_tag_manifests_required(self.bag)
+                except Exception as e:
+                    self.bag_exception = "Required tag manifests not found: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_tag_files_required(self.bag)
+                except Exception as e:
+                    self.bag_exception = "Required tag files not found: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_allow_fetch(self.bag)
+                except Exception as e:
+                    self.bag_exception = "fetch.txt is present but is not allowed: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_accept_bagit_version(self.bag)
+                except Exception as e:
+                    self.bag_exception = "Required BagIt version not found: {}".format(e.value)
+                    return False
+
                 print "Bag valid according to RAC profile"
                 return True
-            else:
-                print "Bag invalid according to RAC profile"
-                return False
 
         return False
 
@@ -81,6 +121,7 @@ class bagChecker():
         """Assumes a valid bag/bag info; returns true if all datatypes in bag pass"""
         dates = []
         langz = []
+
 
         for k,v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:
@@ -92,16 +133,18 @@ class bagChecker():
             for date in dates:
                 try:
                     iso8601.parse_date(date)
-                except:
-                    print "invalid date: '{}'".format(date)
+                except Exception as e:
+                    print e
+                    self.bag_exception = e
                     return False
 
         if langz:
             for language in langz:
                 try:
                     languages.lookup(language)
-                except:
-                    print "invalid language code: '{}'".format(language)
+                except Exception as e:
+                    print e
+                    self.bag_exception = e
                     return False
         return True
 
@@ -112,13 +155,13 @@ class bagChecker():
 
         if not isfile(metadata_file):
             print 'no metadata file'
+            return True
         else:
             try:
                 return json.loads(FH.get_file_contents(metadata_file))
             except ValueError as e:
-                print "invalid json: {}".format(e)
-
-        return False
+                # self.bag_exception = 'optional metadata file is not valid json'
+                return False
 
     def bag_passed_all(self):
         if not self.archive_extracted:
@@ -128,7 +171,6 @@ class bagChecker():
 
         if not self._is_generic_bag():
             self.ecode = 'GBERR'
-            print 'bag didnt pass due to not being valid bag'
             return self.bag_failed()
 
         if not self.bag_info_data:
@@ -150,8 +192,12 @@ class bagChecker():
 
         if not self._has_valid_metadata_file():
             self.ecode = 'MDERR'
-            print 'optional metadata file is not valid json'
             return self.bag_failed()
+
+        if not self.archiveObj.save_bag_data(self.bag_info_data):
+            self.ecode = 'BIERR'
+            return self.bag_failed()
+        
         BAGLog.log_it('PBAGP', self.archiveObj)
 
         self.cleanup()
@@ -160,9 +206,11 @@ class bagChecker():
     def bag_failed(self):
         self.cleanup()
         return False
+
     def cleanup(self):
-        # FH.remove_file_or_dir(self.archive_path)
-        pass
+        """called on success of failure of bag_checker routine"""
+        if self.bag_exception:
+            self.archiveObj.additional_error_info = self.bag_exception
 
     def _retrieve_bag_info_key_val(self):
         """Returns list of key val of bag info fields, only run on valid bag object"""
