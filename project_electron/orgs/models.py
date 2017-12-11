@@ -113,6 +113,23 @@ class User(AbstractUser):
     def in_group(self,GRP):
         return User.objects.filter(pk=self.pk, groups_name=GRP).exists()
 
+    def check_password_ldap(self, password):
+        from orgs.ldap_mixin import _LDAPUserExtension
+        ldap_interface = _LDAPUserExtension()
+        if ldap_interface.authenticate(username=self.username, password=password):
+            return True
+        return False
+
+    def set_password_ldap(self, raw_password):
+        from orgs.ldap_mixin import _LDAPUserExtension
+        ldap_interface = _LDAPUserExtension()
+        if ldap_interface.set_password(username=self.username,password=raw_password):
+            self.password = make_password(raw_password)
+            self._password = raw_password
+            return True
+        return False
+        
+
     def save(self, *args, **kwargs):
 
         if self.pk is None:
@@ -243,6 +260,7 @@ class Archives(models.Model):
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
+    appraisal_note =        models.TextField(blank=True, null=True)
 
     additional_error_info = models.CharField(max_length=255,null=True,blank=True)
     process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)

@@ -40,10 +40,10 @@
 	<div class="col-md-12">
 		<div class="box box-{% if object.accepted %}success{% elif object.rejected %}danger{% endif %}">
 			<div class="box-header with-border">
-				<h3 class="box-title">Appraisal information</h3>
+				<h3 class="box-title">Appraisal Information</h3>
 			</div>
 			<div class="box-body">
-				<textarea class="form-control" rows="3" placeholder="Appraisal note goes here..." {% if not user.is_appraiser %}disabled{% endif %}></textarea>
+				<p>{{ object.appraisal_note }}</p>
 			</div>
 			{% if user.is_appraiser %}
 			<div class="box-footer">
