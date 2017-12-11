@@ -254,6 +254,7 @@ class Archives(models.Model):
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
+    appraisal_note =        models.TextField(blank=True, null=True)
 
     additional_error_info = models.CharField(max_length=255,null=True,blank=True)
     process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
