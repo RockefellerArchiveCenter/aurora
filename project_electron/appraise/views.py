@@ -36,6 +36,17 @@ class AppraiseView(RACUserMixin, View):
                                 upload.appraisal_note = request.GET['appraisal_note']
                                 upload.save()
                                 rdata['success'] = 1
+                            elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                                appraisal_decision = 0
+                                try:
+                                    appraisal_decision = int(request.GET['appraisal_decision'])
+                                except Exception as e:
+                                    print e
+                                    appraisal_decision = 0
+
+                                upload.process_status = (70 if appraisal_decision else 60)
+                                upload.save()
+                                rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 
