@@ -88,19 +88,22 @@ class OrganizationListView(RACUserMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, View):
+class OrganizationTransferDataView(CSVResponseMixin, RACUserMixin, View):
 
     def get(self, request, *args, **kwargs):
         data = [('Bag Name','Status','Size','Upload Time','Errors')]
         self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
         transfers = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
         for transfer in transfers:
-            if transfer.get_errors():
-                errors = ', '.join([e.code.code_desc for e in transfer.get_errors()])
-            else:
-                errors = ''
-            row = (transfer.bag_or_failed_name(), transfer.process_status, transfer.machine_file_size, transfer.machine_file_upload_time, errors)
-            data.append(row)
+            transfer_errors = transfer.get_errors()
+            errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
+
+            data.append((
+                transfer.bag_or_failed_name(),
+                transfer.process_status,
+                transfer.machine_file_size,
+                transfer.machine_file_upload_time,
+                errors))
         return self.render_to_csv(data)
 
 class UsersListView(RACUserMixin, ListView):
