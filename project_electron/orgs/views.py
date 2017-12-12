@@ -45,8 +45,6 @@ class OrganizationDetailView(RACUserMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
-        context['trans_lst'] = self.object.build_transfer_timeline_list()
-
         context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
         return context

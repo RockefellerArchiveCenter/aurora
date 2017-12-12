@@ -83,16 +83,6 @@ class Organization(models.Model):
             return False
         return organization
 
-    def build_transfer_timeline_list(self):
-        arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
-        for arc in org_arcs:
-            if arc.created_time.date() not in arc_by_date:
-
-                arc_by_date[arc.created_time.date()] = []
-            arc_by_date[arc.created_time.date()].append(arc)
-        return arc_by_date
-
     def __unicode__(self): return self.name
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
@@ -128,7 +118,7 @@ class User(AbstractUser):
             self._password = raw_password
             return True
         return False
-        
+
 
     def save(self, *args, **kwargs):
 
@@ -302,7 +292,7 @@ class Archives(models.Model):
             'NORG','BFNM',
             'BTAR','BTAR2','BZIP','BZIP2',
             'BDIR','EXERR',
-            'GBERR', 'RBERR', 
+            'GBERR', 'RBERR',
             'MDERR', 'DTERR', 'FSERR',
             'VIRUS','BIERR'
         ]
