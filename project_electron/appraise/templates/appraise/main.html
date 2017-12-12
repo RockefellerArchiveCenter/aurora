@@ -24,22 +24,24 @@
 
 					<tbody>
 					{% for upload in uploads %}
-						<tr>
-              <td><a href="{% url 'transfer-detail' upload.pk %}">{{ upload.bag_or_failed_name }}</a></td>
-              <td>{{ upload.get_bag_data.source_organization }}</td>
-							<td>{{ upload.get_bag_data.record_creators }}</td>
-							<td>{{ upload.get_bag_data.record_type }}</td>
+						<tr class="upload-row" rel="{{ upload.pk }}">
+              <td><a href="{% url 'transfer-detail' upload.pk %}" class="bag-name">{{ upload.bag_or_failed_name }}</a></td>
+              <td>{{ upload.source_organization }}</td>
+							<td>{{ upload.record_creator }}</td>
+							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
-                <button type="button" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#modal-reject">
-                    Reject
-                </button>
-                <button type="button" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#modal-accept">
-                    Accept
-                </button>
+                <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
+                  Accept
+                </a>
+                <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">
+                  Reject
+                </a>
+                <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
+                    {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
+                </a>
               </td>
 						</tr>
-
 					{% endfor %}
 					</tbody>
 				</table>
@@ -49,52 +51,20 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-accept">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">Appraisal note</h4>
-      </div>
-      <div class="modal-body">
-        <textarea class="form-control" rows="3"></textarea>
-        <p class="text-muted">{{request.user.username}} accepted this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Submit</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modal-reject">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">Appraisal note</h4>
-      </div>
-      <div class="modal-body">
-        <textarea class="form-control" rows="3"></textarea>
-        <p class="text-muted">{{request.user.username}} rejected this transfer on {% now "F jS Y" %} at {% now "H:i" %}</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary">Submit</button>
-      </div>
-    </div>
-  </div>
+<div class="modal fade" id="modal-appraisal-note">
+  {% include 'appraise/edit_note.html' %}
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
+var amodal = $("#modal-appraisal-note");
+var url = '{% url 'appraise-main' %}';
+var appraise_table = '';
+
   $(function () {
-    $('#appraise_table').DataTable({
+    appraise_table = $('#appraise_table').DataTable({
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
@@ -103,6 +73,112 @@
       'autoWidth'   : true,
       'pageLength'  : 25
     })
+  
+
+    $(".appraisal-note").click(function(e) {
+        e.preventDefault();
+
+        var bag_name = $(this).parent().parent().find('.bag-name').text();
+        var upload_id = $(this).attr('rel');
+
+        if (!$(this).hasClass('edit-note')){
+          activateModal(upload_id, 'Add', bag_name);
+          return false;
+        }
+
+        var data = {
+          'req_type' : 'edit',
+          'req_form' : 'appraise',
+          'upload_id': upload_id
+        };
+
+        $.get(url,data, function(resp){
+          if (resp.success){
+            activateModal(upload_id,'Edit',bag_name,resp.appraisal_note);
+          } else {
+            alert('Something went wrong.. Please try again..');
+          }
+        });
+
+        return false;
+    });
+
+    $('#appraisal-note-form').submit(function(e){
+      e.preventDefault();
+      var frm = $(this)
+      var data = {
+        'upload_id': frm.find('.upload_id').val(),
+        'appraisal_note': frm.find('.appraisal_note').val(),
+        'req_form' : 'appraise',
+        'req_type' : 'submit'
+      }
+
+      //empty check, no need to submit
+      if (data.appraisal_note.length < 2){
+        alert('Note is too short!');
+        return false;
+      }
+
+      //AJAX submit
+      $.get(url,data,function(resp){
+        if (resp.success){
+          amodal.modal('hide');
+          resolveRowCallback(data.upload_id);
+        }
+      });
+
+      return false;
+    });
+
+    $('.appraisal-accept, .appraisal-reject').click(function(e){
+      e.preventDefault();
+      var upload_row = $(this).closest('.upload-row');
+      var upload_id = upload_row.attr('rel');
+      var appraisal_decision = 0; // reject
+      if ($(this).hasClass('appraisal-accept')){
+        appraisal_decision = 1; //accept
+      }
+      var data = {
+        'req_form': 'appraise',
+        'req_type': 'decision',
+        'upload_id': upload_id,
+        'appraisal_decision': appraisal_decision
+      }
+
+      $.get(url, data, function(resp){
+        if (resp.success){
+          // remove row
+          appraise_table.row( upload_row ).remove().draw();
+
+        } else {
+          alert('Something went wrong.. Please try again..');
+        }
+      });
+
+    });
+
   })
+
+var activateModal = function(uid,label,bag_name,appraisal_note){
+  // setups up and opens modal
+  amodal.find('.upload_id').val(uid);
+  amodal.find('.add-or-edit-label').text(label);
+  amodal.find('.bag-name').text(bag_name);
+  amodal.find('.appraisal_note').val(appraisal_note);
+  amodal.modal('show');
+}
+
+var resolveRowCallback = function(uid){
+  $('.appraisal-note').each(function(){
+    if ($(this).attr('rel') == uid){
+
+      $(this).text('Edit Note');
+      $(this).removeClass('btn-default');
+      $(this).addClass('btn-info').addClass('edit-note');
+    }
+  });
+}
+
+
 </script>
 {% endblock %}

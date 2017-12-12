@@ -7,7 +7,7 @@ from pycountry import languages
 
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
-from orgs.models import BAGLog, BagInfoMetadata
+from orgs.models import BAGLog, Archives
 
 
 
@@ -48,7 +48,7 @@ class bagChecker():
         try:
             self.bag = bagit.Bag(self.archive_path)
             self.bag.validate()
-            
+
         except Exception as e:
             print e
             self.bag_exception = e
@@ -178,8 +178,6 @@ class bagChecker():
             # log internal error here
             return self.bag_failed()
 
-        BagInfoMetadata.save_metadata(self.bag_info_data, self.archiveObj)
-
         BAGLog.log_it('PBAG', self.archiveObj)
 
         if not self._is_rac_bag():
@@ -195,6 +193,11 @@ class bagChecker():
         if not self._has_valid_metadata_file():
             self.ecode = 'MDERR'
             return self.bag_failed()
+
+        if not self.archiveObj.save_bag_data(self.bag_info_data):
+            self.ecode = 'BIERR'
+            return self.bag_failed()
+        
         BAGLog.log_it('PBAGP', self.archiveObj)
 
         self.cleanup()
@@ -203,7 +206,9 @@ class bagChecker():
     def bag_failed(self):
         self.cleanup()
         return False
+
     def cleanup(self):
+        """called on success of failure of bag_checker routine"""
         if self.bag_exception:
             self.archiveObj.additional_error_info = self.bag_exception
 
