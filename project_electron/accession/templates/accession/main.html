@@ -7,7 +7,6 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-      	{% with uploads=object_list%}
           {% if not uploads %}
         <div>No pending accessions</div>
           {% else %}
@@ -34,7 +33,6 @@
           </tbody>
         </table>
         {% endif %}
-        {% endwith %}
 
       </div>
     </div>
