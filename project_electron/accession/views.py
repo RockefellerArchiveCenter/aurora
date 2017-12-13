@@ -14,6 +14,7 @@ class AccessionView(RACUserMixin, TemplateView):
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
         context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).order_by('created_time')
+        return context
 
 class AccessionRecordView(RACUserMixin, TemplateView):
     template_name = "accession/create.html"
@@ -21,3 +22,4 @@ class AccessionRecordView(RACUserMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(TemplateView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accession Record'
+        return context
