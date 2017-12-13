@@ -17,10 +17,10 @@ class RightsCreateView(RACAdminMixin, CreateView):
 class RightsDetailView(DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
+    pk_url_kwarg = 'rights_pk'
 
     def get_context_data(self, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)
-        context['object'] = RightsStatement.objects.get(pk=self.object.pk)
         context['meta_page_title'] = '{} PREMIS rights statement'.format(self.object.organization)
         context['rights_basis_info'] = context['object'].get_rights_info_object
         context['rights_granted_info'] = context['object'].get_rights_granted_objects

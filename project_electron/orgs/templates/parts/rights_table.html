@@ -14,7 +14,7 @@
       <td>{{statement.rights_basis}}</td>
       <td>{{statement.get_table_data.notes}}</td>
       <td class="text-right col-md-2">
-        <a href="{% url 'rights-detail' statement.organization.pk statement.pk %}" class="btn btn-primary btn-sm">View</a>
+        <a href="{% url 'rights-detail' pk=statement.organization.pk rights_pk=statement.pk %}" class="btn btn-primary btn-sm">View</a>
         {% if request.user.is_superuser %}<a href="#" class="btn btn-warning btn-sm">Edit</a>
         <a href="#" class="btn btn-danger btn-sm">Delete</a>{% endif %}
       </td>
