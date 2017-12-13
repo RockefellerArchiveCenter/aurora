@@ -4,15 +4,17 @@ from __future__ import unicode_literals
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 
-from orgs.models import Organization, User
+from orgs.models import Organization, User, Archives
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, UserPasswordChangeForm
+from orgs.authmixins import *
+
+from rights.models import RightsStatement
+
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
-
-from orgs.models import Archives
-from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -47,6 +49,7 @@ class OrganizationDetailView(RACUserMixin, DetailView):
         context['meta_page_title'] = self.object.name
         context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
+        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         return context
 
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
@@ -57,6 +60,7 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
+        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         context['meta_page_title'] = 'Edit Organization'
         return context
 
