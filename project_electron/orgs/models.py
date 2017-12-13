@@ -83,7 +83,8 @@ class Organization(models.Model):
             return False
         return organization
 
-    def __unicode__(self): return self.name
+    def __unicode__(self):
+        return self.name
 
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
@@ -263,6 +264,9 @@ class Archives(models.Model):
     process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
     created_time =          models.DateTimeField(auto_now=True) # process time
     modified_time =         models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.bag_or_failed_name()
 
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
