@@ -266,7 +266,7 @@ class Archives(models.Model):
     modified_time =         models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return self.bag_or_failed_name()
+        return '{}: {}'.format(self.pk, self.bag_or_failed_name())
 
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
@@ -321,8 +321,6 @@ class Archives(models.Model):
 
         if 'BZIP2' in codes or 'BTAR2' in codes:
             errs.append('Transfer contained more than one top level directory')
-
-
 
         if self.additional_error_info:
             errs.append(self.additional_error_info)
