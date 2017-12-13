@@ -8,6 +8,7 @@
   My Transfers
   {% endif %}
   <small>All Transfers</small>
+  <a href="{% url 'orgs-transfer-data' organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-download"></i> Download CSV</a>
 {% endblock %}
 
 {% block content %}
