@@ -1,0 +1,25 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}{{page_title}}{% endblock %}
+
+{% block content %}
+<div class="row">
+
+  <div class="col-md-12">
+
+    <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
+      <div class="box-header with-border">
+        <form role="form" action="" method="post">
+          {% csrf_token %}
+          <div class="box-body">
+          </div>
+            {{form}}
+          <div class="box-footer">
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

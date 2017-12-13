@@ -1,0 +1,21 @@
+<li>
+  <i class="fa {% if rights_granted.restriction == 'disallow' %}fa-times bg-red{% elif rights_granted.restriction == 'allow' %}fa-check bg-green{% else %}fa-warning bg-orange{% endif %}"></i>
+
+  <div class="timeline-item">
+
+    <h3 class="timeline-header">{{rights_granted.act}} <span class="label label-{% if rights_granted.restriction == 'disallow' %}danger{% elif rights_granted.restriction == 'allow' %}success{% else %}warning{% endif %}">{{rights_granted.restriction}}</span></h3>
+
+    <div class="timeline-body">
+      <dl>
+        <dt>Applicable Dates</dt>
+        {% if rights_granted.start_date and rights_granted_info.end_date %}
+        <dd>{{ rights_granted.start_date }} - {{ rights_granted_info.end_date }}</dd>
+        {% else %}
+        <dd>{{ rights_granted.rights_granted_period }} years after date of creation</dd>
+        {% endif %}
+        <dt>Note</dt>
+        <dd>{{ rights_granted.rights_granted_note }}</dd>
+      </dl>
+    </div>
+  </div>
+</li>
