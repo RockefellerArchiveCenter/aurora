@@ -83,18 +83,7 @@ class Organization(models.Model):
             return False
         return organization
 
-    def build_transfer_timeline_list(self):
-        arc_by_date = {}
-        org_arcs =  Archives.objects.filter(process_status__gte=20, organization=self).order_by('-created_time')
-        for arc in org_arcs:
-            if arc.created_time.date() not in arc_by_date:
-
-                arc_by_date[arc.created_time.date()] = []
-            arc_by_date[arc.created_time.date()].append(arc)
-        return arc_by_date
-
-    def __unicode__(self):
-        return self.name
+    def __unicode__(self): return self.name
 
     def get_absolute_url(self):
         return reverse('orgs-edit', kwargs={'pk': self.pk})
@@ -231,6 +220,18 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+class RecordCreators(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self):
+        return self.name
+
+class LanguageCode(models.Model):
+    code = models.CharField(max_length=3)
+
+    def __unicode__(self):
+        return self.code
+
 class Archives(models.Model):
     machine_file_types = (
         ('ZIP', 'zip'),
@@ -249,13 +250,14 @@ class Archives(models.Model):
 
     organization =          models.ForeignKey(Organization)
     user_uploaded =         models.ForeignKey(User, null=True)
-    machine_file_path =          models.CharField(max_length=100)
+    machine_file_path =     models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
     machine_file_upload_time = models.DateTimeField()
     machine_file_identifier = models.CharField(max_length=255,unique=True)
     machine_file_type =     models.CharField(max_length=5,choices=machine_file_types)
     bag_it_name =           models.CharField(max_length=60)
     bag_it_valid =          models.BooleanField(default=False)
+    appraisal_note =        models.TextField(blank=True, null=True)
 
     additional_error_info = models.CharField(max_length=255,null=True,blank=True)
     process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
@@ -299,7 +301,7 @@ class Archives(models.Model):
             'BDIR','EXERR',
             'GBERR', 'RBERR',
             'MDERR', 'DTERR', 'FSERR',
-            'VIRUS',
+            'VIRUS','BIERR'
         ]
         get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
         if not get_error_obj:
@@ -333,6 +335,72 @@ class Archives(models.Model):
             self.additional_error_info = 'Virus found in: {}'.format([k for k in obj['virus_scanresult']][0])
         elif obj['auto_fail_code'] == 'FSERR':
             self.additional_error_info = 'Bag size ({}) is larger then maximum allow size ({})'.format(obj['file_size'], (settings.TRANSFER_FILESIZE_MAX * 1000))
+
+    def save_mtm_fields(self, cls, field, model_field, metadata):
+        obj_list = []
+        if field in metadata:
+            if type(metadata[field]) is list:
+                for f in metadata[field]:
+                    new_obj = cls.objects.get_or_create(**{model_field: f})[0]
+                    obj_list.append(new_obj)
+            else:
+                new_obj = cls.objects.get_or_create(**{model_field: metadata[field]})[0]
+                obj_list.append(new_obj)
+        return obj_list
+
+    def save_bag_data(self, metadata):
+        if not metadata:
+            return False
+
+        try:
+            creators_list = self.save_mtm_fields(RecordCreators, 'Record_Creators', 'name', metadata)
+            language_list = self.save_mtm_fields(LanguageCode, 'Language', 'code', metadata)
+            item = BagInfoMetadata(
+                archive = self,
+                source_organization = Organization.objects.get(name=metadata['Source_Organization']),
+                external_identifier = metadata.get('External_Identifier', ''),
+                internal_sender_description = metadata.get('Internal_Sender_Description', ''),
+                title = metadata.get('Title', ''),
+                date_start = metadata.get('Date_Start', ''),
+                date_end = metadata.get('Date_End', ''),
+                record_type = metadata.get('Record_Type', ''),
+                bagging_date = metadata.get('Bagging_Date', ''),
+                bag_count = metadata.get('Bag_Count', ''),
+                bag_group_identifier = metadata.get('Bag_Group_Identifier', ''),
+                payload_oxum = metadata.get('Payload_Oxum', ''),
+                bagit_profile_identifier = metadata.get('BagIt_Profile_Identifier', '')
+            )
+            item.save()
+            for c in creators_list:
+                item.record_creators.add(c)
+            for l in language_list:
+                item.language.add(l)
+            item.save()
+        except Exception as e:
+            print e
+            return False
+        else:
+            return True # this at least assumes nothing blew up
+
+    def get_bag_data(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        excluded_fields = ['id', 'pk', 'archive']
+        mtm_fields = ['record_creators', 'language']
+        field_names = [field.name for field in BagInfoMetadata._meta.get_fields() if field.name not in excluded_fields]
+        values = {}
+        for field_name in field_names:
+            if field_name in mtm_fields:
+                strings = []
+                objects = getattr(bag_data, field_name, None)
+                if objects:
+                    for creator in objects.all():
+                        strings.append(str(creator))
+                    values[field_name] = sorted(strings)
+            else:
+                field_value = getattr(bag_data, field_name, None)
+                if field_value:
+                    values[field_name] = getattr(bag_data, field_name, None)
+        return values
 
     class Meta:
         ordering = ['machine_file_upload_time']
@@ -392,3 +460,20 @@ class BAGLog(models.Model):
 
     class Meta:
         ordering = ['-created_time']
+
+class BagInfoMetadata(models.Model):
+    archive =                       models.ForeignKey(Archives)
+    source_organization =           models.ForeignKey(Organization, blank=True,null=True)
+    external_identifier =           models.CharField(max_length=256)
+    internal_sender_description =   models.TextField()
+    title =                         models.CharField(max_length=256)
+    date_start =                    models.DateTimeField()
+    date_end =                      models.DateTimeField()
+    record_creators =               models.ManyToManyField(RecordCreators, blank=True)
+    record_type =                   models.CharField(max_length=30)
+    language =                      models.ManyToManyField(LanguageCode, blank=True)
+    bagging_date =                  models.DateTimeField()
+    bag_count =                     models.CharField(max_length=10)
+    bag_group_identifier =          models.CharField(max_length=256)
+    payload_oxum =                  models.CharField(max_length=20)
+    bagit_profile_identifier =      models.URLField()
