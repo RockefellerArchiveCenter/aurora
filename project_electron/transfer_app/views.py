@@ -6,7 +6,7 @@ from django.views.generic import TemplateView, View, DetailView
 
 from django.db.models import Sum
 from django.shortcuts import render
-from orgs.models import Archives
+from orgs.models import Archives, BagInfoMetadata
 from orgs.authmixins import LoggedInMixinDefaults
 
 class MainView(LoggedInMixinDefaults, TemplateView):
@@ -45,11 +45,17 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
     template_name = 'orgs/recent_transfers.html'
 
     def get(self, request, *args, **kwargs):
+        org_archives = Archives.objects.filter(process_status__gte=20, organization = request.user.organization).order_by('-created_time')[:25]
+        for archive in org_archives:
+            archive.bag_info_data = archive.get_bag_data()
+        user_archives = Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25]
+        for archive in user_archives:
+            archive.bag_info_data = archive.get_bag_data()
         return render(request, self.template_name, {
             'meta_page_title' : 'Recent Transfers',
-            'org_uploads' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization).order_by('-created_time')[:25],
+            'org_uploads' : org_archives,
             'org_uploads_count' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization).count(),
-            'user_uploads' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded=request.user).order_by('-created_time')[:25],
+            'user_uploads' : user_archives,
             'user_uploads_count' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded = request.user).count(),
         })
 
