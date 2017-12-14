@@ -66,7 +66,7 @@ def has_files_to_process():
 
                 try:
                     scanresult = virus_checker.scan(file_path)
-                
+
                 except ConnectionError as e:
                     print e
                     BAGLog.log_it('VCON2')
@@ -88,7 +88,7 @@ def has_files_to_process():
                     auto_fail = True
                     auto_fail_code = 'VIRUS'
 
-                    
+
                 else:
                     extension = splitext_(file_path)
                     tar_accepted_ext = ['tar.gz', '.tar']
@@ -476,7 +476,14 @@ def get_fields_from_file(fpath):
 
                 row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
-                    fields[row_search.group('key').replace('-','_').strip()] = row_search.group('val').strip()
+                    key = row_search.group('key').replace('-','_').strip()
+                    val = row_search.group('val').strip()
+                    if key in fields:
+                        listval = [fields[key]]
+                        listval.append(val)
+                        fields[key] = listval
+                    else:
+                        fields[key] = val
     except Exception as e:
         print e
 
