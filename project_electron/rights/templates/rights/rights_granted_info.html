@@ -7,9 +7,9 @@
 
     <div class="timeline-body">
       <dl>
-        {% if rights_granted.start_date and rights_granted_info.end_date %}
+        {% if rights_granted.start_date and rights_granted.end_date %}
         <dt>Applicable Dates</dt>
-        <dd>{{ rights_granted.start_date }} - {{ rights_granted_info.end_date }}</dd>
+        <dd>{{ rights_granted.start_date }} - {{ rights_granted.end_date }}</dd>
         {% elif rights_granted.start_date_period %}
         <dt>Applicable Date Rules</dt>
         <dd>{{ rights_granted.start_date_period }} years after start date</dd>
