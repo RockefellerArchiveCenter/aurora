@@ -10,7 +10,6 @@ from django.shortcuts import render, redirect
 
 from orgs.models import Archives
 from orgs.authmixins import RACUserMixin
-from appraise.form import AppraisalNoteUpdateForm
 
 class AppraiseView(RACUserMixin, View):
     template_name = "appraise/main.html"
