@@ -9,10 +9,10 @@ from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render, redirect
 
 from orgs.models import Archives
-from orgs.authmixins import RACUserMixin
+from orgs.authmixins import ArchivistMixin
 from appraise.form import AppraisalNoteUpdateForm
 
-class AppraiseView(RACUserMixin, View):
+class AppraiseView(ArchivistMixin, View):
     template_name = "appraise/main.html"
 
     def get(self, request, *args, **kwargs):

@@ -5,10 +5,20 @@ from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRe
 class LoggedInMixinDefaults(LoginRequiredMixin):
     login_url = '/app'
 
-class RACAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
+class ArchivistMixin(LoggedInMixinDefaults, GroupRequiredMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
+    group_required = [u"appraisal_archivists", u"accessioning_archivists", u"managing_archivists"]
 
-class RACUserMixin(LoggedInMixinDefaults, StaffuserRequiredMixin):
+class AppraisalArchivistMixin(ArchivistMixin, GroupRequiredMixin):
+    group_required = u"appraisal_archivists"
+
+class AccessioningArchivistMixin(ArchivistMixin, GroupRequiredMixin):
+    group_required = u"accessioning_archivists"
+
+class ManagingArchivistMixin(ArchivistMixin, GroupRequiredMixin):
+    group_required = u"managing_archivists"
+
+class SysAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
 
 class SelfOrSuperUserMixin(LoggedInMixinDefaults, UserPassesTestMixin):

@@ -62,7 +62,7 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
             'user_uploads_count' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded = request.user).count(),
         })
 
-class TransferDetailView(DetailView):
+class TransferDetailView(LoggedInMixinDefaults, DetailView):
     template_name = 'transfer_app/transfer_detail.html'
     model = Archives
 

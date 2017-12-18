@@ -9,7 +9,7 @@ from orgs.authmixins import *
 
 from django.shortcuts import render, redirect, render_to_response
 
-class RightsManageView(RACAdminMixin, CreateView):
+class RightsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
@@ -65,7 +65,7 @@ class RightsManageView(RACAdminMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
 
-class RightsGrantsManageView(RACAdminMixin, CreateView):
+class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
@@ -89,7 +89,7 @@ class RightsGrantsManageView(RACAdminMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
-class RightsDetailView(DetailView):
+class RightsDetailView(ArchivistMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
 
@@ -101,6 +101,6 @@ class RightsDetailView(DetailView):
         context['rights_granted_info'] = context['object'].get_rights_granted_objects
         return context
 
-class RightsDeleteView(RACAdminMixin, DeleteView):
+class RightsDeleteView(ManagingArchivistMixin, DeleteView):
     template_name = 'rights/manage.html'
     model = RightsStatement
