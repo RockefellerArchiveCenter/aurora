@@ -21,13 +21,14 @@
                         </div>
                     {% endif %}
 
-                    {% if user.is_superuser %}
+                    {% if request.user.is_superuser %}
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
                       </label>
                     </div>
                     {% endif %}
+
                     <div class="form-group">
                       <label for="id_email">Email address</label>
                       <input type="email" name="email" value="{{ object.email }}" class="form-control" id="id_email" placeholder="Enter email" required>
@@ -39,7 +40,8 @@
                       <a id="change_password" href="{% url 'password-change' pk=object.pk %}" class="btn btn-default btn-xs">Change Password</a>
                     </div>
                     {% endcomment %}
-                    {% if user.is_superuser %}
+
+                    {% if request.user.is_superuser %}
                     <div class="form-group">
                         <label>Organization</label>
                         <select class="form-control" name="organization" required>

@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orgs', '0036_archives_process_status'),
+        ('orgs', '0037_archives_additional_error_info'),
     ]
 
     operations = [

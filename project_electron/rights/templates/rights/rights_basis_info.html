@@ -1,0 +1,63 @@
+<dl class="dl-horizontal">
+  {% if object.rights_basis == 'Copyright' %}
+    <dt>Copyright status</dt>
+    <dd>{{ rights_basis_info.copyright_status }}</dd>
+    <dt>Determination date</dt>
+    <dd>{{ rights_basis_info.copyright_status_determination_date }}</dd>
+    <dt>Jurisdiction</dt>
+    <dd>{{ rights_basis_info.copyright_jurisdiction }}</dd>
+    <dt>Applicable Dates</dt>
+    {% if rights_basis_info.copyright_applicable_start_date and rights_basis_info.copyright_applicable_end_date %}
+    <dd>{{ rights_basis_info.copyright_applicable_start_date }} - {{ rights_basis_info.copyright_applicable_end_date }}</dd>
+    {% elif rights_basis_info.copyright_start_date_period %}
+    <dd>{{ rights_basis_info.copyright_start_date_period }} years after start date</dd>
+    {% else %}
+    <dd>{{ rights_basis_info.copyright_end_date_period }} years after end date</dd>
+    {% endif %}
+    <dt>Open End Date?</dt>
+    <dd>{{ rights_basis_info.copyright_end_date_open }}</dd>
+    <dt>Copyright Note</dt>
+    <dd>{{ rights_basis_info.copyright_note }}</dd>
+  {% elif object.rights_basis == 'License' %}
+    <dt>License Terms</dt>
+    <dd>{{ rights_basis_info.license_terms }}</dd>
+    <dt>Applicable Dates</dt>
+    {% if rights_basis_info.license_applicable_start_date and rights_basis_info.license_applicable_end_date %}
+    <dd>{{ rights_basis_info.license_applicable_start_date }} - {{ rights_basis_info.license_applicable_end_date }}</dd>
+    {% else %}
+    <dd>{{ rights_basis_info.license_period }} years after date of creation</dd>
+    {% endif %}
+    <dt>Open End Date?</dt>
+    <dd>{{ rights_basis_info.license_end_date_open }}</dd>
+    <dt>License Note</dt>
+    <dd>{{ rights_basis_info.license_note }}</dd>
+  {% elif object.rights_basis == 'Statute' %}
+    <dt>Jurisdiction</dt>
+    <dd>{{ rights_basis_info.statute_jurisdiction }}</dd>
+    <dt>Statute Citation</dt>
+    <dd>{{ rights_basis_info.statute_citation }}</dd>
+    <dt>Applicable Dates</dt>
+    {% if rights_basis_info.statute_applicable_start_date and rights_basis_info.statute_applicable_end_date %}
+    <dd>{{ rights_basis_info.statute_applicable_start_date }} - {{ rights_basis_info.statute_applicable_end_date }}</dd>
+    {% else %}
+    <dd>{{ rights_basis_info.statute_period }} years after date of creation</dd>
+    {% endif %}
+    <dt>Open End Date?</dt>
+    <dd>{{ rights_basis_info.statute_end_date_open }}</dd>
+    <dt>Statute Note</dt>
+    <dd>{{ rights_basis_info.statute_note }}</dd>
+  {% elif object.rights_basis == 'Other' %}
+    <dt>Rights Basis</dt>
+    <dd>{{ rights_basis_info.other_rights_basis }}</dd>
+    <dt>Applicable Dates</dt>
+    {% if rights_basis_info.other_rights_applicable_start_date and rights_basis_info.other_rights_applicable_end_date %}
+    <dd>{{ rights_basis_info.other_rights_applicable_start_date }} - {{ rights_basis_info.other_rights_applicable_end_date }}</dd>
+    {% else %}
+    <dd>{{ rights_basis_info.other_rights_period }} years after date of creation</dd>
+    {% endif %}
+    <dt>Open End Date?</dt>
+    <dd>{{ rights_basis_info.other_rights_end_date_open }}</dd>
+    <dt>{{ rights_basis_info.other_rights_basis }} Note</dt>
+    <dd>{{ rights_basis_info.other_rights_note }}</dd>
+  {% endif %}
+</dl>

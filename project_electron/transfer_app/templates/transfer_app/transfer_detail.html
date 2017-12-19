@@ -1,5 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
+{% load util %}
 
 {% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span></small>{% endblock %}
 
@@ -18,12 +19,24 @@
 				<h3 class="box-title">Metadata</h3>
 			</div>
 			<div class="box-body">
+				{% if object.get_bag_data %}
 				<dl class="dl-horizontal">
-					<dt>Key</dt>
-					<dd>Value</dd>
-					<dt>Key</dt>
-					<dd>Value</dd>
+					{% for k,v in object.get_bag_data.items %}
+							<dt>{{k}}</dt>
+							<dd>
+								{% if v|get_type == 'list' %}
+									{% for i in v %}
+										{{ i }}<br/>
+									{% endfor %}
+								{% else %}
+									{{v}}
+								{% endif %}
+							</dd>
+					{% endfor %}
 				</dl>
+				{% else %}
+				<p>No metadata available.</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -50,6 +63,7 @@
 </div>
 {% endif %}
 
+{% if object.get_errors %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-danger">
@@ -57,19 +71,30 @@
 				<h3 class="box-title">Error Messages</h3>
 			</div>
 			<div class="box-body">
+
 				<table>
 					<thead>
 						<tr>
 							<th>Date/Time</th>
 							<th>Summary</th>
-							<th>Result</th>
+							<th>Details</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for err in object.get_errors %}
+						<tr>
+							<td>{{ err.created_time }}</td>
+							<td>{{ err.code.code_desc }}</td>
+							<td>{% if object.additional_error_info %}{{ object.additional_error_info }}{% else %}No additional details available.{% endif %}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
+{% endif %}
 
 <div class="row">
 	<div class="col-md-12">
@@ -85,9 +110,33 @@
 							<th>Message</th>
 						</tr>
 					</thead>
+					<tbody>
+						{% for tlog in object.get_transfer_logs %}
+						<tr>
+							<td>{{ tlog.created_time }}</td>
+							<td>{{ tlog.code.code_desc }}</td>
+						</tr>
+						{% endfor %}
+					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
 </div>
+
+{% if rights_statements %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">Rights Statements</h3>
+			</div>
+			<div class="box-body no-padding">
+				{% include 'parts/rights_table.html' %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
 {% endblock %}

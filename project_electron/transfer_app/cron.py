@@ -68,15 +68,11 @@ class MyCronJob(CronJobBase):
                 new_arc.process_status = 20
                 new_arc.save()
 
-                ## EMAIL: Receipt of transfer
-                # email.setup_message('TRANS_RECEIPT')
-                # email.send()
-
-
                 print 'archive saved'
                 BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:
+                    new_arc.setup_save(upload_list)
                     new_arc.process_status = 30
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
