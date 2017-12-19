@@ -187,6 +187,7 @@ class UsersTransfersView(RACUserMixin, ListView):
     def get_context_data(self,**kwargs):
         context = super(UsersTransfersView, self).get_context_data(**kwargs)
         context['user'] = self.user
+        context['organization'] = self.user.organization
         context['meta_page_title'] = 'My Transfers'
         return context
 
