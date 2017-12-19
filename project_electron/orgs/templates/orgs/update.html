@@ -60,19 +60,18 @@
 	</div>
 </div>
 
-{% if rights_statements %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-info">
 			<div class="box-header with-border">
 				<h3 class="box-title">Rights Statements</h3>
+				{% if request.user.is_superuser %}<a href="{% url 'rights-add' object.pk %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
 			</div>
-			<div class="box-body no-padding">
+			<div class="box-body {% if rights_statements %}no-padding{% endif %}">
 				{% include 'parts/rights_table.html' %}
 			</div>
 		</div>
 	</div>
 </div>
-{% endif %}
 
 {% endblock %}

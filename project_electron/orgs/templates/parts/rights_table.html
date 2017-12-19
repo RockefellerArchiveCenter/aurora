@@ -1,3 +1,4 @@
+{% if rights_statements %}
 <table class="table table-striped">
   <thead>
     <tr>
@@ -15,6 +16,7 @@
       <td>{{statement.get_table_data.notes}}</td>
       <td class="text-right col-md-2">
         <a href="{% url 'rights-detail' pk=statement.organization.pk rights_pk=statement.pk %}" class="btn btn-primary btn-sm">View</a>
+        
         {% if request.user.is_superuser %}<a href="#" class="btn btn-warning btn-sm">Edit</a>
         <a href="#" class="btn btn-danger btn-sm">Delete</a>{% endif %}
       </td>
@@ -22,3 +24,6 @@
     {% endfor %}
   </tbody>
 </table>
+{% else %}
+<p>{{object.name}} has no rights statements.</p>
+{% endif %}

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.db import models
 from orgs.models import Organization, Archives
 
@@ -58,26 +60,27 @@ class RightsStatementCopyright(models.Model):
         ('unknown', 'unknown'),
     )
     copyright_status = models.CharField(choices=PREMIS_COPYRIGHT_STATUSES, default='unknown', max_length=64)
-    copyright_jurisdiction = models.CharField(max_length=2)
-    copyright_period = models.PositiveSmallIntegerField()
-    copyright_status_determination_date = models.DateField(blank=True, null=True)
+    copyright_jurisdiction = models.CharField(max_length=2, default='us')
+    copyright_status_determination_date = models.DateField(blank=True, null=True, default=datetime.now)
     copyright_applicable_start_date = models.DateField(blank=True, null=True)
     copyright_applicable_end_date = models.DateField(blank=True, null=True)
+    copyright_start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
+    copyright_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     copyright_end_date_open = models.BooleanField(default=False)
     copyright_note = models.TextField()
 
 class RightsStatementLicense(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
-    license_period = models.PositiveSmallIntegerField()
     license_terms = models.TextField(blank=True, null=True)
     license_applicable_start_date = models.DateField(blank=True, null=True)
     license_applicable_end_date = models.DateField(blank=True, null=True)
+    license_start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
+    license_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     license_end_date_open = models.BooleanField(default=False)
     license_note = models.TextField()
 
 class RightsStatementRightsGranted(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
-    rights_granted_period = models.PositiveSmallIntegerField()
     ACT_CHOICES = (
         ('publish', 'Publish'),
         ('disseminate', 'Disseminate'),
@@ -90,6 +93,8 @@ class RightsStatementRightsGranted(models.Model):
     act = models.CharField(choices=ACT_CHOICES, max_length=64)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
+    start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
+    end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     end_date_open = models.BooleanField(default=False)
     rights_granted_note = models.TextField()
     RESTRICTION_CHOICES = (
@@ -104,12 +109,13 @@ class RightsStatementRightsGranted(models.Model):
 
 class RightsStatementStatute(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
-    statute_period = models.PositiveSmallIntegerField()
-    statute_jurisdiction = models.CharField(max_length=2)
+    statute_jurisdiction = models.CharField(max_length=2, default='us')
     statute_citation = models.TextField()
     statute_determination_date = models.DateField(blank=True, null=True)
     statute_applicable_start_date = models.DateField(blank=True, null=True)
     statute_applicable_end_date = models.DateField(blank=True, null=True)
+    statute_start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
+    statute_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     statute_end_date_open = models.BooleanField(default=False)
     statute_note = models.TextField()
 
@@ -120,8 +126,9 @@ class RightsStatementOther(models.Model):
         ('Policy', 'Policy'),
     )
     other_rights_basis = models.CharField(choices=OTHER_RIGHTS_BASIS_CHOICES, max_length=64)
-    other_rights_period = models.PositiveSmallIntegerField()
     other_rights_applicable_start_date = models.DateField(blank=True, null=True)
     other_rights_applicable_end_date = models.DateField(blank=True, null=True)
+    other_rights_start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
+    other_rights_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     other_rights_end_date_open = models.BooleanField(default=False)
     other_rights_note = models.TextField()
