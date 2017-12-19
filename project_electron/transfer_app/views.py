@@ -22,6 +22,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['month_labels'] = []
         context['upload_count_by_month'] = []
         context['upload_size_by_month'] = []
+        context['upload_size_by_year'] = []
 
         today = datetime.date.today()
         current = today - relativedelta(years=1)
@@ -37,8 +38,16 @@ class MainView(LoggedInMixinDefaults, TemplateView):
                 context['upload_size_by_month'].append(0)
             current += relativedelta(months=1)
 
+        context['upload_count_by_year'] = Archives.objects.filter(process_status__gte=20, organization=self.request.user.organization, machine_file_upload_time__year=current.year).count()
+        year_upload_size = Archives.objects.filter(process_status__gte=20, organization = self.request.user.organization, machine_file_upload_time__year=current.year).aggregate(Sum('machine_file_size'))
+        if year_upload_size['machine_file_size__sum']:
+            context['upload_size_by_year'].append(year_upload_size['machine_file_size__sum']/1000000)
+        else:
+            context['upload_size_by_year'].append(0)
         context['average_size'] = sum(context['upload_size_by_month'])/len(context['upload_size_by_month'])
         context['average_count'] = sum(context['upload_count_by_month'])/len(context['upload_count_by_month'])
+        context['size_trend'] = context['upload_size_by_month'][-1] - context['average_size']
+        context['count_trend'] = context['upload_count_by_month'][-1] - context['average_count']
         return context
 
 class RecentTransfersView(LoggedInMixinDefaults, View):
