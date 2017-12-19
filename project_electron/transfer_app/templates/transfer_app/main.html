@@ -12,9 +12,39 @@
       <div class="box-header with-border">
         <h3 class="box-title">Transfers</h3>
       </div>
-      <div class="box-body">
-        <div class="chart">
-          <canvas id="lineChart" style="height: 249px; width: 542px;" width="542" height="249"></canvas>
+      <div class="box-body no-padding">
+        <div class="row">
+
+          <div class="col-md-9">
+            <div class="chart">
+              <canvas id="lineChart" style="height: 249px; width: 542px;" width="542" height="249"></canvas>
+            </div>
+          </div>
+
+          <div class="col-md-3">
+            <div class="pad box-pane-right bg-blue" style="min-height:250px">
+              <div class="description-block margin-bottom">
+                <h5 class="description-header">{{uploads_count}}</h5>
+                <span class="description-text">Transferred</span>
+              </div>
+
+              <div class="description-block margin-bottom">
+                <h5 class="description-header">{{validated_count}}</h5>
+                <span class="description-text">Validated</span>
+              </div>
+
+              <div class="description-block margin-bottom">
+                <h5 class="description-header">{{accepted_count}}</h5>
+                <span class="description-text">Accepted</span>
+              </div>
+
+              <div class="description-block">
+                <h5 class="description-header">{{accessioned_count}}</h5>
+                <span class="description-text">Accessioned</span>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -22,7 +52,7 @@
         <div class="row">
           <div class="col-sm-3 col-xs-6">
             <div class="description-block border-right">
-              <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 17%</span>
+              {% include 'transfer_app/trend_display.html' with trend=count_trend %}
               <h5 class="description-header">{{ upload_count_by_month|last }}</h5>
               <span class="description-text">Transfers in {% now "F" %}</span>
             </div>
@@ -30,7 +60,6 @@
 
           <div class="col-sm-3 col-xs-6">
             <div class="description-block border-right">
-              <span class="description-percentage text-green"><i class="fa fa-caret-up"></i> 20%</span>
               <h5 class="description-header">{{ upload_count_by_year }}</h5>
               <span class="description-text">Transfers in {% now "Y" %}</span>
             </div>
@@ -38,7 +67,7 @@
 
           <div class="col-sm-3 col-xs-6">
             <div class="description-block border-right">
-              <span class="description-percentage text-yellow"><i class="fa fa-caret-left"></i> 0%</span>
+              {% include 'transfer_app/trend_display.html' with trend=size_trend %}
               <h5 class="description-header">{{ upload_size_by_month|last|floatformat:"2" }}</h5>
               <span class="description-text">Gigabytes in {% now "F" %}</span>
             </div>
@@ -46,7 +75,6 @@
 
           <div class="col-sm-3 col-xs-6">
             <div class="description-block">
-              <span class="description-percentage text-red"><i class="fa fa-caret-down"></i> 18%</span>
               <h5 class="description-header">{{ upload_size_by_year }}</h5>
               <span class="description-text">Gigabytes in {% now "Y" %}</span>
             </div>
@@ -110,6 +138,7 @@
       </div>
       <div class="box-body">
         <canvas id="recordTypesPieChart" style="height: 281px; width: 562px;" width="562" height="281"></canvas>
+        <div id="recordTypesPieChartLegend" class="chart-legend clearfix"></div>
       </div>
     </div>
   </div>
@@ -286,10 +315,8 @@
       animateScale         : false,
       responsive           : true,
       maintainAspectRatio  : true,
-      legendTemplate       : ''
     }
-    pieChart.Doughnut(PieData, pieOptions)
-
+    var chart = pieChart.Doughnut(PieData, pieOptions)
 
   })
 </script>
