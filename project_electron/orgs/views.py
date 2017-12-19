@@ -40,7 +40,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(ArchivistMixin, DetailView):
+class OrganizationDetailView(LoggedInMixinDefaults, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
@@ -67,7 +67,7 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(ArchivistMixin, ListView):
+class OrganizationTransfersView(LoggedInMixinDefaults, ListView):
     template_name = 'orgs/all_transfers.html'
     def get_context_data(self,**kwargs):
         context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
@@ -92,7 +92,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, ArchivistMixin, View):
+class OrganizationTransferDataView(CSVResponseMixin, LoggedInMixinDefaults, View):
 
     def get(self, request, *args, **kwargs):
         data = [('Bag Name','Status','Size','Upload Time','Errors')]
@@ -182,7 +182,7 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(ArchivistMixin, ListView):
+class UsersTransfersView(LoggedInMixinDefaults, ListView):
     template_name = 'orgs/all_transfers.html'
     def get_context_data(self,**kwargs):
         context = super(UsersTransfersView, self).get_context_data(**kwargs)
