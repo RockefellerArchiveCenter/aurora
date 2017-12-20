@@ -24,3 +24,10 @@ class AccessionView(RACUserMixin, ListView):
 class AccessionRecordView(RACUserMixin, TemplateView):
     template_name = "accession/create.html"
     model = Accession
+
+    def get(self, request, *args, **kwargs):
+        id_list = map(int, request.GET.get('transfers').split(','))
+        return render(request, self.template_name, {
+            'meta_page_title' : 'Create Accession Record',
+            'transfers' : Archives.objects.filter(pk__in=id_list)
+        })
