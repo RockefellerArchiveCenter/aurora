@@ -78,8 +78,6 @@ class OrganizationTransfersView(RACUserMixin, ListView):
     def get_queryset(self):
         self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
         archives = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
         return archives
 
 class OrganizationListView(RACUserMixin, ListView):
@@ -194,8 +192,6 @@ class UsersTransfersView(RACUserMixin, ListView):
     def get_queryset(self):
         self.user = get_object_or_404(User, pk=self.kwargs['pk'])
         archives = Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
         return archives
 
 class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):

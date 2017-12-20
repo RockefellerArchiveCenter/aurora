@@ -1,6 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}Accession Number <small>132 files, 527 MB</small>{% endblock %}
+{% block h1_title %}Accession Number <small>{{ extent.files }} files, {{ extent.size|filesizeformat }}</small>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -26,10 +26,9 @@
 <form role="form">
   <div class="box box-primary">
     <div class="box-body">
-      {{transfers}}
       <div class="form-group">
         <label>Title</label>
-        <input type="text" class="form-control" required="">
+        <input type="text" class="form-control" required="" value="{{transfers.0.get_bag_data.source_organization}}, {% for r in transfers.0.get_bag_data.record_creators%}{{r}}{%if not forloop.last%}, {%endif%}{%endfor%} {{transfers.0.get_bag_data.record_type}}"/>
       </div>
       <div class="row">
         <div class="col-md-6">
@@ -49,8 +48,9 @@
             <label>Unidentified Creators</label>
             <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
             <div class="row">
+              {% for creator in creators %}
               <div class="col-md-8">
-                <input type="text" class="form-control" placeholder="Unidentified creator" />
+                <input type="text" class="form-control" value="{{creator}}" />
               </div>
               <div class="col-md-4">
                 <select class="form-control">
@@ -59,94 +59,52 @@
                     <option>family</option>
                   </select>
               </div>
+              {% endfor %}
             </div>
           </div>
         </div>
       </div>
       <div class="form-group">
         <label>Content Description</label>
-        <textarea class="form-control" rows="3"></textarea>
+        <textarea class="form-control" rows="3">{% for d in descriptions %}{{d}} {% endfor %}</textarea>
       </div>
       <div class="form-group">
         <label>Access Restrictions Note</label>
-        <textarea class="form-control" rows="3"></textarea>
+        <textarea class="form-control" rows="3">{% for note in access_restrictions_notes %}{{note}} {% endfor %}</textarea>
       </div>
       <div class="form-group">
         <label>Use Restrictions Note</label>
-        <textarea class="form-control" rows="3"></textarea>
+        <textarea class="form-control" rows="3">{% for note in use_restrictions_notes %}{{note}} {% endfor %}</textarea>
       </div>
     </div>
   </div>
 
-  <div class="box box-primary collapsed-box">
+  <div class="box box-primary">
     <div class="box-header with-border">
       <h3 class="box-title">Rights Statements</h3>
       <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
       </div>
     </div>
     <div class="box-body">
-      <table>
-        <thead>
-          <tr>
-            <th>basis</th>
-            <th>status</th>
-            <th>determination_date</th>
-            <th>jurisdiction</th>
-            <th>start_date</th>
-            <th>end_date</th>
-            <th>terms</th>
-            <th>citation</th>
-            <th>note</th>
-            <th>grant_act</th>
-            <th>grant_restriction</th>
-            <th>grant_start_date</th>
-            <th>grant_end_date</th>
-            <th>grant_note</th>
-            <th>doc_id_type</th>
-            <th>doc_id_value</th>
-            <th>doc_id_role</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>basis</td>
-            <td>status</td>
-            <td>determination_date</td>
-            <td>jurisdiction</td>
-            <td>start_date</td>
-            <td>end_date</td>
-            <td>terms</td>
-            <td>citation</td>
-            <td>note</td>
-            <td>grant_act</td>
-            <td>grant_restriction</td>
-            <td>grant_start_date</td>
-            <td>grant_end_date</td>
-            <td>grant_note</td>
-            <td>doc_id_type</td>
-            <td>doc_id_value</td>
-            <td>doc_id_role</td>
-          </tr>
-        </tbody>
-      </table>
+      {% include 'parts/rights_table.html' %}
     </div>
   </div>
 
-  <div class="box box-primary collapsed-box">
+  <div class="box box-primary">
     <div class="box-header with-border">
       <h3 class="box-title">Transfers</h3>
       <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
       </div>
     </div>
     <div class="box-body">
-      Table of all transfers included in this accession.
+      {% include 'parts/transfer_table.html' with uploads=transfers %}
     </div>
   </div>
 
   <button type="submit" class="btn btn-primary">Submit</button>
-  <button type="cancel" class="btn btn-danger">Cancel</button>
+  <a href="{% url 'accession-main' %}" class="btn btn-danger">Cancel</a>
 
 </form>
 
