@@ -1,25 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
+from django.db.models import CharField
+from django.db.models.functions import Concat
 
 from django.shortcuts import render
-from orgs.models import Archives
+from orgs.models import Archives, RecordCreators
+from accession.models import Accession
+from accession.db_functions import GroupConcat
 from orgs.authmixins import RACUserMixin
 
 
-class AccessionView(RACUserMixin, TemplateView):
+class AccessionView(RACUserMixin, ListView):
     template_name = "accession/main.html"
+    model = Archives
 
     def get_context_data(self, **kwargs):
-        context = super(TemplateView, self).get_context_data(**kwargs)
+        context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
-        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).order_by('created_time')
+        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'))).order_by('transfer_group')
         return context
 
 class AccessionRecordView(RACUserMixin, TemplateView):
     template_name = "accession/create.html"
-
-    def get_context_data(self, **kwargs):
-        context = super(TemplateView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Accession Record'
-        return context
+    model = Accession
