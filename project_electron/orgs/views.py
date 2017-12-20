@@ -27,7 +27,7 @@ from orgs.form import UserPasswordChangeForm
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
     model = Organization
-    fields = ['name']
+    fields = ['name', 'acquisition_type']
     success_message = "New Organization Saved!"
 
     def get_context_data(self, **kwargs):
