@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db import models
 from django.urls import reverse
+from orgs.models import RecordCreators
 
 class Accession(models.Model):
     title =             models.CharField(max_length=256)
@@ -12,7 +13,7 @@ class Accession(models.Model):
     end_date =          models.DateTimeField()
     extent_files =      models.PositiveIntegerField()
     extent_size =       models.PositiveIntegerField()
-    # creators =          models.ManyToManyField(RecordCreators)
+    creators =          models.ManyToManyField(RecordCreators)
     description =       models.TextField()
     access_restrictions =   models.TextField()
     use_restrictions =      models.TextField()
