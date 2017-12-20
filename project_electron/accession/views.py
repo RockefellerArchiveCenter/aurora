@@ -18,7 +18,7 @@ class AccessionView(RACUserMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
-        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'))).order_by('transfer_group')
+        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier')).order_by('transfer_group')
         return context
 
 class AccessionRecordView(RACUserMixin, TemplateView):
