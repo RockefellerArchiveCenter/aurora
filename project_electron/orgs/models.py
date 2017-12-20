@@ -17,6 +17,12 @@ class Organization(models.Model):
     machine_name =  models.CharField(max_length=30, unique=True, default="orgXXX will be created here")
     created_time =  models.DateTimeField(auto_now = True)
     modified_time = models.DateTimeField(auto_now_add = True)
+    ACQUISITION_TYPE_CHOICES = (
+        ('donation', 'Donation'),
+        ('deposit', 'Deposit'),
+        ('transfer', 'Transfer'),
+    )
+    acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
