@@ -13,14 +13,14 @@
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
-            {% for field in basis_form %}
+            {% for field in basis_form.visible_fields %}
               {% include 'rights/form_fields.html' %}
             {% endfor %}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
               {% for form in copyright_form %}
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
                 {% endfor %}
               {% endfor %}
@@ -29,7 +29,7 @@
               {{ license_form.management_form }}
               {{ license_form.non_form_errors }}
               {% for form in license_form %}
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
                 {% endfor %}
               {% endfor %}
@@ -38,7 +38,7 @@
               {{ statute_form.management_form }}
               {{ statute_form.non_form_errors }}
               {% for form in statute_form %}
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
                 {% endfor %}
               {% endfor %}
@@ -47,7 +47,7 @@
               {{ other_form.management_form }}
               {{ other_form.non_form_errors }}
               {% for form in other_form %}
-                {% for field in form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
                 {% endfor %}
               {% endfor %}
@@ -65,7 +65,7 @@
                         <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
                       </div>
                     </div>
-                    {% for field in form %}
+                    {% for field in form.visible_fields %}
                       {% include 'rights/form_fields.html' %}
                     {% endfor %}
                 </div>
