@@ -12,6 +12,7 @@ from orgs.models import Organization, Archives
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
+    accession = models.ForeignKey('accession.Accession', null=True, blank=True)
     # Eventually these choices should be replaced by a call to get record types associated with this organization
     APPLIES_TO_TYPE_CHOICES = (
         ('administrative records', 'Administrative Records'),

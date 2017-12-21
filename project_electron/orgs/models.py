@@ -246,7 +246,8 @@ class Archives(models.Model):
         (40, 'Validated'),
         (60, 'Rejected'),
         (70, 'Accepted'),
-        (90, 'Accessioned')
+        (75, 'Accessioning Started'),
+        (90, 'Accession Complete')
     )
 
     organization =          models.ForeignKey(Organization)

@@ -35,15 +35,24 @@ class AccessionRecordView(RACUserMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        id_list = map(int, request.GET.get('transfers').split(','))
+        transfers_list = Archives.objects.filter(pk__in=id_list)
+        rights_statements_list = RightsStatement.objects.filter(archive__in=id_list)
         if form.is_valid():
-            # update status for each transfer
-            # save transfers
+            accession = form.save()
+            for transfer in transfers_list:
+                transfer.process_status = 75
+                transfer.save()
+            for statement in rights_statements_list:
+                statement.accession = accession
+                statement.save()
             return redirect('accession-main')
-        return render(request, self.template_name, {'meta_page_title': 'Create Accession Record', 'form': form})
+        return render(request, self.template_name, {'meta_page_title': 'Create Accession Record', 'form': form, 'rights_statements': rights_statements_list, 'transfers': transfers_list})
 
     def get(self, request, *args, **kwargs):
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
+        # need to de-duplicate/merge these
         rights_statements_list = RightsStatement.objects.filter(archive__in=id_list)
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
@@ -88,16 +97,16 @@ class AccessionRecordView(RACUserMixin, View):
             'description': ' '.join(set(descriptions_list)),
             'extent_files': extent_files,
             'extent_size': extent_size,
-            'access_restrictions_notes': ' '.join(set(access_note)),
-            'use_restrictions_notes': ' '.join(set(use_note)),
+            'access_restrictions': ' '.join(set(access_note)),
+            'use_restrictions': ' '.join(set(use_note)),
             # needs PR from master to be merged into development
             'acquisition_type': 'deposit',
             'appraisal_note': ' '.join(set(appraisal_notes_list)),
             'creators': record_creators,
-            'transfers' : transfers_list,
-            'rights_statements' : rights_statements_list
             })
         return render(request, self.template_name, {
             'form': form,
             'meta_page_title': 'Create Accession Record',
+            'transfers' : transfers_list,
+            'rights_statements' : rights_statements_list
             })

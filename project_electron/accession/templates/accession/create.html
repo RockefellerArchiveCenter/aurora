@@ -65,9 +65,10 @@
           </div>
         </div>
       </div>
+      {{form.access_restriction}}
       {% include 'rights/form_fields.html' with field=form.description %}
-      {% include 'rights/form_fields.html' with field=form.access_restrictions%}
-      {% include 'rights/form_fields.html' with field=form.use_restrictions%}
+      {% include 'rights/form_fields.html' with field=form.access_restrictions %}
+      {% include 'rights/form_fields.html' with field=form.use_restrictions %}
     </div>
   </div>
 
@@ -91,7 +92,7 @@
       </div>
     </div>
     <div class="box-body">
-      {% include 'parts/transfer_table.html' with uploads=form.transfers %}
+      {% include 'parts/transfer_table.html' with uploads=transfers %}
     </div>
   </div>
 
