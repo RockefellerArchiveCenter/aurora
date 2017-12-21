@@ -404,6 +404,13 @@ class Archives(models.Model):
                     values[field_name] = getattr(bag_data, field_name, None)
         return values
 
+    def get_records_creators(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        record_creators = []
+        for c in bag_data.record_creators.all():
+            record_creators.append(c)
+        return record_creators
+
     class Meta:
         ordering = ['machine_file_upload_time']
 

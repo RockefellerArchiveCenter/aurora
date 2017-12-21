@@ -66,8 +66,7 @@ class AccessionRecordView(RACUserMixin, View):
             start_dates_list.append(bag_data['date_start'])
             end_dates_list.append(bag_data['date_end'])
             appraisal_notes_list.append(transfer.appraisal_note if transfer.appraisal_note else '')
-            for creator in bag_data['record_creators']:
-                creators_list.append(creator)
+            creators_list.append(transfer.get_records_creators())
         for statement in rights_statements_list:
             if statement.rights_basis == 'Copyright':
                 rights_info = statement.get_rights_info_object()
@@ -81,11 +80,10 @@ class AccessionRecordView(RACUserMixin, View):
                 rights_granted = statement.get_rights_granted_objects()
                 for grant in rights_granted:
                     access_note.append(grant.rights_granted_note)
-        print appraisal_notes_list
-
+        record_creators = list(set([item for sublist in creators_list for item in sublist]))
         form = AccessionForm(initial={
-            'title': '{}, {} {}'.format(organization, ', '.join(set(creators_list)), bag_data['record_type']),
-            #faked for right now
+            'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data['record_type']),
+            #faked for now, will eventually get this from ArchivesSpace
             'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
             'start_date': sorted(start_dates_list)[0],
             'end_date': sorted(end_dates_list)[-1],
@@ -97,13 +95,12 @@ class AccessionRecordView(RACUserMixin, View):
             # needs PR from master to be merged into development
             'acquisition_type': 'deposit',
             'appraisal_note': ' '.join(set(appraisal_notes_list)),
-            #need to pass a list of PKs, maybe need a model method?
-            # 'record_creators': [pk list here]
+            'creators': record_creators
             })
         return render(request, self.template_name, {
             'form': form,
             'meta_page_title': 'Create Accession Record',
             'transfers' : transfers_list,
-            'creators' : set(creators_list),
+            'creators' : record_creators,
             'rights_statements' : rights_statements_list
             })

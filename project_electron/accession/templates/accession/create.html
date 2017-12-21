@@ -12,15 +12,8 @@
     <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-body">
-          <div class="form-group">
-            <label>Related Resource</label>
-            <div class="input-group">
-              <input type="text" class="form-control">
-              <span class="input-group-btn">
-                <button type="button" class="btn btn-primary">Go!</button>
-              </span>
-            </div>
-          </div>
+          {% include 'rights/form_fields.html' with field=form.resource %}
+          <button class="btn btn-default">Find in ArchivesSpace</button>
         </div>
       </div>
     </div>
@@ -31,7 +24,15 @@
       {% for field in form %}
         {% if field.errors %}{{field.name}}{{field.errors}}{%endif%}
       {% endfor %}
-      {% include 'rights/form_fields.html' with form=form %}
+      {% include 'rights/form_fields.html' with field=form.title %}
+      <div class="row">
+        <div class="col-md-6">
+          {% include 'rights/form_fields.html' with field=form.start_date%}
+        </div>
+        <div class="col-md-6">
+          {% include 'rights/form_fields.html' with field=form.end_date%}
+        </div>
+      </div>
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -66,6 +67,9 @@
           </div>
         </div>
       </div>
+      {% include 'rights/form_fields.html' with field=form.description %}
+      {% include 'rights/form_fields.html' with field=form.access_restrictions%}
+      {% include 'rights/form_fields.html' with field=form.use_restrictions%}
     </div>
   </div>
 
