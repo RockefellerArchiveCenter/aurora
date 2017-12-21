@@ -107,7 +107,16 @@ class User(AbstractUser):
     AbstractUser._meta.get_field('email').blank = False
 
     def in_group(self,GRP):
-        return User.objects.filter(pk=self.pk, groups_name=GRP).exists()
+        return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
+
+    def is_archivist(self):
+        return self.groups.filter(name__in=['appraisal_archivists', 'accessioning_archivists', 'managing_archivists']).exists()
+
+    def is_manager(self):
+        return self.groups.filter(name='managing_archivists').exists()
+
+    def can_appraise(self):
+        return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
     def check_password_ldap(self, password):
         from orgs.ldap_mixin import _LDAPUserExtension

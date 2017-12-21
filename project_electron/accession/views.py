@@ -4,7 +4,7 @@ from django.views.generic import TemplateView
 
 from django.shortcuts import render
 from orgs.models import Archives
-from orgs.authmixins import ArchivistMixin
+from orgs.authmixins import ArchivistMixin, AccessioningArchivistMixin
 
 
 class AccessionView(ArchivistMixin, TemplateView):
@@ -16,7 +16,7 @@ class AccessionView(ArchivistMixin, TemplateView):
         context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).order_by('created_time')
         return context
 
-class AccessionRecordView(ArchivistMixin, TemplateView):
+class AccessionRecordView(AccessioningArchivistMixin, TemplateView):
     template_name = "accession/create.html"
 
     def get_context_data(self, **kwargs):

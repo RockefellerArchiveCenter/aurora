@@ -90,9 +90,11 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
+
 class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
+    pk_url_kwarg = 'rights_pk'
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)

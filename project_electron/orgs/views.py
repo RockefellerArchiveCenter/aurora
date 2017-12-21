@@ -7,6 +7,7 @@ from django.contrib.auth.views import PasswordChangeView
 from orgs.models import Organization, User, Archives
 from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, UserPasswordChangeForm
 from orgs.authmixins import *
+from orgs.donorauthmixins import DonorOrgReadAccessMixin
 
 from rights.models import RightsStatement
 
@@ -40,7 +41,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(LoggedInMixinDefaults, DetailView):
+class OrganizationDetailView(DonorOrgReadAccessMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
@@ -67,7 +68,7 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(LoggedInMixinDefaults, ListView):
+class OrganizationTransfersView(DonorOrgReadAccessMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     def get_context_data(self,**kwargs):
         context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
@@ -92,7 +93,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, LoggedInMixinDefaults, View):
+class OrganizationTransferDataView(CSVResponseMixin, DonorOrgReadAccessMixin, View):
 
     def get(self, request, *args, **kwargs):
         data = [('Bag Name','Status','Size','Upload Time','Errors')]
@@ -146,7 +147,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersDetailView(SelfOrSuperUserMixin, DetailView):
+class UsersDetailView(SelfOrManagerMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
@@ -182,7 +183,7 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(LoggedInMixinDefaults, ListView):
+class UsersTransfersView(DonorOrgReadAccessMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     def get_context_data(self,**kwargs):
         context = super(UsersTransfersView, self).get_context_data(**kwargs)

@@ -10,9 +10,9 @@ from django.shortcuts import render
 from orgs.models import Archives
 from rights.models import RightsStatement
 
-from orgs.authmixins import LoggedInMixinDefaults
+from orgs.donorauthmixins import DonorOrgReadAccessMixin
 
-class MainView(LoggedInMixinDefaults, TemplateView):
+class MainView(DonorOrgReadAccessMixin, TemplateView):
     template_name = "transfer_app/main.html"
 
 
@@ -44,7 +44,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['average_count'] = sum(context['upload_count_by_month'])/len(context['upload_count_by_month'])
         return context
 
-class RecentTransfersView(LoggedInMixinDefaults, View):
+class RecentTransfersView(DonorOrgReadAccessMixin, View):
     template_name = 'orgs/recent_transfers.html'
 
     def get(self, request, *args, **kwargs):
@@ -62,7 +62,7 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
             'user_uploads_count' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded = request.user).count(),
         })
 
-class TransferDetailView(LoggedInMixinDefaults, DetailView):
+class TransferDetailView(DonorOrgReadAccessMixin, DetailView):
     template_name = 'transfer_app/transfer_detail.html'
     model = Archives
 

@@ -21,7 +21,7 @@
                         </div>
                     {% endif %}
 
-                    {% if request.user.is_superuser %}
+                    {% if request.user.in_group.managing_archivists or request.user.is_superuser %}
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
@@ -41,7 +41,7 @@
                     </div>
                     {% endcomment %}
 
-                    {% if request.user.is_superuser %}
+                    {% if request.user.is_manager or request.user.is_superuser %}
                     <div class="form-group">
                         <label>Organization</label>
                         <select class="form-control" name="organization" required>

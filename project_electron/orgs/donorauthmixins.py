@@ -4,7 +4,7 @@ from rights.models import RightsStatement
 
 class DonorOrgReadAccessMixin(LoggedInMixinDefaults, UserPassesTestMixin):
     def test_func(self, user):
-        if self.request.user.is_staff:
+        if self.request.user.is_archivist:
             return True
         organization = None
 
