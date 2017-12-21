@@ -19,4 +19,4 @@ class Accession(models.Model):
     use_restrictions =      models.TextField()
     resource =              models.URLField()
     acquisition_type =      models.CharField(max_length=200)
-    appraisal_note =        models.TextField()
+    appraisal_note =        models.TextField(blank=True, null=True)
