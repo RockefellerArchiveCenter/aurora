@@ -66,7 +66,7 @@ class AccessionRecordView(RACUserMixin, View):
             start_dates_list.append(bag_data['date_start'])
             end_dates_list.append(bag_data['date_end'])
             appraisal_notes_list.append(transfer.appraisal_note if transfer.appraisal_note else '')
-            creators_list.append(transfer.get_records_creators())
+            creators_list = creators_list + transfer.get_records_creators()
         for statement in rights_statements_list:
             if statement.rights_basis == 'Copyright':
                 rights_info = statement.get_rights_info_object()
@@ -80,7 +80,7 @@ class AccessionRecordView(RACUserMixin, View):
                 rights_granted = statement.get_rights_granted_objects()
                 for grant in rights_granted:
                     access_note.append(grant.rights_granted_note)
-        record_creators = list(set([item for sublist in creators_list for item in sublist]))
+        record_creators = list(set(creators_list))
         form = AccessionForm(initial={
             'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data['record_type']),
             #faked for now, will eventually get this from ArchivesSpace
