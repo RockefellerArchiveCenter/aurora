@@ -33,6 +33,7 @@
           {% include 'rights/form_fields.html' with field=form.end_date%}
         </div>
       </div>
+      <!-- Leaving this unimplemented for now because we'll need to build out ArchivesSpace integration first -->
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
@@ -45,15 +46,13 @@
             </h4>
           </div>
         </div>
-
         <div class="col-md-6">
           <div class="form-group">
             <label>Unidentified Creators</label>
             <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
             <div class="row">
-              {% for creator in creators %}
               <div class="col-md-8">
-                <input type="text" class="form-control" value="{{creator}}" />
+                <input type="text" class="form-control" value="" />
               </div>
               <div class="col-md-4">
                 <select class="form-control">
@@ -62,7 +61,6 @@
                     <option>family</option>
                   </select>
               </div>
-              {% endfor %}
             </div>
           </div>
         </div>
@@ -93,7 +91,7 @@
       </div>
     </div>
     <div class="box-body">
-      {% include 'parts/transfer_table.html' with uploads=transfers %}
+      {% include 'parts/transfer_table.html' with uploads=form.transfers %}
     </div>
   </div>
 

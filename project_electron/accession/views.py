@@ -8,7 +8,7 @@ from django.views.generic import ListView, View
 from django.db.models import CharField
 from django.db.models.functions import Concat
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from orgs.models import Archives, RecordCreators, Organization
 from orgs.authmixins import RACUserMixin
 from accession.models import Accession
@@ -34,14 +34,12 @@ class AccessionRecordView(RACUserMixin, View):
     fields = ['title', 'accession_number','start_date','end_date','extent_files','extent_size','description','access_restrictions','use_restrictions','resource','acquisition_type','appraisal_note']
 
     def post(self, request, *args, **kwargs):
-        print request.POST
         form = self.form_class(request.POST)
-        try:
-            if form.is_valid():
-                return redirect('{% url accession-main %}')
-        except Exception as e:
-            print e
-        return render(request, self.template_name, {'form': form})
+        if form.is_valid():
+            # update status for each transfer
+            # save transfers
+            return redirect('accession-main')
+        return render(request, self.template_name, {'meta_page_title': 'Create Accession Record', 'form': form})
 
     def get(self, request, *args, **kwargs):
         id_list = map(int, request.GET.get('transfers').split(','))
@@ -95,12 +93,11 @@ class AccessionRecordView(RACUserMixin, View):
             # needs PR from master to be merged into development
             'acquisition_type': 'deposit',
             'appraisal_note': ' '.join(set(appraisal_notes_list)),
-            'creators': record_creators
+            'creators': record_creators,
+            'transfers' : transfers_list,
+            'rights_statements' : rights_statements_list
             })
         return render(request, self.template_name, {
             'form': form,
             'meta_page_title': 'Create Accession Record',
-            'transfers' : transfers_list,
-            'creators' : record_creators,
-            'rights_statements' : rights_statements_list
             })

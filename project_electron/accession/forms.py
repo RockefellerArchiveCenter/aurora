@@ -16,7 +16,6 @@ class AccessionForm(forms.ModelForm):
 			'description': 'Content Description',
 			'access_restrictions': 'Access Restrictions Note',
 			'use_restrictions': 'Use Restrictions Note',
-			'creators': 'Creators'
 		}
 		help_texts = {}
 		widgets = {
@@ -32,4 +31,5 @@ class AccessionForm(forms.ModelForm):
 			'extent_size': forms.widgets.HiddenInput(),
 			'acquisition_type': forms.widgets.HiddenInput(),
 			'appraisal_note': forms.widgets.HiddenInput(),
+			'creators': forms.widgets.MultipleHiddenInput(),
 		}
