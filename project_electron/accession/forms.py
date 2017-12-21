@@ -7,21 +7,29 @@ from accession.models import Accession
 class AccessionForm(forms.ModelForm):
 	class Meta:
 		model = Accession
-		fields = ('title','start_date','end_date','description','access_restrictions','use_restrictions')
+		exclude = ('accession_date',)
 		labels = {
+			'resource': 'Related Resource',
 			'title': 'Title',
 			'start_date': 'Start Date',
 			'end_date': 'End Date',
 			'description': 'Content Description',
 			'access_restrictions': 'Access Restrictions Note',
 			'use_restrictions': 'Use Restrictions Note',
+			'creators': 'Creators'
 		}
 		help_texts = {}
 		widgets = {
 			'title': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-			'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
+			'start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+			'end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
 			'description': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
 			'access_restrictions': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
 			'use_restrictions': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+			'resource': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+			'accession_number': forms.widgets.HiddenInput(),
+			'extent_files': forms.widgets.HiddenInput(),
+			'extent_size': forms.widgets.HiddenInput(),
+			'acquisition_type': forms.widgets.HiddenInput(),
+			'appraisal_note': forms.widgets.HiddenInput(),
 		}

@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+# these two imports may be unnecessary later
+import random
+from datetime import datetime
+
 from django.views.generic import ListView, View
 from django.db.models import CharField
 from django.db.models.functions import Concat
 
 from django.shortcuts import render
-from orgs.models import Archives, RecordCreators
+from orgs.models import Archives, RecordCreators, Organization
 from orgs.authmixins import RACUserMixin
 from accession.models import Accession
 from accession.forms import AccessionForm
@@ -43,12 +47,15 @@ class AccessionRecordView(RACUserMixin, View):
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements_list = RightsStatement.objects.filter(archive__in=id_list)
+        # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
+        organization = transfers_list[0].organization
         access_note = []
         use_note = []
         creators_list = []
         descriptions_list = []
         start_dates_list = []
         end_dates_list = []
+        appraisal_notes_list = []
         extent_files = 0
         extent_size = 0
         for transfer in transfers_list:
@@ -58,6 +65,7 @@ class AccessionRecordView(RACUserMixin, View):
             descriptions_list.append(bag_data['internal_sender_description'])
             start_dates_list.append(bag_data['date_start'])
             end_dates_list.append(bag_data['date_end'])
+            appraisal_notes_list.append(transfer.appraisal_note if transfer.appraisal_note else '')
             for creator in bag_data['record_creators']:
                 creators_list.append(creator)
         for statement in rights_statements_list:
@@ -73,15 +81,24 @@ class AccessionRecordView(RACUserMixin, View):
                 rights_granted = statement.get_rights_granted_objects()
                 for grant in rights_granted:
                     access_note.append(grant.rights_granted_note)
+        print appraisal_notes_list
+
         form = AccessionForm(initial={
-            'title': "Ze title",
+            'title': '{}, {} {}'.format(organization, ', '.join(set(creators_list)), bag_data['record_type']),
+            #faked for right now
+            'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
             'start_date': sorted(start_dates_list)[0],
             'end_date': sorted(end_dates_list)[-1],
-            'description' : ' '.join(set(descriptions_list)),
+            'description': ' '.join(set(descriptions_list)),
             'extent_files': extent_files,
             'extent_size': extent_size,
-            'access_restrictions_notes' : ' '.join(set(access_note)),
-            'use_restrictions_notes' : ' '.join(set(use_note))
+            'access_restrictions_notes': ' '.join(set(access_note)),
+            'use_restrictions_notes': ' '.join(set(use_note)),
+            # needs PR from master to be merged into development
+            'acquisition_type': 'deposit',
+            'appraisal_note': ' '.join(set(appraisal_notes_list)),
+            #need to pass a list of PKs, maybe need a model method?
+            # 'record_creators': [pk list here]
             })
         return render(request, self.template_name, {
             'form': form,
