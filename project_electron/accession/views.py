@@ -48,7 +48,12 @@ class AccessionRecordView(RACUserMixin, CreateView):
                 statement.save()
             messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
             return redirect('accession-main')
-        return render(request, self.template_name, {'meta_page_title': 'Create Accession Record', 'form': form, 'rights_statements': rights_statements_list, 'transfers': transfers_list})
+        return render(request, self.template_name, {
+            'meta_page_title': 'Create Accession Record',
+            'form': form,
+            'rights_statements': rights_statements_list,
+            'transfers': transfers_list
+            })
 
     def get(self, request, *args, **kwargs):
         id_list = map(int, request.GET.get('transfers').split(','))
@@ -103,6 +108,7 @@ class AccessionRecordView(RACUserMixin, CreateView):
             # needs PR from master to be merged into development
             'acquisition_type': 'deposit',
             'appraisal_note': ' '.join(set(appraisal_notes_list)),
+            # We'll need to revisit this once we build out ArchivesSpace integration
             'creators': record_creators,
             })
         return render(request, self.template_name, {

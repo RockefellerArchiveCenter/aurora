@@ -31,5 +31,6 @@ class AccessionForm(forms.ModelForm):
 			'extent_size': forms.widgets.HiddenInput(),
 			'acquisition_type': forms.widgets.HiddenInput(),
 			'appraisal_note': forms.widgets.HiddenInput(),
+			# this should be revisited once ArchivesSpace integration is completed
 			'creators': forms.widgets.MultipleHiddenInput(),
 		}
