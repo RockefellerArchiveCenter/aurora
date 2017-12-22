@@ -79,8 +79,26 @@
         <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
       </div>
     </div>
-    <div class="box-body">
-      {% include 'parts/rights_table.html' %}
+    <div class="box-body no-padding">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Record Type</th>
+            <th>Basis</th>
+            <th>Rights Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% regroup rights_statements by rights_group as merged_rights %}
+          {% for statement in merged_rights %}
+          <tr>
+            <td>{{statement.list.0.applies_to_type}}</td>
+            <td>{{statement.list.0.rights_basis}}</td>
+            <td>{{statement.list.0.get_table_data.notes}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
   </div>
 

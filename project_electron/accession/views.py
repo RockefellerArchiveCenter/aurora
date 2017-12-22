@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 
 from django.views.generic import ListView, CreateView
-from django.db.models import CharField
+from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
 
@@ -37,13 +37,14 @@ class AccessionRecordView(RACUserMixin, CreateView):
         form = self.form_class(request.POST)
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
-        rights_statements_list = RightsStatement.objects.filter(archive__in=id_list)
+        rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         if form.is_valid():
             accession = form.save()
+            merged_rights_statements = RightsStatement.merge_rights(rights_statements)
             for transfer in transfers_list:
                 transfer.process_status = 75
                 transfer.save()
-            for statement in rights_statements_list:
+            for statement in merged_rights_statements:
                 statement.accession = accession
                 statement.save()
             messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
@@ -51,15 +52,14 @@ class AccessionRecordView(RACUserMixin, CreateView):
         return render(request, self.template_name, {
             'meta_page_title': 'Create Accession Record',
             'form': form,
-            'rights_statements': rights_statements_list,
+            'rights_statements': rights_statements,
             'transfers': transfers_list
             })
 
     def get(self, request, *args, **kwargs):
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
-        # need to de-duplicate/merge these
-        rights_statements_list = RightsStatement.objects.filter(archive__in=id_list)
+        rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
         access_note = []
@@ -80,7 +80,7 @@ class AccessionRecordView(RACUserMixin, CreateView):
             end_dates_list.append(bag_data['date_end'])
             appraisal_notes_list.append(transfer.appraisal_note if transfer.appraisal_note else '')
             creators_list = creators_list + transfer.get_records_creators()
-        for statement in rights_statements_list:
+        for statement in rights_statements:
             if statement.rights_basis == 'Copyright':
                 rights_info = statement.get_rights_info_object()
                 use_note.append(rights_info.copyright_note)
@@ -115,5 +115,5 @@ class AccessionRecordView(RACUserMixin, CreateView):
             'form': form,
             'meta_page_title': 'Create Accession Record',
             'transfers' : transfers_list,
-            'rights_statements' : rights_statements_list
+            'rights_statements' : rights_statements
             })

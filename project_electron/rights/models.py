@@ -53,6 +53,78 @@ class RightsStatement(models.Model):
         data['notes'] = ', '.join([value for key, value in rights_info.__dict__.items() if '_note' in key.lower()])
         return data
 
+    def get_date_keys(self):
+        if self.rights_basis == 'Other':
+            start_date_key = 'other_rights_applicable_start_date'
+            end_date_key = 'other_rights_applicable_end_date'
+        else:
+            start_date_key = '{}_applicable_start_date'.format(self.rights_basis.lower())
+            end_date_key = '{}_applicable_end_date'.format(self.rights_basis.lower())
+        return {'start': start_date_key, 'end': end_date_key}
+
+    @staticmethod
+    def merge_rights(statement_list):
+
+        def merge_dates(merge_list, dates, merge_to):
+            start_dates = []
+            end_dates = []
+            for merge_item in merge_list:
+                start_dates.append(getattr(merge_item, dates['start']))
+                end_dates.append(getattr(merge_item, dates['end']))
+            setattr(merge_to, dates['start'], sorted(start_dates)[0])
+            setattr(merge_to, dates['end'], sorted(end_dates)[-1])
+
+        statements_by_type = {}
+        merged_statements = []
+        for statement in statement_list:
+            if not statement.rights_basis.lower() in statements_by_type:
+                statements_by_type[statement.rights_basis.lower()] = []
+            statements_by_type[statement.rights_basis.lower()].append(statement)
+        for statement_group in statements_by_type:
+            merged_statement = statements_by_type[statement_group][0]
+            merged_rights_info = merged_statement.get_rights_info_object()
+            if len(statements_by_type[statement_group]) < 2:
+                merged_rights_granted = merged_statement.get_rights_granted_objects()
+            else:
+                merged_rights_granted = []
+                rights_info_to_merge = []
+                rights_granted_groups = {}
+
+                for statement in statements_by_type[statement_group]:
+                    rights_info_to_merge.append(statement.get_rights_info_object())
+                    rights_granted_objects = statement.get_rights_granted_objects()
+                    for rights_granted in rights_granted_objects:
+                        if not '{}{}'.format(rights_granted.act, rights_granted.restriction) in rights_granted_groups:
+                            rights_granted_groups['{}{}'.format(rights_granted.act, rights_granted.restriction)] = []
+                        rights_granted_groups['{}{}'.format(rights_granted.act, rights_granted.restriction)].append(rights_granted)
+
+                date_keys = merged_statement.get_date_keys()
+                merge_dates(rights_info_to_merge, date_keys, merged_rights_info)
+
+                for granted_group in rights_granted_groups:
+                    merged_group = rights_granted_groups[granted_group][0]
+                    merge_dates(rights_granted_groups[granted_group], {'start':'start_date','end':'end_date'}, merged_group)
+                    merged_rights_granted.append(merged_group)
+
+            # Save statement
+            merged_statement.pk = None
+            merged_statement.archive = None
+            merged_statement.save()
+            merged_statements.append(merged_statement)
+
+            # Save Rights Info
+            merged_rights_info.pk = None
+            merged_rights_info.rights_statement = merged_statement
+            merged_rights_info.save()
+
+            # Save granted
+            for granted in merged_rights_granted:
+                granted.pk = None
+                granted.rights_statement = merged_statement
+                granted.save()
+
+        return merged_statements
+
 class RightsStatementCopyright(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     PREMIS_COPYRIGHT_STATUSES = (
