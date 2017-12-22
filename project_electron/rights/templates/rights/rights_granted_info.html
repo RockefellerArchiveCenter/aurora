@@ -7,13 +7,15 @@
 
     <div class="timeline-body">
       <dl>
-        <dt>Applicable Dates</dt>
         {% if rights_granted.start_date and rights_granted_info.end_date %}
+        <dt>Applicable Dates</dt>
         <dd>{{ rights_granted.start_date }} - {{ rights_granted_info.end_date }}</dd>
-        {% elif rights_basis_info.copyright_start_date_period %}
-        <dd>{{ rights_basis_info.copyright_start_date_period }} years after start date</dd>
-        {% else %}
-        <dd>{{ rights_basis_info.copyright_end_date_period }} years after end date</dd>
+        {% elif rights_granted.start_date_period %}
+        <dt>Applicable Date Rules</dt>
+        <dd>{{ rights_granted.start_date_period }} years after start date</dd>
+        {% elif rights_granted.end_date_period %}
+        <dt>Applicable Date Rules</dt>
+        <dd>{{ rights_granted.end_date_period }} years after end date</dd>
         {% endif %}
         <dt>Note</dt>
         <dd>{{ rights_granted.rights_granted_note }}</dd>
