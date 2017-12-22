@@ -197,7 +197,11 @@ class bagChecker():
         if not self.archiveObj.save_bag_data(self.bag_info_data):
             self.ecode = 'BIERR'
             return self.bag_failed()
-        
+
+        if not self.archiveObj.assign_rights():
+            self.ecode = 'RSERR'
+            return self.bag_failed()
+
         BAGLog.log_it('PBAGP', self.archiveObj)
 
         self.cleanup()

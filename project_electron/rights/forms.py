@@ -136,7 +136,6 @@ class RightsOtherRightsForm(forms.ModelForm):
             'other_rights_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
 			'other_rights_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'other_rights_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-			'other_rights_end_date_open': forms.widgets.CheckboxInput(attrs={'class': 'form-control'}),
 			'other_rights_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsLicenseForm(forms.ModelForm):
