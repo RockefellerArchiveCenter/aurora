@@ -68,7 +68,5 @@ class TransferDetailView(DonorOrgReadAccessMixin, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
-        context['rights_statements'] = RightsStatement.objects.filter(archive = context['object'])
         context['meta_page_title'] = self.object.bag_or_failed_name
-
         return context

@@ -17,6 +17,9 @@ from django.http import JsonResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
 
+from orgs.models import Archives, Organization
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
+
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404
@@ -30,12 +33,13 @@ from orgs.form import UserPasswordChangeForm
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
     model = Organization
-    fields = ['name']
+    fields = ['name', 'acquisition_type']
     success_message = "New Organization Saved!"
 
     def get_context_data(self, **kwargs):
         context = super(CreateView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Add Organization'
+        context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context
 
     def get_success_url(self):
@@ -50,19 +54,18 @@ class OrganizationDetailView(DonorOrgReadAccessMixin, DetailView):
         context['meta_page_title'] = self.object.name
         context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
-        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         return context
 
 class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
     model =         Organization
-    fields =        ['is_active','name']
+    fields =        ['is_active','name', 'acquisition_type']
     success_message = "Organization Saved!"
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         context['meta_page_title'] = 'Edit Organization'
+        context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context
 
     def get_success_url(self):

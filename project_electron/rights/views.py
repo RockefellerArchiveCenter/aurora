@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import CreateView, UpdateView, DetailView, DeleteView
+from django.http import Http404
+
+from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 
 from rights.models import *
 from rights.forms import *
 from orgs.authmixins import *
+from transfer_app.mixins import JSONResponseMixin
 
-from django.shortcuts import render, redirect, render_to_response
+from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from orgs.donorauthmixins import DonorOrgReadAccessMixin
 
 class RightsManageView(ManagingArchivistMixin, CreateView):
@@ -66,6 +69,22 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
 
+class RightsAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
+
+    def render_to_response(self, context, **kwargs):
+        if not self.request.is_ajax():
+            raise Http404
+        resp = {'success': 0}
+
+        if 'action' in self.kwargs:
+            obj = get_object_or_404(RightsStatement,pk=context['pk'])
+            if self.kwargs['action'] == 'delete':
+                obj.delete()
+                resp['success'] = 1
+
+
+        return self.render_to_json_response(resp, **kwargs)
+
 class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
@@ -90,7 +109,6 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
-
 class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
@@ -103,6 +121,6 @@ class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
         context['rights_granted_info'] = context['object'].get_rights_granted_objects
         return context
 
-class RightsDeleteView(ManagingArchivistMixin, DeleteView):
+class RightsUpdateView(RACAdminMixin, UpdateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
