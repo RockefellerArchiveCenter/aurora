@@ -1,13 +1,25 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}
-  {{object.organization}} <small>PREMIS Rights Details</small>
-  <a href="{% url 'orgs-detail' object.organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
-{% endblock %}
+{% block h1_title %}{{object.organization}} <small>PREMIS Rights Statement Details</small>{% endblock %}
 
 {% block content %}
 <div class="row">
+  <div class="col-xs-12">
+    <div class="box box-danger">
+      <div class="box-body">
+        <form action="" method="post">{% csrf_token %}
+            <h4><i class="icon fa fa-ban"></i> Are you sure you want to delete this rights statement?</h4>
+            <p>This rights basis and all associated rights granted or restricted will be deleted.</p>
+          <input class="btn btn-primary" type="submit" value="Delete" />
+          <a class="btn btn-danger" href="{% url 'app_home' %}">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mar-top20">
   <div class="col-md-12">
 
     <ul class="timeline">
@@ -41,6 +53,5 @@
     </ul>
   </div>
 </div>
-
 
 {% endblock %}
