@@ -1,5 +1,6 @@
 {% extends 'transfer_app/base.html' %}
-{% load tz %}
+{% load tz static %}
+{% load util %}
 
 {% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span></small>{% endblock %}
 
@@ -18,12 +19,24 @@
 				<h3 class="box-title">Metadata</h3>
 			</div>
 			<div class="box-body">
+				{% if object.get_bag_data %}
 				<dl class="dl-horizontal">
-					<dt>Key</dt>
-					<dd>Value</dd>
-					<dt>Key</dt>
-					<dd>Value</dd>
+					{% for k,v in object.get_bag_data.items %}
+							<dt>{{k}}</dt>
+							<dd>
+								{% if v|get_type == 'list' %}
+									{% for i in v %}
+										{{ i }}<br/>
+									{% endfor %}
+								{% else %}
+									{{v}}
+								{% endif %}
+							</dd>
+					{% endfor %}
 				</dl>
+				{% else %}
+				<p>No metadata available.</p>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -34,10 +47,10 @@
 	<div class="col-md-12">
 		<div class="box box-{% if object.accepted %}success{% elif object.rejected %}danger{% endif %}">
 			<div class="box-header with-border">
-				<h3 class="box-title">Appraisal information</h3>
+				<h3 class="box-title">Appraisal Information</h3>
 			</div>
 			<div class="box-body">
-				<textarea class="form-control" rows="3" placeholder="Appraisal note goes here..." {% if not user.is_appraiser %}disabled{% endif %}></textarea>
+				<p>{{ object.appraisal_note }}</p>
 			</div>
 			{% if user.is_appraiser %}
 			<div class="box-footer">
@@ -50,6 +63,7 @@
 </div>
 {% endif %}
 
+{% if object.get_errors %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-danger">
@@ -58,13 +72,12 @@
 			</div>
 			<div class="box-body">
 
-				{% if object.get_errors %}
 				<table>
 					<thead>
 						<tr>
 							<th>Date/Time</th>
 							<th>Summary</th>
-							<th>Result</th>
+							<th>Details</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -72,29 +85,11 @@
 						<tr>
 							<td>{{ err.created_time }}</td>
 							<td>{{ err.code.code_desc }}</td>
-							<td></td>
+							<td>{% if object.additional_error_info %}{{ object.additional_error_info }}{% else %}No additional details available.{% endif %}</td>
 						</tr>
 						{% endfor %}
 					</tbody>
 				</table>
-				{% else %}
-				<p>No errors</p>
-				{% endif %}
-			</div>
-		</div>
-	</div>
-</div>
-
-
-{% if object.additional_error_info %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-danger">
-			<div class="box-header with-border">
-				<h3 class="box-title">Additional Error Info</h3>
-			</div>
-			<div class="box-body">
-				<p>{{ object.additional_error_info }}</p>
 			</div>
 		</div>
 	</div>
@@ -144,4 +139,14 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+
+{% block modals %}
+	{% include 'rights/modals/confirm_delete.html' %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
 {% endblock %}
