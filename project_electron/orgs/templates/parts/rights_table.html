@@ -1,4 +1,4 @@
-{% if rights_statements %}
+{% if org.rights_statements %}
   <table class="table table-striped rights-table">
     <thead>
       <tr>
@@ -9,7 +9,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for statement in rights_statements %}
+      {% for statement in org.rights_statements %}
       <tr rel="{{ statement.pk }}">
         <td>{{statement.applies_to_type}}</td>
         <td>{{statement.rights_basis}}</td>
@@ -28,7 +28,7 @@
   </table>
 {% endif %}
 
-<p class="has-no-rights-p" {% if rights_statements %}style="display:none"{% endif %}>{{object.name}} has no rights statements.</p>
+<p class="has-no-rights-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
 
 
 

@@ -53,7 +53,6 @@ class OrganizationDetailView(RACUserMixin, DetailView):
         context['meta_page_title'] = self.object.name
         context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
-        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         return context
 
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
@@ -64,7 +63,6 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         context['meta_page_title'] = 'Edit Organization'
         context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context

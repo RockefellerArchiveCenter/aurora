@@ -24,6 +24,9 @@ class Organization(models.Model):
     )
     acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
 
+    def rights_statements(self):
+        return self.rightsstatement_set.all()
+
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
     def active_users(self):
