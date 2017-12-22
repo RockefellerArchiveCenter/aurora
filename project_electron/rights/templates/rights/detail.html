@@ -1,7 +1,10 @@
 {% extends 'transfer_app/base.html' %}
 {% load tz %}
 
-{% block h1_title %}{{object.organization}} <small>PREMIS Rights Details</small>{% endblock %}
+{% block h1_title %}
+  {{object.organization}} <small>PREMIS Rights Details</small>
+  <a href="{% url 'orgs-detail' object.organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+{% endblock %}
 
 {% block content %}
 <div class="row">

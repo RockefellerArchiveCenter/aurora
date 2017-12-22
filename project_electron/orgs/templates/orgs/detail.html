@@ -1,5 +1,5 @@
 {% extends 'transfer_app/base.html' %}
-{% load tz %}
+{% load tz static %}
 
 {% block h1_title %}
 	{{ object.name }}
@@ -133,3 +133,14 @@
 </div>
 
 {% endblock %}
+
+{% block modals %}
+	{% include 'rights/modals/confirm_delete.html' %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
+{% endblock %}
+
+      	

@@ -1,5 +1,5 @@
 {% extends 'transfer_app/base.html' %}
-{% load tz %}
+{% load tz static %}
 {% load util %}
 
 {% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span></small>{% endblock %}
@@ -139,4 +139,14 @@
 </div>
 {% endif %}
 
+{% endblock %}
+
+
+{% block modals %}
+	{% include 'rights/modals/confirm_delete.html' %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
 {% endblock %}
