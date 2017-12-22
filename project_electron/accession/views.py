@@ -4,9 +4,10 @@ from __future__ import unicode_literals
 import random
 from datetime import datetime
 
-from django.views.generic import ListView, View
+from django.views.generic import ListView, CreateView
 from django.db.models import CharField
 from django.db.models.functions import Concat
+from django.contrib import messages
 
 from django.shortcuts import render, redirect
 from orgs.models import Archives, RecordCreators, Organization
@@ -24,14 +25,13 @@ class AccessionView(RACUserMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
-        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier')).order_by('transfer_group')
+        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
         return context
 
-class AccessionRecordView(RACUserMixin, View):
+class AccessionRecordView(RACUserMixin, CreateView):
     template_name = "accession/create.html"
     model = Accession
     form_class = AccessionForm
-    fields = ['title', 'accession_number','start_date','end_date','extent_files','extent_size','description','access_restrictions','use_restrictions','resource','acquisition_type','appraisal_note']
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -46,6 +46,7 @@ class AccessionRecordView(RACUserMixin, View):
             for statement in rights_statements_list:
                 statement.accession = accession
                 statement.save()
+            messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
             return redirect('accession-main')
         return render(request, self.template_name, {'meta_page_title': 'Create Accession Record', 'form': form, 'rights_statements': rights_statements_list, 'transfers': transfers_list})
 
