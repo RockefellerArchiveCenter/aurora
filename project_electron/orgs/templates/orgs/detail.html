@@ -104,8 +104,12 @@
 				<div class="box-body">
 					<div class="row">
 						<div class="col-sm-12">
-							<h4>Acquisition Type</h4>
-							<p>acquisition type goes here.</p>
+							{% if object.acquisition_type %}
+								<h4>Acquisition Type</h4>
+								<p>{{object.get_acquisition_type_display}}</p>
+							{% endif %}
+							<h4>Rights Statements</h4>
+							<p>Rights statements go here.</p>
 						</div>
 					</div>
 				</div>

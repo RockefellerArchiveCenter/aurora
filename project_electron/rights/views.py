@@ -8,6 +8,7 @@ from rights.forms import *
 from orgs.authmixins import *
 
 from django.shortcuts import render, redirect, render_to_response
+from orgs.donorauthmixins import DonorOrgReadAccessMixin
 
 class RightsManageView(RACAdminMixin, CreateView):
     template_name = 'rights/manage.html'
@@ -69,13 +70,13 @@ class RightsGrantsManageView(RACAdminMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
-class RightsDetailView(DetailView):
+class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
+    pk_url_kwarg = 'rights_pk'
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)
-        context['object'] = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
         context['meta_page_title'] = '{} PREMIS rights statement'.format(self.object.organization)
         context['rights_basis_info'] = context['object'].get_rights_info_object
         context['rights_granted_info'] = context['object'].get_rights_granted_objects
