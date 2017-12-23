@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import random
 from datetime import datetime
 
-from django.views.generic import ListView, CreateView
+from django.views.generic import ListView, View
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
@@ -28,7 +28,7 @@ class AccessionView(RACUserMixin, ListView):
         context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
         return context
 
-class AccessionRecordView(RACUserMixin, CreateView):
+class AccessionRecordView(RACUserMixin, View):
     template_name = "accession/create.html"
     model = Accession
     form_class = AccessionForm
@@ -62,21 +62,20 @@ class AccessionRecordView(RACUserMixin, CreateView):
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
-        notes = {}
+        notes = {'appraisal':[]}
         dates = {'start':[], 'end':[]}
         creators_list = []
         descriptions_list = []
-        appraisal_notes_list = []
         extent_files = 0
         extent_size = 0
         for transfer in transfers_list:
             bag_data = transfer.get_bag_data()
-            extent_size = extent_size + int(getattr(bag_data, 'payload_oxum', 0.0).split('.')[0])
-            extent_files = extent_files + int(getattr(bag_data, 'payload_oxum', 0.0).split('.')[1])
-            dates['start'].append(getattr(bag_data, 'date_start', ''))
-            dates['end'].append(getattr(bag_data, 'date_end', ''))
-            descriptions_list.append(getattr(bag_data, 'internal_sender_description', ''))
-            appraisal_notes_list.append(getattr(transfer, 'appraisal_note', ''))
+            extent_size = extent_size + int(bag_data.get('payload_oxum', '0.0').split('.')[0])
+            extent_files = extent_files + int(bag_data.get('payload_oxum', '0.0').split('.')[1])
+            dates['start'].append(bag_data.get('date_start', ''))
+            dates['end'].append(bag_data.get('date_end', ''))
+            notes['appraisal'].append(bag_data.get('appraisal_note', ''))
+            descriptions_list.append(bag_data.get('internal_sender_description', ''))
             creators_list = creators_list + transfer.get_records_creators()
         for statement in rights_statements:
             rights_info = statement.get_rights_info_object()
@@ -98,9 +97,8 @@ class AccessionRecordView(RACUserMixin, CreateView):
             'extent_size': extent_size,
             'access_restrictions': ' '.join(set(notes.get('other', [])+notes.get('license', [])+notes.get('statute', []))),
             'use_restrictions': ' '.join(set(notes.get('copyright', []))),
-            # needs PR from master to be merged into development
-            'acquisition_type': 'deposit',
-            'appraisal_note': ' '.join(set(appraisal_notes_list)),
+            'acquisition_type': organization.acquisition_type,
+            'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
             # We'll need to revisit this once we build out ArchivesSpace integration
             'creators': record_creators,
             })

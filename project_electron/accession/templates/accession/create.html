@@ -21,9 +21,6 @@
 
   <div class="box box-primary">
     <div class="box-body">
-      {% for field in form %}
-        {% if field.errors %}{{field.name}}{{field.errors}}{%endif%}
-      {% endfor %}
       {% include 'rights/form_fields.html' with field=form.title %}
       <div class="row">
         <div class="col-md-6">
