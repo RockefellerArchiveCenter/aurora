@@ -62,49 +62,42 @@ class AccessionRecordView(RACUserMixin, CreateView):
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
-        access_note = []
-        use_note = []
+        notes = {}
+        dates = {'start':[], 'end':[]}
         creators_list = []
         descriptions_list = []
-        start_dates_list = []
-        end_dates_list = []
         appraisal_notes_list = []
         extent_files = 0
         extent_size = 0
         for transfer in transfers_list:
             bag_data = transfer.get_bag_data()
-            extent_size = extent_size + int(bag_data['payload_oxum'].split('.')[0])
-            extent_files = extent_files + int(bag_data['payload_oxum'].split('.')[1])
-            descriptions_list.append(bag_data['internal_sender_description'])
-            start_dates_list.append(bag_data['date_start'])
-            end_dates_list.append(bag_data['date_end'])
-            appraisal_notes_list.append(transfer.appraisal_note if transfer.appraisal_note else '')
+            extent_size = extent_size + int(getattr(bag_data, 'payload_oxum', 0.0).split('.')[0])
+            extent_files = extent_files + int(getattr(bag_data, 'payload_oxum', 0.0).split('.')[1])
+            dates['start'].append(getattr(bag_data, 'date_start', ''))
+            dates['end'].append(getattr(bag_data, 'date_end', ''))
+            descriptions_list.append(getattr(bag_data, 'internal_sender_description', ''))
+            appraisal_notes_list.append(getattr(transfer, 'appraisal_note', ''))
             creators_list = creators_list + transfer.get_records_creators()
         for statement in rights_statements:
-            if statement.rights_basis == 'Copyright':
-                rights_info = statement.get_rights_info_object()
-                use_note.append(rights_info.copyright_note)
-                rights_granted = statement.get_rights_granted_objects()
-                for grant in rights_granted:
-                    use_note.append(grant.rights_granted_note)
-            elif statement.rights_basis == 'Other':
-                rights_info = statement.get_rights_info_object()
-                access_note.append(rights_info.other_rights_note)
-                rights_granted = statement.get_rights_granted_objects()
-                for grant in rights_granted:
-                    access_note.append(grant.rights_granted_note)
+            rights_info = statement.get_rights_info_object()
+            rights_granted = statement.get_rights_granted_objects()
+            if not statement.rights_basis.lower() in notes:
+                notes[statement.rights_basis.lower()] = []
+            notes[statement.rights_basis.lower()].append(next(value for key, value in rights_info.__dict__.iteritems() if '_note' in key.lower()))
+            for grant in rights_granted:
+                notes[statement.rights_basis.lower()].append(grant.rights_granted_note)
         record_creators = list(set(creators_list))
         form = AccessionForm(initial={
             'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data['record_type']),
             #faked for now, will eventually get this from ArchivesSpace
             'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
-            'start_date': sorted(start_dates_list)[0],
-            'end_date': sorted(end_dates_list)[-1],
+            'start_date': sorted(dates.get('start', []))[0],
+            'end_date': sorted(dates.get('end', []))[-1],
             'description': ' '.join(set(descriptions_list)),
             'extent_files': extent_files,
             'extent_size': extent_size,
-            'access_restrictions': ' '.join(set(access_note)),
-            'use_restrictions': ' '.join(set(use_note)),
+            'access_restrictions': ' '.join(set(notes.get('other', [])+notes.get('license', [])+notes.get('statute', []))),
+            'use_restrictions': ' '.join(set(notes.get('copyright', []))),
             # needs PR from master to be merged into development
             'acquisition_type': 'deposit',
             'appraisal_note': ' '.join(set(appraisal_notes_list)),
