@@ -227,8 +227,13 @@ class BagItProfileManageView(View):
 
     def get(self, request, *args, **kwargs):
         if 'profile_pk' in kwargs:
-            # get the data for the bagit profile
-            print "do some stuff"
+            form = BagItProfile.objects.get(pk=kwargs['profile_pk'])
+            bag_info_formset = BagItProfileBagInfoFormset(queryset=BagItProfileBagInfo.objects.filter(bagit_profile=form))
+            manifests_formset = ManifestsRequiredFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=form))
+            serialization_formset = AcceptBagItVersionFormset(queryset=AcceptSerialization.filter.get(bagit_profile=form))
+            version_formset = AcceptBagItVersionFormset(queryset=AcceptBagItVersion.objects.filter(bagit_profile=form))
+            tag_manifests_formset = TagManifestsRequiredFormset(queryset=TagManifestsRequired.objects.filter(bagit_profile=form))
+            tag_files_formset = TagFilesRequiredFormset(queryset=TagFilesRequired.objects.filter(bagit_profile=form))
         else:
             form = BagItProfileForm()
             bag_info_formset = BagItProfileBagInfoFormset()
@@ -237,6 +242,18 @@ class BagItProfileManageView(View):
             version_formset = AcceptBagItVersionFormset()
             tag_manifests_formset = TagManifestsRequiredFormset()
             tag_files_formset = TagFilesRequiredFormset()
+        return render(request, self.template_name, {
+            'form': form,
+            'bag_info_formset': bag_info_formset,
+            'manifests_formset': manifests_formset,
+            'serialization_formset': serialization_formset,
+            'version_formset': version_formset,
+            'tag_manifests_formset': tag_manifests_formset,
+            'tag_files_formset': tag_files_formset,
+            'meta_page_title': 'BagIt Profile',
+            })
+
+    def post(self, request, *args, **kwargs):
         return render(request, self.template_name, {
             'form': form,
             'bag_info_formset': bag_info_formset,

@@ -80,7 +80,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
 class BagItProfileForm(forms.ModelForm):
 	class Meta:
 		model = BagItProfile
-		exclude = ['source_organization','version','bagit_profile_identifier']
+		exclude = []
 		labels = {
 			'external_descripton': 'Description',
 			'allow_fetch': 'Allow Fetch.txt?',
@@ -89,11 +89,11 @@ class BagItProfileForm(forms.ModelForm):
 		widgets = {
 			'applies_to_organization': forms.widgets.HiddenInput(),
 			'contact_email': forms.widgets.HiddenInput(),
+			'source_organization': forms.widgets.HiddenInput(),
+			'version': forms.widgets.HiddenInput(),
+			'bagit_profile_identifier': forms.widgets.HiddenInput(),
 			'external_descripton': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
 			'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
-		}
-		help_texts = {
-			'allow_fetch': 'Is a fetch.txt file allowed within the bag?'
 		}
 
 class ManifestsRequiredForm(forms.ModelForm):
