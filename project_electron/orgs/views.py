@@ -4,15 +4,14 @@ from __future__ import unicode_literals
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 
-from orgs.models import Organization, User
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
 
-from orgs.models import Archives, Organization
-from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
+from orgs.models import Archives, Organization, User, BagItProfile
+from orgs.form import OrgUserUpdateForm, UserPasswordChangeForm, RACSuperUserUpdateForm, BagItProfileForm, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagManifestsRequiredFormset, TagFilesRequiredFormset
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -20,9 +19,6 @@ from django.shortcuts import get_object_or_404
 
 from orgs.authmixins import *
 from orgs.formatmixins import CSVResponseMixin
-
-from orgs.form import UserPasswordChangeForm
-
 
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
@@ -224,3 +220,30 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.request.user.pk})
+
+class BagItProfileManageView(View):
+    template_name = 'orgs/bagit_profiles/manage.html'
+    model = BagItProfile
+
+    def get(self, request, *args, **kwargs):
+        if 'profile_pk' in kwargs:
+            # get the data for the bagit profile
+            print "do some stuff"
+        else:
+            form = BagItProfileForm()
+            bag_info_formset = BagItProfileBagInfoFormset()
+            manifests_formset = ManifestsRequiredFormset()
+            serialization_formset = AcceptSerializationFormset()
+            version_formset = AcceptBagItVersionFormset()
+            tag_manifests_formset = TagManifestsRequiredFormset()
+            tag_files_formset = TagFilesRequiredFormset()
+        return render(request, self.template_name, {
+            'form': form,
+            'bag_info_formset': bag_info_formset,
+            'manifests_formset': manifests_formset,
+            'serialization_formset': serialization_formset,
+            'version_formset': version_formset,
+            'tag_manifests_formset': tag_manifests_formset,
+            'tag_files_formset': tag_files_formset,
+            'meta_page_title': 'BagIt Profile',
+            })

@@ -1,0 +1,46 @@
+{% extends 'transfer_app/base.html' %}
+
+{% block h1_title %}BagIt Profile{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-body">
+				<form action="" method="post">
+					{% csrf_token %}
+
+					{% for hidden in form.hidden_fields %}
+				    {{hidden}}
+				  {% endfor %}
+
+					{{form}}
+
+					{% for form in manifests_formset %}
+						{{form}}
+					{% endfor %}
+					{% for form in serialization_formset %}
+						{{form}}
+					{% endfor %}
+					{% for form in version_formset %}
+						{{form}}
+					{% endfor %}
+					{% for form in tag_manifests_formset %}
+						{{form}}
+					{% endfor %}
+					{% for form in tag_files_formset %}
+						{{form}}
+					{% endfor %}
+
+					<h4>BagInfo</h4>
+					{% for form in bag_info_formset %}
+						{{form}}
+					{% endfor %}
+				
+				</form>
+			</div>
+
+		</div>
+	</div>
+</div>
+{% endblock %}

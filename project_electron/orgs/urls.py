@@ -9,5 +9,6 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/edit/$', OrganizationEditView.as_view(), name='orgs-edit'),
     url(r'^(?P<pk>\d+)/transfers/$', OrganizationTransfersView.as_view(), name='orgs-transfers-report'),
     url(r'^(?P<pk>\d+)/transfers/csv/$', OrganizationTransferDataView.as_view(), name='orgs-transfer-data'),
-
+    url(r'^(?P<pk>\d+)/bagit_profiles/add/$', BagItProfileManageView.as_view(), name='bagit-profiles-add'),
+    url(r'^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/$', BagItProfileManageView.as_view(), name='bagit-profiles-add'),
 ]

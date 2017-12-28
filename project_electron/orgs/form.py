@@ -81,39 +81,111 @@ class BagItProfileForm(forms.ModelForm):
 	class Meta:
 		model = BagItProfile
 		exclude = ['source_organization','version','bagit_profile_identifier']
+		labels = {
+			'external_descripton': 'Description',
+			'allow_fetch': 'Allow Fetch.txt?',
+			'serialization': 'Serialization allowed?'
+		}
+		widgets = {
+			'applies_to_organization': forms.widgets.HiddenInput(),
+			'contact_email': forms.widgets.HiddenInput(),
+			'external_descripton': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+			'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
+		}
+		help_texts = {
+			'allow_fetch': 'Is a fetch.txt file allowed within the bag?'
+		}
+
+class ManifestsRequiredForm(forms.ModelForm):
+	class Meta:
+		model = ManifestsRequired
+		fields = ['name',]
+		labels = {'name': 'Required Manifests'}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+
+class AcceptSerializationForm(forms.ModelForm):
+	class Meta:
+		model = AcceptSerialization
+		fields = ['name',]
+		labels = {'name': 'Serializations Accepted'}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+
+class AcceptBagItVersionForm(forms.ModelForm):
+	class Meta:
+		model = AcceptSerialization
+		fields = ['name',]
+		labels = {'name': 'BagIt Versions Accepted'}
+		widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control'})}
+
+class TagManifestsRequiredForm(forms.ModelForm):
+	class Meta:
+		model = TagManifestsRequired
+		fields = ['name',]
+		labels = {'name': 'Tag Manifest Types Required'}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+
+class TagFilesRequiredForm(forms.ModelForm):
+	class Meta:
+		model = TagFilesRequired
+		fields = ['name',]
+		labels = {'name': 'Tag Files Required'}
+		widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control'})}
 
 BagItProfileBagInfoFormset = forms.inlineformset_factory(
+	BagItProfile,
 	BagItProfileBagInfo,
-	BagItProfileBagInfoValues,
-	exclude=('bagit_profile',)
+	fields=('field', 'required', 'repeatable'),
+	extra=1,
+	max_num=1,
+	can_delete=False,
 )
 
 ManifestsRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	ManifestsRequired,
-	fields=('name',)
+	fields=('name',),
+	extra=1,
+	max_num=1,
+	can_delete=False,
+	form=ManifestsRequiredForm,
 )
 
 AcceptSerializationFormset = forms.inlineformset_factory(
 	BagItProfile,
 	AcceptSerialization,
-	fields=('name',)
+	fields=('name',),
+	extra=1,
+	max_num=1,
+	can_delete=False,
+	form=AcceptSerializationForm,
 )
 
 AcceptBagItVersionFormset = forms.inlineformset_factory(
 	BagItProfile,
 	AcceptBagItVersion,
-	fields=('name',)
+	fields=('name',),
+	extra=1,
+	max_num=1,
+	can_delete=False,
+	form=AcceptBagItVersionForm,
 )
 
 TagManifestsRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	TagManifestsRequired,
-	fields=('name',)
+	fields=('name',),
+	extra=1,
+	max_num=1,
+	can_delete=False,
+	form=TagManifestsRequiredForm,
 )
 
 TagFilesRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	TagFilesRequired,
-	fields=('name',)
+	fields=('name',),
+	extra=1,
+	max_num=1,
+	can_delete=False,
+	form=TagFilesRequiredForm,
 )
