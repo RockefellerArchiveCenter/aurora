@@ -532,7 +532,7 @@ class TagFilesRequired(models.Model):
     bagit_profile = models.ForeignKey(BagItProfile)
 
 class BagItProfileBagInfo(models.Model):
-    bag_it_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile)
     FIELD_CHOICES = (
         ('source_organization', 'Source-Organization'),
         ('organization_address', 'Organization-Address'),

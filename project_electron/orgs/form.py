@@ -3,8 +3,7 @@ from django import forms
 from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm
 from django.utils.translation import ugettext, ugettext_lazy as _
 
-from orgs.models import User
-
+from orgs.models import User, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagManifestsRequired, TagFilesRequired
 
 
 class OrgUserUpdateForm(forms.ModelForm):
@@ -77,3 +76,44 @@ class UserPasswordChangeForm(PasswordChangeForm):
 				self.user.save()
 			return self.user
 		return None
+
+class BagItProfileForm(forms.ModelForm):
+	class Meta:
+		model = BagItProfile
+		exclude = ['source_organization','version','bagit_profile_identifier']
+
+BagItProfileBagInfoFormset = forms.inlineformset_factory(
+	BagItProfileBagInfo,
+	BagItProfileBagInfoValues,
+	exclude=('bagit_profile',)
+)
+
+ManifestsRequiredFormset = forms.inlineformset_factory(
+	BagItProfile,
+	ManifestsRequired,
+	fields=('name',)
+)
+
+AcceptSerializationFormset = forms.inlineformset_factory(
+	BagItProfile,
+	AcceptSerialization,
+	fields=('name',)
+)
+
+AcceptBagItVersionFormset = forms.inlineformset_factory(
+	BagItProfile,
+	AcceptBagItVersion,
+	fields=('name',)
+)
+
+TagManifestsRequiredFormset = forms.inlineformset_factory(
+	BagItProfile,
+	TagManifestsRequired,
+	fields=('name',)
+)
+
+TagFilesRequiredFormset = forms.inlineformset_factory(
+	BagItProfile,
+	TagFilesRequired,
+	fields=('name',)
+)
