@@ -516,7 +516,11 @@ class AcceptSerialization(models.Model):
     bagit_profile = models.ForeignKey(BagItProfile)
 
 class AcceptBagItVersion(models.Model):
-    name = models.DecimalField(max_digits=5, decimal_places=2)
+    BAGIT_VERSION_NAME_CHOICES = (
+        (0.96, 0.96),
+        (0.97, 0.97),
+    )
+    name = models.DecimalField(choices=BAGIT_VERSION_NAME_CHOICES, max_digits=5, decimal_places=2)
     bagit_profile = models.ForeignKey(BagItProfile)
 
 class TagManifestsRequired(models.Model):

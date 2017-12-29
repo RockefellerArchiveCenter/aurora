@@ -16,20 +16,49 @@
 
 					{{form}}
 
+					<h4>Manifests Required</h4>
+					{{ manifests_formset.management_form }}
+					{{ manifests_formset.non_form_errors }}
 					{% for form in manifests_formset %}
-						{{form}}
+						{% for field in form %}
+							{{field}}
+						{% endfor %}
 					{% endfor %}
+
+					<h4>Serializations Accepted</h4>
+					{{ serialization_formset.management_form }}
+					{{ serialization_formset.non_form_errors }}
 					{% for form in serialization_formset %}
-						{{form}}
+						{% for field in form %}
+							{{field}}
+						{% endfor %}
 					{% endfor %}
+
+					<h4>BagIt Versions Accepted</h4>
+					{{ version_formset.management_form }}
+					{{ version_formset.non_form_errors }}
 					{% for form in version_formset %}
-						{{form}}
+						{% for field in form %}
+							{{field}}
+						{% endfor %}
 					{% endfor %}
+
+					<h4>Tag Manifests Required</h4>
+					{{ tag_manifests_formset.management_form }}
+					{{ tag_manifests_formset.non_form_errors }}
 					{% for form in tag_manifests_formset %}
-						{{form}}
+						{% for field in form %}
+							{{field}}
+						{% endfor %}
 					{% endfor %}
+
+					<h4>Tag Files Required</h4>
+					{{ tag_files_formset.management_form }}
+					{{ tag_files_formset.non_form_errors }}
 					{% for form in tag_files_formset %}
-						{{form}}
+						{% for field in form %}
+							{{field}}
+						{% endfor %}
 					{% endfor %}
 
 					<h4>BagInfo</h4>
