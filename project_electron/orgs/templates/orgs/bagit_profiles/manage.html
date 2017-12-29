@@ -20,45 +20,55 @@
 					{{ manifests_formset.management_form }}
 					{{ manifests_formset.non_form_errors }}
 					{% for form in manifests_formset %}
+						<div class="{{form.prefix}}">
 						{% for field in form %}
 							{{field}}
 						{% endfor %}
+						</div>
 					{% endfor %}
 
 					<h4>Serializations Accepted</h4>
 					{{ serialization_formset.management_form }}
 					{{ serialization_formset.non_form_errors }}
 					{% for form in serialization_formset %}
+						<div class="{{form.prefix}}">
 						{% for field in form %}
 							{{field}}
 						{% endfor %}
+						</div>
 					{% endfor %}
 
 					<h4>BagIt Versions Accepted</h4>
 					{{ version_formset.management_form }}
 					{{ version_formset.non_form_errors }}
 					{% for form in version_formset %}
+						<div class="{{form.prefix}}">
 						{% for field in form %}
 							{{field}}
 						{% endfor %}
+						</div>
 					{% endfor %}
 
 					<h4>Tag Manifests Required</h4>
 					{{ tag_manifests_formset.management_form }}
 					{{ tag_manifests_formset.non_form_errors }}
 					{% for form in tag_manifests_formset %}
+						<div class="{{form.prefix}}">
 						{% for field in form %}
 							{{field}}
 						{% endfor %}
+						</div>
 					{% endfor %}
 
 					<h4>Tag Files Required</h4>
 					{{ tag_files_formset.management_form }}
 					{{ tag_files_formset.non_form_errors }}
 					{% for form in tag_files_formset %}
+						<div class="{{form.prefix}}">
 						{% for field in form %}
 							{{field}}
 						{% endfor %}
+						</div>
 					{% endfor %}
 
 					<h4>BagInfo</h4>
@@ -75,4 +85,54 @@
 		</div>
 	</div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  function updateElementIndex(el, prefix, ndx) {
+		var id_regex = new RegExp('(' + prefix + '-\\d+)');
+		var replacement = prefix + '-' + ndx;
+		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+		if (el.id) el.id = el.id.replace(id_regex, replacement);
+		if (el.name) el.name = el.name.replace(id_regex, replacement);
+	}
+  function addForm(select, prefix) {
+    var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+		var value = $(select).find(":selected").text();
+		console.log(value)
+    var row = $(select).parent().clone(true).get(0);
+    $(row).removeAttr('id').insertAfter($('div[class^='+prefix+']:last'));
+		$(row).children('select').children('option[value="'+value+'"]').remove();
+		$(row).children().each(function() {
+	    updateElementIndex(this, prefix, formCount);
+	    $(this).val('');
+    });
+    $(row).find('.delete-row').click(function() {
+	    deleteForm(this, prefix);
+    });
+    $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+    return false;
+  }
+  function deleteForm(btn, prefix) {
+    $(btn).parents('.dynamic-form').remove();
+    var forms = $('.dynamic-form');
+    $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+    for (var i=0, formCount=forms.length; i<formCount; i++) {
+	    $(forms.get(i)).children().not(':last').children().each(function() {
+	        updateElementIndex(this, prefix, i);
+	    });
+    }
+    return false;
+  }
+  $(document).ready(function() {
+    $('.multi-value').on('change', function() {
+			if ($(this).children('option').size() > 2) {
+	    	return addForm(this, $(this).attr('name').substr(0, $(this).attr('name').indexOf('-')));
+			}
+    });
+    $('.delete-row').click(function() {
+	    return deleteForm(this, 'form');
+    })
+  });
+</script>
 {% endblock %}

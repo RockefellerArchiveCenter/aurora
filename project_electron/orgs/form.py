@@ -100,25 +100,25 @@ class ManifestsRequiredForm(forms.ModelForm):
 	class Meta:
 		model = ManifestsRequired
 		fields = ['name',]
-		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 class AcceptSerializationForm(forms.ModelForm):
 	class Meta:
 		model = AcceptSerialization
 		fields = ['name',]
-		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 class AcceptBagItVersionForm(forms.ModelForm):
 	class Meta:
 		model = AcceptSerialization
 		fields = ['name',]
-		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 class TagManifestsRequiredForm(forms.ModelForm):
 	class Meta:
 		model = TagManifestsRequired
 		fields = ['name',]
-		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control'})}
+		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 class TagFilesRequiredForm(forms.ModelForm):
 	class Meta:
@@ -138,7 +138,7 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	ManifestsRequired,
 	fields=('name',),
-	extra=2,
+	extra=1,
 	can_delete=False,
 	form=ManifestsRequiredForm,
 )
@@ -147,7 +147,7 @@ AcceptSerializationFormset = forms.inlineformset_factory(
 	BagItProfile,
 	AcceptSerialization,
 	fields=('name',),
-	extra=3,
+	extra=1,
 	can_delete=False,
 	form=AcceptSerializationForm,
 )
@@ -156,7 +156,7 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
 	BagItProfile,
 	AcceptBagItVersion,
 	fields=('name',),
-	extra=2,
+	extra=1,
 	can_delete=False,
 	form=AcceptBagItVersionForm,
 )
@@ -165,7 +165,7 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	TagManifestsRequired,
 	fields=('name',),
-	extra=2,
+	extra=1,
 	can_delete=False,
 	form=TagManifestsRequiredForm,
 )
@@ -174,7 +174,7 @@ TagFilesRequiredFormset = forms.inlineformset_factory(
 	BagItProfile,
 	TagFilesRequired,
 	fields=('name',),
-	extra=10,
+	extra=1,
 	can_delete=False,
 	form=TagFilesRequiredForm,
 )
