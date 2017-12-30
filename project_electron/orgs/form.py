@@ -96,6 +96,27 @@ class BagItProfileForm(forms.ModelForm):
 			'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
 		}
 
+class BagItProfileBagInfoForm(forms.ModelForm):
+	class Meta:
+		model = BagItProfileBagInfo
+		exclude = []
+		labels = {
+			'field': 'Field',
+			'required': 'Required?',
+			'repeateable': 'Repeatable?',
+		}
+		widgets = {
+			'field': forms.widgets.Select(attrs={'class': 'form-control multi-value'}),
+			'required': forms.widgets.CheckboxInput(),
+			'repeatable': forms.widgets.CheckboxInput(),
+		}
+
+class BagItProfileBagInfoValuesForm(forms.ModelForm):
+	class Meta:
+		model = BagItProfileBagInfoValues
+		fields = ['values',]
+		widgets = {'values': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
+
 class ManifestsRequiredForm(forms.ModelForm):
 	class Meta:
 		model = ManifestsRequired
@@ -130,8 +151,18 @@ BagItProfileBagInfoFormset = forms.inlineformset_factory(
 	BagItProfile,
 	BagItProfileBagInfo,
 	fields=('field', 'required', 'repeatable'),
-	extra=10,
+	extra=1,
 	can_delete=False,
+	form=BagItProfileBagInfoForm
+)
+
+BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
+	BagItProfileBagInfo,
+	BagItProfileBagInfoValues,
+	fields=('values',),
+	extra=1,
+	can_delete=False,
+	form=BagItProfileBagInfoValuesForm
 )
 
 ManifestsRequiredFormset = forms.inlineformset_factory(

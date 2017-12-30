@@ -72,12 +72,24 @@
 					{% endfor %}
 
 					<h4>BagInfo</h4>
-					{% for form in bag_info_formset %}
-						{{form}}
-					{% endfor %}
 
-					<button type="submit" class="btn btn-primary">Submit</button>
-					<a href="javascript:history.back()" class="btn btn-danger">Cancel</a>
+						{% for form in bag_info_formset %}
+						<div class="{{form.prefix}}">
+							{{form}}
+							{% for form in bag_info_values_formset %}
+								<div class="{{form.prefix}}">
+								{{form}}
+								</div>
+							{% endfor %}
+							</div>
+						{% endfor %}
+
+					<div class="row">
+						<div class="col-md-12">
+							<button type="submit" class="btn btn-primary">Submit</button>
+							<a href="javascript:history.back()" class="btn btn-danger">Cancel</a>
+						</div>
+					</div>
 
 				</form>
 			</div>
@@ -98,9 +110,8 @@
 	}
   function addForm(select, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-		var value = $(select).find(":selected").text();
-		console.log(value)
-    var row = $(select).parent().clone(true).get(0);
+		var value = $(select).find(":selected").val();
+    var row = $(select).parents('div[class^='+prefix+']').clone(true).get(0);
     $(row).removeAttr('id').insertAfter($('div[class^='+prefix+']:last'));
 		$(row).children('select').children('option[value="'+value+'"]').remove();
 		$(row).children().each(function() {

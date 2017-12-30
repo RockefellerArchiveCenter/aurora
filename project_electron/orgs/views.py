@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.contrib.messages.views import SuccessMessageMixin
 
 from orgs.models import Archives, Organization, User, BagItProfile
-from orgs.form import OrgUserUpdateForm, UserPasswordChangeForm, RACSuperUserUpdateForm, BagItProfileForm, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagManifestsRequiredFormset, TagFilesRequiredFormset
+from orgs.form import OrgUserUpdateForm, UserPasswordChangeForm, RACSuperUserUpdateForm, BagItProfileForm, BagItProfileBagInfoFormset, BagItProfileBagInfoValuesFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagManifestsRequiredFormset, TagFilesRequiredFormset
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
@@ -229,6 +229,7 @@ class BagItProfileManageView(View):
         if 'profile_pk' in kwargs:
             form = BagItProfile.objects.get(pk=kwargs['profile_pk'])
             bag_info_formset = BagItProfileBagInfoFormset(queryset=BagItProfileBagInfo.objects.filter(bagit_profile=form))
+            bag_info_values_formset = BagItProfileBagInfoValuesFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=form))
             manifests_formset = ManifestsRequiredFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=form))
             serialization_formset = AcceptBagItVersionFormset(queryset=AcceptSerialization.filter.get(bagit_profile=form))
             version_formset = AcceptBagItVersionFormset(queryset=AcceptBagItVersion.objects.filter(bagit_profile=form))
@@ -237,6 +238,7 @@ class BagItProfileManageView(View):
         else:
             form = BagItProfileForm()
             bag_info_formset = BagItProfileBagInfoFormset()
+            bag_info_values_formset = BagItProfileBagInfoValuesFormset()
             manifests_formset = ManifestsRequiredFormset()
             serialization_formset = AcceptSerializationFormset()
             version_formset = AcceptBagItVersionFormset()
@@ -245,6 +247,7 @@ class BagItProfileManageView(View):
         return render(request, self.template_name, {
             'form': form,
             'bag_info_formset': bag_info_formset,
+            'bag_info_values_formset': bag_info_values_formset,
             'manifests_formset': manifests_formset,
             'serialization_formset': serialization_formset,
             'version_formset': version_formset,
