@@ -103,7 +103,7 @@ class BagItProfileBagInfoForm(forms.ModelForm):
 		labels = {
 			'field': 'Field',
 			'required': 'Required?',
-			'repeateable': 'Repeatable?',
+			'repeatable': 'Repeatable?',
 		}
 		widgets = {
 			'field': forms.widgets.Select(attrs={'class': 'form-control multi-value'}),

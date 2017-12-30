@@ -1,6 +1,6 @@
 {% extends 'transfer_app/base.html' %}
 
-{% block h1_title %}BagIt Profile{% endblock %}
+{% block h1_title %}{{organization}} BagIt Profile <span class="badge">Version {{form.version.value}}</span>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -20,68 +20,62 @@
 					{{ manifests_formset.management_form }}
 					{{ manifests_formset.non_form_errors }}
 					{% for form in manifests_formset %}
-						<div class="{{form.prefix}}">
-						{% for field in form %}
-							{{field}}
-						{% endfor %}
-						</div>
+						{% include 'orgs/bagit_profiles/repeating_form.html' %}
 					{% endfor %}
 
 					<h4>Serializations Accepted</h4>
 					{{ serialization_formset.management_form }}
 					{{ serialization_formset.non_form_errors }}
 					{% for form in serialization_formset %}
-						<div class="{{form.prefix}}">
-						{% for field in form %}
-							{{field}}
-						{% endfor %}
-						</div>
+						{% include 'orgs/bagit_profiles/repeating_form.html' %}
 					{% endfor %}
 
 					<h4>BagIt Versions Accepted</h4>
 					{{ version_formset.management_form }}
 					{{ version_formset.non_form_errors }}
 					{% for form in version_formset %}
-						<div class="{{form.prefix}}">
-						{% for field in form %}
-							{{field}}
-						{% endfor %}
-						</div>
+						{% include 'orgs/bagit_profiles/repeating_form.html' %}
 					{% endfor %}
 
 					<h4>Tag Manifests Required</h4>
 					{{ tag_manifests_formset.management_form }}
 					{{ tag_manifests_formset.non_form_errors }}
 					{% for form in tag_manifests_formset %}
-						<div class="{{form.prefix}}">
-						{% for field in form %}
-							{{field}}
-						{% endfor %}
-						</div>
+						{% include 'orgs/bagit_profiles/repeating_form.html' %}
 					{% endfor %}
 
 					<h4>Tag Files Required</h4>
 					{{ tag_files_formset.management_form }}
 					{{ tag_files_formset.non_form_errors }}
 					{% for form in tag_files_formset %}
-						<div class="{{form.prefix}}">
-						{% for field in form %}
-							{{field}}
-						{% endfor %}
-						</div>
+						{% include 'orgs/bagit_profiles/repeating_form.html' %}
 					{% endfor %}
 
-					<h4>BagInfo</h4>
+					<h4>BagInfo Metadata</h4>
 
 						{% for form in bag_info_formset %}
-						<div class="{{form.prefix}}">
-							{{form}}
-							{% for form in bag_info_values_formset %}
-								<div class="{{form.prefix}}">
-								{{form}}
+						<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} well">
+							<div class="row">
+								<div class="col-xs-8">
+									{{form.field}}
 								</div>
-							{% endfor %}
+								<div class="col-xs-4">
+									{{form.required.label_tag}}
+									{{form.required}}
+									{{form.repeatable.label_tag}}
+									{{form.repeatable}}
+									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
+								</div>
 							</div>
+							<div class="row">
+								<div class="col-xs-8">
+									{% for form in bag_info_values_formset %}
+										{{form.values}}
+									{% endfor %}
+								</div>
+							</div>
+						</div>
+						<a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add Metadata Field</a>
 						{% endfor %}
 
 					<div class="row">
@@ -102,19 +96,21 @@
 {% block extra_js %}
 <script type="text/javascript">
   function updateElementIndex(el, prefix, ndx) {
+    console.log(el)
 		var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    console.log(id_regex)
 		var replacement = prefix + '-' + ndx;
+    console.log(replacement)
 		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
 	}
-  function addForm(select, prefix) {
+  function addForm(btn, prefix) {
+		console.log(prefix)
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-		var value = $(select).find(":selected").val();
-    var row = $(select).parents('div[class^='+prefix+']').clone(true).get(0);
-    $(row).removeAttr('id').insertAfter($('div[class^='+prefix+']:last'));
-		$(row).children('select').children('option[value="'+value+'"]').remove();
-		$(row).children().each(function() {
+    var row = $('.'+prefix+':first').clone(true).get(0);
+    $(row).removeAttr('id').insertAfter($('.'+prefix+':last')).find('.hidden').removeClass('hidden');
+    $(row).children().children().children().each(function() {
 	    updateElementIndex(this, prefix, formCount);
 	    $(this).val('');
     });
@@ -125,8 +121,8 @@
     return false;
   }
   function deleteForm(btn, prefix) {
-    $(btn).parents('.dynamic-form').remove();
-    var forms = $('.dynamic-form');
+    $(btn).parents('.'+prefix).remove();
+    var forms = $('.'+prefix);
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
     for (var i=0, formCount=forms.length; i<formCount; i++) {
 	    $(forms.get(i)).children().not(':last').children().each(function() {
@@ -136,13 +132,11 @@
     return false;
   }
   $(document).ready(function() {
-    $('.multi-value').on('change', function() {
-			if ($(this).children('option').size() > 2) {
-	    	return addForm(this, $(this).attr('name').substr(0, $(this).attr('name').indexOf('-')));
-			}
+    $('.add-row').click(function() {
+	    return addForm(this, $(this).data('target'));
     });
     $('.delete-row').click(function() {
-	    return deleteForm(this, 'form');
+	    return deleteForm(this, $(this).data('target'));
     })
   });
 </script>

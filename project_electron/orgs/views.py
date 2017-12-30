@@ -226,17 +226,24 @@ class BagItProfileManageView(View):
     model = BagItProfile
 
     def get(self, request, *args, **kwargs):
+        applies_to_organization = Organization.objects.get(pk=self.kwargs['pk'])
+        source_organization = self.request.user.organization
         if 'profile_pk' in kwargs:
             form = BagItProfile.objects.get(pk=kwargs['profile_pk'])
             bag_info_formset = BagItProfileBagInfoFormset(queryset=BagItProfileBagInfo.objects.filter(bagit_profile=form))
-            bag_info_values_formset = BagItProfileBagInfoValuesFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=form))
+            bag_info_values_formset = BagItProfileBagInfoValuesFormset(queryset=ManifestsRequired.objects.filter(bagit_profile_baginfo=bag_info_formset))
             manifests_formset = ManifestsRequiredFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=form))
             serialization_formset = AcceptBagItVersionFormset(queryset=AcceptSerialization.filter.get(bagit_profile=form))
             version_formset = AcceptBagItVersionFormset(queryset=AcceptBagItVersion.objects.filter(bagit_profile=form))
             tag_manifests_formset = TagManifestsRequiredFormset(queryset=TagManifestsRequired.objects.filter(bagit_profile=form))
             tag_files_formset = TagFilesRequiredFormset(queryset=TagFilesRequired.objects.filter(bagit_profile=form))
         else:
-            form = BagItProfileForm()
+            form = BagItProfileForm(
+                initial={
+                    'applies_to_organization': applies_to_organization,
+                    'source_organization': source_organization,
+                }
+            )
             bag_info_formset = BagItProfileBagInfoFormset()
             bag_info_values_formset = BagItProfileBagInfoValuesFormset()
             manifests_formset = ManifestsRequiredFormset()
@@ -254,6 +261,7 @@ class BagItProfileManageView(View):
             'tag_manifests_formset': tag_manifests_formset,
             'tag_files_formset': tag_files_formset,
             'meta_page_title': 'BagIt Profile',
+            'organization': applies_to_organization,
             })
 
     def post(self, request, *args, **kwargs):
