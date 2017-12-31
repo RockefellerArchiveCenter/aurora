@@ -147,15 +147,6 @@ class TagFilesRequiredForm(forms.ModelForm):
 		fields = ['name',]
 		widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control'})}
 
-BagItProfileBagInfoFormset = forms.inlineformset_factory(
-	BagItProfile,
-	BagItProfileBagInfo,
-	fields=('field', 'required', 'repeatable'),
-	extra=1,
-	can_delete=False,
-	form=BagItProfileBagInfoForm
-)
-
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
 	BagItProfileBagInfo,
 	BagItProfileBagInfoValues,
@@ -163,6 +154,47 @@ BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
 	extra=1,
 	can_delete=False,
 	form=BagItProfileBagInfoValuesForm
+)
+
+# Based on https://micropyramid.com/blog/how-to-use-nested-formsets-in-django/
+class BaseBagInfoFormset(forms.BaseInlineFormSet):
+	def add_fields(self, form, index):
+		super(BaseBagInfoFormset, self).add_fields(form, index)
+
+		form.nested = BagItProfileBagInfoValuesFormset(
+                        instance=form.instance,
+                        data=form.data if form.is_bound else None,
+                        files=form.files if form.is_bound else None,
+                        prefix='baginfovalues-%s-%s' % (
+                            form.prefix,
+                            BagItProfileBagInfoValuesFormset.get_default_prefix()),
+                        )
+	def is_valid(self):
+		result = super(BaseChildrenFormset, self).is_valid()
+
+		if self.is_bound:
+			for form in self.forms:
+				if hasattr(form, 'nested'):
+					result = result and form.nested.is_valid()
+		return result
+
+	def save(self, commit=True):
+		result = super(BaseChildrenFormset, self).save(commit=commit)
+
+		for form in self.forms:
+			if hasattr(form, 'nested'):
+				if not self._should_delete_form(form):
+					form.nested.save(commit=commit)
+		return result
+
+BagItProfileBagInfoFormset = forms.inlineformset_factory(
+	BagItProfile,
+	BagItProfileBagInfo,
+	fields=('field', 'required', 'repeatable'),
+	extra=1,
+	can_delete=False,
+	form=BagItProfileBagInfoForm,
+	formset=BaseBagInfoFormset
 )
 
 ManifestsRequiredFormset = forms.inlineformset_factory(

@@ -11,7 +11,7 @@ from django.http import JsonResponse
 from django.contrib.messages.views import SuccessMessageMixin
 
 from orgs.models import Archives, Organization, User, BagItProfile
-from orgs.form import OrgUserUpdateForm, UserPasswordChangeForm, RACSuperUserUpdateForm, BagItProfileForm, BagItProfileBagInfoFormset, BagItProfileBagInfoValuesFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagManifestsRequiredFormset, TagFilesRequiredFormset
+from orgs.form import *
 
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy

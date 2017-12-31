@@ -69,9 +69,13 @@
 							</div>
 							<div class="row">
 								<div class="col-xs-8">
-									{% for form in bag_info_values_formset %}
-										{{form.values}}
-									{% endfor %}
+									{% if form.nested %}
+						        {{ form.nested.management_form }}
+						        {{ form.nested.non_form_errors }}
+						        {% for form in form.nested.forms %}
+						            {% include 'orgs/bagit_profiles/repeating_form.html' %}
+						        {% endfor %}
+						    {% endif %}
 								</div>
 							</div>
 						</div>
