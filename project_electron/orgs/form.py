@@ -170,7 +170,7 @@ class BaseBagInfoFormset(forms.BaseInlineFormSet):
                             BagItProfileBagInfoValuesFormset.get_default_prefix()),
                         )
 	def is_valid(self):
-		result = super(BaseChildrenFormset, self).is_valid()
+		result = super(BaseBagInfoFormset, self).is_valid()
 
 		if self.is_bound:
 			for form in self.forms:
@@ -179,7 +179,7 @@ class BaseBagInfoFormset(forms.BaseInlineFormSet):
 		return result
 
 	def save(self, commit=True):
-		result = super(BaseChildrenFormset, self).save(commit=commit)
+		result = super(BaseBagInfoFormset, self).save(commit=commit)
 
 		for form in self.forms:
 			if hasattr(form, 'nested'):
