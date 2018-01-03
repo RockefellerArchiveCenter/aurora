@@ -6,6 +6,8 @@ from decimal import *
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 
+from rights.models import RightsStatement
+
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
