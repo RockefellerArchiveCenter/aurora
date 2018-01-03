@@ -55,6 +55,9 @@
 						{{ bag_info_formset.non_form_errors }}
 						{% for form in bag_info_formset %}
 						<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} well dynamic-form">
+							{% for hidden in form.hidden_fields %}
+						    {{ hidden }}
+							{% endfor %}
 							<div class="row">
 								<div class="col-xs-8">
 									{{form.field}}

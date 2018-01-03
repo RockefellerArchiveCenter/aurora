@@ -165,7 +165,7 @@ class BaseBagInfoFormset(forms.BaseInlineFormSet):
                         instance=form.instance,
                         data=form.data if form.is_bound else None,
                         files=form.files if form.is_bound else None,
-                        prefix='nested_%s_%s' % (
+                        prefix='nested-%s-%s' % (
                             form.prefix,
                             BagItProfileBagInfoValuesFormset.get_default_prefix()),
                         )
