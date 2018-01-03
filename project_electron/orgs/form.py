@@ -202,6 +202,7 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
 	ManifestsRequired,
 	fields=('name',),
 	extra=1,
+	max_num=2,
 	can_delete=False,
 	form=ManifestsRequiredForm,
 )
@@ -211,6 +212,7 @@ AcceptSerializationFormset = forms.inlineformset_factory(
 	AcceptSerialization,
 	fields=('name',),
 	extra=1,
+	max_num=3,
 	can_delete=False,
 	form=AcceptSerializationForm,
 )
@@ -220,6 +222,7 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
 	AcceptBagItVersion,
 	fields=('name',),
 	extra=1,
+	max_num=2,
 	can_delete=False,
 	form=AcceptBagItVersionForm,
 )
@@ -229,6 +232,7 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
 	TagManifestsRequired,
 	fields=('name',),
 	extra=1,
+	max_num=2,
 	can_delete=False,
 	form=TagManifestsRequiredForm,
 )
