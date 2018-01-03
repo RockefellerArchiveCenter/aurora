@@ -127,6 +127,9 @@
 			$(row).children('.nested-form').find('#id_' + nestedPrefix + '-TOTAL_FORMS').val(1)
 		}
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+		if ($('#id_' + prefix + '-TOTAL_FORMS').val() >= $('#id_' + prefix + '-MAX_NUM_FORMS').val()) {
+			$(btn).attr("disabled", "disabled");
+		}
   }
   function deleteForm(btn, prefix) {
     $(btn).closest('.dynamic-form').remove()
@@ -143,10 +146,23 @@
 					}
 	    });
     }
+		if ($('#id_' + prefix + '-TOTAL_FORMS').val() < $('#id_' + prefix + '-MAX_NUM_FORMS').val()) {
+			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
+		}
   }
   $(document).ready(function() {
+		$('input[name$=-TOTAL_FORMS]').each(function(){
+			var formPrefix = $(this).attr('name').substr(0, $(this).attr('name').indexOf('-TOTAL_FORMS'))
+			if ($(this).val() >= $('input[name='+formPrefix+'-MAX_NUM_FORMS]').val()) {
+				$('.add-row[data-target='+formPrefix+']').attr("disabled", "disabled");
+			} else {
+				$('.add-row[data-target='+formPrefix+']').removeAttr("disabled");
+			}
+		});
     $('.add-row').on('click', function() {
-	    addForm(this, $(this).attr('data-target'));
+			if (!($(this).attr('disabled'))) {
+				addForm(this, $(this).attr('data-target'));
+			}
     });
     $('.delete-row').on('click', function() {
 	    deleteForm(this, $(this).attr('data-target'));

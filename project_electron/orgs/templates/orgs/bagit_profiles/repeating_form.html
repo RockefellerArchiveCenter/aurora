@@ -10,4 +10,6 @@
     </div>
   </div>
 </div>
-<a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
+{% if forloop.last %}
+<a href="javascript:void(0)" class="add-row btn btn-sm btn-default mar-top10" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
+{% endif %}
