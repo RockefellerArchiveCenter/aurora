@@ -45,15 +45,11 @@
 	<div class="col-md-12">
 		<div class="box box-info">
 			<div class="box-header with-border">
-				<h3 class="box-title">Bag-It Profile</h3>
+				<h3 class="box-title">BagIt Profiles</h3>
+				{% if request.user.is_superuser and not object.bagit_profiles %}<a href="{% url 'bagit-profiles-add' object.pk %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add BagIt Profile</a>{% endif %}
 			</div>
-			<div class="box-body">
-						<div class="pull-left">bag it profile name</div>
-						<div class="pull-right">
-							<button href="#" class="btn btn-primary btn-sm">View</button>
-							<button href="#" class="btn btn-warning btn-sm">Edit</button>
-							<button href="#" class="btn btn-danger btn-sm">Delete</button>
-						</div>
+			<div class="box-body {% if object.bagit_profiles %}no-padding{% endif %}">
+				{% include 'parts/bagit_profiles_table.html' with org=object %}
 			</div>
 		</div>
 	</div>

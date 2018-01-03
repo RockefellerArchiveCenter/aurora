@@ -100,7 +100,7 @@
 	<div class="col-md-12">
 		<div class="box box-info">
 			<div class="box-header with-border">
-				<h3 class="box-title">Administrative information</h3>
+				<h3 class="box-title">Acquisition Type</h3>
 				<div class="box-body">
 					<div class="row">
 						<div class="col-sm-12">
@@ -108,11 +108,23 @@
 								<h4>Acquisition Type</h4>
 								<p>{{object.get_acquisition_type_display}}</p>
 							{% endif %}
-							<h4>Rights Statements</h4>
-							<p>Rights statements go here.</p>
 						</div>
 					</div>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">BagIt Profiles</h3>
+				{% if request.user.is_superuser and not object.bagit_profiles %}<a href="{% url 'bagit-profiles-add' object.pk %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add BagIt Profile</a>{% endif %}
+			</div>
+			<div class="box-body {% if object.bagit_profiles %}no-padding{% endif %}">
+				{% include 'parts/bagit_profiles_table.html' with org=object %}
 			</div>
 		</div>
 	</div>
@@ -140,7 +152,5 @@
 
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/delete_object_js.js' %}"></script>
 {% endblock %}
-
-      	

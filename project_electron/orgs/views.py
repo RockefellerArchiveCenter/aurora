@@ -3,14 +3,14 @@ from __future__ import unicode_literals
 
 from decimal import *
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
 from django.contrib.auth.views import PasswordChangeView
 
 from rights.models import RightsStatement
 
 from django.utils import timezone
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 
 from orgs.authmixins import *
 from orgs.formatmixins import CSVResponseMixin
+from transfer_app.mixins import JSONResponseMixin
 
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
@@ -242,7 +243,6 @@ class BagItProfileManageView(View):
                     'applies_to_organization': applies_to_organization,
                     'source_organization': source_organization,
                     'contact_email': 'archive@rockarch.org',
-                    'bagit_profile_identifier': 'http://blah.org' #this should be removed and model changed to make this field nonrequired
                 }
             )
         bag_info_formset = BagItProfileBagInfoFormset(instance=profile, prefix='bag_info')
@@ -269,10 +269,7 @@ class BagItProfileManageView(View):
             instance = get_object_or_404(BagItProfile, pk=self.kwargs.get('profile_pk'))
         form = BagItProfileForm(request.POST, instance=instance)
         if form.is_valid():
-            bagit_profile = form.save(commit=False)
-            bagit_profile.version = bagit_profile.version + Decimal(0.1) #need to set the default version to 0.0
-            # set bagit profile identifier here
-            bagit_profile.save()
+            bagit_profile = form.save()
             bag_info_formset = BagItProfileBagInfoFormset(request.POST, instance=bagit_profile, prefix='bag_info')
             manifests_formset = ManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='manifests')
             serialization_formset = AcceptSerializationFormset(request.POST, instance=bagit_profile, prefix='serialization')
@@ -294,6 +291,9 @@ class BagItProfileManageView(View):
                         'tag_files_formset': tag_files_formset,
                         'meta_page_title': 'BagIt Profile',
                         })
+            bagit_profile.version = bagit_profile.version + Decimal(0.1)
+            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(reverse('bagit-profiles-json', args=(bagit_profile.applies_to_organization.pk, bagit_profile.pk)))
+            bagit_profile.save()
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
             'form': form,
@@ -305,3 +305,18 @@ class BagItProfileManageView(View):
             'tag_files_formset': TagFilesRequiredFormset(request.POST, prefix='tag_files'),
             'meta_page_title': 'BagIt Profile',
             })
+
+class BagItProfileAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
+
+    def render_to_response(self, context, **kwargs):
+        if not self.request.is_ajax():
+            raise Http404
+        resp = {'success': 0}
+
+        if 'action' in self.kwargs:
+            obj = get_object_or_404(BagItProfile,pk=context['profile_pk'])
+            if self.kwargs['action'] == 'delete':
+                obj.delete()
+                resp['success'] = 1
+
+        return self.render_to_json_response(resp, **kwargs)
