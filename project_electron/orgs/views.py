@@ -228,17 +228,11 @@ class BagItProfileManageView(View):
     model = BagItProfile
 
     def get(self, request, *args, **kwargs):
-        applies_to_organization = Organization.objects.get(pk=self.kwargs['pk'])
+        applies_to_organization = Organization.objects.get(pk=self.kwargs.get('pk'))
         source_organization = self.request.user.organization
         if 'profile_pk' in kwargs:
-            profile = BagItProfile.objects.get(pk=self.kwargs.get('profile_pk'))
+            profile = get_object_or_404(BagItProfile, pk=self.kwargs.get('profile_pk'))
             form = BagItProfileForm(instance=profile)
-            bag_info_formset = BagItProfileBagInfoFormset(queryset=BagItProfileBagInfo.objects.filter(bagit_profile=profile), instance=profile)
-            manifests_formset = ManifestsRequiredFormset(queryset=ManifestsRequired.objects.filter(bagit_profile=profile), instance=profile)
-            serialization_formset = AcceptBagItVersionFormset(queryset=AcceptSerialization.objects.filter(bagit_profile=profile), instance=profile)
-            version_formset = AcceptBagItVersionFormset(queryset=AcceptBagItVersion.objects.filter(bagit_profile=profile), instance=profile)
-            tag_manifests_formset = TagManifestsRequiredFormset(queryset=TagManifestsRequired.objects.filter(bagit_profile=profile), instance=profile)
-            tag_files_formset = TagFilesRequiredFormset(queryset=TagFilesRequired.objects.filter(bagit_profile=profile), instance=profile)
         else:
             form = BagItProfileForm(
                 initial={
@@ -248,16 +242,15 @@ class BagItProfileManageView(View):
                     'bagit_profile_identifier': 'http://blah.org' #this should be removed and model changed to make this field nonrequired
                 }
             )
-            bag_info_formset = BagItProfileBagInfoFormset()
-            bag_info_values_formset = BagItProfileBagInfoValuesFormset()
-            manifests_formset = ManifestsRequiredFormset()
-            serialization_formset = AcceptSerializationFormset()
-            version_formset = AcceptBagItVersionFormset()
-            tag_manifests_formset = TagManifestsRequiredFormset()
-            tag_files_formset = TagFilesRequiredFormset()
+            profile = None
+        manifests_formset = ManifestsRequiredFormset(instance=profile, prefix='manifests')
+        serialization_formset = AcceptSerializationFormset(instance=profile, prefix='serialization')
+        version_formset = AcceptBagItVersionFormset(instance=profile, prefix='version')
+        tag_manifests_formset = TagManifestsRequiredFormset(instance=profile, prefix='tag_manifests')
+        tag_files_formset = TagFilesRequiredFormset(instance=profile, prefix='tag_files')
         return render(request, self.template_name, {
             'form': form,
-            'bag_info_formset': bag_info_formset,
+            # 'bag_info_formset': bag_info_formset,
             'manifests_formset': manifests_formset,
             'serialization_formset': serialization_formset,
             'version_formset': version_formset,
@@ -278,20 +271,20 @@ class BagItProfileManageView(View):
             bagit_profile.version = bagit_profile.version + Decimal(0.1) #need to set the default version to 0.0
             # set bagit profile identifier here
             bagit_profile.save()
-            bag_info_formset = BagItProfileBagInfoFormset(request.POST, instance=bagit_profile)
-            manifests_formset = ManifestsRequiredFormset(request.POST, instance=bagit_profile)
-            serialization_formset = AcceptSerializationFormset(request.POST, instance=bagit_profile)
-            version_formset = AcceptBagItVersionFormset(request.POST, instance=bagit_profile)
-            tag_manifests_formset = TagManifestsRequiredFormset(request.POST, instance=bagit_profile)
-            tag_files_formset = TagFilesRequiredFormset(request.POST, instance=bagit_profile)
-            forms_to_save = [bag_info_formset, manifests_formset, serialization_formset, version_formset, tag_manifests_formset, tag_files_formset]
+            # bag_info_formset = BagItProfileBagInfoFormset(request.POST, instance=bagit_profile)
+            manifests_formset = ManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='manifests')
+            serialization_formset = AcceptSerializationFormset(request.POST, instance=bagit_profile, prefix='serialization')
+            version_formset = AcceptBagItVersionFormset(request.POST, instance=bagit_profile, prefix='version')
+            tag_manifests_formset = TagManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='tag_manifests')
+            tag_files_formset = TagFilesRequiredFormset(request.POST, instance=bagit_profile, prefix='tag_files')
+            forms_to_save = [manifests_formset, serialization_formset, version_formset, tag_manifests_formset, tag_files_formset]
             for formset in forms_to_save:
                 if formset.is_valid():
                     formset.save()
                 else:
                     return render(request, self.template_name, {
                         'form': bagit_profile,
-                        'bag_info_formset': bag_info_formset,
+                        # 'bag_info_formset': bag_info_formset,
                         'manifests_formset': manifests_formset,
                         'serialization_formset': serialization_formset,
                         'version_formset': version_formset,
@@ -302,11 +295,11 @@ class BagItProfileManageView(View):
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
             'form': form,
-            'bag_info_formset': BagItProfileBagInfoFormset(request.POST),
-            'manifests_formset': ManifestsRequiredFormset(request.POST),
-            'serialization_formset': AcceptSerializationFormset(request.POST),
-            'version_formset': AcceptBagItVersionFormset(request.POST),
-            'tag_manifests_formset': TagManifestsRequiredFormset(request.POST),
-            'tag_files_formset': TagFilesRequiredFormset(request.POST),
+            # 'bag_info_formset': BagItProfileBagInfoFormset(request.POST),
+            'manifests_formset': ManifestsRequiredFormset(request.POST, prefix='manifests'),
+            'serialization_formset': AcceptSerializationFormset(request.POST, prefix='serialization'),
+            'version_formset': AcceptBagItVersionFormset(request.POST, prefix='version'),
+            'tag_manifests_formset': TagManifestsRequiredFormset(request.POST, prefix='tag_manifests'),
+            'tag_files_formset': TagFilesRequiredFormset(request.POST, prefix='tag_files'),
             'meta_page_title': 'BagIt Profile',
             })
