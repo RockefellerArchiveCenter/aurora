@@ -31,6 +31,9 @@ class Organization(models.Model):
     def rights_statements(self):
         return self.rightsstatement_set.all()
 
+    def bagit_profiles(self):
+        return BagItProfile.objects.filter(applies_to_organization=self)
+
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
     def active_users(self):
@@ -559,8 +562,8 @@ class BagItProfile(models.Model):
     applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
     source_organization = models.ForeignKey(Organization, related_name='source_organization')
     external_descripton = models.TextField(blank=True)
-    version = models.DecimalField(max_digits=4, decimal_places=1, default=0.1)
-    bagit_profile_identifier = models.URLField()
+    version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
+    bagit_profile_identifier = models.URLField(blank=True)
     contact_email = models.EmailField()
     allow_fetch = models.BooleanField(default=False)
     SERIALIZATION_CHOICES = (
