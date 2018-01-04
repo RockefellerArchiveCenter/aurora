@@ -119,8 +119,3 @@ class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
         context['rights_basis_info'] = context['object'].get_rights_info_object
         context['rights_granted_info'] = context['object'].get_rights_granted_objects
         return context
-
-
-class RightsUpdateView(RACAdminMixin, UpdateView):
-    template_name = 'rights/manage.html'
-    model = RightsStatement

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from django.utils.translation import gettext as _
+from django.apps import apps
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from transfer_app import RAC_CMD
 from django.urls import reverse
-from django.apps import apps
+from django.utils.translation import gettext as _
 
-from django.contrib import messages
-from django.conf import settings
-
+from transfer_app import RAC_CMD
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):

@@ -3,26 +3,22 @@ from __future__ import unicode_literals
 
 from decimal import *
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
 from django.contrib.auth.views import PasswordChangeView
-
-from rights.models import RightsStatement
-
-from django.utils import timezone
-from django.shortcuts import render, redirect
-from django.http import JsonResponse, Http404
-
+from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import JsonResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
 
 from orgs.models import Archives, Organization, User, BagItProfile
 from orgs.form import *
-
-from django.contrib import messages
-from django.urls import reverse, reverse_lazy
-from django.shortcuts import get_object_or_404
-
 from orgs.authmixins import *
 from orgs.formatmixins import CSVResponseMixin
+
+from rights.models import RightsStatement
+
 from transfer_app.mixins import JSONResponseMixin
 
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
