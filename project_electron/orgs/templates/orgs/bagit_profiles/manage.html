@@ -10,94 +10,112 @@
 				<form action="" method="post">
 					{% csrf_token %}
 
+					<h3>General Information</h3>
+
 					{{form.management_form}}
 					{{form.non_form_errors}}
 
-					{{form}}
-
-					<h4>Manifests Required</h4>
-					{{ manifests_formset.management_form }}
-					{{ manifests_formset.non_form_errors }}
-					{% for form in manifests_formset %}
-						{% include 'orgs/bagit_profiles/repeating_form.html' %}
-					{% endfor %}
-
-					<h4>Serializations Accepted</h4>
-					{{ serialization_formset.management_form }}
-					{{ serialization_formset.non_form_errors }}
-					{% for form in serialization_formset %}
-						{% include 'orgs/bagit_profiles/repeating_form.html' %}
-					{% endfor %}
-
-					<h4>BagIt Versions Accepted</h4>
-					{{ version_formset.management_form }}
-					{{ version_formset.non_form_errors }}
-					{% for form in version_formset %}
-						{% include 'orgs/bagit_profiles/repeating_form.html' %}
-					{% endfor %}
-
-					<h4>Tag Manifests Required</h4>
-					{{ tag_manifests_formset.management_form }}
-					{{ tag_manifests_formset.non_form_errors }}
-					{% for form in tag_manifests_formset %}
-						{% include 'orgs/bagit_profiles/repeating_form.html' %}
-					{% endfor %}
-
-					<h4>Tag Files Required</h4>
-					{{ tag_files_formset.management_form }}
-					{{ tag_files_formset.non_form_errors }}
-					{% for form in tag_files_formset %}
-						{% include 'orgs/bagit_profiles/repeating_form.html' %}
-					{% endfor %}
-
-					<h4>BagInfo Metadata</h4>
-						{{ bag_info_formset.management_form }}
-						{{ bag_info_formset.non_form_errors }}
-						{% for form in bag_info_formset %}
-						<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} well dynamic-form">
-							{% for hidden in form.hidden_fields %}
-						    {{ hidden }}
-							{% endfor %}
-							<div class="row">
-								<div class="col-xs-8">
-									{{form.field}}
-								</div>
-								<div class="col-xs-4">
-									{{form.required.label_tag}}
-									{{form.required}}
-									{{form.repeatable.label_tag}}
-									{{form.repeatable}}
-									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
-								</div>
-							</div>
-							{% if form.nested %}
-							<div class="row nested-form">
-								<div class="col-xs-8">
-				        {{ form.nested.management_form }}
-				        {{ form.nested.non_form_errors }}
-				        {% for form in form.nested.forms %}
-				            {% include 'orgs/bagit_profiles/repeating_form.html' %}
-				        {% endfor %}
-							</div>
-						</div>
-				    {% endif %}
-						</div>
-						<a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add Metadata Field</a>
-						{% endfor %}
-
+					{% include 'rights/form_fields.html' %}
 					<div class="row">
 						<div class="col-md-12">
-							<button type="submit" class="btn btn-primary">Submit</button>
-							<a href="javascript:history.back()" class="btn btn-danger">Cancel</a>
+							<label for="id_{{manifests_formset.prefix}}-0-name">Manifests Required</label>
+							{{ manifests_formset.management_form }}
+							{{ manifests_formset.non_form_errors }}
+							{% for form in manifests_formset %}
+								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+							{% endfor %}
 						</div>
 					</div>
 
-				</form>
-			</div>
+					<div class="row">
+						<div class="col-md-12">
+							<label for="id_{{serialization_formset.prefix}}-0-name">Serializations Accepted</label>
+							{{ serialization_formset.management_form }}
+							{{ serialization_formset.non_form_errors }}
+							{% for form in serialization_formset %}
+								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+						</div>
+					</div>
 
+					<div class="row">
+						<div class="col-md-12">
+							<label for="id_{{version_formset.prefix}}-0-name">BagIt Versions Accepted</label>
+							{{ version_formset.management_form }}
+							{{ version_formset.non_form_errors }}
+							{% for form in version_formset %}
+								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<label for="id_{{tag_manifests_formset.prefix}}-0-name">Tag Manifests Required</label>
+							{{ tag_manifests_formset.management_form }}
+							{{ tag_manifests_formset.non_form_errors }}
+							{% for form in tag_manifests_formset %}
+								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-12">
+							<label for="id_{{tag_files_formset.prefix}}-0-name">Tag Files Required</label>
+							{{ tag_files_formset.management_form }}
+							{{ tag_files_formset.non_form_errors }}
+							{% for form in tag_files_formset %}
+								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+						</div>
+					</div>
+
+					<h3>Metadata</h3>
+					{{ bag_info_formset.management_form }}
+					{{ bag_info_formset.non_form_errors }}
+					{% for form in bag_info_formset %}
+					<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} well dynamic-form">
+						{% for hidden in form.hidden_fields %}
+					    {{ hidden }}
+						{% endfor %}
+						<div class="row">
+							<div class="col-xs-6">
+								{% include 'rights/form_fields.html' %}
+							</div>
+							<div class="col-xs-6">
+								{% if form.nested %}
+								<div class="nested-form">
+									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
+									<div>
+						        {{ form.nested.management_form }}
+						        {{ form.nested.non_form_errors }}
+										<label>Values</label>
+						        {% for form in form.nested.forms %}
+						            {% include 'orgs/bagit_profiles/repeating_form.html' %}
+						        {% endfor %}
+									</div>
+								</div>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+					<a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add Metadata Field</a>
+					{% endfor %}
+
+				<div class="row mar-top20">
+					<div class="col-md-12">
+						<button type="submit" class="btn btn-primary">Submit</button>
+						<a href="javascript:history.back()" class="btn btn-danger">Cancel</a>
+					</div>
+				</div>
+
+			</form>
 		</div>
 	</div>
 </div>
+
+
 {% endblock %}
 
 {% block extra_js %}
@@ -130,7 +148,7 @@
 			$(row).children('.nested-form').find('#id_' + nestedPrefix + '-TOTAL_FORMS').val(1)
 		}
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-		if ($('#id_' + prefix + '-TOTAL_FORMS').val() >= $('#id_' + prefix + '-MAX_NUM_FORMS').val()) {
+		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$(btn).attr("disabled", "disabled");
 		}
   }
@@ -149,14 +167,14 @@
 					}
 	    });
     }
-		if ($('#id_' + prefix + '-TOTAL_FORMS').val() < $('#id_' + prefix + '-MAX_NUM_FORMS').val()) {
+		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
 		}
   }
   $(document).ready(function() {
 		$('input[name$=-TOTAL_FORMS]').each(function(){
 			var formPrefix = $(this).attr('name').substr(0, $(this).attr('name').indexOf('-TOTAL_FORMS'))
-			if ($(this).val() >= $('input[name='+formPrefix+'-MAX_NUM_FORMS]').val()) {
+			if (parseInt($(this).val()) >= parseInt($('input[name='+formPrefix+'-MAX_NUM_FORMS]').val())) {
 				$('.add-row[data-target='+formPrefix+']').attr("disabled", "disabled");
 			} else {
 				$('.add-row[data-target='+formPrefix+']').removeAttr("disabled");
