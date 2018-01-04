@@ -11,7 +11,7 @@
       {% for profile in org.bagit_profiles %}
       <tr rel="{{ profile.pk }}">
         <td>{{profile.bagit_profile_identifier}} <span class="badge">Version {{profile.version}}</span></td>
-        <td>{{profile.description}}</td>
+        <td>{{profile.external_descripton}}</td>
         <td class="text-right col-md-2">
           <a href="{% url 'bagit-profiles-json' pk=org.pk profile_pk=profile.pk %}" class="btn btn-primary btn-sm">View</a>
 

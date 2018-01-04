@@ -20,7 +20,8 @@ $(function () {
   				$(table).fadeOut().remove();
 
   				$('.has-no-objects-p').closest('.box-body').removeClass('no-padding');
-  				$('.has-no-objects-p').fadeIn();
+  				$('.has-no-objects-p').fadeIn()
+          $('.'+object_type+'-add').fadeIn();
   			}
   		} else {
   			alert('Sorry there was a problem deleting the ' + object_type.replace(/\-/g, ' ') + '.');
