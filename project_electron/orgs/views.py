@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from decimal import *
+import json
 
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
@@ -301,6 +302,71 @@ class BagItProfileManageView(View):
             'tag_files_formset': TagFilesRequiredFormset(request.POST, prefix='tag_files'),
             'meta_page_title': 'BagIt Profile',
             })
+
+class BagItProfileJSONView(JSONResponseMixin, TemplateView):
+
+    def render_to_response(self, context, **kwargs):
+        obj = get_object_or_404(BagItProfile,pk=context['profile_pk'])
+        bag_info_obj = BagItProfileBagInfo.objects.filter(bagit_profile=obj)
+        manifests_obj = ManifestsRequired.objects.filter(bagit_profile=obj)
+        serialization_obj = AcceptSerialization.objects.filter(bagit_profile=obj)
+        version_obj = AcceptBagItVersion.objects.filter(bagit_profile=obj)
+        tag_manifests_obj = TagManifestsRequired.objects.filter(bagit_profile=obj)
+        tag_files_obj = TagFilesRequired.objects.filter(bagit_profile=obj)
+
+        resp = {}
+        resp['BagIt-Profile-Info'] = {}
+        resp['BagIt-Profile-Info']['BagIt-Profile-Identifier'] = getattr(obj, 'bagit_profile_identifier', None)
+        resp['BagIt-Profile-Info']['Source-Organization'] = getattr(obj, 'source_organization.name', None)
+        resp['BagIt-Profile-Info']['External-Description'] = getattr(obj, 'external_descripton', None)
+        resp['BagIt-Profile-Info']['Version'] = getattr(obj, 'version', None)
+        resp['BagIt-Profile-Info']['Contact-Name'] = getattr(obj, 'contact_name', None)
+        resp['BagIt-Profile-Info']['Contact-Email'] = getattr(obj, 'contact_email', None)
+        resp['BagIt-Profile-Info']['Contact-Phone'] = getattr(obj, 'contact_phone', None)
+
+        resp['Allow-Fetch.txt'] = getattr(obj, 'allow_fetch', None)
+        resp['Serialization'] = getattr(obj, 'serialization', None)
+
+        resp['Bag-Info'] = {}
+        for bi in bag_info_obj:
+            resp['Bag-Info'][bi.get_field_display()] = {}
+            resp['Bag-Info'][bi.get_field_display()]['required'] = bi.required
+            resp['Bag-Info'][bi.get_field_display()]['repeatable'] = bi.repeatable
+            resp['Bag-Info'][bi.get_field_display()]['values'] = []
+            values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=bi)
+            for v in values:
+                resp['Bag-Info'][bi.get_field_display()]['values'].append(v.values)
+
+        resp['Manifests-Required'] = []
+        for m in manifests_obj:
+            resp['Manifests-Required'].append(m.name)
+
+        resp['Accept-Serialization'] = []
+        for s in serialization_obj:
+            resp['Accept-Serialization'].append(s.name)
+
+        resp['Accept-BagIt-Version'] = []
+        for v in version_obj:
+            resp['Accept-BagIt-Version'].append(v.name)
+
+        resp['Tag-Manifests-Required'] = []
+        for tm in tag_manifests_obj:
+            resp['Tag-Manifests-Required'].append(tm.name)
+
+        resp['Tag-Files-Required'] = []
+        for tf in tag_files_obj:
+            resp['Tag-Files-Required'].append(tf.name)
+
+        def clean_empty(d):
+            if not isinstance(d, (dict, list)):
+                return d
+            if isinstance(d, list):
+                return sorted([v for v in (clean_empty(v) for v in d) if v])
+            return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v}
+
+        resp = clean_empty(resp)
+
+        return self.render_to_json_response(resp, **kwargs)
 
 class BagItProfileAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
 

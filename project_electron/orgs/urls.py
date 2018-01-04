@@ -12,5 +12,5 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/bagit_profiles/add/$', BagItProfileManageView.as_view(), name='bagit-profiles-add'),
     url(r'^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/edit$', BagItProfileManageView.as_view(), name='bagit-profiles-edit'),
     url(r'^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/(?P<action>(delete))/$', BagItProfileAPIAdminView.as_view(), name='bagit-profiles-api'),
-    url(r'^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+).json$', BagItProfileManageView.as_view(), name='bagit-profiles-json'),
+    url(r'^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+).json$', BagItProfileJSONView.as_view(), name='bagit-profiles-json'),
 ]
