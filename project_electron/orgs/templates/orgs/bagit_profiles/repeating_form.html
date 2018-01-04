@@ -1,4 +1,4 @@
-<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} dynamic-form">
+<div id="{{ form.prefix }}-row" class="dynamic-form">
   <div class="row">
     <div class="col-xs-6">
       {%for field in form%}
@@ -6,7 +6,7 @@
       {%endfor%}
     </div>
     <div class="col-xs-6">
-      <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger{% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
+      <a id="{{ form.prefix }}-remove-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger{% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
     </div>
   </div>
 </div>

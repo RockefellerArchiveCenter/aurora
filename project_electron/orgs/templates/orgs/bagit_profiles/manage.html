@@ -86,15 +86,16 @@
 							<div class="col-xs-6">
 								{% if form.nested %}
 								<div class="nested-form">
+									{{ form.nested.management_form }}
+									{{ form.nested.non_form_errors }}
 									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
-									<div>
-						        {{ form.nested.management_form }}
-						        {{ form.nested.non_form_errors }}
-										<label>Values</label>
-						        {% for form in form.nested.forms %}
-						            {% include 'orgs/bagit_profiles/repeating_form.html' %}
-						        {% endfor %}
-									</div>
+									<label>Values</label>
+									{% for form in form.nested.forms %}
+										{% for hidden in form.hidden_fields %}
+								    	{{ hidden }}
+										{% endfor %}
+						        {% include 'orgs/bagit_profiles/repeating_form.html' %}
+					        {% endfor %}
 								</div>
 								{% endif %}
 							</div>
@@ -131,21 +132,27 @@
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $(btn).prev('.dynamic-form').clone(true).get(0);
-    $(row).removeAttr('id').insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
-    $(row).find('[name^='+prefix+']').each(function() {
+		updateElementIndex(row, prefix, formCount)
+    $(row).insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
+		$(row).find('[name^='+prefix+']').each(function() {
 	    updateElementIndex(this, prefix, formCount);
-	    $(this).val('');
+	    $(this).filter('[type!=hidden]').val('');
     });
-		if ($(row).children('.nested-form').length) {
-			$(row).find('div[class^=nested_]:not(:first)').remove();
-			$(row).children('.nested-form').find('.delete-row').addClass('hidden')
+		if ($(row).find('.nested-form').length) {
+			var nestedForm = $(row).find('.nested-form');
 			var nestedPrefix = 'nested_'+prefix
-			$(row).find('[name^=nested_]').each(function() {
+			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
+			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden')
+			$(nestedForm).find('[name^='+nestedPrefix+']').each(function() {
+				updateElementIndex(this, nestedPrefix, formCount);
+				$(this).filter('[type!=hidden]').val('');
+			});
+			$(row).find('[id^='+nestedPrefix+']').each(function() {
 				updateElementIndex(this, nestedPrefix, formCount);
 			});
-			updateElementIndex($(row).children('.nested-form').find('.add-row'), nestedPrefix, formCount)
-			updateElementIndex($(row).children('.nested-form').find('.delete-row'), nestedPrefix, formCount)
-			$(row).children('.nested-form').find('#id_' + nestedPrefix + '-TOTAL_FORMS').val(1)
+			updateElementIndex($(nestedForm).find('.add-row'), nestedPrefix, formCount)
+			updateElementIndex($(nestedForm), nestedPrefix, formCount)
+			$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val(1)
 		}
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {

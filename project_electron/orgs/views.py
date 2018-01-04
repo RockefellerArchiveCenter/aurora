@@ -361,8 +361,8 @@ class BagItProfileJSONView(JSONResponseMixin, TemplateView):
             if not isinstance(d, (dict, list)):
                 return d
             if isinstance(d, list):
-                return sorted([v for v in (clean_empty(v) for v in d) if v])
-            return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v}
+                return sorted([v for v in (clean_empty(v) for v in d) if v is not None])
+            return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v is not None}
 
         resp = clean_empty(resp)
 
