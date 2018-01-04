@@ -592,10 +592,10 @@ class AcceptSerialization(models.Model):
 
 class AcceptBagItVersion(models.Model):
     BAGIT_VERSION_NAME_CHOICES = (
-        (0.96, 0.96),
-        (0.97, 0.97),
+        ('0.96', '0.96'),
+        ('0.97', '0.97'),
     )
-    name = models.DecimalField(choices=BAGIT_VERSION_NAME_CHOICES, max_digits=5, decimal_places=2)
+    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
     bagit_profile = models.ForeignKey(BagItProfile)
 
 class TagManifestsRequired(models.Model):

@@ -131,7 +131,7 @@ class AcceptSerializationForm(forms.ModelForm):
 
 class AcceptBagItVersionForm(forms.ModelForm):
 	class Meta:
-		model = AcceptSerialization
+		model = AcceptBagItVersion
 		fields = ['name',]
 		widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
