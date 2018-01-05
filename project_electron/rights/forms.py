@@ -9,15 +9,26 @@ from orgs.models import Organization
 class RightsForm(forms.ModelForm):
 	class Meta:
 		model = RightsStatement
-		fields = ('applies_to_type', 'rights_basis')
+		fields = ('applies_to_type', 'rights_basis',)
 		labels = {
 			'rights_basis': 'Rights Basis',
 			'applies_to_type': 'Applies to Record Type(s)'
 		}
+		help_texts = {
+			'applies_to_type': 'The record types for which this rights statement applies. If no options are available here, values must first be added in this organization\'s BagIt Profile.' 
+		}
 		widgets = {
 			'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
-			'applies_to_type': forms.widgets.Select(attrs={'class': 'form-control'}),
+			'applies_to_type': forms.widgets.CheckboxSelectMultiple(),
 		}
+
+	def __init__(self, *args, **kwargs):
+		applies_to_type_choices = kwargs.pop('applies_to_type_choices', None)
+		super(RightsForm, self).__init__(*args, **kwargs)
+
+		if applies_to_type_choices:
+			self.fields['applies_to_type'].choices = list(applies_to_type_choices)
+			self.fields['applies_to_type'].widget.choices = list(applies_to_type_choices)
 
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:

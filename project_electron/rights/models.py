@@ -12,15 +12,7 @@ from orgs.models import Organization, Archives
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
-    # Eventually these choices should be replaced by a call to get record types associated with this organization
-    APPLIES_TO_TYPE_CHOICES = (
-        ('administrative records', 'Administrative Records'),
-        ('annual reports', 'Annual Reports'),
-        ('board materials', 'Board Materials'),
-        ('communications and publications', 'Communications and Publications'),
-        ('grant records', 'Grant Records'),
-    )
-    applies_to_type = models.CharField(choices=APPLIES_TO_TYPE_CHOICES, max_length=100)
+    applies_to_type = models.CharField(max_length=100)
     RIGHTS_BASIS_CHOICES = (
         ('Copyright', 'Copyright'),
         ('Statute', 'Statute'),

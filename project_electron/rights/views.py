@@ -7,6 +7,7 @@ from django.views.generic import CreateView, UpdateView, DetailView, TemplateVie
 
 from rights.models import *
 from rights.forms import *
+from orgs.models import BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues
 from orgs.authmixins import *
 from transfer_app.mixins import JSONResponseMixin
 
@@ -20,25 +21,29 @@ class RightsManageView(RACAdminMixin, CreateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsManageView, self).get_context_data(**kwargs)
-        context['basis_form'] = RightsForm()
-        context['copyright_form'] = CopyrightFormSet()
-        context['license_form'] = LicenseFormSet()
-        context['statute_form'] = StatuteFormSet()
-        context['other_form'] = OtherFormSet()
+        rights_statement = None
         if self.kwargs.get('pk'):
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
-            context['basis_form'] = RightsForm(instance=rights_statement)
             context['organization'] = Organization.objects.get(pk=rights_statement.organization.pk)
             if rights_statement.rights_basis == 'Copyright':
                 context['copyright_form'] = CopyrightFormSet(instance=rights_statement)
             elif rights_statement.rights_basis == 'License':
                 context['license_form'] = LicenseFormSet(instance=rights_statement)
             elif rights_statement.rights_basis == 'Statute':
-                context['Statute'] = StatuteFormSet(instance=rights_statement)
+                context['statute_form'] = StatuteFormSet(instance=rights_statement)
             else:
                 context['other_form'] = OtherFormSet(instance=rights_statement)
         else:
+            context['copyright_form'] = CopyrightFormSet()
+            context['license_form'] = LicenseFormSet()
+            context['statute_form'] = StatuteFormSet()
+            context['other_form'] = OtherFormSet()
             context['organization'] = Organization.objects.get(pk=self.request.GET.get('org'))
+        values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(bagit_profile__in=BagItProfile.objects.filter(applies_to_organization=context['organization']), field='record_type'))
+        applies_to_type_choices = []
+        for v in values:
+            applies_to_type_choices.append((v.values, v.values))
+        context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
         return context
 
     def post(self, request, *args, **kwargs):
