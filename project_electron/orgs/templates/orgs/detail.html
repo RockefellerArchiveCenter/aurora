@@ -1,5 +1,5 @@
 {% extends 'transfer_app/base.html' %}
-{% load tz %}
+{% load tz static %}
 
 {% block h1_title %}
 	{{ object.name }}
@@ -96,10 +96,9 @@
 	</div>
 </div>
 
-{% if request.user.is_superuser %}
 <div class="row">
 	<div class="col-md-12">
-		<div class="box box-default">
+		<div class="box box-info">
 			<div class="box-header with-border">
 				<h3 class="box-title">Administrative information</h3>
 				<div class="box-body">
@@ -113,10 +112,35 @@
 							<p>Rights statements go here.</p>
 						</div>
 					</div>
+				</div>
 			</div>
 		</div>
 	</div>
 </div>
-{% endif %}
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">Rights Statements</h3>
+				{% if request.user.is_superuser %}<a href="{% url 'rights-add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
+			</div>
+			<div class="box-body {% if object.rights_statements %}no-padding{% endif %}">
+				{% include 'parts/rights_table.html' with org=object %}
+			</div>
+		</div>
+	</div>
+</div>
 
 {% endblock %}
+
+{% block modals %}
+	{% include 'rights/modals/confirm_delete.html' %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
+{% endblock %}
+
+      	
