@@ -8,7 +8,7 @@
 	cursor: pointer;
 }
 .pointer-row:hover{
-	background-color: #00c0ef;
+	background-color: #00c0ef !important;
 }
 
 .mar-top20{
