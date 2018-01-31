@@ -8,11 +8,15 @@ from orgs.models import Organization, Archives
 
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
+class RecordType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self): return 'self.name'
 
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
-    applies_to_type = models.CharField(max_length=100)
+    applies_to_type = models.ManyToManyField(RecordType)
     RIGHTS_BASIS_CHOICES = (
         ('Copyright', 'Copyright'),
         ('Statute', 'Statute'),

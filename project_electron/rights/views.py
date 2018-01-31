@@ -43,10 +43,11 @@ class RightsManageView(RACAdminMixin, CreateView):
         applies_to_type_choices = []
         for v in values:
             applies_to_type_choices.append((v.values, v.values))
-        context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
+        context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement, initial={'applies_to_type': ['grant records', 'communications and publications']})
         return context
 
     def post(self, request, *args, **kwargs):
+        applies_to_type = request.POST.getlist('applies_to_type')
         if self.kwargs.get('pk'):
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
             form = RightsForm(request.POST, instance=rights_statement)
@@ -68,6 +69,12 @@ class RightsManageView(RACAdminMixin, CreateView):
             formset = OtherFormSet(request.POST, instance=rights_statement)
             formset_key = 'other_form'
         if formset.is_valid():
+            obj_list = []
+            for record_type in applies_to_type:
+                print record_type
+                new_obj = RecordType.objects.get_or_create(name=record_type)[0]
+                obj_list.append(new_obj)
+            rights_statement.applies_to_type.set(obj_list)
             rights_statement.save()
             formset.save()
             return redirect('rights-grants', rights_statement.pk)
