@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
+
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -52,7 +53,6 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
-        context['rights_statements'] = RightsStatement.objects.filter(organization = context['object'])
         context['meta_page_title'] = 'Edit Organization'
         context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context

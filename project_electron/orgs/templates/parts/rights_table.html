@@ -27,3 +27,5 @@
 {% else %}
 <p>No rights statements</p>
 {% endif %}
+
+<p class="has-no-rights-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
