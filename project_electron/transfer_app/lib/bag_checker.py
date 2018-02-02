@@ -141,10 +141,10 @@ class bagChecker():
         if langz:
             for language in langz:
                 try:
-                    languages.lookup(language)
+                    languages.get(alpha_3=language)
                 except Exception as e:
                     print e
-                    self.bag_exception = e
+                    self.bag_exception = "Invalid language value: {}".format(language)
                     return False
         return True
 
