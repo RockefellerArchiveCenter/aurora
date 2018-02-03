@@ -120,14 +120,12 @@ class bagChecker():
     def _has_valid_datatypes(self):
         """Assumes a valid bag/bag info; returns true if all datatypes in bag pass"""
         dates = []
-        langz = []
-
 
         for k,v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:
                 dates.append(v)
-            if k == 'Language':
-                langz = v
+
+        langz = bag_info_data.get('Language', None)
 
         if dates:
             for date in dates:
@@ -139,9 +137,9 @@ class bagChecker():
                     return False
 
         if langz:
-            print langz
+            if type(langz) is not list:
+                langz = [langz]
             for language in langz:
-                print language
                 try:
                     languages.get(alpha_3=language)
                 except Exception as e:
