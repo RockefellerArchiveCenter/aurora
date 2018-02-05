@@ -44,12 +44,16 @@ class Organization(models.Model):
     def save(self, *args, **kwargs):
 
         if self.pk is None:                         # Initial Save / Sync table
-            results = RAC_CMD.add_org(self.name)
-            if results[0]:
-                self.machine_name = results[1]
-            else:
+            if settings.TESTING:
+                print 'Running in test mode'
                 go = 1
-                # and when it fails
+            else:
+                results = RAC_CMD.add_org(self.name)
+                if results[0]:
+                    self.machine_name = results[1]
+                else:
+                    go = 1
+                    # and when it fails
         else:
 
             # SET USERS INACTIVE WHEN ORG IS SET TO INACTIVE

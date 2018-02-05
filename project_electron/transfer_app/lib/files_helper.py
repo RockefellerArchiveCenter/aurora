@@ -110,7 +110,7 @@ def has_files_to_process():
                             if not bag_it_name:
                                 auto_fail = True
                                 auto_fail_code = 'BTAR2'
-                                
+
 
 
                     elif extension[-1] == '.zip':
@@ -433,7 +433,8 @@ def zip_extract_all(file_path):
     extracted = False
     try:
         zf = zipfile.ZipFile(file_path,'r')
-        zf.extractall('/data/tmp/')
+        # zf.extractall('/data/tmp/')
+        zf.extractall('/home/va0425/tmp/')
         zf.close()
         extracted = True
     except Exception as e:

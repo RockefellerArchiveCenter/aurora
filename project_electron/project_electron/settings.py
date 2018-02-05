@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 from project_electron import config as CF
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -135,6 +136,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = CF.STATIC_ROOT
 
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
+
+TESTING = sys.argv[1:2] == ['test']
 
 
 import ldap
