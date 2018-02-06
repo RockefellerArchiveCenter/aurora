@@ -5,6 +5,9 @@ import json
 from os.path import isfile, join
 from pycountry import languages
 
+from django.conf import settings
+from project_electron import config
+
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
 from orgs.models import BAGLog, Archives
@@ -15,12 +18,17 @@ class bagChecker():
 
     def __init__(self,archiveObj):
 
+        if settings.TESTING:
+            tmp_dir_prefix = config.TESTING_TMP_DIR
+        else:
+            tmp_dir_prefix = config.TMP_DIR
+
         self.RAC_profile_identifier = 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json'
         self.bag_dates_to_validate = ['Date_Start', 'Date_End', 'Bagging_Date']
 
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
-        self.archive_path = '/data/tmp/{}'.format(self.archiveObj.bag_it_name)
+        self.archive_path = '{}{}'.format(tmp_dir_prefix, self.archiveObj.bag_it_name)
         self.ecode = ''
         self.bag = {}
         self.bag_info_data = []

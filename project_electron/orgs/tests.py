@@ -2,16 +2,25 @@
 from __future__ import unicode_literals
 
 from django.test import TestCase
-
+from os import path, makedirs
+from shutil import rmtree
 from orgs.models import Archives, Organization, User
 from project_electron import config
 from transfer_app.lib import files_helper as FH
 from transfer_app.lib.bag_checker import bagChecker
 
 class BagTest(TestCase):
+    def tearDown(self):
+        print "tearing down"
+        FH.remove_file_or_dir(config.TESTING_TMP_DIR)
+
     # TODO: abstract these setup functions
-    # TODO: use variable for tmp dir
-    # TODO: set up TMP dir
+    def set_up_tmp_dir(self):
+        if path.isdir(config.TESTING_TMP_DIR):
+            rmtree(config.TESTING_TMP_DIR)
+        else:
+            makedirs(config.TESTING_TMP_DIR)
+        return config.TESTING_TMP_DIR
 
     def create_test_org(self):
         test_org = Organization(name='Ford Foundation', machine_name='org1')
@@ -46,9 +55,8 @@ class BagTest(TestCase):
 
     def test_bag_is_valid(self):
         # TODO: write loop to test all bags
+        tmp_dir_prefix = self.set_up_tmp_dir()
         archive = self.set_up_archive_object()
         bag = bagChecker(archive)
-        bag.archive_path = "/home/va0425/tmp/{}".format(archive.bag_it_name)
+        # bag.archive_path = "{}{}".format(tmp_dir_prefix, archive.bag_it_name)
         self.assertTrue(bag.bag_passed_all())
-
-#TODO: teardown to delete TMP dir

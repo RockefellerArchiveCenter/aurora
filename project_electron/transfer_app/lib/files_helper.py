@@ -13,8 +13,13 @@ import psutil
 from transfer_app.lib.virus_scanner import VirusScan
 
 from django.conf import settings
+from project_electron import config
 from orgs.models import BAGLog, Organization
 
+if settings.TESTING:
+    tmp_dir_prefix = config.TESTING_TMP_DIR
+else:
+    tmp_dir_prefix = config.TMP_DIR
 
 def has_files_to_process():
     files_to_process = []
@@ -363,7 +368,7 @@ def file_get_size(file_path,file_type):
                 return (0, 'BTAR2')
 
             if tar_extract_all(file_path):
-                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                tmp_dir_path = "{}{}".format(tmp_dir_prefix, top_level_dir)
                 filesize = get_dir_size(tmp_dir_path)
                 remove_file_or_dir(tmp_dir_path)
         elif file_type == 'ZIP':
@@ -371,8 +376,7 @@ def file_get_size(file_path,file_type):
             if not top_level_dir:
                 return (0, 'BZIP2')
             if zip_extract_all(file_path):
-                # tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
-                tmp_dir_path = "{}{}".format('/home/va0425/tmp/', top_level_dir)
+                tmp_dir_path = "{}{}".format(tmp_dir_prefix, top_level_dir)
                 filesize = get_dir_size(tmp_dir_path)
                 remove_file_or_dir(tmp_dir_path)
 
@@ -434,8 +438,7 @@ def zip_extract_all(file_path):
     extracted = False
     try:
         zf = zipfile.ZipFile(file_path,'r')
-        # zf.extractall('/data/tmp/')
-        zf.extractall('/home/va0425/tmp/')
+        zf.extractall(tmp_dir_prefix)
         zf.close()
         extracted = True
     except Exception as e:
@@ -446,7 +449,7 @@ def tar_extract_all(file_path):
     extracted = False
     try:
         tf = tarfile.open(file_path, 'r:*')
-        tf.extractall('/data/tmp/')
+        tf.extractall(tmp_dir_prefix)
         tf.close()
         extracted = True
     except Exception as e:
@@ -459,7 +462,7 @@ def dir_extract_all(file_path):
     try:
         # notice forward slash missing
         print '!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-        copy_tree(file_path,'/data/tmp/{}'.format(file_path.split('/')[-1]), update=1)
+        copy_tree(file_path,'{}{}'.format(tmp_dir_prefix, file_path.split('/')[-1]), update=1)
         extracted = True
     except Exception as e:
         print e
