@@ -2,6 +2,7 @@ bagit==1.5.4
 bagit-profile==1.1.1
 certifi==2017.7.27.1
 chardet==3.0.4
+coverage==4.5
 Django==1.11.4
 django-auth-ldap==1.2.15
 django-braces==1.11.0
