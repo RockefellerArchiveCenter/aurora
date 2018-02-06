@@ -371,7 +371,8 @@ def file_get_size(file_path,file_type):
             if not top_level_dir:
                 return (0, 'BZIP2')
             if zip_extract_all(file_path):
-                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                # tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                tmp_dir_path = "{}{}".format('/home/va0425/tmp/', top_level_dir)
                 filesize = get_dir_size(tmp_dir_path)
                 remove_file_or_dir(tmp_dir_path)
 
