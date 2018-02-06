@@ -10,8 +10,11 @@ from transfer_app.lib.bag_checker import bagChecker
 
 class BagTest(TestCase):
     # TODO: abstract these setup functions
+    # TODO: use variable for tmp dir
+    # TODO: set up TMP dir
+
     def create_test_org(self):
-        test_org = Organization(name='Rockefeller Archive Center', machine_name='org1')
+        test_org = Organization(name='Ford Foundation', machine_name='org1')
         test_org.save()
         print 'Test organization {} created'.format(test_org)
         return test_org
@@ -30,13 +33,12 @@ class BagTest(TestCase):
             organization = org,
             # user_uploaded = user,
             machine_file_path = bag_file_path,
-            # file_get_size is throwing issues I think
-            # machine_file_size =     FH.file_get_size(bag_file_path, 'ZIP'),
-            machine_file_size =     12345,
+            machine_file_size =     FH.file_get_size(bag_file_path, 'ZIP'),
+            # TODO: fix naive datetime warning
             machine_file_upload_time =  FH.file_modified_time(bag_file_path),
             machine_file_identifier =   '12345',
             machine_file_type       =   'ZIP',
-            bag_it_name =               bag_file_path.split('/')[-1],
+            bag_it_name =               (bag_file_path.split('/')[-1]).split('.')[0],
         )
         archive.save()
         print "Archive {} saved!".format(archive)
@@ -46,5 +48,7 @@ class BagTest(TestCase):
         # TODO: write loop to test all bags
         archive = self.set_up_archive_object()
         bag = bagChecker(archive)
-        bag.archive_path = archive.machine_file_path
+        bag.archive_path = "/home/va0425/tmp/{}".format(archive.bag_it_name)
         self.assertTrue(bag.bag_passed_all())
+
+#TODO: teardown to delete TMP dir

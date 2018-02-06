@@ -170,6 +170,7 @@ class bagChecker():
             return self.bag_failed()
 
         if not self._is_generic_bag():
+            print 'didnt pass bag validation'
             self.ecode = 'GBERR'
             return self.bag_failed()
 
@@ -192,14 +193,17 @@ class bagChecker():
 
         if not self._has_valid_metadata_file():
             self.ecode = 'MDERR'
+            print 'metadata file is not valid'
             return self.bag_failed()
 
         if not self.archiveObj.save_bag_data(self.bag_info_data):
             self.ecode = 'BIERR'
+            print 'could not save bag-info data'
             return self.bag_failed()
 
         if not self.archiveObj.assign_rights():
             self.ecode = 'RSERR'
+            print 'could not assign rights'
             return self.bag_failed()
 
         BAGLog.log_it('PBAGP', self.archiveObj)
