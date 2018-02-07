@@ -4,14 +4,19 @@ from __future__ import unicode_literals
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 
-from orgs.models import Organization, User
+from orgs.models import Organization, User, Archives
+from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, UserPasswordChangeForm
+from orgs.authmixins import *
+
+from rights.models import RightsStatement
+
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 
 from django.contrib.messages.views import SuccessMessageMixin
 
-from orgs.models import Archives
+from orgs.models import Archives, Organization
 from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm
 
 from django.contrib import messages
@@ -27,12 +32,13 @@ from orgs.form import UserPasswordChangeForm
 class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
     model = Organization
-    fields = ['name']
+    fields = ['name', 'acquisition_type']
     success_message = "New Organization Saved!"
 
     def get_context_data(self, **kwargs):
         context = super(CreateView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Add Organization'
+        context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context
 
     def get_success_url(self):
@@ -52,12 +58,13 @@ class OrganizationDetailView(RACUserMixin, DetailView):
 class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
     model =         Organization
-    fields =        ['is_active','name']
+    fields =        ['is_active','name', 'acquisition_type']
     success_message = "Organization Saved!"
 
     def get_context_data(self, **kwargs):
         context = super(UpdateView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Edit Organization'
+        context['acquisition_types'] = Organization.ACQUISITION_TYPE_CHOICES
         return context
 
     def get_success_url(self):
@@ -183,6 +190,7 @@ class UsersTransfersView(RACUserMixin, ListView):
     def get_context_data(self,**kwargs):
         context = super(UsersTransfersView, self).get_context_data(**kwargs)
         context['user'] = self.user
+        context['organization'] = self.user.organization
         context['meta_page_title'] = 'My Transfers'
         return context
 

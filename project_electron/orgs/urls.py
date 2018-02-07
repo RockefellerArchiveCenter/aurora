@@ -1,4 +1,4 @@
-from django.conf.urls import url
+from django.conf.urls import url,include
 from orgs.views import *
 
 urlpatterns = [
@@ -9,5 +9,4 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/edit/$', OrganizationEditView.as_view(), name='orgs-edit'),
     url(r'^(?P<pk>\d+)/transfers/$', OrganizationTransfersView.as_view(), name='orgs-transfers-report'),
     url(r'^(?P<pk>\d+)/transfers/csv/$', OrganizationTransferDataView.as_view(), name='orgs-transfer-data'),
-
 ]
