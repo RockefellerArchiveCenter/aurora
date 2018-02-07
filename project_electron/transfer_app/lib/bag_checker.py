@@ -31,7 +31,7 @@ class bagChecker():
         self.archive_path = '{}{}'.format(tmp_dir_prefix, self.archiveObj.bag_it_name)
         self.ecode = ''
         self.bag = {}
-        self.bag_info_data = []
+        self.bag_info_data = {}
         self.bag_exception = ''
 
 
@@ -129,7 +129,6 @@ class bagChecker():
         """Assumes a valid bag/bag info; returns true if all datatypes in bag pass"""
         dates = []
         langz = []
-
 
         for k,v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:

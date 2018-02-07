@@ -96,7 +96,7 @@ def has_files_to_process():
 
                 else:
                     extension = splitext_(file_path)
-                    tar_accepted_ext = ['tar.gz', '.tar']
+                    tar_accepted_ext = ['.gz', '.tar']
 
                     if extension[-1] in tar_accepted_ext:
                         file_type = 'TAR'
@@ -380,7 +380,7 @@ def file_get_size(file_path,file_type):
                 filesize = get_dir_size(tmp_dir_path)
                 remove_file_or_dir(tmp_dir_path)
 
-        elif file_type == OTHER:
+        elif file_type == 'OTHER':
             filesize = getsize(file_path)
 
     elif isdir(file_path):
