@@ -96,13 +96,14 @@ class BagTest(TestCase):
             self.assertFalse(bag.bag_passed_all())
 
     def test_empty_payload_directory(self):
-        """Bag with empty payload directory is rejected"""
+        # TODO: According to the bagit spec, it seems that empty payload directories are technically allowed.
+        """Bag with empty payload directory is not rejected"""
         bag_names = ['empty_payload_directory', 'empty_payload_directory.zip',
                      'empty_payload_directory.tar', 'empty_payload_directory.tar.gz']
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag.bag_passed_all())
+            self.assertTrue(bag.bag_passed_all())
 
     def test_changed_file(self):
         """Bag with a changed file is rejected"""
