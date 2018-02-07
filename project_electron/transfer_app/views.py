@@ -29,6 +29,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
 
         today = datetime.date.today()
         current = today - relativedelta(years=1)
+        print current.month
 
         while current <= today:
             context['month_labels'].append(current.strftime("%B"))
@@ -44,13 +45,13 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['upload_count_by_year'] = Archives.objects.filter(process_status__gte=20, organization=self.request.user.organization, machine_file_upload_time__year=current.year).count()
         year_upload_size = Archives.objects.filter(process_status__gte=20, organization = self.request.user.organization, machine_file_upload_time__year=current.year).aggregate(Sum('machine_file_size'))
         if year_upload_size['machine_file_size__sum']:
-            context['upload_size_by_year'] = year_upload_size['machine_file_size__sum']/1000000
+            context['upload_size_by_year'] = round(year_upload_size['machine_file_size__sum']/1000000, 2)
         else:
             context['upload_size_by_year'] = 0
         context['average_size'] = sum(context['upload_size_by_month'])/len(context['upload_size_by_month'])
         context['average_count'] = sum(context['upload_count_by_month'])/len(context['upload_count_by_month'])
-        context['size_trend'] = (context['upload_size_by_month'][-1] - context['average_size'])/100
-        context['count_trend'] = (context['upload_count_by_month'][-1] - context['average_count'])/100
+        context['size_trend'] = round((context['upload_size_by_month'][-1] - context['average_size'])/100, 2)
+        context['count_trend'] = round((context['upload_count_by_month'][-1] - context['average_count'])/100, 2)
         return context
 
 class RecentTransfersView(LoggedInMixinDefaults, View):
