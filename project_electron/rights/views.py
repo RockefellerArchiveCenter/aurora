@@ -42,7 +42,8 @@ class RightsManageView(RACAdminMixin, CreateView):
         values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(bagit_profile__in=BagItProfile.objects.filter(applies_to_organization=context['organization']), field='record_type'))
         applies_to_type_choices = []
         for v in values:
-            applies_to_type_choices.append((v.values, v.values))
+            record_type = RecordType.objects.get_or_create(name=v.values)[0]
+            applies_to_type_choices.append((record_type.pk, record_type.name))
         context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement, initial={'applies_to_type': ['grant records', 'communications and publications']})
         return context
 
@@ -69,13 +70,10 @@ class RightsManageView(RACAdminMixin, CreateView):
             formset = OtherFormSet(request.POST, instance=rights_statement)
             formset_key = 'other_form'
         if formset.is_valid():
-            obj_list = []
-            for record_type in applies_to_type:
-                print record_type
-                new_obj = RecordType.objects.get_or_create(name=record_type)[0]
-                obj_list.append(new_obj)
-            rights_statement.applies_to_type.set(obj_list)
             rights_statement.save()
+            for record_type in applies_to_type:
+                rights_statement.applies_to_type.clear()
+                rights_statement.applies_to_type.add(record_type)
             formset.save()
             return redirect('rights-grants', rights_statement.pk)
         else:

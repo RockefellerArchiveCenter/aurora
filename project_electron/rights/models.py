@@ -11,7 +11,7 @@ from orgs.models import Organization, Archives
 class RecordType(models.Model):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self): return 'self.name'
+    def __unicode__(self): return self.name
 
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
@@ -26,7 +26,7 @@ class RightsStatement(models.Model):
     rights_basis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
 
     def __unicode__(self):
-        return '{}: {}: {}'.format(self.organization, self.applies_to_type, self.rights_basis)
+        return '{}: {}'.format(self.organization, self.rights_basis)
 
     def get_rights_info_object(self):
         if self.rights_basis == 'Copyright':

@@ -15,7 +15,7 @@ class RightsForm(forms.ModelForm):
 			'applies_to_type': 'Applies to Record Type(s)'
 		}
 		help_texts = {
-			'applies_to_type': 'The record types for which this rights statement applies. If no options are available here, values must first be added in this organization\'s BagIt Profile.' 
+			'applies_to_type': 'The record types for which this rights statement applies. If no options are available here, values must first be added in this organization\'s BagIt Profile.'
 		}
 		widgets = {
 			'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
@@ -29,6 +29,11 @@ class RightsForm(forms.ModelForm):
 		if applies_to_type_choices:
 			self.fields['applies_to_type'].choices = list(applies_to_type_choices)
 			self.fields['applies_to_type'].widget.choices = list(applies_to_type_choices)
+			if kwargs['instance']:
+				self.initial['applies_to_type'] = kwargs['instance'].applies_to_type.all()
+		else:
+			self.fields['applies_to_type'].choices = []
+			self.fields['applies_to_type'].widget.choices = []
 
 class RightsGrantedForm(forms.ModelForm):
 	class Meta:
