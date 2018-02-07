@@ -66,7 +66,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_missing_payload_manifest(self):
         """Bag missing payload manifest is rejected"""
@@ -75,7 +75,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_missing_bag_manifest(self):
         """Bag missing bag manifest is rejected"""
@@ -84,7 +84,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_missing_payload_directory(self):
         """Bag missing payload directory is rejected"""
@@ -93,7 +93,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_empty_payload_directory(self):
         """Bag with empty payload directory is rejected"""
@@ -102,7 +102,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_changed_file(self):
         """Bag with a changed file is rejected"""
@@ -111,7 +111,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_generic_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_invalid_metadata_file(self):
         """Bag with invalid metadata.json file is rejected"""
@@ -120,7 +120,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._has_valid_metadata_file())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_no_metadata_file(self):
         """Bag with invalid metadata.json file is rejected"""
@@ -129,7 +129,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertTrue(bag._has_valid_metadata_file())
+            self.assertTrue(bag.bag_passed_all())
 
     def test_missing_required_fields(self):
         """Bag with missing fields in bag-info.txt is rejected"""
@@ -138,7 +138,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_rac_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_repeating_fields(self):
         """Bag containing repeating non-repeatable metadata fields in bag-info.txt is rejected"""
@@ -147,7 +147,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_rac_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_invalid_data_type(self):
         """A bag containing a metadata element that does not conform to datatype specification is rejected"""
@@ -156,7 +156,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._has_valid_datatypes())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_unauthorized_term(self):
         """Bag containing metadata elements which do not adhere to locally controlled vocabularies is rejected"""
@@ -165,7 +165,7 @@ class BagTest(TestCase):
         for name in bag_names:
             archive = set_up_archive_object('test_bags/{}'.format(name))
             bag = bagChecker(archive)
-            self.assertFalse(bag._is_rac_bag())
+            self.assertFalse(bag.bag_passed_all())
 
     def test_valid_bag(self):
         """Bag which passes all checks is stored"""
