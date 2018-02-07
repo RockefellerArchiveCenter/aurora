@@ -10,7 +10,7 @@ from django.db.models.functions import Concat
 from django.contrib import messages
 
 from django.shortcuts import render, redirect
-from orgs.models import Archives, RecordCreators, Organization
+from orgs.models import Archives, RecordCreators, Organization, BAGLog
 from orgs.authmixins import RACUserMixin
 from accession.models import Accession
 from accession.forms import AccessionForm
@@ -42,6 +42,7 @@ class AccessionRecordView(RACUserMixin, View):
             accession = form.save()
             merged_rights_statements = RightsStatement.merge_rights(rights_statements)
             for transfer in transfers_list:
+                BAGLog.log_it('BACC', transfer)
                 transfer.process_status = 75
                 transfer.save()
             for statement in merged_rights_statements:
