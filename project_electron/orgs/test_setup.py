@@ -1,23 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
-from os import path, makedirs
-from shutil import rmtree
 from orgs.models import Archives, Organization, User
 from project_electron import config
 from transfer_app.lib import files_helper as FH
-
-def tearDown():
-    print "tearing down"
-    FH.remove_file_or_dir(config.TESTING_TMP_DIR)
-
-def set_up_tmp_dir():
-    if path.isdir(config.TESTING_TMP_DIR):
-        rmtree(config.TESTING_TMP_DIR)
-    else:
-        makedirs(config.TESTING_TMP_DIR)
-    return config.TESTING_TMP_DIR
 
 def create_test_org():
     test_org = Organization(name='Ford Foundation', machine_name='org1')
@@ -30,10 +16,10 @@ def create_test_user(org):
     print 'Test user created'
     return test_user
 
-def set_up_archive_object():
+def set_up_archive_object(bag_name):
     org = create_test_org()
     # user = self.create_test_user(org)
-    bag_file_path = "{}test_bags/valid_bag.zip".format(config.PROJECT_ROOT_DIR)
+    bag_file_path = "{}{}".format(config.PROJECT_ROOT_DIR, bag_name)
     print bag_file_path
     archive = Archives(
         organization = org,
