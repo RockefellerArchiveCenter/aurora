@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import datetime
+from dateutil.relativedelta import relativedelta
+
 from django.utils.translation import gettext as _
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from transfer_app import RAC_CMD
 from django.urls import reverse
+from django.apps import apps
 
 from django.contrib import messages
 from django.conf import settings
@@ -23,6 +27,9 @@ class Organization(models.Model):
         ('transfer', 'Transfer'),
     )
     acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
+
+    def rights_statements(self):
+        return self.rightsstatement_set.all()
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
@@ -414,6 +421,68 @@ class Archives(models.Model):
     def get_records_creators(self):
         bag_data = BagInfoMetadata.objects.get(archive=self.pk)
         return list(bag_data.record_creators.all())
+        
+    def assign_rights(self):
+        try:
+            bag_data = self.get_bag_data()
+            RightsStatement = apps.get_model('rights', 'RightsStatement')
+            rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type=bag_data['record_type'], archive__isnull=True)
+            for statement in rights_statements:
+                rights_info = statement.get_rights_info_object()
+                rights_granted = statement.get_rights_granted_objects()
+                # Clone and save rights statement
+                statement.pk = None
+                statement.archive = self
+                statement.save()
+                # Assign dates to rights basis and save
+                if statement.rights_basis == 'Other':
+                    start_date_key = 'other_rights_applicable_start_date'
+                    end_date_key = 'other_rights_applicable_end_date'
+                    start_date_period_key = 'other_rights_start_date_period'
+                    end_date_period_key = 'other_rights_end_date_period'
+                else:
+                    start_date_key = '{}_applicable_start_date'.format(statement.rights_basis.lower())
+                    end_date_key = '{}_applicable_end_date'.format(statement.rights_basis.lower())
+                    start_date_period_key = '{}_start_date_period'.format(statement.rights_basis.lower())
+                    end_date_period_key = '{}_end_date_period'.format(statement.rights_basis.lower())
+                if not getattr(rights_info, start_date_key):
+                    if getattr(rights_info, start_date_period_key):
+                        period = getattr(rights_info, start_date_period_key)
+                    else:
+                        period = 0
+                    setattr(rights_info, start_date_key, bag_data['date_start'] + relativedelta(years=period))
+                if not getattr(rights_info, end_date_key):
+                    if getattr(rights_info, end_date_period_key):
+                        period = getattr(rights_info, end_date_period_key)
+                    else:
+                        period = 0
+                    setattr(rights_info, end_date_key, bag_data['date_end'] + relativedelta(years=period))
+                rights_info.pk = None
+                rights_info.rights_statement = statement
+                rights_info.save()
+                # Assign dates to rights granted and save
+                for granted in rights_granted:
+                    if not granted.start_date:
+                        if getattr(granted, 'start_date_period'):
+                            period = getattr(granted, 'start_date_period')
+                        else:
+                            period = 0
+                        granted.start_date = bag_data['date_start'] + relativedelta(years=period)
+                    if not granted.end_date:
+                        if getattr(granted, 'end_date_period'):
+                            period = getattr(granted, 'end_date_period')
+                        else:
+                            period = 0
+                        granted.end_date = bag_data['date_end'] + relativedelta(years=period)
+                    granted.pk = None
+                    granted.rights_statement = statement
+                    granted.save()
+            return True
+        except Exception as e:
+            print e
+            return False
+        else:
+            return True
 
     class Meta:
         ordering = ['machine_file_upload_time']
