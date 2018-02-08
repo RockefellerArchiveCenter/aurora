@@ -80,6 +80,10 @@ LOGIN_REDIRECT_URL = 'app_home'
 
 WSGI_APPLICATION = 'project_electron.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
