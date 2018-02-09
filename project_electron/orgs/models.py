@@ -263,7 +263,7 @@ class Archives(models.Model):
     )
 
     organization =          models.ForeignKey(Organization, related_name="transfers")
-    user_uploaded =         models.ForeignKey(User, null=True, related_name="transfers")
+    user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =     models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
     machine_file_upload_time = models.DateTimeField()
@@ -483,24 +483,35 @@ class Archives(models.Model):
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
+    """
+    Codes used in writing logs items.
 
+    These codes are divided into four categories:
+        Bag Error - errors caused by an invalid bag, such as BagIt validation failure
+        General Error - errors not specifically caused by an invalid bag, such as a virus scan connection failure
+        Info - informational messages about system activity such as cron job start and end
+        Success - messages indicating the successful completion of a human or machine process or activity
+
+    Each code has a next_action field to provide information about additional system actions that have
+    occurred as a result of the successful or failed process or activity.
+    """
     eCat_bagit_validation = ['BTAR2','BZIP2',]
     eCat_rac_profile = ['FSERR','MDERR','DTERR']
 
     code_short = models.CharField(max_length=5)
     code_types = (
-        ('T', 'Transfer'),
-        ('E', 'Error'),
+        ('BE', 'Bag Error'),
+        ('GE', 'General Error'),
         ('I', 'Info'),
-
+        ('S', 'Success'),
     )
-    code_type = models.CharField(max_length=5, choices=code_types)
+    code_type = models.CharField(max_length=15, choices=code_types)
     code_desc = models.CharField(max_length=60)
+    next_action = models.CharField(max_length=255, null=True, blank=True)
     def __unicode__(self):
         return "{} : {}".format(self.code_short,self.code_desc)
 
 class BAGLog(models.Model):
-
     code = models.ForeignKey(BAGLogCodes)
     archive = models.ForeignKey(Archives, blank=True,null=True, related_name='notifications')
     log_info = models.CharField(max_length=255, null=True, blank=True)

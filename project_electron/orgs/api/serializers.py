@@ -8,28 +8,13 @@ class BAGLogResultSerializer(serializers.Serializer):
 	name = serializers.SerializerMethodField()
 
 	def get_name(self, obj):
-		# TODO: Would be better to implement this in model
-		accept_codes = ['CSTR', 'CEND', 'ASAVE', 'APASS', 'PBAG', 'PBAGP', 'BACPT', 'BACC']
-		if obj not in accept_codes:
-			return "Transfer deleted"
-		elif obj == 'ASAVE':
-			return "Staged for validation"
-		elif obj == 'APASS':
-			return "Staged for appraisal"
-		elif obj == 'PBAG':
-			return "Staged for conformance to local specifications"
-		elif obj == 'PBAGP':
-			return "Staged for appraisal"
-		elif obj == 'BACPT':
-			return "Staged for accessioning"
-		elif obj == 'BACC':
-			return "Staged for ingest"
+		return obj
 
 class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 	type = serializers.SerializerMethodField()
 	summary = serializers.SerializerMethodField()
 	object = serializers.SerializerMethodField()
-	result = BAGLogResultSerializer(source='code.code_short')
+	result = BAGLogResultSerializer(source='code.next_action')
 	endTime = serializers.StringRelatedField(source='created_time')
 
 	class Meta:
@@ -37,13 +22,10 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 		fields = ('url', 'type', 'summary', 'object', 'result', 'endTime',)
 
 	def get_type(self, obj):
-		code = obj.code.code_short
-		# TODO: This seems super buggy and problematic; should probably look at the types on the error codes
-		accept_codes = ['CSTR', 'CEND', 'ASAVE', 'APASS', 'PBAG', 'PBAGP', 'BACPT', 'BACC']
-		if code in accept_codes:
-			return "Accept"
-		else:
+		if obj.code.code_type in ['BE', 'GE']:
 			return "Reject"
+		elif obj.code.code_type in ['S']:
+			return "Accept"
 
 	def get_summary(self, obj):
 		return obj.code.code_desc
