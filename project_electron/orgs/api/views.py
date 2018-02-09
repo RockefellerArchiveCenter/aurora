@@ -9,6 +9,9 @@ from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata
 from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer
 
 class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Organizations
+    """
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
@@ -36,23 +39,21 @@ class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 class ArchivesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Transfers
+    """
     queryset = Archives.objects.all()
     serializer_class = ArchivesSerializer
 
-    @detail_route()
-    def notifications(self, request, *args, **kwargs):
-        archive = self.get_object()
-        notifications = BAGLog.objects.filter(archive=archive).order_by('created_time')
-        notifications_json = BAGLogSerializer(notifications, context={'request': request}, many=True)
-        return Response(notifications_json.data)
-
-    @detail_route()
-    def metadata(self, request, *args, **kwargs):
-        archive = self.get_object()
-        metadata = BagInfoMetadata.objects.filter(archive=archive)
-        metadata_json = BagInfoMetadataSerializer(metadata, context={'request': request}, many=True)
-        return Response(metadata_json.data)
+    # def metadata(self, request, *args, **kwargs):
+    #     archive = self.get_object()
+    #     metadata = BagInfoMetadata.objects.filter(archive=archive)
+    #     metadata_json = BagInfoMetadataSerializer(metadata, context={'request': request}, many=True)
+    #     return Response(metadata_json.data)
 
 class BAGLogViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    Notifications
+    """
     queryset = BAGLog.objects.all()
     serializer_class = BAGLogSerializer

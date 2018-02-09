@@ -4,12 +4,55 @@ from __future__ import unicode_literals
 from rest_framework import serializers
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata
 
+class BAGLogResultSerializer(serializers.Serializer):
+	name = serializers.SerializerMethodField()
+
+	def get_name(self, obj):
+		# TODO: Would be better to implement this in model
+		accept_codes = ['CSTR', 'CEND', 'ASAVE', 'APASS', 'PBAG', 'PBAGP', 'BACPT', 'BACC']
+		if obj not in accept_codes:
+			return "Transfer deleted"
+		elif obj == 'ASAVE':
+			return "Staged for validation"
+		elif obj == 'APASS':
+			return "Staged for appraisal"
+		elif obj == 'PBAG':
+			return "Staged for conformance to local specifications"
+		elif obj == 'PBAGP':
+			return "Staged for appraisal"
+		elif obj == 'BACPT':
+			return "Staged for accessioning"
+		elif obj == 'BACC':
+			return "Staged for ingest"
+
 class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
-	code = serializers.StringRelatedField()
+	type = serializers.SerializerMethodField()
+	summary = serializers.SerializerMethodField()
+	object = serializers.SerializerMethodField()
+	result = BAGLogResultSerializer(source='code.code_short')
+	endTime = serializers.StringRelatedField(source='created_time')
 
 	class Meta:
 		model = BAGLog
-		fields = ('url', 'code', 'archive', 'log_info', 'created_time')
+		fields = ('url', 'type', 'summary', 'object', 'result', 'endTime',)
+
+	def get_type(self, obj):
+		code = obj.code.code_short
+		# TODO: This seems super buggy and problematic; should probably look at the types on the error codes
+		accept_codes = ['CSTR', 'CEND', 'ASAVE', 'APASS', 'PBAG', 'PBAGP', 'BACPT', 'BACC']
+		if code in accept_codes:
+			return "Accept"
+		else:
+			return "Reject"
+
+	def get_summary(self, obj):
+		return obj.code.code_desc
+
+	def get_object(self, obj):
+		try:
+			return obj.archive.bag_it_name
+		except:
+			return None
 
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 	source_organization = serializers.StringRelatedField()
@@ -18,15 +61,15 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
 	class Meta:
 		model = BagInfoMetadata
-		fields = ('url', 'source_organization', 'external_identifier',
+		fields = ('source_organization', 'external_identifier',
 					'title', 'record_creators', 'internal_sender_description',
 					'date_start', 'date_end', 'record_type', 'language',
 					'bag_count', 'bag_group_identifier', 'payload_oxum',
 					'bagit_profile_identifier', 'bagging_date',)
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
-	metadata = serializers.HyperlinkedIdentityField(view_name='archives-metadata')
-	notifications = serializers.HyperlinkedIdentityField(view_name='archives-notifications')
+	metadata = BagInfoMetadataSerializer(many=True)
+	notifications = BAGLogSerializer(many=True)
 
 	class Meta:
 		model = Archives
