@@ -312,15 +312,8 @@ class Archives(models.Model):
     def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
-        flist = [
-            'NORG','BFNM',
-            'BTAR','BTAR2','BZIP','BZIP2',
-            'BDIR','EXERR',
-            'GBERR', 'RBERR',
-            'MDERR', 'DTERR', 'FSERR',
-            'VIRUS','BIERR'
-        ]
-        get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
+        flist = ['BE',]
+        get_error_obj = BAGLog.objects.filter(archive=self,code__code_type__in=flist)
         if not get_error_obj:
             return False
         return get_error_obj[0] if LAST_ONLY else get_error_obj
