@@ -45,12 +45,6 @@ class ArchivesViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Archives.objects.all()
     serializer_class = ArchivesSerializer
 
-    # def metadata(self, request, *args, **kwargs):
-    #     archive = self.get_object()
-    #     metadata = BagInfoMetadata.objects.filter(archive=archive)
-    #     metadata_json = BagInfoMetadataSerializer(metadata, context={'request': request}, many=True)
-    #     return Response(metadata_json.data)
-
 class BAGLogViewSet(viewsets.ReadOnlyModelViewSet):
     """
     Notifications

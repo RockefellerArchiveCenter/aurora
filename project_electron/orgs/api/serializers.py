@@ -13,9 +13,13 @@ class BAGLogResultSerializer(serializers.Serializer):
 class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 	type = serializers.SerializerMethodField()
 	summary = serializers.SerializerMethodField()
-	object = serializers.SerializerMethodField()
+	object = serializers.HyperlinkedRelatedField(source='archive', queryset='archive', view_name='archives-detail')
 	result = BAGLogResultSerializer(source='code.next_action')
 	endTime = serializers.StringRelatedField(source='created_time')
+
+	print object
+
+	print result.data
 
 	class Meta:
 		model = BAGLog
@@ -29,12 +33,6 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 
 	def get_summary(self, obj):
 		return obj.code.code_desc
-
-	def get_object(self, obj):
-		try:
-			return obj.archive.bag_it_name
-		except:
-			return None
 
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 	source_organization = serializers.StringRelatedField()
@@ -52,13 +50,14 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
 	metadata = BagInfoMetadataSerializer(many=True)
 	notifications = BAGLogSerializer(many=True)
+	file_size = serializers.StringRelatedField(source='machine_file_size')
+	file_type = serializers.StringRelatedField(source='machine_file_type')
 
 	class Meta:
 		model = Archives
-		fields = ('url', 'organization', 'bag_it_name', 'process_status', 'machine_file_size',
-		'machine_file_upload_time', 'machine_file_identifier', 'machine_file_type',
-		'created_time', 'modified_time', 'appraisal_note', 'additional_error_info',
-		'metadata', 'notifications',)
+		fields = ('url', 'organization', 'bag_it_name', 'process_status', 'file_size',
+		'file_type', 'appraisal_note', 'additional_error_info', 'metadata', 'notifications',
+		'created_time', 'modified_time', )
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
 	transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')

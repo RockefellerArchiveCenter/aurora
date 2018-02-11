@@ -544,7 +544,7 @@ class BAGLog(models.Model):
 
 class BagInfoMetadata(models.Model):
     archive =                       models.ForeignKey(Archives, related_name='metadata')
-    source_organization =           models.ForeignKey(Organization, blank=True,null=True)
+    source_organization =           models.ForeignKey(Organization, blank=True,null=True,)
     external_identifier =           models.CharField(max_length=256)
     internal_sender_description =   models.TextField()
     title =                         models.CharField(max_length=256)
