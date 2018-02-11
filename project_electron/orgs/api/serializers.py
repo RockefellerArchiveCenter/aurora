@@ -12,14 +12,10 @@ class BAGLogResultSerializer(serializers.Serializer):
 
 class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 	type = serializers.SerializerMethodField()
-	summary = serializers.SerializerMethodField()
+	summary = serializers.CharField(source='code.code_desc')
 	object = serializers.HyperlinkedRelatedField(source='archive', queryset='archive', view_name='archives-detail')
 	result = BAGLogResultSerializer(source='code.next_action')
 	endTime = serializers.StringRelatedField(source='created_time')
-
-	print object
-
-	print result.data
 
 	class Meta:
 		model = BAGLog
@@ -30,9 +26,6 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 			return "Reject"
 		elif obj.code.code_type in ['S']:
 			return "Accept"
-
-	def get_summary(self, obj):
-		return obj.code.code_desc
 
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 	source_organization = serializers.StringRelatedField()
