@@ -9,9 +9,9 @@ class DonorOrgReadAccessMixin(LoggedInMixinDefaults, UserPassesTestMixin):
         organization = None
 
         # conditionals to make different req types
-        if 'rights_pk' in self.kwargs:
+        if self.model == RightsStatement:
             try:
-                rights_statement = RightsStatement.objects.get(pk = self.kwargs.get('rights_pk'))
+                rights_statement = RightsStatement.objects.get(pk = self.kwargs.get('pk'))
             except RightsStatement.DoesNotExist as e:
                 print e
                 return False
