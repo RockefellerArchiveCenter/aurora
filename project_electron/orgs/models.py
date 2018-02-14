@@ -418,10 +418,10 @@ class Archives(models.Model):
                     values[field_name] = getattr(bag_data, field_name, None)
         return values
 
-
     def get_records_creators(self):
         bag_data = BagInfoMetadata.objects.get(archive=self.pk)
         return list(bag_data.record_creators.all())
+        
     def assign_rights(self):
         try:
             bag_data = self.get_bag_data()

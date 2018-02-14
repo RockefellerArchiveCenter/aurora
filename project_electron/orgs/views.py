@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
-
 from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone

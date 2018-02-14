@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, UpdateView
 
 from django.shortcuts import render, redirect
 
-from orgs.models import Archives
+from orgs.models import Archives, BAGLog
 from orgs.authmixins import RACUserMixin
 
 class AppraiseView(RACUserMixin, View):
@@ -44,6 +44,7 @@ class AppraiseView(RACUserMixin, View):
                                     appraisal_decision = 0
 
                                 upload.process_status = (70 if appraisal_decision else 60)
+                                BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                 upload.save()
                                 rdata['success'] = 1
 
