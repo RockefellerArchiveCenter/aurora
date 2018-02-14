@@ -69,7 +69,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
 
-class RightsAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
+class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
     def render_to_response(self, context, **kwargs):
         if not self.request.is_ajax():
@@ -121,6 +121,6 @@ class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
         context['rights_granted_info'] = context['object'].get_rights_granted_objects
         return context
 
-class RightsUpdateView(RACAdminMixin, UpdateView):
+class RightsUpdateView(ManagingArchivistMixin, UpdateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
