@@ -15,18 +15,23 @@ class ArchivistMixin(LoggedInMixinDefaults,UserPassesTestMixin):
             return True
         return False
 
-class AppraisalArchivistMixin(ArchivistMixin, GroupRequiredMixin):
-    group_required = [u"appraisal_archivists", u"managing_archivists"]
+class AppraisalArchivistMixin(ArchivistMixin,UserPassesTestMixin):
 
-class AccessioningArchivistMixin(ArchivistMixin, GroupRequiredMixin):
-    group_required = [u"accessioning_archivists", u"managing_archivists"]
+    def test_func(self,user):
+        return user.has_privs('APPRAISER')
 
-class ManagingArchivistMixin(ArchivistMixin, GroupRequiredMixin):
-    group_required = u"managing_archivists"
+class AccessioningArchivistMixin(ArchivistMixin, UserPassesTestMixin):
+    def test_func(self,user):
+        return user.has_privs('ACCESSIONER')
+
+class ManagingArchivistMixin(ArchivistMixin, UserPassesTestMixin):
+    def test_func(self,user):
+        return user.has_privs('MANAGING')
 
 class SysAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
 
+# UNUSED
 class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
     def test_func(self, user):
