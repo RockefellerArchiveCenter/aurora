@@ -45,7 +45,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(OrgReadViewMixin, DetailView):
+class OrganizationDetailView(ArchivistMixin,OrgReadViewMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
@@ -71,7 +71,7 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(OrgReadViewMixin, ListView):
+class OrganizationTransfersView(ArchivistMixin, OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     model = Organization
     def get_context_data(self,**kwargs):
@@ -97,7 +97,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
+class OrganizationTransferDataView(CSVResponseMixin, ArchivistMixin, OrgReadViewMixin, View):
     model = Organization
 
     def get(self, request, *args, **kwargs):
@@ -152,7 +152,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersDetailView(SelfOrManagerMixin, DetailView):
+class UsersDetailView(ArchivistMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
@@ -173,14 +173,10 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     success_message = "Your changes have been saved!"
 
     def get_form_class(self):
-        return (RACSuperUserUpdateForm if self.if_editing_staffer() else OrgUserUpdateForm)
-
-    def if_editing_staffer(self):
-        return (True if self.object.username[:2] == "va" else False)
+        return (RACSuperUserUpdateForm if self.object.is_staff else OrgUserUpdateForm)
 
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
-        context['editing_staffer'] = self.if_editing_staffer()
         context['page_title'] = "Edit User"
         context['meta_page_title'] = "Edit User"
         return context
@@ -188,7 +184,7 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(OrgReadViewMixin, ListView):
+class UsersTransfersView(ArchivistMixin, OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     model = User
     def get_context_data(self,**kwargs):

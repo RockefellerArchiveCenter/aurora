@@ -8,9 +8,12 @@ from orgs.models import Archives, Organization, User
 class LoggedInMixinDefaults(LoginRequiredMixin):
     login_url = '/app'
 
-class ArchivistMixin(LoggedInMixinDefaults, GroupRequiredMixin):
+class ArchivistMixin(LoggedInMixinDefaults,UserPassesTestMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
-    group_required = [u"appraisal_archivists", u"accessioning_archivists", u"managing_archivists"]
+    def test_func(self, user):
+        if user.is_staff:
+            return True
+        return False
 
 class AppraisalArchivistMixin(ArchivistMixin, GroupRequiredMixin):
     group_required = [u"appraisal_archivists", u"managing_archivists"]
@@ -31,14 +34,8 @@ class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
 
 class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
     def test_func(self, user):
-        if self.request.user.is_staff:
-            return True
-
 
         organization = None
-
-        # conditionals to make different req types
-
         # Most views are using generics, which in return pass models, so we can hook those in and target the org to remove access to reg users not in org
         if hasattr(self,'model') :
             if self.model == User:

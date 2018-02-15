@@ -42,26 +42,29 @@
                     {% endcomment %}
 
                     {% if request.user.is_manager or request.user.is_superuser %}
-                    <div class="form-group">
-                        <label>Organization</label>
-                        <select class="form-control" name="organization" required>
-                            {% for org in form.fields.organization.choices %}
-                            <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
 
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
-                      </label>
-                    </div>
+                        {% if not object.is_staff %}
+                        <div class="form-group">
+                            <label>Organization</label>
+                            <select class="form-control" name="organization" required>
+                                {% for org in form.fields.organization.choices %}
+                                <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
+                          </label>
+                        </div>
                     {% else %}
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="is_org_admin" {% if object.is_org_admin %}checked{% endif %}> Org Admin?
-                      </label>
-                    </div>
+                        <div class="checkbox">
+                          <label>
+                            <input type="checkbox" name="is_org_admin" {% if object.is_org_admin %}checked{% endif %}> Org Admin?
+                          </label>
+                        </div>
 
                     {% endif %}
 
