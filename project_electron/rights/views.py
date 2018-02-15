@@ -11,7 +11,7 @@ from orgs.authmixins import *
 from transfer_app.mixins import JSONResponseMixin
 
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
-from orgs.donorauthmixins import DonorOrgReadAccessMixin
+from orgs.authmixins import OrgReadViewMixin
 
 class RightsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
@@ -109,7 +109,7 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
-class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
+class RightsDetailView(OrgReadViewMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
     pk_url_kwarg = 'rights_pk'

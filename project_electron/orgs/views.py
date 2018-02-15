@@ -7,7 +7,7 @@ from django.contrib.auth.views import PasswordChangeView
 from orgs.models import Organization, User, Archives
 from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, UserPasswordChangeForm
 from orgs.authmixins import *
-from orgs.donorauthmixins import DonorOrgReadAccessMixin
+from orgs.authmixins import OrgReadViewMixin
 
 from rights.models import RightsStatement
 
@@ -45,7 +45,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(DonorOrgReadAccessMixin, DetailView):
+class OrganizationDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
@@ -71,8 +71,9 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(DonorOrgReadAccessMixin, ListView):
+class OrganizationTransfersView(OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
+    model = Organization
     def get_context_data(self,**kwargs):
         context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
         context['organization'] = self.organization
@@ -96,7 +97,8 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, DonorOrgReadAccessMixin, View):
+class OrganizationTransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
+    model = Organization
 
     def get(self, request, *args, **kwargs):
         data = [('Bag Name','Status','Size','Upload Time','Errors')]
@@ -186,8 +188,9 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(DonorOrgReadAccessMixin, ListView):
+class UsersTransfersView(OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
+    model = User
     def get_context_data(self,**kwargs):
         context = super(UsersTransfersView, self).get_context_data(**kwargs)
         context['user'] = self.user
@@ -207,21 +210,6 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     model = User
     success_message = "New password saved."
     form_class = UserPasswordChangeForm
-
-    # def post(self, request, *args, **kwargs):
-    #     from django.core.exceptions import ValidationError
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-
-    #     try:
-    #         if form.is_valid():
-    #             return self.form_valid(form)
-    #         else:
-    #             return self.form_invalid(form)
-    #     except ValidationError as e:
-    #         print e
-
-    #     return self.form_invalid(form)
 
     def get_context_data(self,**kwargs):
         context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
