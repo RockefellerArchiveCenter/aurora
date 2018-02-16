@@ -16,6 +16,9 @@ Application functionality currently assumes a SLES server and a particular LDAP 
 Aurora implements the following user groups and associated permissions:
 
 ### All Users
+
+All users have a few basic permissions:
+
 *  View all own organization transfers
 *  View all own transfers
 *  View dashboard for own organization
@@ -27,7 +30,9 @@ Aurora implements the following user groups and associated permissions:
 
 ### Archivist Users
 
-#### All RAC Users
+In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
+
+#### All Archivists
 *  View all transfers
 *  View all organizations
 *  View all organization profiles
@@ -37,13 +42,22 @@ Aurora implements the following user groups and associated permissions:
 *  View accessioning queue
 
 #### Appraisal Archivists
+
+In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
+
 *  Accept or reject transfers
 *  Add appraisal notes to transfers
 
 #### Accessioning Archivists
+
+In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
+
 *  Create accession records
 
 #### Managing Archivists
+
+In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
+
 *  Accept or reject transfers
 *  Add appraisal notes to transfers
 *  Create accession records
@@ -53,6 +67,9 @@ Aurora implements the following user groups and associated permissions:
 *  Add/edit bag profiles
 
 #### System Administrator
+
+In addition to the permissions of **All Archivists**, System Administrators have the following additional permissions:
+
 *  Accept or reject transfers
 *  Add appraisal notes to transfers
 *  Create accession records
