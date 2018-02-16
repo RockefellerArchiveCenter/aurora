@@ -45,7 +45,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(ArchivistMixin,OrgReadViewMixin, DetailView):
+class OrganizationDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
@@ -71,7 +71,7 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(ArchivistMixin, OrgReadViewMixin, ListView):
+class OrganizationTransfersView(OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     model = Organization
     def get_context_data(self,**kwargs):
@@ -97,7 +97,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, ArchivistMixin, OrgReadViewMixin, View):
+class OrganizationTransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
     model = Organization
 
     def get(self, request, *args, **kwargs):
@@ -152,7 +152,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersDetailView(ArchivistMixin, DetailView):
+class UsersDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
@@ -184,7 +184,7 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(ArchivistMixin, OrgReadViewMixin, ListView):
+class UsersTransfersView(OrgReadViewMixin, ListView):
     template_name = 'orgs/all_transfers.html'
     model = User
     def get_context_data(self,**kwargs):

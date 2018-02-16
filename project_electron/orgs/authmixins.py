@@ -16,7 +16,6 @@ class ArchivistMixin(LoggedInMixinDefaults,UserPassesTestMixin):
         return False
 
 class AppraisalArchivistMixin(ArchivistMixin,UserPassesTestMixin):
-
     def test_func(self,user):
         return user.has_privs('APPRAISER')
 
@@ -39,6 +38,9 @@ class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
 
 class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
     def test_func(self, user):
+
+        if user.is_staff:
+            return True
 
         organization = None
         # Most views are using generics, which in return pass models, so we can hook those in and target the org to remove access to reg users not in org
