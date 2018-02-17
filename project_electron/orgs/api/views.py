@@ -6,12 +6,12 @@ from rest_framework.decorators import detail_route
 from rest_framework.response import Response
 
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata
+from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
 from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer
 
-class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Organizations
-    """
+class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
+    '''Endpoint for organizations'''
+    model = Organization
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
 
@@ -38,16 +38,12 @@ class OrganizationViewSet(viewsets.ReadOnlyModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
-class ArchivesViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Transfers
-    """
+class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+    '''Endpoint for transfers'''
     queryset = Archives.objects.all()
     serializer_class = ArchivesSerializer
 
-class BAGLogViewSet(viewsets.ReadOnlyModelViewSet):
-    """
-    Notifications
-    """
+class BAGLogViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+    '''Endpoint for notifications'''
     queryset = BAGLog.objects.all()
     serializer_class = BAGLogSerializer
