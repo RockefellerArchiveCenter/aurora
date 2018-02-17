@@ -3,7 +3,7 @@
 
 {% block h1_title %}
   Organizations
-  {% if request.user.is_superuser %}
+  {% if request.user.is_manager or request.user.is_superuser %}
     <a href="{% url 'orgs-add' %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Organization</a>
   {% endif %}
 {% endblock %}
