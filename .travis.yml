@@ -1,0 +1,13 @@
+    language: python
+    python:
+      - "2.7"
+    services:
+      - mysql
+    env:
+      -DJANGO=1.11 DB=mysql
+    install:
+      - pip install -r requirements.txt
+    before_script:
+      - mysql -e 'create database aurora;' -u root
+    script:
+      - python manage.py test
