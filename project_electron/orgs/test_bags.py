@@ -11,7 +11,9 @@ from transfer_app.lib.bag_checker import bagChecker
 class BagTest(TestCase):
     def setUp(self):
         setup_tmp_dir()
-        # TODO: create BAGLog Codes
+        baglog_codes = ['PBAG', 'PBAGP']
+        for code in baglog_codes:
+            create_test_baglog_code(code)
 
     def tearDown(self):
         remove_tmp_dir()

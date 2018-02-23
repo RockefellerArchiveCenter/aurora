@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from datetime import datetime
 from os import path, chdir, makedirs
-from orgs.models import Archives, Organization, User
+from orgs.models import Archives, Organization, User, BAGLogCodes
 from project_electron import config, settings
 from transfer_app.lib import files_helper as FH
 
@@ -16,6 +16,15 @@ def setup_tmp_dir():
 
 def remove_tmp_dir():
     FH.remove_file_or_dir(config.TESTING_TMP_DIR)
+
+def create_test_baglog_code(code):
+    baglog_code = BAGLogCodes(
+        code_short = code,
+        code_type = 'T',
+        code_desc = 'Test code',
+    )
+    baglog_code.save()
+    print "BAGLogCode {} created".format(baglog_code)
 
 def create_test_org():
     test_org = Organization.objects.get_or_create(name='Ford Foundation', machine_name='org1')
