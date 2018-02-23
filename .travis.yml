@@ -12,3 +12,5 @@
       - mysql -e 'create database aurora;' -u root
     script:
       - cd project_electron && python manage.py test
+    notifications:
+      slack: rd-team:AbQysL3oBYoOCiIsq6uiqgy4
