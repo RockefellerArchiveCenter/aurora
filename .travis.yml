@@ -7,6 +7,7 @@
       -DJANGO=1.11 DB=mysql
     install:
       - pip install -r requirements.txt
+      - cp project_electron/project_electron/config.py.example project_electron/project_electron/config.py 
     before_script:
       - mysql -e 'create database aurora;' -u root
     script:
