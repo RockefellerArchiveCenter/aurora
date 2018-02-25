@@ -28,7 +28,7 @@ def create_test_baglog_code(code):
 
 def create_test_org():
     test_org = Organization.objects.get_or_create(name='Ford Foundation', machine_name='org1')
-    print 'Test organization {} created'.format(test_org)
+    print 'Test organization {} created'.format(test_org[0].name)
     return test_org[0]
 
 def create_test_user(org):
@@ -36,10 +36,9 @@ def create_test_user(org):
     print 'Test user created'
     return test_user
 
-def create_test_archive(bag_name):
-    org = create_test_org()
+def create_test_archive(bag_name, org):
     # user = self.create_test_user(org)
-    bag_file_path = path.join(path.split(settings.BASE_DIR)[0], bag_name)
+    bag_file_path = path.join(path.split(settings.BASE_DIR)[0], 'test_bags', bag_name)
     # TODO: this should be replaced with calls to functions, but will require some refactoring
     extension = path.splitext(bag_file_path)
     tar_accepted_ext = ['.gz', '.tar']
