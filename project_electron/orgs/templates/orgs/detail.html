@@ -32,28 +32,9 @@
 				{% if uploads %}
         <div class="box-comments">
         {% for upload in uploads %}
-          <div class="box-comment">
-            <div class="box-comment-icon">
-              <span class="fa fa-archive fa-3x {% if upload.bag_it_valid %}green-bag{% else %}red-bag{% endif %}"></span>
-            </div>
-            <div class="comment-text">
-              <span class="username">
-              	<a href="{% url 'transfer-detail' pk=upload.pk %}">
-                		{{ upload.bag_or_failed_name }}
-                	</a>
-                <span class="text-muted pull-right">{{ upload.created_time }}</span>
-              </span>
-              	{% if upload.user_uploaded %}
-              		Transfer by <a href="{% url 'users-detail' pk=upload.user_uploaded.pk %}">{{ upload.user_uploaded.username }}</a> {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
-              	{% else %}
-              		{% if upload.bag_it_valid %}
-              			Transfer successful
-              		{% else %}
-              			Transfer Failed
-              		{% endif %}
-              	{% endif %}
-            </div>
-          </div>
+          {% for upload in uploads %}
+            {% include 'parts/uploads_list_item.html' %}
+          {% endfor %}
         {% endfor %}
         </div>
       {% else %}
@@ -123,7 +104,7 @@
 		<div class="box box-info">
 			<div class="box-header with-border">
 				<h3 class="box-title">Rights Statements</h3>
-				{% if request.user.is_superuser %}<a href="{% url 'rights-add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
+				{% if request.user.is_manager or request.user.is_superuser %}<a href="{% url 'rights-add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
 			</div>
 			<div class="box-body {% if object.rights_statements %}no-padding{% endif %}">
 				{% include 'parts/rights_table.html' with org=object %}

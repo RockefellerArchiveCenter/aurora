@@ -10,7 +10,7 @@
        {% if not uploads %}
 				<div>No transfers to appraise</div>
 			 {% else %}
-				<table id="appraise_table" class="table table-bordered dataTable">
+				<table id="appraise_table" class="table table-striped dataTable">
 					<thead>
 						<tr>
 							<th>Transfer File Name</th>
@@ -31,6 +31,7 @@
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
+                {% if request.user.can_appraise or request.user.is_superuser %}
                 <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
                   Accept
                 </a>
@@ -40,6 +41,7 @@
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
                     {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
                 </a>
+                {% endif %}
               </td>
 						</tr>
 					{% endfor %}
@@ -73,7 +75,7 @@ var appraise_table = '';
       'autoWidth'   : true,
       'pageLength'  : 25
     })
-  
+
 
     $(".appraisal-note").click(function(e) {
         e.preventDefault();

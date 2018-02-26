@@ -111,6 +111,10 @@ class Organization(models.Model):
 
 class User(AbstractUser):
 
+    appraiser_groups = [u"appraisal_archivists", u"managing_archivists"]
+    accessioner_groups = [u"accessioning_archivists", u"managing_archivists"]
+    managing_group = [u"managing_archivists"]
+
     organization =          models.ForeignKey(Organization, null=True, blank=False)
     is_machine_account =    models.BooleanField(default=True)
     from_ldap =             models.BooleanField(editable=False, default=False)
@@ -120,7 +124,36 @@ class User(AbstractUser):
     AbstractUser._meta.get_field('email').blank = False
 
     def in_group(self,GRP):
-        return User.objects.filter(pk=self.pk, groups_name=GRP).exists()
+        return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
+
+    def is_archivist(self):
+        """friendlier way to check if staff"""
+        return self.is_staff
+
+    def has_privs(self, priv_type=None):
+        """resolves group clusters for user object"""
+        if not self.is_staff:
+            return False
+        if self.is_superuser:
+            return True
+        groups = []
+        if priv_type == 'APPRAISER':
+            groups = User.appraiser_groups
+        elif priv_type == 'ACCESSIONER':
+            groups = User.accessioner_groups
+        elif priv_type == 'MANAGING':
+            groups = User.managing_group
+
+        if not groups: return False
+
+        return self.groups.filter(name__in=groups).exists()
+
+
+    def is_manager(self):
+        return self.groups.filter(name='managing_archivists').exists()
+
+    def can_appraise(self):
+        return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
     def check_password_ldap(self, password):
         from orgs.ldap_mixin import _LDAPUserExtension

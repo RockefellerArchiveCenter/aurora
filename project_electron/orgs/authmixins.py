@@ -2,16 +2,79 @@ from django.urls import reverse, reverse_lazy
 
 from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 
+from rights.models import RightsStatement
+from orgs.models import Archives, Organization, User
+
 class LoggedInMixinDefaults(LoginRequiredMixin):
     login_url = '/app'
 
-class RACAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
-    authenticated_redirect_url = reverse_lazy(u"app_home")
-
-class RACUserMixin(LoggedInMixinDefaults, StaffuserRequiredMixin):
-    authenticated_redirect_url = reverse_lazy(u"app_home")
-
-class SelfOrSuperUserMixin(LoggedInMixinDefaults, UserPassesTestMixin):
+class ArchivistMixin(LoggedInMixinDefaults,UserPassesTestMixin):
     authenticated_redirect_url = reverse_lazy(u"app_home")
     def test_func(self, user):
-        return (user.is_superuser or self.kwargs.get('pk') == str(user.pk))
+        if user.is_staff:
+            return True
+        return False
+
+class AppraisalArchivistMixin(ArchivistMixin,UserPassesTestMixin):
+    def test_func(self,user):
+        return user.has_privs('APPRAISER')
+
+class AccessioningArchivistMixin(ArchivistMixin, UserPassesTestMixin):
+    def test_func(self,user):
+        return user.has_privs('ACCESSIONER')
+
+class ManagingArchivistMixin(ArchivistMixin, UserPassesTestMixin):
+    def test_func(self,user):
+        return user.has_privs('MANAGING')
+
+class SysAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
+    authenticated_redirect_url = reverse_lazy(u"app_home")
+
+# UNUSED
+class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
+    authenticated_redirect_url = reverse_lazy(u"app_home")
+    def test_func(self, user):
+        return (user.is_superuser or user.in_group('managing_archivists') or self.kwargs.get('pk') == str(user.pk))
+
+class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
+    def test_func(self, user):
+
+        if user.is_staff:
+            return True
+
+        organization = None
+        # Most views are using generics, which in return pass models, so we can hook those in and target the org to remove access to reg users not in org
+        if hasattr(self,'model') :
+            if self.model == User:
+                # all staff validate to true above, should pass if == request.user
+                try:
+                    u = User.objects.get(pk=self.kwargs.get('pk'))
+                    if self.request.user == u: return True
+                except User.DoesNotExist as e:
+                    print e
+
+            elif self.model == Organization:
+                try:
+                    org = Organization.objects.get(pk=self.kwargs.get('pk'))
+                    organization = org
+                except Organization.DoesNotExist as e:
+                    print e
+
+            elif self.model == RightsStatement:
+                try:
+                    rights_statement = RightsStatement.objects.get(pk = self.kwargs.get('pk'))
+                    organization = rights_statement.organization
+                except RightsStatement.DoesNotExist as e:
+                    print e
+
+            elif self.model == Archives:
+                try:
+                    archive = Archives.objects.get(pk=self.kwargs.get('pk'))
+                    organization = archive.organization
+                except Archives.DoesNotExist as e:
+                    print e
+
+
+            if organization and self.request.user.organization == organization:
+                return True
+        return False
