@@ -31,6 +31,7 @@
 							<td>{{ upload.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time }}</td>
 							<td>
+                {% if request.user.can_appraise or request.user.is_superuser %}
                 <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
                   Accept
                 </a>
@@ -40,6 +41,7 @@
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
                     {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
                 </a>
+                {% endif %}
               </td>
 						</tr>
 					{% endfor %}

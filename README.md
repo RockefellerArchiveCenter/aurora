@@ -11,6 +11,74 @@ Aurora is a Django web application that can receive, virus check and validate tr
 
 Application functionality currently assumes a SLES server and a particular LDAP configuration. Future development will include improving the portability of the application.
 
+## User groups and permissions
+
+Aurora implements the following user groups and associated permissions:
+
+### All Users
+
+All users have a few basic permissions:
+
+*  View all own organization transfers
+*  View all own transfers
+*  View dashboard for own organization
+*  View rights statements for own organization
+*  View BagIt Profile for own organization
+*  View own organization profile
+*  View own profile
+*  Change own password
+
+### Archivist Users
+
+In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
+
+#### All Archivists
+*  View all transfers
+*  View all organizations
+*  View all organization profiles
+*  View all rights statements
+*  View all BagIt Profiles
+*  View appraisal queue
+*  View accessioning queue
+
+#### Appraisal Archivists
+
+In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+
+#### Accessioning Archivists
+
+In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
+
+*  Create accession records
+
+#### Managing Archivists
+
+In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+*  Create accession records
+*  Add/edit organizations
+*  Add/edit users
+*  Add/edit rights statements
+*  Add/edit bag profiles
+
+#### System Administrator
+
+In addition to the permissions of **All Archivists**, System Administrators have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+*  Create accession records
+*  Add/edit organizations
+*  Add/edit users
+*  Add/edit rights statements
+*  Add/edit bag profiles
+*  Change system settings
+
 ## Scripts
 
 Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/project_electron_transfer/blob/scripts/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).

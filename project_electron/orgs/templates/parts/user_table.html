@@ -1,22 +1,15 @@
 <h6>{{ switch }}</h6>
 {% if users %}
-
 	<table role="table" class="table table-bordered">
-
-<!-- 		<THEAD>
-			<TR>
-				<TH></TH>
-			</TR>
-		</THEAD> -->
-		<TBODY>
+		<tbody>
 			{% for u in users %}
-			<TR onclick="window.open('{% url 'users-detail' u.pk %}' ,'_self');" class="pointer-row">
-				<TD>
+			<tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users-detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}>
+				<td>
 					{{ u.username }}
-				</TD>
-			</TR>
+				</td>
+			</tr>
 			{% endfor %}
-		</TBODY>
+		</tbody>
 	</table>
 {% else %}
 	<p>There are no {{ switch|lower }} users...</p>
