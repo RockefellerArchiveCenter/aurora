@@ -9,8 +9,9 @@ from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata
 from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
 from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer
 
+
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
-    '''Endpoint for organizations'''
+    """Endpoint for organizations"""
     model = Organization
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
@@ -28,7 +29,7 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         return Response(transfer_json.data)
 
     @detail_route()
-    def notifications(self, request, *args, **kwargs):
+    def events(self, request, *args, **kwargs):
         org = self.get_object()
         archives = Archives.objects.filter(organization=org)
         notifications = BAGLog.objects.filter(archive__in=archives).order_by('-created_time')
@@ -38,12 +39,14 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
+
 class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
-    '''Endpoint for transfers'''
+    """Endpoint for transfers"""
     queryset = Archives.objects.all()
     serializer_class = ArchivesSerializer
 
+
 class BAGLogViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
-    '''Endpoint for notifications'''
+    """Endpoint for events"""
     queryset = BAGLog.objects.all()
     serializer_class = BAGLogSerializer
