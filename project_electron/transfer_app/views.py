@@ -10,11 +10,10 @@ from django.shortcuts import render
 from orgs.models import Archives
 from rights.models import RightsStatement
 
-from orgs.authmixins import LoggedInMixinDefaults
+from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
 
 class MainView(LoggedInMixinDefaults, TemplateView):
     template_name = "transfer_app/main.html"
-
 
     def get_context_data(self, **kwargs):
         context = super(MainView, self).get_context_data(**kwargs)
@@ -75,7 +74,7 @@ class RecentTransfersView(LoggedInMixinDefaults, View):
             'user_uploads_count' : Archives.objects.filter(process_status__gte=20, organization = request.user.organization, user_uploaded = request.user).count(),
         })
 
-class TransferDetailView(DetailView):
+class TransferDetailView(OrgReadViewMixin, DetailView):
     template_name = 'transfer_app/transfer_detail.html'
     model = Archives
 
