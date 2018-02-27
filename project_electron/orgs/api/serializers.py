@@ -47,7 +47,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
-    metadata = BagInfoMetadataSerializer(many=True)
+    metadata = BagInfoMetadataSerializer()
     notifications = BAGLogSerializer(many=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')

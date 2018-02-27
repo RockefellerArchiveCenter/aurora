@@ -576,7 +576,7 @@ class BAGLog(models.Model):
         ordering = ['-created_time']
 
 class BagInfoMetadata(models.Model):
-    archive =                       models.ForeignKey(Archives, related_name='metadata')
+    archive =                       models.OneToOneField(Archives, related_name='metadata')
     source_organization =           models.ForeignKey(Organization, blank=True,null=True,)
     external_identifier =           models.CharField(max_length=256)
     internal_sender_description =   models.TextField()
