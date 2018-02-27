@@ -12,9 +12,9 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from orgs.models import Archives, RecordCreators, Organization, BAGLog
 from orgs.authmixins import RACUserMixin
-from accession.models import Accession
-from accession.forms import AccessionForm
-from accession.db_functions import GroupConcat
+from orgs.accession.models import Accession
+from orgs.accession.forms import AccessionForm
+from orgs.accession.db_functions import GroupConcat
 from rights.models import RightsStatement
 
 
@@ -25,8 +25,11 @@ class AccessionView(RACUserMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
-        context['uploads'] = Archives.objects.filter(process_status=70, organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
+        context['uploads'] = Archives.objects.filter(
+            process_status=70,
+            organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
         return context
+
 
 class AccessionRecordView(RACUserMixin, View):
     template_name = "accession/create.html"
@@ -63,8 +66,8 @@ class AccessionRecordView(RACUserMixin, View):
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
-        notes = {'appraisal':[]}
-        dates = {'start':[], 'end':[]}
+        notes = {'appraisal': []}
+        dates = {'start': [], 'end': []}
         creators_list = []
         descriptions_list = []
         extent_files = 0
@@ -89,7 +92,7 @@ class AccessionRecordView(RACUserMixin, View):
         record_creators = list(set(creators_list))
         form = AccessionForm(initial={
             'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data['record_type']),
-            #faked for now, will eventually get this from ArchivesSpace
+            # faked for now, will eventually get this from ArchivesSpace
             'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
             'start_date': sorted(dates.get('start', []))[0],
             'end_date': sorted(dates.get('end', []))[-1],
@@ -106,6 +109,6 @@ class AccessionRecordView(RACUserMixin, View):
         return render(request, self.template_name, {
             'form': form,
             'meta_page_title': 'Create Accession Record',
-            'transfers' : transfers_list,
-            'rights_statements' : rights_statements
+            'transfers': transfers_list,
+            'rights_statements': rights_statements
             })

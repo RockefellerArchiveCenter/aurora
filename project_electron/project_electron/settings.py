@@ -42,8 +42,8 @@ INSTALLED_APPS = [
     'rac_user',
     'transfer_app',
     'orgs',
+    'orgs.accession',
     'appraise',
-    'accession',
     'rights',
 ]
 

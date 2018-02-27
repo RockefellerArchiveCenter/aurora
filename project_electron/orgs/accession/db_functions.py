@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from django.db.models import CharField, Aggregate
 
+
 class GroupConcat(Aggregate):
     function = 'GROUP_CONCAT'
     template = '%(function)s(%(distinct)s%(expressions)s)'

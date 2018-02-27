@@ -9,6 +9,7 @@ from orgs.models import Organization, Archives
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
 
+
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
