@@ -1,4 +1,5 @@
-from os import stat, remove, listdir
+import os
+from os import stat, remove, listdir, walk
 from os.path import isdir, getmtime, getsize, splitext, isfile
 from pwd import getpwuid
 import re
@@ -8,6 +9,8 @@ import zipfile
 from distutils.dir_util import copy_tree
 from shutil import rmtree, move
 import psutil
+
+from transfer_app.lib.virus_scanner import VirusScan
 
 from django.conf import settings
 from orgs.models import BAGLog, Organization
@@ -36,8 +39,10 @@ def has_files_to_process():
 
             auto_fail = False
             auto_fail_code = ''
-            bag_it_name = ''
+            # auto_fail_data = ''
+            bag_it_name = file_path.split('/')[-1]
             file_type = 'OTHER'
+            file_size = 0
 
             # DOES FILE STILL EXIST?
             if len(file_path) <=2 or not is_dir_or_file(file_path):
@@ -48,64 +53,115 @@ def has_files_to_process():
             Pter.flines(["staring file".format(file_path)], tab=3)
 
 
+            # convert this into a transfer file object !!! lot less code D.L.
+            file_own =      file_owner(file_path)
+            file_modtime =  file_modified_time(file_path)
+            file_date =     file_modtime.date()
+            file_time =     file_modtime.time()
+
             # CHECK FNAME BASED ON SPEC
             if not is_filename_valid(file_path):
                 auto_fail = True
                 auto_fail_code = 'BFNM'
             else:
-                extension = splitext_(file_path)
-                tar_accepted_ext = ['tar.gz', '.tar']
 
-                if extension[-1] in tar_accepted_ext:
-                    file_type = 'TAR'
-                    tar_passed = False
-                    try:
-                        if tarfile.is_tarfile(file_path):
-                            tar_passed = True
-                    except Exception as e:
-                        print e
+                scanresult = None
+                try:
+                    # Virus Scanning First
+                    virus_checker = VirusScan()
+                except ValueError as e:
+                    print e
+                    BAGLog.log_it('VCONN')
+                    continue
 
-                    if not tar_passed:
-                        auto_fail = True
-                        auto_fail_code = 'BTAR'
-                    else:
-                        bag_it_name = tar_has_top_level_only(file_path)
-                        if not bag_it_name:
-                            auto_fail = True
-                            auto_fail_code = 'BTAR2'
-                            # print 'tar has more than one top level'
-                    
+                try:
+                    scanresult = virus_checker.scan(file_path)
 
-                elif extension[-1] == '.zip':
-                    file_type = 'ZIP'
-                    if not zipfile.is_zipfile(file_path):
-                        print 'zip failed due to not being a zipfile'
-                        auto_fail = True
-                        auto_fail_code = 'BZIP'
-                    else:
-                        bag_it_name = zip_has_top_level_only(file_path)
-                        if not bag_it_name:
-                            auto_fail = True
-                            auto_fail_code = 'BZIP2'
-                            # print 'zip has more than one top level'
+                except ConnectionError as e:
+                    print e
+                    BAGLog.log_it('VCON2')
+                    continue
+
+                except Exception as e:
+                    ## more than likely Socket
+                    BAGLog.log_it('VSOCK')
+                    print e
+                    continue
+                # ALL The continues Above actually should yield attention to APP Team
+
+                if scanresult:
+                    print scanresult
+                    print 'VIRUS IDENTIFIED'
+
+                    #quarantine or move
+                    remove_file_or_dir(file_path)
+                    auto_fail = True
+                    auto_fail_code = 'VIRUS'
+
 
                 else:
-                    # IS UNSERIALIZED DIR
-                    if not isdir(file_path):
-                        # print 'we have problems isnt dir'
+                    extension = splitext_(file_path)
+                    tar_accepted_ext = ['tar.gz', '.tar']
+
+                    if extension[-1] in tar_accepted_ext:
+                        file_type = 'TAR'
+                        tar_passed = False
+                        try:
+                            if tarfile.is_tarfile(file_path):
+                                tar_passed = True
+                        except Exception as e:
+                            print e
+
+                        if not tar_passed:
+                            auto_fail = True
+                            auto_fail_code = 'BTAR'
+                        else:
+                            bag_it_name = tar_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                auto_fail_code = 'BTAR2'
+                                
+
+
+                    elif extension[-1] == '.zip':
+                        file_type = 'ZIP'
+                        if not zipfile.is_zipfile(file_path):
+                            print 'zip failed due to not being a zipfile'
+                            auto_fail = True
+                            auto_fail_code = 'BZIP'
+                        else:
+                            bag_it_name = zip_has_top_level_only(file_path)
+                            if not bag_it_name:
+                                auto_fail = True
+                                auto_fail_code = 'BZIP2'
+
+                    else:
+                        # IS UNSERIALIZED DIR
+                        if not isdir(file_path):
+                            # print 'we have problems isnt dir'
+                            auto_fail = True
+                            auto_fail_code = 'BDIR'
+
+                    #returns filesize in kbs -- need type so moved logic down here
+                    file_size = file_get_size(file_path, file_type)
+
+                    if not file_size or (type(file_size) is tuple and not file_size[0]):
+
                         auto_fail = True
-                        auto_fail_code = 'BDIR'
-                    
+                        auto_fail_code = ('FSERR' if type(file_size) is not tuple else file_size[1])
+                        file_size = 0
 
-                    # handle dir ending in splash
-                    bag_it_name = file_path.split('/')[-1]
+                    else:
 
-            file_modtime =  file_modified_time(file_path)
-            file_size =     file_get_size(file_path)
-            file_own =      file_owner(file_path)
-            file_date =     file_modtime.date()
-            file_time =     file_modtime.time()
+                        transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
+                        print "\nFile is {}\n".format(file_size)
 
+                        if file_size > transfer_max:
+                            auto_fail = True
+                            auto_fail_code = 'FSERR'
+
+                            # handle dir ending in splash
+                            bag_it_name = file_path.split('/')[-1]
 
 
             # GETTING ORGANIZATION
@@ -126,7 +182,9 @@ def has_files_to_process():
                 'upload_user' :         file_own,
                 'auto_fail' :           auto_fail,
                 'auto_fail_code' :      auto_fail_code,
+                # 'auto_fail_data' :      auto_fail_data,
                 'bag_it_name':          bag_it_name,
+                'virus_scanresult' :    scanresult
             }
 
             files_to_process.append(data)
@@ -143,7 +201,7 @@ def has_files_to_process():
     return files_to_process if files_to_process else False
 
 def open_files_list():
-    
+
     path_list = []
 
     for proc in psutil.process_iter():
@@ -206,7 +264,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
 
         # build list from all files in Infinite sub dirs
         while True:
-            
+
             #resolve new dir to check
             if not to_check:
                 break
@@ -218,7 +276,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                     dirpaths.append(fullpath)
 
                     if fullpath not in checked_dirs:
-                        to_check.append(fullpath) 
+                        to_check.append(fullpath)
 
             checked_dirs.append(live_dir)
             if live_dir in to_check:
@@ -282,7 +340,7 @@ def rm_frm_contents(cObj,contents):
     for obj in cObj:
         if obj[1] == 0 and isfile(obj[2]):
             contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
-            
+
         elif obj[1] == 1 and isdir(obj[2]):
             contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
     Pter.flines(['rm_frm_contents'],end=True)
@@ -336,12 +394,12 @@ def uploads_to_process():
             org_processing = '/data/{}/processing/'.format(org.machine_name)
             contents = listdir(org_processing)
             Pter.flines(contents,tab=3)
-            
-            
+             
             org_paths = ["{}{}".format(org_processing,x) for x in contents]
             paths = paths + org_paths
             
     Pter.flines(['uploads_to_process'], end=True)
+
     return paths
 
 def file_owner(file_path):
@@ -350,8 +408,47 @@ def file_owner(file_path):
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
 
-def file_get_size(file_path):
-    return getsize(file_path)
+def file_get_size(file_path,file_type):
+    """returns file size of archive, or of directory; expects top level validation to run already"""
+
+    filesize = 0
+    if isfile(file_path):
+        if file_type == 'TAR':
+            top_level_dir = tar_has_top_level_only(file_path)
+            if not top_level_dir:
+                return (0, 'BTAR2')
+
+            if tar_extract_all(file_path):
+                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                filesize = get_dir_size(tmp_dir_path)
+                remove_file_or_dir(tmp_dir_path)
+        elif file_type == 'ZIP':
+            top_level_dir = zip_has_top_level_only(file_path)
+            if not top_level_dir:
+                return (0, 'BZIP2')
+            if zip_extract_all(file_path):
+                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
+                filesize = get_dir_size(tmp_dir_path)
+                remove_file_or_dir(tmp_dir_path)
+
+        elif file_type == OTHER:
+            filesize = getsize(file_path)
+
+    elif isdir(file_path):
+        filesize = get_dir_size(file_path)
+    return filesize
+
+def get_dir_size(start_path):
+    """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
+    total_size = 0
+    for dirpath, dirnames, filenames in walk(start_path):
+        for f in filenames:
+            fp = os.path.join(dirpath, f)
+            total_size += getsize(fp)
+        for d in dirnames:
+            dp = os.path.join(dirpath,d)
+            total_size += getsize(dp)
+    return ((total_size / 1000) if total_size else False)
 
 def splitext_(path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
@@ -433,9 +530,16 @@ def get_fields_from_file(fpath):
             for line in f.readlines():
                 line = line.strip('\n')
 
-                row_search = re.search(": ".join(patterns), line)
+                row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
-                    fields[row_search.group('key').replace('-','_')] = row_search.group('val')
+                    key = row_search.group('key').replace('-','_').strip()
+                    val = row_search.group('val').strip()
+                    if key in fields:
+                        listval = [fields[key]]
+                        listval.append(val)
+                        fields[key] = listval
+                    else:
+                        fields[key] = val
     except Exception as e:
         print e
 
@@ -443,7 +547,7 @@ def get_fields_from_file(fpath):
 
 
 def remove_file_or_dir(path):
-    print 'delete it ------ {}'.format(path)
+    print '@@@-- deleting file/dir ------ {}'.format(path)
     if isfile(path):
         try:
             remove(path)
@@ -452,7 +556,7 @@ def remove_file_or_dir(path):
             return False
 
     elif isdir(path):
-        
+
         try:
             rmtree(path)
         except Exception as e:
@@ -469,3 +573,15 @@ def is_dir_or_file(path):
     if isdir(path): return True
     if isfile(path): return True
     return False
+
+def get_file_contents(f):
+    """returns contents of file as str"""
+
+    data = ''
+    try:
+        with open(f,'r') as open_file:
+            data = open_file.read()
+    except Exception as e:
+        print e
+    finally:
+        return data

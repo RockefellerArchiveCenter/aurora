@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'orgs',
     'appraise',
     'accession',
+    'rights',
 ]
 
 MIDDLEWARE = [
@@ -89,7 +90,7 @@ DATABASES = {
 AUTHENTICATION_BACKENDS = (
     # 'django_auth_ldap.backend.LDAPBackend',
     'orgs.backend.RACLDAPBackend',
-    'django.contrib.auth.backends.ModelBackend',
+    # 'django.contrib.auth.backends.ModelBackend', removing local account access
 )
 
 # Password validation
@@ -181,3 +182,6 @@ EMAIL_OVERRIDE = CF.EMAIL_OVERRIDE
 EMAIL_OVERRIDE_USERS = CF.EMAIL_OVERRIDE_USERS
 
 HOST_ORG_ID = CF.HOST_ORG_ID
+
+
+TRANSFER_FILESIZE_MAX = CF.TRANSFER_FILESIZE_MAX

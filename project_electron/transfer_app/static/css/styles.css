@@ -8,7 +8,7 @@
 	cursor: pointer;
 }
 .pointer-row:hover{
-	background-color: #00c0ef;
+	background-color: #00c0ef !important;
 }
 
 .mar-top20{
@@ -60,4 +60,51 @@
 .main-header .logo {
 	font-family: "Satisfy", cursive;
 	font-size: 30px;
+}
+
+.content-header > .breadcrumb {
+	display: block;
+	position: relative;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu > li.user-header {
+	height: auto;
+	background-color: #5ea6d1;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu > .user-footer {
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-right: 10px;
+	display: table;
+}
+
+.navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn-default {
+	margin-bottom: 10px;
+	width: 180px;
+}
+
+.navbar-custom-menu > .navbar-nav > li > .dropdown-menu {
+	width: 200px;
+	padding: 0;
+	border: none;
+	margin-top: 2px;
+}
+
+.container {
+    width: 98%;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+#welcomeli {
+    color: white;
+    line-height: 32px;
+    font-size: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.navbar-nav {
+    margin-right: 40px;
 }

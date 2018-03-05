@@ -1,5 +1,5 @@
 {% extends 'transfer_app/base.html' %}
-
+{% load static %}
 {% block h1_title %}{{ object.name }}<small>Organization Edit</small>{% endblock %}
 
 {% block content %}
@@ -22,28 +22,13 @@
 
 					<div class="form-group">
 						<label for="acquisition_type">Acquisition Type</label>
-						<select id="acquisition_type" class="form-control">
-              <option>option 1</option>
-              <option>option 2</option>
-              <option>option 3</option>
-              <option>option 4</option>
-              <option>option 5</option>
+						<select id="id_acquisition_type" name="acquisition_type" class="form-control">
+							<option value=""> --- Select an acquisition type --- </option>
+							{% for x,y in acquisition_types %}
+						    <option value="{{ x }}"{% if object.acquisition_type == x %} selected{% endif %}>{{ y }}</option>
+							{% endfor %}
             </select>
 					</div>
-
-					<div class="box box-default expanded-box box-solid">
-            <div class="box-header with-border">
-              <h3 class="box-title">Rights Statements</h3>
-
-              <div class="box-tools pull-right">
-                <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i>
-                </button>
-              </div>
-            </div>
-            <div class="box-body">
-              Rights statements go here
-            </div>
-          </div>
 
 					<div class="box-footer">
 						<button type="submit" class="btn btn-primary">Save</button>
@@ -55,4 +40,47 @@
 		</div>
 	</div>
 </div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">Bag-It Profile</h3>
+			</div>
+			<div class="box-body">
+						<div class="pull-left">bag it profile name</div>
+						<div class="pull-right">
+							<button href="#" class="btn btn-primary btn-sm">View</button>
+							<button href="#" class="btn btn-warning btn-sm">Edit</button>
+							<button href="#" class="btn btn-danger btn-sm">Delete</button>
+						</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-info">
+			<div class="box-header with-border">
+				<h3 class="box-title">Rights Statements</h3>
+				{% if request.user.is_superuser %}<a href="{% url 'rights-add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
+			</div>
+			<div class="box-body {% if object.rights_statements %}no-padding{% endif %}">
+				{% include 'parts/rights_table.html' with org=object %}
+			</div>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
+
+
+{% block modals %}
+	{% include 'rights/modals/confirm_delete.html' %}
+{% endblock %}
+
+
+{% block extra_js %}
+<script type="text/javascript" src="{% static 'js/rights_js.js' %}"></script>
 {% endblock %}
