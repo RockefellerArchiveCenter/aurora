@@ -12,7 +12,7 @@
       <div class="box-header with-border">
         <h3 class="box-title">Transfers</h3>
       </div>
-      <div class="box-body no-padding">
+      <div class="box-body">
         <div class="row">
 
           <div class="col-md-9">
@@ -23,6 +23,7 @@
 
           <div class="col-md-3">
             <div class="pad box-pane-right bg-blue" style="min-height:250px">
+
               <div class="description-block margin-bottom">
                 <h5 class="description-header">{{uploads_count}}</h5>
                 <span class="description-text">Transferred</span>
@@ -60,16 +61,16 @@
 
           <div class="col-sm-3 col-xs-6">
             <div class="description-block border-right">
-              <h5 class="description-header">{{ upload_count_by_year }}</h5>
-              <span class="description-text">Transfers in {% now "Y" %}</span>
+              {% include 'transfer_app/trend_display.html' with trend=size_trend %}
+              <h5 class="description-header">{{ upload_size_by_month|last|floatformat:"2" }}</h5>
+              <span class="description-text">Gigabytes in {% now "F" %}</span>
             </div>
           </div>
 
           <div class="col-sm-3 col-xs-6">
             <div class="description-block border-right">
-              {% include 'transfer_app/trend_display.html' with trend=size_trend %}
-              <h5 class="description-header">{{ upload_size_by_month|last|floatformat:"2" }}</h5>
-              <span class="description-text">Gigabytes in {% now "F" %}</span>
+              <h5 class="description-header">{{ upload_count_by_year }}</h5>
+              <span class="description-text">Transfers in {% now "Y" %}</span>
             </div>
           </div>
 
