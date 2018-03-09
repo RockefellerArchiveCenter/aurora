@@ -27,7 +27,7 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-  $(function () {
+  $(document).ready(function() {
     $('#all_transfers').DataTable({
       'paging'      : true,
       'lengthChange': false,
@@ -37,6 +37,7 @@
       'autoWidth'   : true,
       'pageLength'  : 25
     })
+    $.fn.dataTable.moment( 'MMM. D, YYYY, h:m a' );
   })
 </script>
 {% endblock %}
