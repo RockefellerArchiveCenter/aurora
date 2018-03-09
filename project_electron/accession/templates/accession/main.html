@@ -44,6 +44,7 @@
 {% block extra_js %}
 <script type="text/javascript">
   $(function () {
+    $.fn.dataTable.moment( 'MMM. D, YYYY, h:m a' );
     $('#accession_table').DataTable({
       'paging'      : true,
       'lengthChange': false,

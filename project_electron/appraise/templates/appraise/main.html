@@ -66,6 +66,7 @@ var url = '{% url 'appraise-main' %}';
 var appraise_table = '';
 
   $(function () {
+    $.fn.dataTable.moment( 'MMM. D, YYYY, h:m a' );
     appraise_table = $('#appraise_table').DataTable({
       'paging'      : true,
       'lengthChange': false,
