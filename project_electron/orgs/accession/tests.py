@@ -1,16 +1,51 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django.test import RequestFactory, TestCase
+from django.core.urlresolvers import reverse
+from orgs.accession.views import AccessionView, AccessionRecordView
 
-# Scenario: bags related to each other via Bag-Count and Bag-Group-Identifier are grouped into the same accession
-# 	Given multiple bags have the same Bag-Group-Identifier
-# 		And all bags with the same Bag-Group-Identifier contain a Bag-Count
-# 	When bags are accepted by an appraisal archivist
-# 	Then group all transfers with the same Bag-Group-Identifier together
-# 		And display as single accession in Accessioning Queue UI
-#
+
+class AccessionGroupTest(TestCase):
+
+    def setUp(self):
+        # set up dirs
+        self.org = set_up_org('Rockefeller Archive Center')
+        self.user = set_up_user(self.org, 'accessioning_archivists')
+        self.factory = RequestFactory()
+        pass
+
+    def tearDown(self):
+        # remove dirs
+        pass
+
+    def test_group_by_identifier_in_list(self):
+        bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
+        for name in bag_names:
+            # TODO: add process_status to archive setup
+            set_up_archive(name, 70)
+        request = self.factory.get(reverse('accession-main'))
+        request.user = self.user
+        response = AccessionView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['uploads']), 1)
+
+    def test_group_by_identifier_in_record(self):
+        bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
+        archives = []
+        for name in bag_names:
+            # TODO: add process_status to archive setup
+            arc = set_up_archive(name, 70)
+            archives.append(arc.id)
+        request = self.factory.get(reverse('accession-record'), {'transfers': archives})
+        request.user = self.user
+        response = AccessionRecordView.as_view()(request)
+        self.assertEqual(response.status_code, 200)
+        # form valid
+        self.assertEqual(len(response.context['uploads']), 1)
+
 # Scenario: transfers related to each other via source organization, record creator, and record type are grouped into the same accession
+##  valid_bag_ford_grants, valid_bag_ford_grants3, valid_bag_ford_grants4
 # 	Given multiple transfers match on source organization
 # 		And record creator matches
 # 		And record type matches
@@ -20,6 +55,7 @@ from django.test import TestCase
 # 		And displayed as single accession in Accessioning Queue UI
 #
 # Scenario: transfers related to each other via record creator and record type are not grouped into the same accession
+##  valid_bag and valid_bag_rockefeller
 # 	Given multiple transfers do not match on source organization
 # 		And record creator matches
 # 		And record type matches
@@ -29,6 +65,7 @@ from django.test import TestCase
 # 		And multiple accessions are displayed in the Accessioning Queue UI
 #
 # Scenario: transfers related to each other via source organization and record type are not grouped into the same accession
+##  valid_bag_ford_grants and valid_bag_ford_grants2
 # 	Given multiple transfers match on source organization
 # 		And record creator does not match
 # 		And record type matches
@@ -38,6 +75,7 @@ from django.test import TestCase
 # 		And multiple accessions are displayed in the Accessioning Queue UI
 #
 # Scenario: transfers related to each other via source organization and record creator are not grouped into the same accession
+##  valid_bag_ford_grants and valid_bag_ford_communications
 # 	Given multiple transfers match on source organization
 # 		And record creator matches
 # 		And record type does not match
@@ -47,6 +85,7 @@ from django.test import TestCase
 # 		And multiple accessions are displayed in the Accessioning Queue UI
 #
 # Scenario: transfers not related to each other via source organization, record creator, and record type are not grouped into the same accession
+##  valid_bag_ford_grants, valid_bag_ford_grants3, valid_bag_ford_grants4 BUT ADDRESS PROCESSING STATUS
 # 	Given multiple transfers match on source organization
 # 		And record creator matches
 # 		And record type matches
@@ -54,32 +93,7 @@ from django.test import TestCase
 # 	When Accessioning Queue UI is loaded
 # 	Then transfers are not grouped into single accession
 # 		And transfers are not displayed in the Accessioning Queue UI
-# Feature: Allow accessioning archivists to search and sort accessions
-# Scenario: accessioning archivist searches for accession by creator
-# 	Given accession exists in Accessioning Queue UI
-# 		And accession with a Source-Organization and one or more Record-Creators exists in Accessioning Queue UI
-# 	When user enters search into search field
-# 	Then display search results with matching creators
-#
-# Scenario: accessioning archivist searches for accession by record type
-# 	Given one or more accessions exist in Accessioning Queue UI
-# 	When user enters search into search field
-# 	Then display search results with matching record type
-#
-# Scenario: accessioning archivist sorts by creator
-# 	Given one or more accessions exist in Accessioning Queue UI
-# 	When user clicks on creator column
-# 	Then sort creator column by ascending or descending
-#
-# Scenario: accessioning archivist sorts by title
-# 	Given one or more accession exists in Accessioning Queue UI
-# 	When user clicks on title column
-# 	Then sort title column by ascending or descending
-#
-# Scenario: accessioning archivist sorts by record type
-# 	Given one more more accession exists in Accessioning Queue UI
-# 	When user clicks on record type column
-# 	Then sort record type column by ascending or descending
+
 
 # Feature: Allow accessioning archivists to review or edit accession records
 # Scenario: accessioning archivist reviews accession records
@@ -110,26 +124,9 @@ from django.test import TestCase
 # 		And remove accession from Accessioning Queue UI
 # 		And split single accession into individual transfers
 
-
-# Feature: Create a DACS-compliant accession record in ArchivesSpace that includes donor-submitted metadata and as any description created by an appraisal archivist
-# Scenario: a DACS-compliant accession record is created in ArchivesSpace when a resource record already exists
-# 	Given an archivist approves accession record in Aurora
-# 		And accession record contains minimum required ArchivesSpace accession record data
-# 		And resource record already exists in ArchivesSpace
-# 	When an archivist adds additional accession data
-# 		And archivist enters target resource record information
-# 		And archivist saves accession record
-# 	Then Aurora creates JSON object from accession data
-# 		And Aurora sends JSON create request to ArchivesSpace server
-# 		And ArchivesSpace creates new accession record
+## USER AUTHORIZATION??
 
 
-# Scenario: a DACS-compliant accession record is not created in ArchivesSpace
-# 	Given an archivist approves accession record in Aurora
-# 		And accession record does not contain minimum required ArchivesSpace accession record data
-# 	When archivist saves accession record
-# 	Then Aurora presents error message specifying which fields are required but empty
-# 		And Aurora does not send JSON create request to ArchivesSpace server
 # Feature: Validate target resource record field in Aurora Accession Record UI
 # Scenario: an archivist types name of existing resource record
 # 	Given target resource record exists in ArchivesSpace
@@ -174,6 +171,8 @@ from django.test import TestCase
 # 	When accessioning archivist selects "Accession" in Accession Queue UI
 # 	Then query ArchivesSpace for a matching name agent
 # 		And display that Record-Creators as an unverified name in the Accession Approval window
+
+
 # Feature: Add metadata about individual transfers in an accession to an existing resource record in ArchivesSpace
 # Scenario: add metadata about individual transfers in an accession to an existing resource record in ArchivesSpace
 # 	Given one or more transfers have been grouped into an accession record
@@ -182,6 +181,8 @@ from django.test import TestCase
 # 	Then metadata about each transfer is included in individual file-level components in the target resource record
 # 		And that metadata is grouped together under a grouping component in the target resource record
 # 		And data from bag-info.txt maps correctly to ArchivesSpace
+
+
 # Feature: Allow external application to update transfer status
 # Scenario: Update transfer status in Aurora
 # 	Given an object has passed through the appraisal and accessioning workflows successfully
