@@ -8,7 +8,7 @@
 	<div class="col-md-12">
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#tab_org" data-toggle="tab">{{ request.user.organization }} Transfers ({{ org_uploads_count }})</a></li>
+				<li class="active"><a href="#tab_org" data-toggle="tab">{% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} Transfers ({{ org_uploads_count }})</a></li>
 				<li class=""><a href="#tab_user" data-toggle="tab">My Transfers ({{ user_uploads_count }})</a></li>
 			</ul>
 			<div class="tab-content">
@@ -17,7 +17,7 @@
 					{% include 'parts/transfer_table.html' with org=request.user.organization uploads=org_uploads %}
 
 					<div class="mar-top20 text-center">
-						<a href="{% url 'orgs-transfers-report' pk=request.user.organization.pk %}" class="btn btn-info">See all {{ request.user.organization }} transfers</a>
+						<a href="{% url 'orgs-transfers-report' pk=request.user.organization.pk %}" class="btn btn-info">See all {% if not request.user.is_archivist %}{{ request.user.organization }} {% endif %}transfers</a>
 					</div>
 
 				</div>
