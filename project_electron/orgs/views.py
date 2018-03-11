@@ -52,7 +52,11 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
-        context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
+        context['uploads'] = []
+        archives = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
+        for archive in archives:
+            archive.bag_info_data = archive.get_bag_data()
+            context['uploads'].append(archive)
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
         return context
 
