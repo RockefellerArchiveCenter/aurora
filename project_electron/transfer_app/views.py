@@ -11,6 +11,8 @@ from orgs.models import Archives, Organization, User
 from rights.models import RightsStatement
 
 from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
+from orgs.formatmixins import CSVResponseMixin
+
 
 class MainView(LoggedInMixinDefaults, TemplateView):
     template_name = "transfer_app/main.html"
@@ -87,27 +89,53 @@ class MainView(LoggedInMixinDefaults, TemplateView):
 
         return context
 
-class RecentTransfersView(LoggedInMixinDefaults, View):
-    template_name = 'orgs/recent_transfers.html'
+
+class TransfersView(LoggedInMixinDefaults, View):
+    template_name = 'orgs/transfers.html'
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_archivist():
             organization = Organization.objects.all()
         else:
             organization = Organization.objects.filter(id=self.request.user.organization.pk)
-        org_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization).order_by('-created_time')[:25]
+        org_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization).order_by('-created_time')
         for archive in org_archives:
             archive.bag_info_data = archive.get_bag_data()
-        user_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).order_by('-created_time')[:25]
+        user_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).order_by('-created_time')
         for archive in user_archives:
             archive.bag_info_data = archive.get_bag_data()
         return render(request, self.template_name, {
-            'meta_page_title': 'Recent Transfers',
+            'meta_page_title': 'Transfers',
             'org_uploads': org_archives,
             'org_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization).count(),
             'user_uploads': user_archives,
             'user_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).count(),
         })
+
+
+class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
+    model = Organization
+
+    def get(self, request, *args, **kwargs):
+        data = [('Bag Name','Status','Size','Upload Time','Errors')]
+        if self.request.user.is_archivist:
+            transfers = Archives.objects.filter(process_status__gte=20).order_by('-created_time')
+        else:
+            self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
+            transfers = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
+        for transfer in transfers:
+            transfer_errors = transfer.get_errors()
+            errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
+
+            data.append((
+                transfer.bag_or_failed_name(),
+                transfer.process_status,
+                transfer.organization,
+                transfer.machine_file_size,
+                transfer.machine_file_upload_time,
+                errors))
+        return self.render_to_csv(data)
+
 
 class TransferDetailView(OrgReadViewMixin, DetailView):
     template_name = 'transfer_app/transfer_detail.html'

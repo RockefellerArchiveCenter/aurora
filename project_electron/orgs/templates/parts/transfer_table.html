@@ -7,6 +7,9 @@
 			<tr>
 				<th>Bag Name</th>
 				<th>Status</th>
+				{% if request.user.is_archivist %}
+				<th>Organization</th>
+				{% endif %}
 				<th>Record Creators</th>
 				<th>Record Type</th>
 				<th>Size</th>
@@ -20,6 +23,9 @@
 			<tr onclick="window.open('{% url 'transfer-detail' upload.pk %}','_self')" class="pointer-row">
 				<td>{{ upload.bag_or_failed_name }} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
 				<td><span class="label label-{% include 'parts/status_class.html' with status=upload.process_status %}">{{ upload.get_process_status_display }}</span></td>
+				{% if request.user.is_archivist %}
+				<td>{{upload.organization}}</td>
+				{% endif %}
 				<td>
 					{% for c in upload.bag_info_data.record_creators %}
 						{{ c }} <br />
