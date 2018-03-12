@@ -25,7 +25,6 @@ from django.urls import reverse, reverse_lazy
 from django.shortcuts import get_object_or_404
 
 from orgs.authmixins import *
-from orgs.formatmixins import CSVResponseMixin
 
 from orgs.form import UserPasswordChangeForm
 
@@ -45,6 +44,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
+
 class OrganizationDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
@@ -52,9 +52,14 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
-        context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
-        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
+        context['uploads'] = []
+        archives = Archives.objects.filter(process_status__gte=20, organization=context['object']).order_by('-created_time')[:15]
+        for archive in archives:
+            archive.bag_info_data = archive.get_bag_data()
+            context['uploads'].append(archive)
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization=context['object']).count()
         return context
+
 
 class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
@@ -71,21 +76,6 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(OrgReadViewMixin, ListView):
-    template_name = 'orgs/all_transfers.html'
-    model = Organization
-    def get_context_data(self,**kwargs):
-        context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
-        context['organization'] = self.organization
-        context['meta_page_title'] = self.organization.name + ' transfers'
-        return context
-
-    def get_queryset(self):
-        self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        archives = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
-        return archives
 
 class OrganizationListView(ArchivistMixin, ListView):
 
@@ -97,24 +87,6 @@ class OrganizationListView(ArchivistMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
-    model = Organization
-
-    def get(self, request, *args, **kwargs):
-        data = [('Bag Name','Status','Size','Upload Time','Errors')]
-        self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        transfers = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
-        for transfer in transfers:
-            transfer_errors = transfer.get_errors()
-            errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
-
-            data.append((
-                transfer.bag_or_failed_name(),
-                transfer.process_status,
-                transfer.machine_file_size,
-                transfer.machine_file_upload_time,
-                errors))
-        return self.render_to_csv(data)
 
 class UsersListView(ArchivistMixin, ListView):
     template_name = 'orgs/users/list.html'
@@ -140,6 +112,7 @@ class UsersListView(ArchivistMixin, ListView):
 
         return context
 
+
 class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/users/update.html'
     model = User
@@ -151,6 +124,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
+
 
 class UsersDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/users/detail.html'
@@ -165,6 +139,7 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
             context['uploads'].append(archive)
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).count()
         return context
+
 
 class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
@@ -184,22 +159,6 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(OrgReadViewMixin, ListView):
-    template_name = 'orgs/all_transfers.html'
-    model = User
-    def get_context_data(self,**kwargs):
-        context = super(UsersTransfersView, self).get_context_data(**kwargs)
-        context['user'] = self.user
-        context['organization'] = self.user.organization
-        context['meta_page_title'] = 'My Transfers'
-        return context
-
-    def get_queryset(self):
-        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
-        archives = Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
-        return archives
 
 class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'orgs/users/password_change.html'

@@ -26,11 +26,6 @@
                     <li class="list-group-item">
                         <b>Total Uploads</b> <a class="pull-right">{{ object.total_uploads }}</a>
                     </li>
-                    {% comment %}
-                    <li class="list-group-item">
-                        <b></b> <a class="pull-right">13,287</a>
-                    </li>
-                    {% endcomment %}
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
@@ -68,7 +63,7 @@
 
                 <p>
                   {% for group in object.groups.all %}
-                    <span class="label label-success">{{ group.name }}</span>
+                    <span class="label label-default">{{ group.name }}</span>
                   {% endfor %}
                 </p>
             </div>
