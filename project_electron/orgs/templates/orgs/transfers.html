@@ -35,6 +35,7 @@ Transfers
 {% block extra_js %}
 <script type="text/javascript">
   $(document).ready(function() {
+		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#org_transfers').DataTable({
       'paging'      : true,
       'lengthChange': false,
@@ -53,7 +54,7 @@ Transfers
       'autoWidth'   : true,
       'pageLength'  : 25
     })
-    $.fn.dataTable.moment( 'MMM. D, YYYY, h:m a' );
+
   })
 </script>
 {% endblock %}
