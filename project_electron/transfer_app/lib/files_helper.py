@@ -18,13 +18,16 @@ from orgs.models import BAGLog, Organization
 import transfer_app.lib.log_print as Pter
 
 
-def has_files_to_process():
+
+
+
+def has_files_to_process(uploads_dir, processing_dir):
     """Return objects of files that will need processing"""
     
     Pter.plines(['Starting "has_files_to_process"'],2)
 
     files_to_process = []
-    discover_files_to_process()
+    discover_transfers_to_process()
     uploads = uploads_to_process()
 
     if uploads:
@@ -39,7 +42,6 @@ def has_files_to_process():
 
             auto_fail = False
             auto_fail_code = ''
-            # auto_fail_data = ''
             bag_it_name = file_path.split('/')[-1]
             file_type = 'OTHER'
             file_size = 0
@@ -211,12 +213,12 @@ def open_files_list():
                 path_list.append(fileObj.path)
     return path_list
 
-def get_active_org_contents_dict():
+def get_active_org_contents_dict(TRANSER_UPLOADS_ROOT):
     """Returns contents (file/dirs) of active org uploads dir"""
 
     Pter.flines(['get_active_org_contents_dict'],start=True)
 
-    root_path = '/data/{}/upload/'
+    root_path = TRANSER_UPLOADS_ROOT+'/{}/upload/'
     target_dirs = []
     org_dir_contents = {}
 
@@ -229,6 +231,11 @@ def get_active_org_contents_dict():
             Pter.flines(['({})'.format(org.machine_name)])
 
             upload_dir = root_path.format(org.machine_name)
+            # does dir exist
+            if not isdir(upload_dir):
+                Pter.flines(['directory {} doesnt exist'.format(upload_dir)])
+                continue
+
             target_dirs.append(upload_dir)
 
             dir_content = listdir(upload_dir)
@@ -360,10 +367,10 @@ def mv_to_processing(contentsObj):
 
     Pter.flines(['mv_to_processing'], end=True)
 
-def discover_files_to_process():
-    """Discovers files and moves them to org/processing dir"""
+def discover_transfers_to_process():
+    """Discovers files in uploads dir and moves them to org/processing dir"""
 
-    Pter.flines(['discover_files_to_process'],start=True)
+    Pter.flines(['discover_transfers_to_process'],start=True)
 
     active_org_contents = get_active_org_contents_dict()
 
@@ -376,7 +383,7 @@ def discover_files_to_process():
             rm_frm_contents(rm_any,active_org_contents)
         mv_to_processing(active_org_contents)
 
-    Pter.flines(['discover_files_to_process'],end=True)
+    Pter.flines(['discover_transfers_to_process'],end=True)
 
 def uploads_to_process():
     """Returns paths transfers in orgs processing dir"""
@@ -485,22 +492,22 @@ def tar_has_top_level_only(file_path):
             return False
     return top_dir
 
-def zip_extract_all(file_path):
+def zip_extract_all(file_path, tmp_dir):
     extracted = False
     try:
         zf = zipfile.ZipFile(file_path,'r')
-        zf.extractall('/data/tmp/')
+        zf.extractall(tmp_dir)
         zf.close()
         extracted = True
     except Exception as e:
         print e
     return extracted
 
-def tar_extract_all(file_path):
+def tar_extract_all(file_path, tmp_dir):
     extracted = False
     try:
         tf = tarfile.open(file_path, 'r:*')
-        tf.extractall('/data/tmp/')
+        tf.extractall(tmp_dir)
         tf.close()
         extracted = True
     except Exception as e:
@@ -508,12 +515,12 @@ def tar_extract_all(file_path):
 
     return extracted
 
-def dir_extract_all(file_path):
+def dir_extract_all(file_path,tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
         print '!!!!!!!!!!!!!!!!!!!!!!!!!!!'
-        copy_tree(file_path,'/data/tmp/{}'.format(file_path.split('/')[-1]), update=1)
+        copy_tree(file_path,'{}{}'.format(tmp_dir, file_path.split('/')[-1]), update=1)
         extracted = True
     except Exception as e:
         print e
@@ -573,6 +580,12 @@ def is_dir_or_file(path):
     if isdir(path): return True
     if isfile(path): return True
     return False
+
+def all_paths_exist(list_of_paths):
+    for p in list_of_paths:
+        if not is_dir_or_file(p):
+            return False
+    return True
 
 def get_file_contents(f):
     """returns contents of file as str"""
