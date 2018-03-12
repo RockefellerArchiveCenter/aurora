@@ -121,11 +121,11 @@ class bagChecker():
         """Assumes a valid bag/bag info; returns true if all datatypes in bag pass"""
         dates = []
 
-        for k,v in self.bag_info_data.iteritems():
+        for k, v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:
                 dates.append(v)
 
-        langz = bag_info_data.get('Language', None)
+        langz = self.bag_info_data.get('Language', None)
 
         if dates:
             for date in dates:
