@@ -42,7 +42,7 @@
 	</div>
 </div>
 
-{% if user.is_staff and object.appraisal_note %}
+{% if user.is_archivist and object.appraisal_note %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-{% if object.accepted %}success{% elif object.rejected %}danger{% endif %}">
@@ -72,7 +72,7 @@
 			</div>
 			<div class="box-body">
 
-				<table>
+				<table class= "table table-striped dataTable">
 					<thead>
 						<tr>
 							<th>Date/Time</th>
@@ -103,7 +103,7 @@
 				<h3 class="box-title">Log</h3>
 			</div>
 			<div class="box-body">
-				<table>
+				<table class="table table-striped dataTable">
 					<thead>
 						<tr>
 							<th>Date/Time</th>

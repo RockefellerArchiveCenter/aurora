@@ -70,7 +70,7 @@
                   <a href="{% url 'users-detail' pk=request.user.id %}" class="btn btn-default btn-flat">Profile</a>
                 </div>
                 <div class="pull-left">
-                  <a href="{% url 'password-change' pk=request.user.id %}" class="btn btn-default btn-flat">Change Password</a>
+                  <a href="{% url 'password-change' %}" class="btn btn-default btn-flat">Change Password</a>
                 </div>
                 {% if request.user.is_staff %}
                   <br />
