@@ -12,6 +12,8 @@
         <thead>
           <tr>
             <th>Username</th>
+            <th>Groups</th>
+            <th>Last Login</th>
             <th>Active?</th>
           </tr>
         <thead>
@@ -19,7 +21,11 @@
         {% for u in blk.users %}
         <tr onclick="window.open('{% url 'users-detail' u.pk %}','_self')" class="pointer-row">
           <td>{{ u.username }}</td>
-          <td>{% if u.is_active %}{% else %}No{% endif %}</td>
+          <td>{% for group in u.groups.all %}
+            <span class="label label-default">{{ group.name }}</span><br/>
+          {% endfor %}</td>
+          <td>{{ u.last_login }}</td>
+          <td>{% if u.is_active %}Yes{% else %}No{% endif %}</td>
         </tr>
         {% endfor %}
         </tbody>
