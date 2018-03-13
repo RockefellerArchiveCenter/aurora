@@ -3,6 +3,7 @@ import datetime
 from django_cron import CronJobBase, Schedule
 
 from transfer_app.lib import files_helper as FH
+from transfer_app.lib.transfer_routine import *
 from transfer_app.lib.bag_checker import bagChecker
 
 from orgs.models import Archives, Organization, User, BAGLog
@@ -20,7 +21,8 @@ class MyCronJob(CronJobBase):
         Pter.cron_open()
         BAGLog.log_it('CSTR')
 
-        to_process = FH.has_files_to_process()
+        transferRoutine = TransferRoutine(1)
+        to_process = transferRoutine.transfers
         if (to_process):
 
             for upload_list in to_process:

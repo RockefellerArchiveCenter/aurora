@@ -18,192 +18,8 @@ from orgs.models import BAGLog, Organization
 import transfer_app.lib.log_print as Pter
 
 
-
-
-
-def has_files_to_process(uploads_dir, processing_dir):
-    """Return objects of files that will need processing"""
-    
-    Pter.plines(['Starting "has_files_to_process"'],2)
-
-    files_to_process = []
-    discover_transfers_to_process()
-    uploads = uploads_to_process()
-
-    if uploads:
-        Pter.plines(['Starting Transfer Processing'],2,tab=1)
-        Pter.plines(['{} uploads to process'.format(len(uploads))],tab=1, line_after=True)
-
-        for file_path in uploads:
-
-
-
-            Pter.flines([file_path],pref='upload path STR')
-
-            auto_fail = False
-            auto_fail_code = ''
-            bag_it_name = file_path.split('/')[-1]
-            file_type = 'OTHER'
-            file_size = 0
-
-            # DOES FILE STILL EXIST?
-            if len(file_path) <=2 or not is_dir_or_file(file_path):
-                BAGLog.log_it('DEXT')
-                Pter.flines(['file didn\'t exist anymore'])
-                continue
-
-            Pter.flines(["staring file".format(file_path)], tab=3)
-
-
-            # convert this into a transfer file object !!! lot less code D.L.
-            file_own =      file_owner(file_path)
-            file_modtime =  file_modified_time(file_path)
-            file_date =     file_modtime.date()
-            file_time =     file_modtime.time()
-
-            # CHECK FNAME BASED ON SPEC
-            if not is_filename_valid(file_path):
-                auto_fail = True
-                auto_fail_code = 'BFNM'
-            else:
-
-                scanresult = None
-                try:
-                    # Virus Scanning First
-                    virus_checker = VirusScan()
-                except ValueError as e:
-                    print e
-                    BAGLog.log_it('VCONN')
-                    continue
-
-                try:
-                    scanresult = virus_checker.scan(file_path)
-
-                except ConnectionError as e:
-                    print e
-                    BAGLog.log_it('VCON2')
-                    continue
-
-                except Exception as e:
-                    ## more than likely Socket
-                    BAGLog.log_it('VSOCK')
-                    print e
-                    continue
-                # ALL The continues Above actually should yield attention to APP Team
-
-                if scanresult:
-                    print scanresult
-                    print 'VIRUS IDENTIFIED'
-
-                    #quarantine or move
-                    remove_file_or_dir(file_path)
-                    auto_fail = True
-                    auto_fail_code = 'VIRUS'
-
-
-                else:
-                    extension = splitext_(file_path)
-                    tar_accepted_ext = ['tar.gz', '.tar']
-
-                    if extension[-1] in tar_accepted_ext:
-                        file_type = 'TAR'
-                        tar_passed = False
-                        try:
-                            if tarfile.is_tarfile(file_path):
-                                tar_passed = True
-                        except Exception as e:
-                            print e
-
-                        if not tar_passed:
-                            auto_fail = True
-                            auto_fail_code = 'BTAR'
-                        else:
-                            bag_it_name = tar_has_top_level_only(file_path)
-                            if not bag_it_name:
-                                auto_fail = True
-                                auto_fail_code = 'BTAR2'
-                                
-
-
-                    elif extension[-1] == '.zip':
-                        file_type = 'ZIP'
-                        if not zipfile.is_zipfile(file_path):
-                            print 'zip failed due to not being a zipfile'
-                            auto_fail = True
-                            auto_fail_code = 'BZIP'
-                        else:
-                            bag_it_name = zip_has_top_level_only(file_path)
-                            if not bag_it_name:
-                                auto_fail = True
-                                auto_fail_code = 'BZIP2'
-
-                    else:
-                        # IS UNSERIALIZED DIR
-                        if not isdir(file_path):
-                            # print 'we have problems isnt dir'
-                            auto_fail = True
-                            auto_fail_code = 'BDIR'
-
-                    #returns filesize in kbs -- need type so moved logic down here
-                    file_size = file_get_size(file_path, file_type)
-
-                    if not file_size or (type(file_size) is tuple and not file_size[0]):
-
-                        auto_fail = True
-                        auto_fail_code = ('FSERR' if type(file_size) is not tuple else file_size[1])
-                        file_size = 0
-
-                    else:
-
-                        transfer_max = (settings.TRANSFER_FILESIZE_MAX * 1000)
-                        print "\nFile is {}\n".format(file_size)
-
-                        if file_size > transfer_max:
-                            auto_fail = True
-                            auto_fail_code = 'FSERR'
-
-                            # handle dir ending in splash
-                            bag_it_name = file_path.split('/')[-1]
-
-
-            # GETTING ORGANIZATION
-            get_org = re.search('\/(?P<organization>org\d+)\/',file_path)
-            if not get_org:
-                BAGLog.log_it('NORG')
-                continue
-
-            data = {
-                'date':                 file_date,
-                'time':                 file_time,
-                'file_path':            file_path,
-                'file_name':            file_path.split('/')[-1],
-                'file_type' :           file_type,
-                'org':                  get_org.group('organization'),
-                'file_modtime':         file_modtime,
-                'file_size':            file_size,
-                'upload_user' :         file_own,
-                'auto_fail' :           auto_fail,
-                'auto_fail_code' :      auto_fail_code,
-                # 'auto_fail_data' :      auto_fail_data,
-                'bag_it_name':          bag_it_name,
-                'virus_scanresult' :    scanresult
-            }
-
-            files_to_process.append(data)
-
-            Pter.flines(['added to files_to_process list'],tab=3)
-            Pter.flines([file_path],pref='upload path END', line_after=True)
-
-        Pter.plines(['Ending Transfer Processing'],3, tab=1)
-    else:
-        pass
-
-    Pter.plines(['Ending "has_files_to_process"'],3)
-
-    return files_to_process if files_to_process else False
-
 def open_files_list():
-
+    """Return a list of files open on the linux system"""
     path_list = []
 
     for proc in psutil.process_iter():
@@ -212,54 +28,6 @@ def open_files_list():
             for fileObj in open_files:
                 path_list.append(fileObj.path)
     return path_list
-
-def get_active_org_contents_dict(TRANSER_UPLOADS_ROOT):
-    """Returns contents (file/dirs) of active org uploads dir"""
-
-    Pter.flines(['get_active_org_contents_dict'],start=True)
-
-    root_path = TRANSER_UPLOADS_ROOT+'/{}/upload/'
-    target_dirs = []
-    org_dir_contents = {}
-
-    active_orgs = Organization.objects.filter(is_active=True)
-    Pter.flines(['active orgs:{}'.format(len(active_orgs))])
-
-    if active_orgs:
-
-        for org in active_orgs:
-            Pter.flines(['({})'.format(org.machine_name)])
-
-            upload_dir = root_path.format(org.machine_name)
-            # does dir exist
-            if not isdir(upload_dir):
-                Pter.flines(['directory {} doesnt exist'.format(upload_dir)])
-                continue
-
-            target_dirs.append(upload_dir)
-
-            dir_content = listdir(upload_dir)
-            Pter.flines(dir_content,tab=3)
-
-            if dir_content:
-                for item in dir_content:
-                    item_path = "{}{}".format(upload_dir, item)
-                    if org.machine_name not in org_dir_contents:
-                        org_dir_contents[org.machine_name] = {
-                            'files' : [],
-                            'dirs'  : [],
-                            'count' : 0
-                        }
-
-                    if isfile(item_path):
-                        org_dir_contents[org.machine_name]['files'].append(item_path)
-                        org_dir_contents[org.machine_name]['count'] +=1
-                    elif isdir(item_path):
-                        org_dir_contents[org.machine_name]['dirs'].append(item_path)
-                        org_dir_contents[org.machine_name]['count'] +=1
-
-    Pter.flines(['get_active_org_contents_dict'],end=True)
-    return org_dir_contents
 
 def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     files = []
@@ -314,136 +82,11 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
 
     return files
 
-
-def org_contents_in_lsof(contents):
-    """Returns list of files to remove from current processing, based on lsof log (open files)"""
-    
-    rm_list = []
-
-    for org, obj in contents.iteritems():
-        # GET OPEN FILES
-        open_files = open_files_list()
-        if obj['count'] < 1:
-            continue
-        # get files
-        for f in obj['files']:
-            if f in open_files:
-                rm_list.append((org,0,f))
-
-        # get directory
-        for d in obj['dirs']:
-            # ck files in directory are on list
-            for fls in files_in_unserialized(d,True):
-                if fls in open_files:
-                    rm_list.append((org,1,d))
-    return rm_list
-
-
-
-def rm_frm_contents(cObj,contents):
-    """Removes items from processing list"""
-    Pter.flines(['rm_frm_contents'],start=True)
-
-    for obj in cObj:
-        if obj[1] == 0 and isfile(obj[2]):
-            contents[obj[0]]['files'] = [x for x in contents[obj[0]]['files'] if x != obj[2]]
-
-        elif obj[1] == 1 and isdir(obj[2]):
-            contents[obj[0]]['dirs'] = [x for x in contents[obj[0]]['dirs'] if x != obj[2]]
-    Pter.flines(['rm_frm_contents'],end=True)
-
-def mv_to_processing(contentsObj):
-    """Move files/dirs discovered to Orgs processing directory"""
-    
-    Pter.flines(['mv_to_processing'], start=True)
-
-    for org,obj in contentsObj.iteritems():
-        mergedlist = obj['files'] + obj['dirs']
-        for f in mergedlist:
-
-            processing_path = f.replace('upload','processing')
-            print "moving {} to \n{}".format(f, processing_path)
-            move(f,processing_path)
-
-    Pter.flines(['mv_to_processing'], end=True)
-
-def discover_transfers_to_process():
-    """Discovers files in uploads dir and moves them to org/processing dir"""
-
-    Pter.flines(['discover_transfers_to_process'],start=True)
-
-    active_org_contents = get_active_org_contents_dict()
-
-    if active_org_contents:
-        rm_any = org_contents_in_lsof(active_org_contents)
-
-
-        if rm_any:
-            Pter.flines(['{} files/dirs are being removed from processing'.format(len(rm_any))],tab=3)
-            rm_frm_contents(rm_any,active_org_contents)
-        mv_to_processing(active_org_contents)
-
-    Pter.flines(['discover_transfers_to_process'],end=True)
-
-def uploads_to_process():
-    """Returns paths transfers in orgs processing dir"""
-
-    Pter.spacer()
-    Pter.flines(['uploads_to_process'], start=True)
-
-    paths = []
-    active_orgs = active_orgs = Organization.objects.filter(is_active=True)
-    if active_orgs:
-        
-        for org in active_orgs:
-            Pter.flines(["({})".format(org.machine_name)])
-
-            org_processing = '/data/{}/processing/'.format(org.machine_name)
-            contents = listdir(org_processing)
-            Pter.flines(contents,tab=3)
-             
-            org_paths = ["{}{}".format(org_processing,x) for x in contents]
-            paths = paths + org_paths
-            
-    Pter.flines(['uploads_to_process'], end=True)
-
-    return paths
-
 def file_owner(file_path):
     return getpwuid(stat(file_path).st_uid).pw_name
 
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
-
-def file_get_size(file_path,file_type):
-    """returns file size of archive, or of directory; expects top level validation to run already"""
-
-    filesize = 0
-    if isfile(file_path):
-        if file_type == 'TAR':
-            top_level_dir = tar_has_top_level_only(file_path)
-            if not top_level_dir:
-                return (0, 'BTAR2')
-
-            if tar_extract_all(file_path):
-                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
-                filesize = get_dir_size(tmp_dir_path)
-                remove_file_or_dir(tmp_dir_path)
-        elif file_type == 'ZIP':
-            top_level_dir = zip_has_top_level_only(file_path)
-            if not top_level_dir:
-                return (0, 'BZIP2')
-            if zip_extract_all(file_path):
-                tmp_dir_path = "{}{}".format('/data/tmp/', top_level_dir)
-                filesize = get_dir_size(tmp_dir_path)
-                remove_file_or_dir(tmp_dir_path)
-
-        elif file_type == OTHER:
-            filesize = getsize(file_path)
-
-    elif isdir(file_path):
-        filesize = get_dir_size(file_path)
-    return filesize
 
 def get_dir_size(start_path):
     """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
@@ -552,7 +195,6 @@ def get_fields_from_file(fpath):
 
     return fields
 
-
 def remove_file_or_dir(path):
     print '@@@-- deleting file/dir ------ {}'.format(path)
     if isfile(path):
@@ -570,11 +212,6 @@ def remove_file_or_dir(path):
             print e
             return False
     return True
-
-
-def is_filename_valid(filename):
-    is_valid = re.match('^[a-zA-Z0-9\-\_\/\.\s]+$',filename.split('/')[-1])
-    return (True if is_valid else False)
 
 def is_dir_or_file(path):
     if isdir(path): return True

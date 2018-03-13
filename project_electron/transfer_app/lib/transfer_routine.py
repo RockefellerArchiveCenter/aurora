@@ -24,10 +24,10 @@ class TransferRoutine(object):
       self.run_routine()
 
   def setup_routine(self):
-    
+
     # pull active organizations
     if not self.has_active_organizations():
-      Pter.flines(['there are no active organizations in db'])
+      Pter.plines(['there are no active organizations in db'])
       return False
 
     # do active orgs dirs exist (processing / upload)
@@ -36,13 +36,13 @@ class TransferRoutine(object):
 
     # are there active orgs left?
     if not self.active_organizations:
-      Pter.flines(['There are no active orgs that are set up correctly'])
+      Pter.plines(['There are no active orgs that are set up correctly'])
       return False
 
     # build contents dictionary of all files / dirs in active org uploads
     self.build_contents_dictionary()
     if not self.routine_contents_dictionary:
-      Pter.flines(['no files discovered in uploads directory'])
+      Pter.plines(['no files discovered in uploads directory'])
       return False
 
     return True
@@ -51,20 +51,20 @@ class TransferRoutine(object):
 
     # discovery phase: searches active orgs dirs for files/dir in uploads
     if not self.setup_routine():
-      Pter.flines(['Transfer Routine Setup didn\'t yield results so the routine will stop here'])
+      Pter.plines(['Transfer Routine Setup didn\'t yield results so the routine will stop here'])
     else:
       # Move Files to Processing
       self._move_transfers_to_processing_dir()
 
     # STEP 0: 
     if not self.has_active_organizations():
-      Pter.flines(['no active orgs so dont run routine'])
+      Pter.plines(['no active orgs so dont run routine'])
       return False
 
     #STEP 1: get list of uploads to process by checking orgs processing dir
     self._discover_paths_in_processing_dir()
     if not self.organizations_processing_paths:
-      Pter.flines(['didnt find anything in processing so ending routine'])
+      Pter.plines(['didnt find anything in processing so ending routine'])
       return False
 
     #STEP 2: VALIDATION ROUTINES
@@ -76,20 +76,19 @@ class TransferRoutine(object):
         continue
 
       if not transObj.passes_filename():
-        go = 1 #log mess
+        pass
       else:
-        
         if not transObj.passes_virus_scan():
-          go = 1
+          pass
         else:
           if not transObj.resolve_file_type():
-            go = 1
+            pass
           else:
             if not transObj.resolve_file_size():
-              go = 1
+              pass
             else:
               if not transObj.passes_filesize_max():
-                go = 1
+                pass
 
       self.transfers.append(transObj.render_transfer_record())
 
@@ -116,7 +115,7 @@ class TransferRoutine(object):
     # remove org from Routine and log
     if ck > 0:
       self.active_organizations = [org for org in self.active_organizations if org not in orgs_to_remove]
-      Pter.flines(['{} orgs where removed from routine'.format(len(orgs_to_remove))])
+      Pter.plines(['{} orgs where removed from routine'.format(len(orgs_to_remove))])
 
   def build_contents_dictionary(self):
     org_dir_contents = {}
@@ -246,7 +245,7 @@ class TransferFileObject(object):
     self.file_path_ext =    ''
     self.path_type =        self.PATH_TYPE_FILE
     self.org_machine_name = ''
-    self.virus_scanner =    {'scan_result' : None}
+    self.virus_scanner =    {}
 
     if self.path_still_exist() and self._resolve_org_machine_name() and self._resolve_virus_scan_connection():
       self._generate_file_info()
@@ -271,10 +270,11 @@ class TransferFileObject(object):
     return True
 
   def _resolve_virus_scan_connection(self):
-    return True
-
     self.virus_scanner = VirusScan()
-    return self.virus_scanner.is_ready()
+    if not self.virus_scanner.is_ready():
+      BAGLog.log_it('VCONN')
+      return False
+    return True
 
   def resolve_file_type(self):
     """sets file_type based on ext and then file_type validation"""
@@ -370,15 +370,13 @@ class TransferFileObject(object):
     return True
 
   def passes_virus_scan(self):
-    return True
-
 
     # secondary ping, but right before scan
     if not self.virus_scanner.is_ready():
       # need actionable to drop from active processing
       return False
     try:
-      self.virus_scanner.scan()
+      self.virus_scanner.scan(self.file_path)
     except Exception as e:
       print e
       # again need actionable to reloop
@@ -421,5 +419,5 @@ class TransferFileObject(object):
       'auto_fail' :           self.auto_fail,
       'auto_fail_code' :      self.auto_fail_code,
       'bag_it_name':          self.bag_it_name,
-      'virus_scanresult' :    self.virus_scanner['scan_result']
+      'virus_scanresult' :    self.virus_scanner.scan_result
     }
