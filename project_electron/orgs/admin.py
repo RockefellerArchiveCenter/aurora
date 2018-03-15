@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from orgs.models import Organization,User,BAGLogCodes,BAGLog,Archives,BagInfoMetadata
+from orgs.models import Organization,User,BAGLogCodes,BAGLog,Archives,BagInfoMetadata,LanguageCode
 
 @admin.register(Organization)
 class OrganizationsAdmin(admin.ModelAdmin):
@@ -25,5 +25,9 @@ class ArchivesAdmin(admin.ModelAdmin):
 	pass
 
 @admin.register(BagInfoMetadata)
+class BagInfoMetadata(admin.ModelAdmin):
+	pass
+
+@admin.register(LanguageCode)
 class BagInfoMetadata(admin.ModelAdmin):
 	pass
