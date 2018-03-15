@@ -19,23 +19,27 @@ class TransferRoutine(object):
     self.active_organizations = []
     self.routine_contents_dictionary = {}
     self.organizations_processing_paths = []
+    self.has_setup_err = False
 
     if RUN:
       self.run_routine()
 
   def setup_routine(self):
+    self.has_setup_err = False
 
     # pull active organizations
     if not self.has_active_organizations():
+      self.has_setup_err = True
       Pter.plines(['there are no active organizations in db'])
       return False
 
     # do active orgs dirs exist (processing / upload)
-    self._verify_organizations_paths()
+    self.verify_organizations_paths()
     
 
     # are there active orgs left?
     if not self.active_organizations:
+      self.has_setup_err = True
       Pter.plines(['There are no active orgs that are set up correctly'])
       return False
 
@@ -56,10 +60,6 @@ class TransferRoutine(object):
       # Move Files to Processing
       self._move_transfers_to_processing_dir()
 
-    # STEP 0: 
-    if not self.has_active_organizations():
-      Pter.plines(['no active orgs so dont run routine'])
-      return False
 
     #STEP 1: get list of uploads to process by checking orgs processing dir
     self._discover_paths_in_processing_dir()
@@ -104,7 +104,7 @@ class TransferRoutine(object):
   def _setup_active_organizations(self):
     self.active_organizations = Organization.objects.filter(is_active = True)
 
-  def _verify_organizations_paths(self):
+  def verify_organizations_paths(self):
     ck = 0
     orgs_to_remove = []
     for org in self.active_organizations:

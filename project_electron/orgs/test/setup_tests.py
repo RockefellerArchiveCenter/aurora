@@ -13,7 +13,7 @@ POTUS_NAMES = [
 COMPANY_SUFFIX = [
 	'Foundation', 'Group', 'Org'
 ]
-TEST_ORG_COUNT = 20
+TEST_ORG_COUNT = 5
 
 def create_rand_name(p1,p3):
 	return "{} {} {}".format(
@@ -24,7 +24,7 @@ def create_rand_name(p1,p3):
 
 def create_test_orgs(org_count=TEST_ORG_COUNT):
 	"""creates random orgs based on org_count"""
-	if org_count < 2:
+	if org_count < 1:
 		return False
 
 	generated_orgs = []
@@ -34,10 +34,10 @@ def create_test_orgs(org_count=TEST_ORG_COUNT):
 		new_org_name = create_rand_name(POTUS_NAMES,COMPANY_SUFFIX)
 		try:
 			org_exist = Organization.objects.get(name=new_org_name)
-		except Organization.DoesNotExist as e:
-			print e
-		if org_exist:
 			continue
+		except Organization.DoesNotExist as e:
+			pass
+		
 		test_org = Organization(
 			name = new_org_name,
 			machine_name = 'org{}'.format((len(generated_orgs)+1))
@@ -46,7 +46,10 @@ def create_test_orgs(org_count=TEST_ORG_COUNT):
 		generated_orgs.append(test_org)
 
 		print 'Test organization {} created'.format(test_org.name)
+
+	return generated_orgs
 		
 
-
-
+def delete_test_orgs(orgs = []):
+	for org in orgs:
+		org.delete()
