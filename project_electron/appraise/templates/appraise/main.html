@@ -10,7 +10,7 @@
        {% if not uploads %}
 				<div>No transfers to appraise</div>
 			 {% else %}
-				<table id="appraise_table" class="table table-bordered dataTable">
+				<table id="appraise_table" class="table table-striped dataTable">
 					<thead>
 						<tr>
 							<th>Transfer File Name</th>
@@ -29,7 +29,7 @@
               <td>{{ upload.source_organization }}</td>
 							<td>{{ upload.record_creator }}</td>
 							<td>{{ upload.record_type }}</td>
-							<td>{{ upload.machine_file_upload_time }}</td>
+							<td>{{ upload.machine_file_upload_time|date:"M j, Y h:i A" }}</td>
 							<td>
                 {% if request.user.can_appraise or request.user.is_superuser %}
                 <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
@@ -66,6 +66,7 @@ var url = '{% url 'appraise-main' %}';
 var appraise_table = '';
 
   $(function () {
+    $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     appraise_table = $('#appraise_table').DataTable({
       'paging'      : true,
       'lengthChange': false,
