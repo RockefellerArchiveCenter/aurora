@@ -35,7 +35,7 @@ class TransferRoutine(object):
 
     # do active orgs dirs exist (processing / upload)
     self.verify_organizations_paths()
-    
+
 
     # are there active orgs left?
     if not self.active_organizations:
@@ -150,7 +150,7 @@ class TransferRoutine(object):
 
   def _org_contents_in_lsof(self):
     """Returns list of files to remove from current processing, based on lsof log (open files)"""
-    
+
     rm_list = []
 
     for org, obj in self.routine_contents_dictionary.iteritems():
@@ -250,7 +250,7 @@ class TransferFileObject(object):
     if self.path_still_exist() and self._resolve_org_machine_name() and self._resolve_virus_scan_connection():
       self._generate_file_info()
       self._is_processible = True
-      
+
   def is_processible(self):
     """True when class init has passed all"""
     return self._is_processible
@@ -283,16 +283,17 @@ class TransferFileObject(object):
     if os.path.isdir(self.file_path):
       self.file_type = self.FILE_TYPE_OTHER
       self.path_type = self.PATH_TYPE_DIR
+      self.bag_it_name = self.file_path.split('/')[-1]
     else:
       # get extension
       self.file_path_ext = splitext_(self.file_path)[-1]
 
       # check extension vs Acceptable list
-      if not self.file_path_ext in self.ACCEPTABLE_FILE_EXT.values():
+      if not any(self.file_path_ext in sl for sl in self.ACCEPTABLE_FILE_EXT.values()):
         self.set_auto_fail_with_code(self.AUTO_FAIL_BDIR) # ACTUALLY NOT Acurate
       else:
         passed = False
-        if self.file_path_ext in ACCEPTABLE_FILE_EXT[self.FILE_TYPE_TAR]:
+        if self.file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_TAR]:
           self.file_type = self.FILE_TYPE_TAR
           try:
             if tarfile.is_tarfile(self.file_path):
@@ -307,7 +308,7 @@ class TransferFileObject(object):
             if not self.bag_it_name:
               self.set_auto_fail_with_code(self.AUTO_FAIL_BTAR2)
 
-        elif self.file_path_ext in ACCEPTABLE_FILE_EXT[self.FILE_TYPE_ZIP]:
+        elif self.file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_ZIP]:
           self.file_type = self.FILE_TYPE_ZIP
 
           if not zipfile.is_zipfile(self.file_path):
