@@ -419,8 +419,11 @@ class Archives(models.Model):
         return values
 
     def get_records_creators(self):
-        bag_data = BagInfoMetadata.objects.get(archive=self.pk)
-        return list(bag_data.record_creators.all())
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        if bag_data:
+            return list(bag_data.record_creators.all())
+        else:
+            return []
 
     def assign_rights(self):
         try:

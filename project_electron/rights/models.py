@@ -5,6 +5,7 @@ from datetime import datetime
 
 from django.db import models
 from orgs.models import Organization, Archives
+from orgs.accession.models import Accession
 
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
@@ -13,7 +14,7 @@ from orgs.models import Organization, Archives
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
-    accession = models.ForeignKey('accession.Accession', null=True, blank=True)
+    accession = models.ForeignKey(Accession, null=True, blank=True)
     # Eventually these choices should be replaced by a call to get record types associated with this organization
     APPLIES_TO_TYPE_CHOICES = (
         ('administrative records', 'Administrative Records'),

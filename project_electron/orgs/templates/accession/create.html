@@ -3,6 +3,18 @@
 {% block h1_title %}{{form.accession_number.value}} <small>{{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
 
 {% block content %}
+
+{% if form.errors %}
+  <div class="alert alert-danger">
+    <h4><i class="icon fa fa-ban"></i> Form Error</h4>
+    {% for field in form %}
+      {%if field.errors %}
+      <p>Error for field {{field.name}}: {{ field.errors|striptags }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
 <form role="form" method="post">
   {% csrf_token %}
   {% for hidden in form.hidden_fields %}

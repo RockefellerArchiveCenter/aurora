@@ -26,8 +26,7 @@ class AccessionView(RACUserMixin, ListView):
         context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
         context['uploads'] = Archives.objects.filter(
-            process_status=70,
-            organization = self.request.user.organization).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
+            process_status=70).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
         return context
 
 
@@ -38,6 +37,7 @@ class AccessionRecordView(RACUserMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        print form
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
@@ -91,7 +91,7 @@ class AccessionRecordView(RACUserMixin, View):
                 notes[statement.rights_basis.lower()].append(grant.rights_granted_note)
         record_creators = list(set(creators_list))
         form = AccessionForm(initial={
-            'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data['record_type']),
+            'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data.get('record_type', '')),
             # faked for now, will eventually get this from ArchivesSpace
             'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
             'start_date': sorted(dates.get('start', []))[0],

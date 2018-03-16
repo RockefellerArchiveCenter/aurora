@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from django.urls import reverse
 from orgs.models import RecordCreators
+
 
 class Accession(models.Model):
     title =             models.CharField(max_length=256)
