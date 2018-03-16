@@ -26,7 +26,7 @@ class AccessionView(AccessioningArchivistMixin, ListView):
         context = super(AccessionView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Accessioning Queue'
         context['uploads'] = Archives.objects.filter(
-            process_status=70).annotate(transfer_group=Concat('organization', 'baginfometadata__record_type', GroupConcat('baginfometadata__record_creators'), 'baginfometadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
+            process_status=70).annotate(transfer_group=Concat('organization', 'metadata__record_type', GroupConcat('metadata__record_creators'), 'metadata__bag_group_identifier', output_field=CharField())).order_by('transfer_group')
         return context
 
 
