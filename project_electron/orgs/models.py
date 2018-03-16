@@ -96,6 +96,12 @@ class Organization(models.Model):
             return False
         return organization
 
+    def org_machine_upload_paths(self):
+        return [
+            '{}{}/upload/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name),
+            '{}{}/processing/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
+        ]
+
     def __unicode__(self):
         return self.name
 
