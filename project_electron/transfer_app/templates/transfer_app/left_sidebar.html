@@ -4,33 +4,17 @@
     <!-- sidebar menu: : style can be found in sidebar.less -->
     <ul class="sidebar-menu">
 
-      {% if request.user.is_staff or request.user.is_superuser %}
-      <li class="header">Admin Pages</li>
-      <li>
-        <a href="{% url 'orgs-list' %}">
-          <i class="fa fa-building-o"></i> <span>Organizations</span>
-        </a>
-      </li>
-      <li>
-        <a href="{% url 'users-list' %}">
-          <i class="fa fa-users"></i> <span>Users</span>
-        </a>
-      </li>
-      {% endif %}
-
-      <li class="header">{{ request.user.organization.name }}</li>
-        <li class="treeview">
+        <li>
           <a href="{% url 'app_home' %}">
             <i class="fa fa-dashboard"></i> <span>Dashboard</span>
           </a>
         </li>
-        <li class="treeview">
-          <a href="{% url 'org-transfers' %}">
+        <li>
+          <a href="{% url 'transfers' %}">
             <i class="fa fa-exchange"></i> <span>Transfers</span>
           </a>
         </li>
-        {% if request.user.is_staff or request.user.is_superuser %}
-        <li class="header">Queues</li>
+        {% if request.user.is_staff %}
         <li>
           <a href="{% url 'appraise-main' %}">
             <i class="fa fa-check-square-o"></i> <span>Appraise</span>
@@ -39,6 +23,20 @@
         <li>
           <a href="{% url 'accession-main' %}">
             <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
+          </a>
+        </li>
+        {% endif %}
+
+        {% if request.user.is_staff %}
+        <li class="header">Admin Pages</li>
+        <li>
+          <a href="{% url 'orgs-list' %}">
+            <i class="fa fa-building-o"></i> <span>Organizations</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'users-list' %}">
+            <i class="fa fa-users"></i> <span>Users</span>
           </a>
         </li>
         {% endif %}

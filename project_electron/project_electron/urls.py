@@ -32,4 +32,5 @@ urlpatterns = [
     url(r'^$',                  SplashView.as_view()),
     url(r'^login/$',            auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
     url(r'^logout/$',           auth_views.logout, {'next_page': '/login'}, name='logout'),
+    url(r'^api/',               include('orgs.api.urls')),
 ]

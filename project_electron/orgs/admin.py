@@ -5,6 +5,7 @@ from django.contrib import admin
 from orgs.models import Organization,User,BAGLogCodes,BAGLog,Archives,BagInfoMetadata
 from orgs.accession.models import Accession
 
+
 @admin.register(Organization)
 class OrganizationsAdmin(admin.ModelAdmin):
 	pass
@@ -32,3 +33,7 @@ class BagInfoMetadata(admin.ModelAdmin):
 @admin.register(Accession)
 class AccessionAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(LanguageCode)
+class BagInfoMetadata(admin.ModelAdmin):
+	pass

@@ -1,4 +1,5 @@
 {% extends 'transfer_app/base.html' %}
+{% load util %}
 
 {% block h1_title %}{{page_title}}{% endblock %}
 
@@ -21,7 +22,7 @@
                         </div>
                     {% endif %}
 
-                    {% if request.user.is_superuser %}
+                    {% if request.user.is_manager or request.user.is_superuser %}
                     <div class="checkbox">
                       <label>
                         <input type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
@@ -34,34 +35,30 @@
                       <input type="email" name="email" value="{{ object.email }}" class="form-control" id="id_email" placeholder="Enter email" required>
                     </div>
 
-                    {% comment %}
-                    <div class="form-group">
-                      <label for="change_password">Password</label>
-                      <a id="change_password" href="{% url 'password-change' pk=object.pk %}" class="btn btn-default btn-xs">Change Password</a>
-                    </div>
-                    {% endcomment %}
+                    {% if request.user.is_manager or request.user.is_superuser %}
 
-                    {% if request.user.is_superuser %}
-                    <div class="form-group">
-                        <label>Organization</label>
-                        <select class="form-control" name="organization" required>
-                            {% for org in form.fields.organization.choices %}
-                            <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
+                        {% if not object.is_staff %}
+                        <div class="form-group">
+                            <label>Organization</label>
+                            <select class="form-control" name="organization" required>
+                                {% for org in form.fields.organization.choices %}
+                                <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% endif %}
+
+                        <div class="form-group">
+                            <label>Groups</label>
+                            {% for group in form.fields.groups.choices %}
+                            <div class="checkbox">
+                              <label>
+                                <input name="groups" type="checkbox" value="{{group.0}}" {% if object|has_group:group.1 %}checked="checked"{% endif %}>
+                                {{group.1}}
+                              </label>
+                            </div>
                             {% endfor %}
-                        </select>
-                    </div>
-
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="is_superuser" {% if object.is_superuser %}checked{% endif %}> RAC Admin?
-                      </label>
-                    </div>
-                    {% else %}
-                    <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="is_org_admin" {% if object.is_org_admin %}checked{% endif %}> Org Admin?
-                      </label>
-                    </div>
+                        </div>
 
                     {% endif %}
 
