@@ -11,14 +11,14 @@ from django.contrib import messages
 
 from django.shortcuts import render, redirect
 from orgs.models import Archives, RecordCreators, Organization, BAGLog
-from orgs.authmixins import RACUserMixin
+from orgs.authmixins import AccessioningArchivistMixin
 from orgs.accession.models import Accession
 from orgs.accession.forms import AccessionForm
 from orgs.accession.db_functions import GroupConcat
 from rights.models import RightsStatement
 
 
-class AccessionView(RACUserMixin, ListView):
+class AccessionView(AccessioningArchivistMixin, ListView):
     template_name = "accession/main.html"
     model = Archives
 
@@ -30,7 +30,7 @@ class AccessionView(RACUserMixin, ListView):
         return context
 
 
-class AccessionRecordView(RACUserMixin, View):
+class AccessionRecordView(AccessioningArchivistMixin, View):
     template_name = "accession/create.html"
     model = Accession
     form_class = AccessionForm

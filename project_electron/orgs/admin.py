@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.contrib import admin
-from orgs.models import Organization,User,BAGLogCodes,BAGLog,Archives,BagInfoMetadata
+from orgs.models import Organization, User, BAGLogCodes, BAGLog, Archives, BagInfoMetadata, LanguageCode
 from orgs.accession.models import Accession
 
 
