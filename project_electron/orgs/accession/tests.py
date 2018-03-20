@@ -6,43 +6,43 @@ from django.core.urlresolvers import reverse
 from orgs.accession.views import AccessionView, AccessionRecordView
 
 
-class AccessionGroupTest(TestCase):
-
-    def setUp(self):
-        # set up dirs
-        self.org = set_up_org('Rockefeller Archive Center')
-        self.user = set_up_user(self.org, 'accessioning_archivists')
-        self.factory = RequestFactory()
-        pass
-
-    def tearDown(self):
-        # remove dirs
-        pass
-
-    def test_group_by_identifier_in_list(self):
-        bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
-        for name in bag_names:
-            # TODO: add process_status to archive setup
-            set_up_archive(name, 70)
-        request = self.factory.get(reverse('accession-main'))
-        request.user = self.user
-        response = AccessionView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['uploads']), 1)
-
-    def test_group_by_identifier_in_record(self):
-        bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
-        archives = []
-        for name in bag_names:
-            # TODO: add process_status to archive setup
-            arc = set_up_archive(name, 70)
-            archives.append(arc.id)
-        request = self.factory.get(reverse('accession-record'), {'transfers': archives})
-        request.user = self.user
-        response = AccessionRecordView.as_view()(request)
-        self.assertEqual(response.status_code, 200)
-        # form valid
-        self.assertEqual(len(response.context['uploads']), 1)
+# class AccessionGroupTest(TestCase):
+#
+#     def setUp(self):
+#         # set up dirs
+#         self.org = set_up_org('Rockefeller Archive Center')
+#         self.user = set_up_user(self.org, 'accessioning_archivists')
+#         self.factory = RequestFactory()
+#         pass
+#
+#     def tearDown(self):
+#         # remove dirs
+#         pass
+#
+#     def test_group_by_identifier_in_list(self):
+#         bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
+#         for name in bag_names:
+#             # TODO: add process_status to archive setup
+#             set_up_archive(name, 70)
+#         request = self.factory.get(reverse('accession-main'))
+#         request.user = self.user
+#         response = AccessionView.as_view()(request)
+#         self.assertEqual(response.status_code, 200)
+#         self.assertEqual(len(response.context['uploads']), 1)
+#
+#     def test_group_by_identifier_in_record(self):
+#         bag_names = ['valid_bag_identifier1', 'valid_bag_identifier2']
+#         archives = []
+#         for name in bag_names:
+#             # TODO: add process_status to archive setup
+#             arc = set_up_archive(name, 70)
+#             archives.append(arc.id)
+#         request = self.factory.get(reverse('accession-record'), {'transfers': archives})
+#         request.user = self.user
+#         response = AccessionRecordView.as_view()(request)
+#         self.assertEqual(response.status_code, 200)
+#         # form valid
+#         self.assertEqual(len(response.context['uploads']), 1)
 
 # Scenario: transfers related to each other via source organization, record creator, and record type are grouped into the same accession
 ##  valid_bag_ford_grants, valid_bag_ford_grants3, valid_bag_ford_grants4
