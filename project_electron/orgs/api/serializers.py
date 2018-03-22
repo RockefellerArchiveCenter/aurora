@@ -2,7 +2,8 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
-from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata
+from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, ManifestsRequired, AcceptSerialization, AcceptBagItVersion
+
 
 
 class BAGLogResultSerializer(serializers.Serializer):
@@ -43,7 +44,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
                   'title', 'record_creators', 'internal_sender_description',
                   'date_start', 'date_end', 'record_type', 'language',
                   'bag_count', 'bag_group_identifier', 'payload_oxum',
-                  'bagit_profile_identifier', 'bagging_date',)
+                  'bagit_profile_identifier', 'bagging_date')
 
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
@@ -57,13 +58,57 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'organization', 'bag_it_name', 'process_status',
                   'file_size', 'file_type', 'appraisal_note',
                   'additional_error_info', 'metadata', 'notifications',
-                  'created_time', 'modified_time', )
+                  'created_time', 'modified_time')
+
+
+# class BagItProfileBagInfoSerializer(serializers.HyperlinkedModelSerializer):
+#     class Meta:
+#         model = BagItProfileBagInfo
+#         fields = ('source_organization', 'external_identifier',
+#                   'internal_sender_description', 'title', 'date_start',
+#                   'date-end', 'record_creator', 'record_type',
+#                   'language', 'bagging_date', 'payload_oxum', 'bag_count',
+#                   'bag_group_identifier')
+#
+#
+class ManifestsRequiredSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ManifestsRequired
+        fields = ('name')
+#
+# class AcceptSerializationSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AcceptSerialization
+#         fields = ('name')
+#
+#
+# class AcceptBagItVersionSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = AcceptBagItVersion
+#         fields = ('name')
+
+
+class BagItProfileSerializer(serializers.HyperlinkedModelSerializer):
+    source_organization = serializers.StringRelatedField()
+    #bag_info = BagItProfileBagInfoSerializer()
+    name = ManifestsRequiredSerializer(many=True)
+    #accept_serialization = AcceptSerializationSerializer(many=True)
+    #accept_bagit_version = AcceptBagItVersionSerializer(many=True)
+
+    class Meta:
+        model = BagItProfile
+        fields = ('bagit_profile_identifier', 'source_organization', 'contact_email',
+                  'external_descripton', 'version',
+                  # 'bag_info',
+                  'name',
+                  # 'accept_serialization',
+                  # 'accept_bagit_version'
+                  )
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
     events = serializers.HyperlinkedIdentityField(view_name='organization-events')
-
 
     class Meta:
         model = Organization
