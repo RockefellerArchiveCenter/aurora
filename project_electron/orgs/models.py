@@ -100,6 +100,12 @@ class Organization(models.Model):
             return False
         return organization
 
+    def org_machine_upload_paths(self):
+        return [
+            '{}{}/upload/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name),
+            '{}{}/processing/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
+        ]
+
     def __unicode__(self):
         return self.name
 
@@ -299,7 +305,7 @@ class Archives(models.Model):
         (90, 'Accessioned')
     )
 
-    organization =          models.ForeignKey(Organization)
+    organization =          models.ForeignKey(Organization, related_name="transfers")
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =     models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
@@ -349,15 +355,8 @@ class Archives(models.Model):
     def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
-        flist = [
-            'NORG','BFNM',
-            'BTAR','BTAR2','BZIP','BZIP2',
-            'BDIR','EXERR',
-            'GBERR', 'RBERR',
-            'MDERR', 'DTERR', 'FSERR',
-            'VIRUS','BIERR'
-        ]
-        get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
+        flist = ['BE',]
+        get_error_obj = BAGLog.objects.filter(archive=self,code__code_type__in=flist)
         if not get_error_obj:
             return False
         return get_error_obj[0] if LAST_ONLY else get_error_obj
@@ -520,26 +519,37 @@ class Archives(models.Model):
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
+    """
+    Codes used in writing logs items.
 
+    These codes are divided into four categories:
+        Bag Error - errors caused by an invalid bag, such as BagIt validation failure
+        General Error - errors not specifically caused by an invalid bag, such as a virus scan connection failure
+        Info - informational messages about system activity such as cron job start and end
+        Success - messages indicating the successful completion of a human or machine process or activity
+
+    Each code has a next_action field to provide information about additional system actions that have
+    occurred as a result of the successful or failed process or activity.
+    """
     eCat_bagit_validation = ['BTAR2','BZIP2',]
     eCat_rac_profile = ['FSERR','MDERR','DTERR']
 
     code_short = models.CharField(max_length=5)
     code_types = (
-        ('T', 'Transfer'),
-        ('E', 'Error'),
+        ('BE', 'Bag Error'),
+        ('GE', 'General Error'),
         ('I', 'Info'),
-
+        ('S', 'Success'),
     )
-    code_type = models.CharField(max_length=5, choices=code_types)
+    code_type = models.CharField(max_length=15, choices=code_types)
     code_desc = models.CharField(max_length=60)
+    next_action = models.CharField(max_length=255, null=True, blank=True)
     def __unicode__(self):
         return "{} : {}".format(self.code_short,self.code_desc)
 
 class BAGLog(models.Model):
-
     code = models.ForeignKey(BAGLogCodes)
-    archive = models.ForeignKey(Archives, blank=True,null=True)
+    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='notifications')
     log_info = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now=True)
 
@@ -576,8 +586,8 @@ class BAGLog(models.Model):
         ordering = ['-created_time']
 
 class BagInfoMetadata(models.Model):
-    archive =                       models.ForeignKey(Archives)
-    source_organization =           models.ForeignKey(Organization, blank=True,null=True)
+    archive =                       models.OneToOneField(Archives, related_name='metadata')
+    source_organization =           models.ForeignKey(Organization, blank=True,null=True,)
     external_identifier =           models.CharField(max_length=256)
     internal_sender_description =   models.TextField()
     title =                         models.CharField(max_length=256)
