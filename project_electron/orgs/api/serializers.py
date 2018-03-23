@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
-from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, ManifestsRequired, AcceptSerialization, AcceptBagItVersion
+from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, User
 
 
 class BAGLogResultSerializer(serializers.Serializer):
@@ -114,3 +114,9 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
                   'acquisition_type', 'bagit_profiles', 'transfers', 'events')
+
+
+class UserSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = User
+        fields = ('url', 'username', 'email', 'is_staff', 'is_active', 'date_joined', 'organization')

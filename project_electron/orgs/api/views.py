@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from rest_framework import viewsets
-from rest_framework.decorators import detail_route
+from rest_framework import viewsets, generics
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
-from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired
+from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
-from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer
+from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
@@ -51,17 +51,31 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
 
+
 class BagItProfileViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
     queryset = BagItProfile.objects.all()
     serializer_class = BagItProfileSerializer
+
 
 class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for transfers"""
     queryset = Archives.objects.all()
     serializer_class = ArchivesSerializer
 
+
 class BAGLogViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for events"""
     queryset = BAGLog.objects.all()
     serializer_class = BAGLogSerializer
+
+
+class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
+    @list_route()
+    def current(self, request, *args, **kwargs):
+        user = User.objects.get(id=request.user.pk)
+        serializer = UserSerializer(user, context={'request': request})
+        return Response(serializer.data)
