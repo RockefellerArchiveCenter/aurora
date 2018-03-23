@@ -622,7 +622,7 @@ class ManifestsRequired(models.Model):
         ('md5', 'md5')
     )
     name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='manifests_required')
 
 class AcceptSerialization(models.Model):
     ACCEPT_SERIALIZATION_CHOICES = (
@@ -631,7 +631,7 @@ class AcceptSerialization(models.Model):
         ('application/x-gzip', 'application/x-gzip'),
     )
     name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='accept_serialization')
 
 class AcceptBagItVersion(models.Model):
     BAGIT_VERSION_NAME_CHOICES = (

@@ -5,7 +5,6 @@ from rest_framework import serializers
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, ManifestsRequired, AcceptSerialization, AcceptBagItVersion
 
 
-
 class BAGLogResultSerializer(serializers.Serializer):
     name = serializers.SerializerMethodField()
 
@@ -61,56 +60,57 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
                   'created_time', 'modified_time')
 
 
-# class BagItProfileBagInfoSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = BagItProfileBagInfo
-#         fields = ('source_organization', 'external_identifier',
-#                   'internal_sender_description', 'title', 'date_start',
-#                   'date-end', 'record_creator', 'record_type',
-#                   'language', 'bagging_date', 'payload_oxum', 'bag_count',
-#                   'bag_group_identifier')
-#
-#
-class ManifestsRequiredSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ManifestsRequired
-        fields = ('name')
-#
-# class AcceptSerializationSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = AcceptSerialization
-#         fields = ('name')
-#
-#
-# class AcceptBagItVersionSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = AcceptBagItVersion
-#         fields = ('name')
+class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        field_name = '-'.join([s[0].upper() + s[1:] for s in obj.field.split('_')])
+        return {
+            field_name: {
+                'repeatable': obj.repeatable,
+                'values': 'values',
+                'required': obj.required,
+            }
+        }
 
 
-class BagItProfileSerializer(serializers.HyperlinkedModelSerializer):
-    source_organization = serializers.StringRelatedField()
-    #bag_info = BagItProfileBagInfoSerializer()
-    name = ManifestsRequiredSerializer(many=True)
-    #accept_serialization = AcceptSerializationSerializer(many=True)
-    #accept_bagit_version = AcceptBagItVersionSerializer(many=True)
+class NameArraySerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        return obj.name
 
-    class Meta:
-        model = BagItProfile
-        fields = ('bagit_profile_identifier', 'source_organization', 'contact_email',
-                  'external_descripton', 'version',
-                  # 'bag_info',
-                  'name',
-                  # 'accept_serialization',
-                  # 'accept_bagit_version'
-                  )
+
+class BagItProfileSerializer(serializers.BaseSerializer):
+
+    def to_representation(self, obj):
+        bag_info = {}
+        bag_info_values = BagItProfileBagInfo.objects.filter(bagit_profile=obj)
+        for bi in bag_info_values:
+            bag_info.update(BagItProfileBagInfoSerializer(bi).data)
+        accept_bagit_version = NameArraySerializer(AcceptBagItVersion.objects.filter(bagit_profile=obj), many=True).data
+        accept_serialization = NameArraySerializer(AcceptSerialization.objects.filter(bagit_profile=obj), many=True).data
+        manifests_required = NameArraySerializer(ManifestsRequired.objects.filter(bagit_profile=obj), many=True).data
+        return {
+            'BagIt-Profile-Info': {
+                "Version": obj.version,
+                "External-Description": obj.external_descripton,
+                "Contact-Email": obj.contact_email,
+                "BagIt-Profile-Identifier": obj.bagit_profile_identifier
+            },
+            'Bag-Info': bag_info,
+            'Manifests-Required': manifests_required,
+            'Allow-Fetch.txt': obj.allow_fetch,
+            'Serialization': obj.serialization,
+            'Accept-Serialization': accept_serialization,
+            'Accept-BagIt-Version': accept_bagit_version,
+            'Tag-Files-Required': [],
+            'Tag-Manifests-Required': [],
+        }
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
     events = serializers.HyperlinkedIdentityField(view_name='organization-events')
+    bagit_profiles = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-bagit-profiles')
 
     class Meta:
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
-                  'acquisition_type', 'transfers', 'events')
+                  'acquisition_type', 'bagit_profiles', 'transfers', 'events')

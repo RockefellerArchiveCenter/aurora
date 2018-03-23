@@ -19,14 +19,16 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     @detail_route()
     def bagit_profiles(self, request, *args, **kwargs):
         org = self.get_object()
-        bagit_profiles = BagItProfile.objects.filter(organization=org).order_by('-created_time')
-        manifests_required = ManifestsRequired.objects
-        page = self.paginate_queryset(bagit_profiles)
-        if page is not None:
-            serializer = BagItProfileSerializer(page, context={'request': request}, many=True)
-            return self.get_paginated_response(serializer.data)
+        bagit_profiles = BagItProfile.objects.filter(applies_to_organization=org)
+        serializer = BagItProfileSerializer(bagit_profiles, context={'request': request}, many=True)
         return Response(serializer.data)
 
+    @detail_route(url_path='bagit_profiles/(?P<number>[0-9]+)')
+    def bagit_profiles_detail(self, request, number=None, *args, **kwargs):
+        org = self.get_object()
+        bagit_profile = BagItProfile.objects.get(id=number)
+        serializer = BagItProfileSerializer(bagit_profile, context={'request': request})
+        return Response(serializer.data)
 
     @detail_route()
     def transfers(self, request, *args, **kwargs):
@@ -37,7 +39,6 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
             serializer = ArchivesSerializer(page, context={'request': request}, many=True)
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data)
-
 
     @detail_route()
     def events(self, request, *args, **kwargs):
