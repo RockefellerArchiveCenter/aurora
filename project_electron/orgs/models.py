@@ -44,16 +44,12 @@ class Organization(models.Model):
     def save(self, *args, **kwargs):
 
         if self.pk is None:                         # Initial Save / Sync table
-            if settings.TESTING:
-                print 'Running in test mode'
-                go = 1
+            results = RAC_CMD.add_org(self.name)
+            if results[0]:
+                self.machine_name = results[1]
             else:
-                results = RAC_CMD.add_org(self.name)
-                if results[0]:
-                    self.machine_name = results[1]
-                else:
-                    go = 1
-                    # and when it fails
+                go = 1
+                # and when it fails
         else:
 
             # SET USERS INACTIVE WHEN ORG IS SET TO INACTIVE
@@ -327,9 +323,27 @@ class Archives(models.Model):
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
 
-    def gen_identifier(self,fname,org,date,time):
-        return "{}{}{}{}".format(fname,org,date,time)
+    @staticmethod
+    def gen_identifier(fname,org,date,time):
+        """returns an identifier if doesn't exists already, Else False"""
+        iden = "{}{}{}{}".format(fname,org,date,time)
+        return (False if Archives.objects.filter(machine_file_identifier = iden) else iden)
 
+    @classmethod
+    def initial_save(cls, org, user, file_path, file_size, file_modtime, identifier,file_type, bag_it_name):
+        archive = cls(
+            organization =          org,
+            user_uploaded =         user,
+            machine_file_path =     file_path,
+            machine_file_size =     file_size,
+            machine_file_upload_time =  file_modtime,
+            machine_file_identifier =   identifier,
+            machine_file_type       =   file_type,
+            bag_it_name =               bag_it_name,
+            process_status = 20
+        )
+        archive.save()
+        return archive
     def get_error_codes(self):
         if self.bag_it_valid:
             return ''

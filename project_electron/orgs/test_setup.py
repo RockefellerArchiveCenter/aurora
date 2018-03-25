@@ -45,6 +45,9 @@ def create_test_user(org):
 
 
 def create_test_archive(bag_name, org):
+
+    
+
     # user = self.create_test_user(org)
     bag_file_path = path.join(path.split(settings.BASE_DIR)[0], 'test_bags', bag_name)
     # TODO: this should be replaced with calls to functions, but will require some refactoring
