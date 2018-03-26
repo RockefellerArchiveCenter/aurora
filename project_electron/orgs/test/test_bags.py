@@ -31,7 +31,7 @@ class BagTestCase(TransactionTestCase):
             ('missing_bag_declaration', 'GBERR', True),
             ('missing_payload_directory', 'GBERR', True),
             ('missing_payload_manifest', 'GBERR', True),
-            
+
             # ('empty_payload_directory', 'GBERR', True),
             ('missing_description', 'RBERR', True),
             # ('missing_bag_manifest', 'RBERR', True),
@@ -43,13 +43,13 @@ class BagTestCase(TransactionTestCase):
             ('repeating_title', 'RBERR', True),
             ('unauthorized_record_type', 'RBERR', True),
             ('unauthorized_source_organization', 'RBERR', True),
-           
+
             # ('no_metadata_file', '', ''),
 
             ('invalid_metadata_file','MDERR', True),
             ('invalid_datatype_date','DTERR', True),
             ('invalid_datatype_language','DTERR', True),
-            
+
         )
         test_on_bagchecker = [r[0] for r in bags_ref if len(r) > 2 and r[2]]
         test_on_transfer_routine = [r[0] for r in bags_ref if len(r) > 3 and r[3]]
@@ -81,7 +81,7 @@ class BagTestCase(TransactionTestCase):
                 if ref[0] == 'valid_bag':
                     self.assertFalse(trans['auto_fail'])
                 else:
-                    
+
                     if r[0] in test_on_transfer_routine:
                         print ref
                         self.assertTrue(trans['auto_fail'])
@@ -112,7 +112,7 @@ class BagTestCase(TransactionTestCase):
                     trans['file_type'],
                     trans['bag_it_name']
                 )
-                
+
                 # updating the name since the bag info reflects ford
                 archive.organization.name = 'Ford Foundation'
                 archive.organization.save()
