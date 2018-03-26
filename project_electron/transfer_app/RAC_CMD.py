@@ -59,6 +59,19 @@ def add2grp(organization_machine_name,machine_user_id):
         has_ERR = True
     return (True if not has_ERR else False)
 
+def delete_system_group(organization_machine_name):
+    if not organization_machine_name.startswith('org'):
+        return False
+    has_ERR = False
+    command = 'sudo /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
+    output = None
+    try:
+        output = check_output(command,shell=True,stderr=STDOUT)
+    except CalledProcessError as e:
+        print e.output
+        has_ERR = True
+    return not has_ERR
+
 def del_from_org(machine_user_id):
     ugroups = [g for g in user_groups(machine_user_id) if g[:3] == "org"]
     has_ERR = False
