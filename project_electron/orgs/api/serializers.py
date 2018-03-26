@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
-from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, User
+from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, TagFilesRequired, TagManifestsRequired, AcceptSerialization, AcceptBagItVersion, User
 
 
 class BAGLogResultSerializer(serializers.Serializer):
@@ -63,11 +63,12 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
 class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):
         field_name = '-'.join([s[0].upper() + s[1:] for s in obj.field.split('_')])
+        values = NameArraySerializer(BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=obj), many=True).data
         return {
             field_name: {
-                'repeatable': obj.repeatable,
-                'values': 'values',
                 'required': obj.required,
+                'repeatable': obj.repeatable,
+                'values': values,
             }
         }
 
@@ -87,6 +88,8 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         accept_bagit_version = NameArraySerializer(AcceptBagItVersion.objects.filter(bagit_profile=obj), many=True).data
         accept_serialization = NameArraySerializer(AcceptSerialization.objects.filter(bagit_profile=obj), many=True).data
         manifests_required = NameArraySerializer(ManifestsRequired.objects.filter(bagit_profile=obj), many=True).data
+        tag_files_required = NameArraySerializer(TagFilesRequired.objects.filter(bagit_profile=obj), many=True).data
+        tag_manifests_required = NameArraySerializer(TagManifestsRequired.objects.filter(bagit_profile=obj), many=True).data
         return {
             'BagIt-Profile-Info': {
                 "Version": obj.version,
@@ -100,8 +103,8 @@ class BagItProfileSerializer(serializers.BaseSerializer):
             'Serialization': obj.serialization,
             'Accept-Serialization': accept_serialization,
             'Accept-BagIt-Version': accept_bagit_version,
-            'Tag-Files-Required': [],
-            'Tag-Manifests-Required': [],
+            'Tag-Files-Required': tag_files_required,
+            'Tag-Manifests-Required': tag_manifests_required,
         }
 
 

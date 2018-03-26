@@ -114,8 +114,8 @@ class BagItProfileBagInfoForm(forms.ModelForm):
 class BagItProfileBagInfoValuesForm(forms.ModelForm):
 	class Meta:
 		model = BagItProfileBagInfoValues
-		fields = ['values',]
-		widgets = {'values': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
+		fields = ['name',]
+		widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
 
 class ManifestsRequiredForm(forms.ModelForm):
 	class Meta:
@@ -150,7 +150,7 @@ class TagFilesRequiredForm(forms.ModelForm):
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
 	BagItProfileBagInfo,
 	BagItProfileBagInfoValues,
-	fields=('values',),
+	fields=('name',),
 	extra=1,
 	can_delete=False,
 	form=BagItProfileBagInfoValuesForm
