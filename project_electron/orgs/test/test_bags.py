@@ -19,22 +19,21 @@ class BagTestCase(TransactionTestCase):
 
     def test_bags(self):
 
-        # tuple of tuples 
+        # tuple of tuples
         # (str that test bag starts with, ecode, test on bag checker, test on transfer routine)
         bags_ref = (
-            ('invalid<filename','BFNM', False, True),
+            ('invalid<filename', 'BFNM', False, True),
 
             ('valid_bag', ''),
 
             ('changed_file', 'GBERR', True),
             ('missing_bag_manifest', 'GBERR', True),
             ('missing_bag_declaration', 'GBERR', True),
+            ('missing_bag_manifest', 'GBERR', True),
             ('missing_payload_directory', 'GBERR', True),
             ('missing_payload_manifest', 'GBERR', True),
 
-            # ('empty_payload_directory', 'GBERR', True),
             ('missing_description', 'RBERR', True),
-            # ('missing_bag_manifest', 'RBERR', True),
             ('missing_record_type', 'RBERR', True),
             ('missing_source_organization', 'RBERR', True),
             ('missing_title', 'RBERR', True),
@@ -43,8 +42,6 @@ class BagTestCase(TransactionTestCase):
             ('repeating_title', 'RBERR', True),
             ('unauthorized_record_type', 'RBERR', True),
             ('unauthorized_source_organization', 'RBERR', True),
-
-            # ('no_metadata_file', '', ''),
 
             ('invalid_metadata_file','MDERR', True),
             ('invalid_datatype_date','DTERR', True),
@@ -56,7 +53,7 @@ class BagTestCase(TransactionTestCase):
 
         for ref in bags_ref:
 
-            # creates test bags 
+            # creates test bags
             self.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0])
 
             # init trans routine
@@ -162,7 +159,7 @@ class BagTestCase(TransactionTestCase):
         for bags in target_bags:
             self.assertTrue(
                 anon_extract_all(
-                    os.path.join(test_bags_dir,bags), 
+                    os.path.join(test_bags_dir,bags),
                     org.org_machine_upload_paths()[0]
                 )
             )
