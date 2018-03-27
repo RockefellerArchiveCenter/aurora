@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 from project_electron import config as CF
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -141,6 +142,8 @@ STATIC_ROOT = CF.STATIC_ROOT
 
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
 
+TESTING = sys.argv[1:2] == ['test']
+
 
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
@@ -194,3 +197,5 @@ TRANSFER_FILESIZE_MAX = CF.TRANSFER_FILESIZE_MAX
 TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
 
 TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
+
+TEST_BAGS_DIR = CF.TEST_BAGS_DIR

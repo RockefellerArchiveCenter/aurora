@@ -10,13 +10,13 @@ from distutils.dir_util import copy_tree
 from shutil import rmtree, move
 import psutil
 
-from transfer_app.lib.virus_scanner import VirusScan
-
 from django.conf import settings
+from project_electron import config
 from orgs.models import BAGLog, Organization
 
-import transfer_app.lib.log_print as Pter
 
+import transfer_app.lib.log_print as Pter
+from transfer_app.lib.virus_scanner import VirusScan
 
 def open_files_list():
     """Return a list of files open on the linux system"""
@@ -135,6 +135,23 @@ def tar_has_top_level_only(file_path):
             return False
     return top_dir
 
+def anon_extract_all(path, tmp_dir):
+    """determine which path type, return extraction results"""
+    # is it a dir
+    if isdir(path):
+        return dir_extract_all(path,tmp_dir)
+    else:
+        # is it a tar
+        if path.endswith('tar.gz') or path.endswith('.tar'):
+            return tar_extract_all(path, tmp_dir)
+
+        # is it a zip
+        if path.endswith('.zip'):
+            return zip_extract_all(path, tmp_dir)
+
+    return False
+
+
 def zip_extract_all(file_path, tmp_dir):
     extracted = False
     try:
@@ -151,6 +168,7 @@ def tar_extract_all(file_path, tmp_dir):
     try:
         tf = tarfile.open(file_path, 'r:*')
         tf.extractall(tmp_dir)
+        print tmp_dir
         tf.close()
         extracted = True
     except Exception as e:

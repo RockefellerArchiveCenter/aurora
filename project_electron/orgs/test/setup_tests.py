@@ -13,7 +13,7 @@ POTUS_NAMES = [
 COMPANY_SUFFIX = [
 	'Foundation', 'Group', 'Org'
 ]
-TEST_ORG_COUNT = 5
+TEST_ORG_COUNT = 3
 
 def create_rand_name(p1,p3):
 	return "{} {} {}".format(
@@ -45,7 +45,7 @@ def create_test_orgs(org_count=TEST_ORG_COUNT):
 		test_org.save()
 		generated_orgs.append(test_org)
 
-		print 'Test organization {} created'.format(test_org.name)
+		print 'Test organization {} -- {} created'.format(test_org.name,test_org.machine_name)
 
 	return generated_orgs
 		
