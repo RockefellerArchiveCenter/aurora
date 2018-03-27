@@ -19,11 +19,13 @@ ORG_ROOT_DIR = '/data/'
 
 STATIC_ROOT = '/data/project_electron_transfer/project_electron/static/'
 
-PROJECT_ROOT_DIR = '/home/va0425/bin/aurora/'
+PROJECT_ROOT_DIR = '/home/user/bin/aurora/'
 
 TMP_DIR = '/data/tmp/'
 
+# UNIT TESTING
 TESTING_TMP_DIR = '/tmp/'
+TEST_BAGS_DIR = '/home/user/bin/aurora/test_bags/'
 
 # LDAP GLOBALS
 
