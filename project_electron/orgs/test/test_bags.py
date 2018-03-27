@@ -29,10 +29,10 @@ class BagTestCase(TransactionTestCase):
             ('changed_file', 'GBERR', True),
             ('missing_bag_manifest', 'GBERR', True),
             ('missing_bag_declaration', 'GBERR', True),
-            ('missing_bag_manifest', 'GBERR', True),
             ('missing_payload_directory', 'GBERR', True),
             ('missing_payload_manifest', 'GBERR', True),
 
+            # ('empty_payload_directory', 'GBERR', True),
             ('missing_description', 'RBERR', True),
             ('missing_record_type', 'RBERR', True),
             ('missing_source_organization', 'RBERR', True),
@@ -43,10 +43,10 @@ class BagTestCase(TransactionTestCase):
             ('unauthorized_record_type', 'RBERR', True),
             ('unauthorized_source_organization', 'RBERR', True),
 
+            # ('no_metadata_file', '', ''),
             ('invalid_metadata_file','MDERR', True),
             ('invalid_datatype_date','DTERR', True),
             ('invalid_datatype_language','DTERR', True),
-
         )
         test_on_bagchecker = [r[0] for r in bags_ref if len(r) > 2 and r[2]]
         test_on_transfer_routine = [r[0] for r in bags_ref if len(r) > 3 and r[3]]
