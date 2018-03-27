@@ -32,7 +32,6 @@ class BagTestCase(TransactionTestCase):
             ('missing_payload_directory', 'GBERR', True),
             ('missing_payload_manifest', 'GBERR', True),
 
-            # ('empty_payload_directory', 'GBERR', True),
             ('missing_description', 'RBERR', True),
             ('missing_record_type', 'RBERR', True),
             ('missing_source_organization', 'RBERR', True),
@@ -43,10 +42,13 @@ class BagTestCase(TransactionTestCase):
             ('unauthorized_record_type', 'RBERR', True),
             ('unauthorized_source_organization', 'RBERR', True),
 
-            # ('no_metadata_file', '', ''),
             ('invalid_metadata_file','MDERR', True),
             ('invalid_datatype_date','DTERR', True),
             ('invalid_datatype_language','DTERR', True),
+
+            # The following are valid bags, and should not fail
+            # ('no_metadata_file', '', ''),
+            # ('empty_payload_directory', 'GBERR', True),
         )
         test_on_bagchecker = [r[0] for r in bags_ref if len(r) > 2 and r[2]]
         test_on_transfer_routine = [r[0] for r in bags_ref if len(r) > 3 and r[3]]
@@ -130,7 +132,7 @@ class BagTestCase(TransactionTestCase):
                 # START -- TEST RESULTS OF Bag Checker
                 ###############
 
-                if ref[0] in ['valid_bag','no_metadata_file']:
+                if ref[0] in ['valid_bag', 'no_metadata_file']:
                     self.assertTrue(passed_all_results)
 
                 else:
@@ -154,7 +156,7 @@ class BagTestCase(TransactionTestCase):
 
         # setting ownership of paths to root
         root_uid = pwd.getpwnam('root').pw_uid
-        index= 0
+        index = 0
 
         for bags in target_bags:
             self.assertTrue(
@@ -165,10 +167,10 @@ class BagTestCase(TransactionTestCase):
             )
 
             # rename extracted path -- add index suffix to prevent colision
-            created_path = os.path.join(org.org_machine_upload_paths()[0],bags.split('.')[0])
+            created_path = os.path.join(org.org_machine_upload_paths()[0], bags.split('.')[0])
             new_path = '{}{}'.format(created_path, index)
-            os.rename(created_path,new_path)
+            os.rename(created_path, new_path)
             index += 1
 
             # trying to update the path
-            os.chown(new_path,root_uid,root_uid)   ## change ownership of files to root
+            os.chown(new_path, root_uid, root_uid)   ## change ownership of files to root

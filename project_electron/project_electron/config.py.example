@@ -26,6 +26,8 @@ TMP_DIR = '/data/tmp/'
 # UNIT TESTING
 TESTING_TMP_DIR = '/tmp/'
 TEST_BAGS_DIR = '/home/user/bin/aurora/test_bags/'
+TRANSFER_UPLOADS_ROOT = '/data/'
+TRANSFER_EXTRACT_TMP = '/data/tmp/'
 
 # LDAP GLOBALS
 
