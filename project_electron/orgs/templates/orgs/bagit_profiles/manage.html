@@ -130,6 +130,13 @@
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
 	}
+	function updateBagInfoDeleteButtons(){
+		if ($('.bag_info').length > 1) {
+			$('.bag_info:first').find('.delete-row:first').removeClass('hidden')
+		} else {
+			$('.bag_info:first').find('.delete-row:first').addClass('hidden')
+		}
+	}
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $(btn).prev('.dynamic-form').clone(true).get(0);
@@ -191,10 +198,12 @@
     $('.add-row').on('click', function() {
 			if (!($(this).attr('disabled'))) {
 				addForm(this, $(this).attr('data-target'));
+				updateBagInfoDeleteButtons();
 			}
     });
     $('.delete-row').on('click', function() {
 	    deleteForm(this, $(this).attr('data-target'));
+			updateBagInfoDeleteButtons();
     })
   });
 </script>
