@@ -222,22 +222,25 @@ class BagItProfileManageView(View):
                 if formset.is_valid():
                     formset.save()
                 else:
+                    print formset.errors
                     return render(request, self.template_name, {
+                        'organization': bagit_profile.applies_to_organization,
                         'form': bagit_profile,
                         'bag_info_formset': bag_info_formset,
                         'manifests_formset': manifests_formset,
                         'serialization_formset': serialization_formset,
                         'version_formset': version_formset,
-                        'tag_manifests_formset': tag_manifests_formset,
+                        'tag_manifests_formset': tag_files_formset,
                         'tag_files_formset': tag_files_formset,
                         'meta_page_title': 'BagIt Profile',
                         })
-            bagit_profile.version = bagit_profile.version + Decimal(0.1)
-            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(urljoin(reverse('organization-bagit-profiles', args=[bagit_profile.applies_to_organization.pk]), '{}.json'.format(bagit_profile.pk)))
+            bagit_profile.version = bagit_profile.version + Decimal(1)
+            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(urljoin(reverse('organization-bagit-profiles', args={bagit_profile.applies_to_organization.pk}), '{}.json'.format(bagit_profile.pk)))
             bagit_profile.save()
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
             'form': form,
+            'organization': form.applies_to_organization,
             'bag_info_formset': BagItProfileBagInfoFormset(request.POST, prefix='bag_info'),
             'manifests_formset': ManifestsRequiredFormset(request.POST, prefix='manifests'),
             'serialization_formset': AcceptSerializationFormset(request.POST, prefix='serialization'),

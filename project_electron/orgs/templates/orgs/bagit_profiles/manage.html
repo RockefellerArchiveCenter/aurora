@@ -81,7 +81,7 @@
 						{% endfor %}
 						<div class="row">
 							<div class="col-xs-6">
-								{% include 'rights/form_fields.html' %}
+								{% include 'orgs/bagit_profiles/baginfo_form_fields.html' %}
 							</div>
 							<div class="col-xs-6">
 								{% if form.nested %}
@@ -91,9 +91,6 @@
 									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first and forloop.last %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
 									<label>Values</label>
 									{% for form in form.nested.forms %}
-										{% for hidden in form.hidden_fields %}
-								    	{{ hidden }}
-										{% endfor %}
 						        {% include 'orgs/bagit_profiles/repeating_form.html' %}
 					        {% endfor %}
 								</div>
@@ -170,7 +167,10 @@
 		}
   }
   function deleteForm(btn, prefix) {
-    $(btn).closest('.dynamic-form').remove()
+		// <input type="hidden" name="nested_bag_info-0_bagitprofilebaginfovalues_set-0-DELETE" id="id_nested_bag_info-0_bagitprofilebaginfovalues_set-0-DELETE" value="true">
+    form = $(btn).closest('.dynamic-form')
+		inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
+		$(form).append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
     var forms = $('.'+prefix);
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
 		renumberForms(prefix);
@@ -179,6 +179,7 @@
 		}
   }
   $(document).ready(function() {
+		$('[id$=DELETE]').hide()
 		$('input[name$=-TOTAL_FORMS]').each(function(){
 			var formPrefix = $(this).attr('name').substr(0, $(this).attr('name').indexOf('-TOTAL_FORMS'))
 			if (parseInt($(this).val()) >= parseInt($('input[name='+formPrefix+'-MAX_NUM_FORMS]').val())) {
