@@ -1,5 +1,5 @@
 {% if org.rights_statements %}
-  <table class="table table-striped rights-table">
+  <table class="table table-striped rights-statement-table">
     <thead>
       <tr>
         <th>Record Type</th>
@@ -19,7 +19,7 @@
 
           {% if request.user.is_superuser %}
             <a href="{% url 'rights-update' statement.pk %}" class="btn btn-warning btn-sm">Edit</a>
-            <a href="{% url 'rights-api' statement.pk 'delete' %}" class="btn btn-danger btn-sm rights-delete-button">Delete</a>
+            <a href="{% url 'rights-api' statement.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="rights-statement">Delete</a>
           {% endif %}
         </td>
       </tr>
