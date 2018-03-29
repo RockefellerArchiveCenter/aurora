@@ -1,7 +1,6 @@
 import os
 from os import stat, remove, listdir, walk
 from os.path import isdir, getmtime, getsize, splitext, isfile
-from pwd import getpwuid
 import re
 import datetime
 import tarfile
@@ -9,6 +8,7 @@ import zipfile
 from distutils.dir_util import copy_tree
 from shutil import rmtree, move
 import psutil
+import pwd
 
 from django.conf import settings
 from project_electron import config
@@ -83,7 +83,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     return files
 
 def file_owner(file_path):
-    return getpwuid(stat(file_path).st_uid).pw_name
+    return pwd.getpwuid(stat(file_path).st_uid).pw_name
 
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
@@ -253,3 +253,8 @@ def get_file_contents(f):
         print e
     finally:
         return data
+
+def chown_path_to_root(path):
+    if is_dir_or_file(path):
+        root_uid = pwd.getpwnam('root').pw_uid
+        os.chown(path,root_uid,root_uid)

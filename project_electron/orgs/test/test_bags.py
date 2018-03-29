@@ -172,5 +172,5 @@ class BagTestCase(TransactionTestCase):
             os.rename(created_path, new_path)
             index += 1
 
-            # trying to update the path
-            os.chown(new_path, root_uid, root_uid)   ## change ownership of files to root
+            # chowning path to root            
+            chown_path_to_root(new_path)
