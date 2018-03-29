@@ -9,7 +9,7 @@ from orgs.models import User, BagItProfile, BagItProfileBagInfo, BagItProfileBag
 class OrgUserUpdateForm(forms.ModelForm):
 	class Meta:
 		model = User
-		fields = ['is_active','email','organization','is_org_admin']
+		fields = ['is_active','email','organization','groups']
 
 # class RACUserUpdateForm(forms.ModelForm):
 # 	class Meta:
@@ -20,7 +20,7 @@ class RACSuperUserUpdateForm(forms.ModelForm):
 	class Meta:
 		model = User
 		# NO ORG -- SET TO PRIMARY
-		fields = ['is_active','email','is_superuser']
+		fields = ['is_active','email','groups']
 
 
 class UserPasswordChangeForm(PasswordChangeForm):
@@ -114,8 +114,8 @@ class BagItProfileBagInfoForm(forms.ModelForm):
 class BagItProfileBagInfoValuesForm(forms.ModelForm):
 	class Meta:
 		model = BagItProfileBagInfoValues
-		fields = ['values',]
-		widgets = {'values': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
+		fields = ['name',]
+		widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
 
 class ManifestsRequiredForm(forms.ModelForm):
 	class Meta:
@@ -150,9 +150,8 @@ class TagFilesRequiredForm(forms.ModelForm):
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
 	BagItProfileBagInfo,
 	BagItProfileBagInfoValues,
-	fields=('values',),
+	fields=('name',),
 	extra=1,
-	can_delete=False,
 	form=BagItProfileBagInfoValuesForm
 )
 
@@ -192,7 +191,6 @@ BagItProfileBagInfoFormset = forms.inlineformset_factory(
 	BagItProfileBagInfo,
 	fields=('field', 'required', 'repeatable'),
 	extra=1,
-	can_delete=False,
 	form=BagItProfileBagInfoForm,
 	formset=BaseBagInfoFormset
 )
@@ -203,7 +201,6 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
 	fields=('name',),
 	extra=1,
 	max_num=2,
-	can_delete=False,
 	form=ManifestsRequiredForm,
 )
 
@@ -213,7 +210,6 @@ AcceptSerializationFormset = forms.inlineformset_factory(
 	fields=('name',),
 	extra=1,
 	max_num=3,
-	can_delete=False,
 	form=AcceptSerializationForm,
 )
 
@@ -223,7 +219,6 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
 	fields=('name',),
 	extra=1,
 	max_num=2,
-	can_delete=False,
 	form=AcceptBagItVersionForm,
 )
 
@@ -233,7 +228,6 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
 	fields=('name',),
 	extra=1,
 	max_num=2,
-	can_delete=False,
 	form=TagManifestsRequiredForm,
 )
 
@@ -242,6 +236,5 @@ TagFilesRequiredFormset = forms.inlineformset_factory(
 	TagFilesRequired,
 	fields=('name',),
 	extra=1,
-	can_delete=False,
 	form=TagFilesRequiredForm,
 )

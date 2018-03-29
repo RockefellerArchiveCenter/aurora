@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+import sys
 from project_electron import config as CF
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -39,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'rac_user',
     'transfer_app',
     'orgs',
@@ -79,6 +81,10 @@ LOGIN_REDIRECT_URL = 'app_home'
 
 WSGI_APPLICATION = 'project_electron.wsgi.application'
 
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 50
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -136,6 +142,8 @@ STATIC_ROOT = CF.STATIC_ROOT
 
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
 
+TESTING = sys.argv[1:2] == ['test']
+
 
 import ldap
 from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
@@ -185,3 +193,9 @@ HOST_ORG_ID = CF.HOST_ORG_ID
 
 
 TRANSFER_FILESIZE_MAX = CF.TRANSFER_FILESIZE_MAX
+
+TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
+
+TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
+
+TEST_BAGS_DIR = CF.TEST_BAGS_DIR

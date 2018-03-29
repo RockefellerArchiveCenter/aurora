@@ -12,9 +12,9 @@ from orgs.authmixins import *
 from transfer_app.mixins import JSONResponseMixin
 
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
-from orgs.donorauthmixins import DonorOrgReadAccessMixin
+from orgs.authmixins import OrgReadViewMixin
 
-class RightsManageView(RACAdminMixin, CreateView):
+class RightsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
@@ -79,7 +79,7 @@ class RightsManageView(RACAdminMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
 
-class RightsAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
+class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
     def render_to_response(self, context, **kwargs):
         if not self.request.is_ajax():
@@ -95,7 +95,7 @@ class RightsAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
 
         return self.render_to_json_response(resp, **kwargs)
 
-class RightsGrantsManageView(RACAdminMixin, CreateView):
+class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
     model = RightsStatement
     form_class = RightsForm
@@ -119,9 +119,10 @@ class RightsGrantsManageView(RACAdminMixin, CreateView):
         else:
             return render(request,'rights/manage.html', {'granted_formset': formset})
 
-class RightsDetailView(DonorOrgReadAccessMixin, DetailView):
+class RightsDetailView(OrgReadViewMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
+    pk_url_kwarg = 'rights_pk'
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)

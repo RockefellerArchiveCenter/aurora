@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 from decimal import *
 import json
+from urlparse import urljoin
 
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
@@ -16,13 +17,12 @@ from django.views.generic import ListView, UpdateView, CreateView, DetailView, T
 from orgs.models import Archives, Organization, User, BagItProfile
 from orgs.form import *
 from orgs.authmixins import *
-from orgs.formatmixins import CSVResponseMixin
 
 from rights.models import RightsStatement
 
 from transfer_app.mixins import JSONResponseMixin
 
-class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
+class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
     model = Organization
     fields = ['name', 'acquisition_type']
@@ -37,18 +37,24 @@ class OrganizationCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationDetailView(RACUserMixin, DetailView):
+
+class OrganizationDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/detail.html'
     model = Organization
 
     def get_context_data(self, **kwargs):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
-        context['uploads'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).order_by('-created_time')[:15]
-        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object']).count()
+        context['uploads'] = []
+        archives = Archives.objects.filter(process_status__gte=20, organization=context['object']).order_by('-created_time')[:15]
+        for archive in archives:
+            archive.bag_info_data = archive.get_bag_data()
+            context['uploads'].append(archive)
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization=context['object']).count()
         return context
 
-class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
+
+class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
     model =         Organization
     fields =        ['is_active','name', 'acquisition_type']
@@ -63,22 +69,8 @@ class OrganizationEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-class OrganizationTransfersView(RACUserMixin, ListView):
-    template_name = 'orgs/all_transfers.html'
-    def get_context_data(self,**kwargs):
-        context = super(OrganizationTransfersView, self).get_context_data(**kwargs)
-        context['organization'] = self.organization
-        context['meta_page_title'] = self.organization.name + ' transfers'
-        return context
 
-    def get_queryset(self):
-        self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        archives = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
-        return archives
-
-class OrganizationListView(RACUserMixin, ListView):
+class OrganizationListView(ArchivistMixin, ListView):
 
     template_name = 'orgs/list.html'
     model = Organization
@@ -88,25 +80,8 @@ class OrganizationListView(RACUserMixin, ListView):
         context['meta_page_title'] = 'Organizations'
         return context
 
-class OrganizationTransferDataView(CSVResponseMixin, RACUserMixin, View):
 
-    def get(self, request, *args, **kwargs):
-        data = [('Bag Name','Status','Size','Upload Time','Errors')]
-        self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-        transfers = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
-        for transfer in transfers:
-            transfer_errors = transfer.get_errors()
-            errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
-
-            data.append((
-                transfer.bag_or_failed_name(),
-                transfer.process_status,
-                transfer.machine_file_size,
-                transfer.machine_file_upload_time,
-                errors))
-        return self.render_to_csv(data)
-
-class UsersListView(RACUserMixin, ListView):
+class UsersListView(ArchivistMixin, ListView):
     template_name = 'orgs/users/list.html'
     model = User
 
@@ -130,7 +105,8 @@ class UsersListView(RACUserMixin, ListView):
 
         return context
 
-class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
+
+class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/users/update.html'
     model = User
     fields = ['is_new_account']
@@ -142,7 +118,8 @@ class UsersCreateView(RACAdminMixin, SuccessMessageMixin, CreateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersDetailView(SelfOrSuperUserMixin, DetailView):
+
+class UsersDetailView(OrgReadViewMixin, DetailView):
     template_name = 'orgs/users/detail.html'
     model = User
     def get_context_data(self, **kwargs):
@@ -156,21 +133,18 @@ class UsersDetailView(SelfOrSuperUserMixin, DetailView):
         context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).count()
         return context
 
-class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
+
+class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/users/update.html'
     model = User
     page_title = "Edit User"
     success_message = "Your changes have been saved!"
 
     def get_form_class(self):
-        return (RACSuperUserUpdateForm if self.if_editing_staffer() else OrgUserUpdateForm)
-
-    def if_editing_staffer(self):
-        return (True if self.object.username[:2] == "va" else False)
+        return (RACSuperUserUpdateForm if self.object.is_staff else OrgUserUpdateForm)
 
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
-        context['editing_staffer'] = self.if_editing_staffer()
         context['page_title'] = "Edit User"
         context['meta_page_title'] = "Edit User"
         return context
@@ -178,42 +152,12 @@ class UsersEditView(RACAdminMixin, SuccessMessageMixin, UpdateView):
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.object.pk})
 
-class UsersTransfersView(RACUserMixin, ListView):
-    template_name = 'orgs/all_transfers.html'
-    def get_context_data(self,**kwargs):
-        context = super(UsersTransfersView, self).get_context_data(**kwargs)
-        context['user'] = self.user
-        context['organization'] = self.user.organization
-        context['meta_page_title'] = 'My Transfers'
-        return context
-
-    def get_queryset(self):
-        self.user = get_object_or_404(User, pk=self.kwargs['pk'])
-        archives = Archives.objects.filter(user_uploaded=self.user).order_by('-created_time')
-        for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
-        return archives
 
 class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     template_name = 'orgs/users/password_change.html'
     model = User
     success_message = "New password saved."
     form_class = UserPasswordChangeForm
-
-    # def post(self, request, *args, **kwargs):
-    #     from django.core.exceptions import ValidationError
-    #     form_class = self.get_form_class()
-    #     form = self.get_form(form_class)
-
-    #     try:
-    #         if form.is_valid():
-    #             return self.form_valid(form)
-    #         else:
-    #             return self.form_invalid(form)
-    #     except ValidationError as e:
-    #         print e
-
-    #     return self.form_invalid(form)
 
     def get_context_data(self,**kwargs):
         context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
@@ -278,22 +222,25 @@ class BagItProfileManageView(View):
                 if formset.is_valid():
                     formset.save()
                 else:
+                    print formset.errors
                     return render(request, self.template_name, {
+                        'organization': bagit_profile.applies_to_organization,
                         'form': bagit_profile,
                         'bag_info_formset': bag_info_formset,
                         'manifests_formset': manifests_formset,
                         'serialization_formset': serialization_formset,
                         'version_formset': version_formset,
-                        'tag_manifests_formset': tag_manifests_formset,
+                        'tag_manifests_formset': tag_files_formset,
                         'tag_files_formset': tag_files_formset,
                         'meta_page_title': 'BagIt Profile',
                         })
-            bagit_profile.version = bagit_profile.version + Decimal(0.1)
-            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(reverse('bagit-profiles-json', args=(bagit_profile.applies_to_organization.pk, bagit_profile.pk)))
+            bagit_profile.version = bagit_profile.version + Decimal(1)
+            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(urljoin(reverse('organization-bagit-profiles', args={bagit_profile.applies_to_organization.pk}), '{}.json'.format(bagit_profile.pk)))
             bagit_profile.save()
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
             'form': form,
+            'organization': form.applies_to_organization,
             'bag_info_formset': BagItProfileBagInfoFormset(request.POST, prefix='bag_info'),
             'manifests_formset': ManifestsRequiredFormset(request.POST, prefix='manifests'),
             'serialization_formset': AcceptSerializationFormset(request.POST, prefix='serialization'),
@@ -303,72 +250,7 @@ class BagItProfileManageView(View):
             'meta_page_title': 'BagIt Profile',
             })
 
-class BagItProfileJSONView(JSONResponseMixin, TemplateView):
-
-    def render_to_response(self, context, **kwargs):
-        obj = get_object_or_404(BagItProfile,pk=context['profile_pk'])
-        bag_info_obj = BagItProfileBagInfo.objects.filter(bagit_profile=obj)
-        manifests_obj = ManifestsRequired.objects.filter(bagit_profile=obj)
-        serialization_obj = AcceptSerialization.objects.filter(bagit_profile=obj)
-        version_obj = AcceptBagItVersion.objects.filter(bagit_profile=obj)
-        tag_manifests_obj = TagManifestsRequired.objects.filter(bagit_profile=obj)
-        tag_files_obj = TagFilesRequired.objects.filter(bagit_profile=obj)
-
-        resp = {}
-        resp['BagIt-Profile-Info'] = {}
-        resp['BagIt-Profile-Info']['BagIt-Profile-Identifier'] = getattr(obj, 'bagit_profile_identifier', None)
-        resp['BagIt-Profile-Info']['Source-Organization'] = getattr(obj, 'source_organization.name', None)
-        resp['BagIt-Profile-Info']['External-Description'] = getattr(obj, 'external_descripton', None)
-        resp['BagIt-Profile-Info']['Version'] = getattr(obj, 'version', None)
-        resp['BagIt-Profile-Info']['Contact-Name'] = getattr(obj, 'contact_name', None)
-        resp['BagIt-Profile-Info']['Contact-Email'] = getattr(obj, 'contact_email', None)
-        resp['BagIt-Profile-Info']['Contact-Phone'] = getattr(obj, 'contact_phone', None)
-
-        resp['Allow-Fetch.txt'] = getattr(obj, 'allow_fetch', None)
-        resp['Serialization'] = getattr(obj, 'serialization', None)
-
-        resp['Bag-Info'] = {}
-        for bi in bag_info_obj:
-            resp['Bag-Info'][bi.get_field_display()] = {}
-            resp['Bag-Info'][bi.get_field_display()]['required'] = bi.required
-            resp['Bag-Info'][bi.get_field_display()]['repeatable'] = bi.repeatable
-            resp['Bag-Info'][bi.get_field_display()]['values'] = []
-            values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=bi)
-            for v in values:
-                resp['Bag-Info'][bi.get_field_display()]['values'].append(v.values)
-
-        resp['Manifests-Required'] = []
-        for m in manifests_obj:
-            resp['Manifests-Required'].append(m.name)
-
-        resp['Accept-Serialization'] = []
-        for s in serialization_obj:
-            resp['Accept-Serialization'].append(s.name)
-
-        resp['Accept-BagIt-Version'] = []
-        for v in version_obj:
-            resp['Accept-BagIt-Version'].append(v.name)
-
-        resp['Tag-Manifests-Required'] = []
-        for tm in tag_manifests_obj:
-            resp['Tag-Manifests-Required'].append(tm.name)
-
-        resp['Tag-Files-Required'] = []
-        for tf in tag_files_obj:
-            resp['Tag-Files-Required'].append(tf.name)
-
-        def clean_empty(d):
-            if not isinstance(d, (dict, list)):
-                return d
-            if isinstance(d, list):
-                return sorted([v for v in (clean_empty(v) for v in d) if v is not None])
-            return {k: v for k, v in ((k, clean_empty(v)) for k, v in d.items()) if v is not None}
-
-        resp = clean_empty(resp)
-
-        return self.render_to_json_response(resp, **kwargs)
-
-class BagItProfileAPIAdminView(RACAdminMixin, JSONResponseMixin, TemplateView):
+class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
     def render_to_response(self, context, **kwargs):
         if not self.request.is_ajax():

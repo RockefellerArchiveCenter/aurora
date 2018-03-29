@@ -1,5 +1,7 @@
 # Aurora
 
+[![Build status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=master)](https://travis-ci.org/RockefellerArchiveCenter)
+
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
 ## Installation
@@ -10,6 +12,74 @@ Aurora is a Django web application that can receive, virus check and validate tr
 4.  For a local development server run `python project_electron/manage.py runserver`
 
 Application functionality currently assumes a SLES server and a particular LDAP configuration. Future development will include improving the portability of the application.
+
+## User groups and permissions
+
+Aurora implements the following user groups and associated permissions:
+
+### All Users
+
+All users have a few basic permissions:
+
+*  View all own organization transfers
+*  View all own transfers
+*  View dashboard for own organization
+*  View rights statements for own organization
+*  View BagIt Profile for own organization
+*  View own organization profile
+*  View own profile
+*  Change own password
+
+### Archivist Users
+
+In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
+
+#### All Archivists
+*  View all transfers
+*  View all organizations
+*  View all organization profiles
+*  View all rights statements
+*  View all BagIt Profiles
+*  View appraisal queue
+*  View accessioning queue
+
+#### Appraisal Archivists
+
+In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+
+#### Accessioning Archivists
+
+In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
+
+*  Create accession records
+
+#### Managing Archivists
+
+In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+*  Create accession records
+*  Add/edit organizations
+*  Add/edit users
+*  Add/edit rights statements
+*  Add/edit bag profiles
+
+#### System Administrator
+
+In addition to the permissions of **All Archivists**, System Administrators have the following additional permissions:
+
+*  Accept or reject transfers
+*  Add appraisal notes to transfers
+*  Create accession records
+*  Add/edit organizations
+*  Add/edit users
+*  Add/edit rights statements
+*  Add/edit bag profiles
+*  Change system settings
 
 ## Scripts
 
