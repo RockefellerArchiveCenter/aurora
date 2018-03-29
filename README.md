@@ -1,5 +1,7 @@
 # Aurora
 
+[![Build status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=master)](https://travis-ci.org/RockefellerArchiveCenter)
+
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
 ## Installation
