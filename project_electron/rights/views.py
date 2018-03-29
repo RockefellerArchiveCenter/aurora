@@ -42,7 +42,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(bagit_profile__in=BagItProfile.objects.filter(applies_to_organization=context['organization']), field='record_type'))
         applies_to_type_choices = []
         for v in values:
-            record_type = RecordType.objects.get_or_create(name=v.values)[0]
+            record_type = RecordType.objects.get_or_create(name=v.name)[0]
             applies_to_type_choices.append((record_type.pk, record_type.name))
         context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement, initial={'applies_to_type': ['grant records', 'communications and publications']})
         return context
@@ -122,7 +122,6 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
 class RightsDetailView(OrgReadViewMixin, DetailView):
     template_name = 'rights/detail.html'
     model = RightsStatement
-    pk_url_kwarg = 'rights_pk'
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)
