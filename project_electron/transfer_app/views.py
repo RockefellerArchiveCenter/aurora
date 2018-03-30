@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, View, DetailView
 from django.db.models import Sum
 from django.shortcuts import render
 
-from orgs.models import Archives, Organization, User
+from orgs.models import Archives, Organization, User, BagInfoMetadata
 from rights.models import RightsStatement
 
 from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
@@ -34,23 +34,38 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['upload_count_by_month'] = []
         data['upload_size_by_month'] = []
         data['upload_size_by_year'] = []
+        data['record_types_by_month'] = []
+        data['record_type_counts_by_month'] = []
+        data['record_types_by_year'] = []
+        data['record_type_counts_by_year'] = []
 
         today = datetime.date.today()
         current = today - relativedelta(years=1)
 
         while current <= today:
             data['month_labels'].append(current.strftime("%B"))
-            upload_count = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month).count()
+            archives = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month)
+            upload_count = archives.count()
             data['upload_count_by_month'].append(upload_count)
-            upload_size = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month).aggregate(Sum('machine_file_size'))
+            upload_size = archives.aggregate(Sum('machine_file_size'))
             if upload_size['machine_file_size__sum']:
                 data['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000)
             else:
                 data['upload_size_by_month'].append(0)
+            labels = BagInfoMetadata.objects.filter(archive__in=archives).values_list('record_type', flat=True)
+            month_record_types = []
+            month_record_counts = []
+            for label in set(labels):
+                number = BagInfoMetadata.objects.filter(archive__in=archives, record_type=label).count()
+                month_record_types.append(label)
+                month_record_counts.append(number)
+            data['record_types_by_month'].append(month_record_types)
+            data['record_type_counts_by_month'].append(month_record_counts)
             current += relativedelta(months=1)
 
-        data['upload_count_by_year'] = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year).count()
-        year_upload_size = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year).aggregate(Sum('machine_file_size'))
+        year_archives = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year)
+        data['upload_count_by_year'] = year_archives.count()
+        year_upload_size = year_archives.aggregate(Sum('machine_file_size'))
         if year_upload_size['machine_file_size__sum']:
             data['upload_size_by_year'] = round(year_upload_size['machine_file_size__sum']/1000000, 2)
         else:
@@ -59,6 +74,17 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['average_count'] = sum(data['upload_count_by_month'])/len(data['upload_count_by_month'])
         data['size_trend'] = round((data['upload_size_by_month'][-1] - data['average_size'])/100, 2)
         data['count_trend'] = round((data['upload_count_by_month'][-1] - data['average_count'])/100, 2)
+        year_labels = BagInfoMetadata.objects.filter(archive__in=year_archives).values_list('record_type', flat=True)
+        year_record_types = []
+        year_record_counts = []
+        for label in set(year_labels):
+            number = BagInfoMetadata.objects.filter(archive__in=year_archives, record_type=label).count()
+            year_record_types.append(label)
+            year_record_counts.append(number)
+        data['record_types_by_year'].append(year_record_types)
+        data['record_type_counts_by_year'].append(year_record_counts)
+        print data['record_types_by_year']
+        print data['record_type_counts_by_year']
         return data
 
     def get_context_data(self, **kwargs):
