@@ -64,13 +64,13 @@
               </div>
         	    {% endfor %}
               <div>
-      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default pull-right"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
+      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
       	       </div>
             {% endif %}
           </div>
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a type="reset" class="btn btn-danger" href="{% url 'app_home' %}">Cancel</a>
+            <a type="reset" class="btn btn-danger" href="{% url 'orgs-detail' organization.pk %}">Cancel</a>
           </div>
         </form>
       </div>
