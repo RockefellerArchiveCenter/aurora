@@ -104,45 +104,18 @@
     //-------------
     //- DONUT CHART -
     //-------------
-    var pieChartCanvas = $('#{{k}}RecordTypesPieChart').get(0).getContext('2d')
-    var pieChart       = new Chart(pieChartCanvas)
-    var {{k}}PieData        = [
-      {
-        value    : 700,
-        color    : '#f56954',
-        highlight: '#f56954',
-        label    : 'Chrome'
-      },
-      {
-        value    : 500,
-        color    : '#00a65a',
-        highlight: '#00a65a',
-        label    : 'IE'
-      },
-      {
-        value    : 400,
-        color    : '#f39c12',
-        highlight: '#f39c12',
-        label    : 'FireFox'
-      },
-      {
-        value    : 600,
-        color    : '#00c0ef',
-        highlight: '#00c0ef',
-        label    : 'Safari'
-      },
-      {
-        value    : 300,
-        color    : '#3c8dbc',
-        highlight: '#3c8dbc',
-        label    : 'Opera'
-      },
-      {
-        value    : 100,
-        color    : '#d2d6de',
-        highlight: '#d2d6de',
-        label    : 'Navigator'
-      }
+    var yearPieChartCanvas = $('#{{k}}YearRecordTypesPieChart').get(0).getContext('2d')
+    var yearPieChart       = new Chart(yearPieChartCanvas)
+    var {{k}}YearPieData        = [
+      {% for record_type in org.record_types_by_year %}
+            {
+              value    : {{record_type.value}},
+              color    : "{{record_type.color}}",
+              highlight: "{{record_type.color}}",
+              label    : "{{record_type.label}}"
+            }{% if not forloop.last %},{%endif%}
+
+      {% endfor %}
     ]
     var pieOptions     = {
       segmentShowStroke    : true,
@@ -156,7 +129,7 @@
       responsive           : true,
       maintainAspectRatio  : true,
     }
-    var chart = pieChart.Doughnut({{k}}PieData, pieOptions)
+    var chart = yearPieChart.Doughnut({{k}}YearPieData, pieOptions)
 
     {% endfor %}
 
@@ -166,6 +139,7 @@
     $('#orgName').text(org_name);
 
   })
+
 
 </script>
 {% endblock %}
