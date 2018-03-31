@@ -167,7 +167,6 @@
 		}
   }
   function deleteForm(btn, prefix) {
-		// <input type="hidden" name="nested_bag_info-0_bagitprofilebaginfovalues_set-0-DELETE" id="id_nested_bag_info-0_bagitprofilebaginfovalues_set-0-DELETE" value="true">
     form = $(btn).closest('.dynamic-form')
 		inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
 		$(form).append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
