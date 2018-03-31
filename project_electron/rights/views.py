@@ -57,7 +57,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             applies_to_type_choices.append((record_type.pk, record_type.name))
 
         if not self.kwargs.get('pk'):
-            form = RightsForm(request.POST)
+            form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices)
             if form.is_valid():
                 rights_statement = form.save(commit=False)
                 rights_statement.organization = organization

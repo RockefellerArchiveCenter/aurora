@@ -29,7 +29,7 @@ class RightsForm(forms.ModelForm):
 		if applies_to_type_choices:
 			self.fields['applies_to_type'].choices = list(applies_to_type_choices)
 			self.fields['applies_to_type'].widget.choices = list(applies_to_type_choices)
-			if kwargs['instance']:
+			if 'instance' in kwargs:
 				self.initial['applies_to_type'] = kwargs['instance'].applies_to_type.all()
 		else:
 			self.fields['applies_to_type'].choices = []
