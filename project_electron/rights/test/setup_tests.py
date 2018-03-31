@@ -12,7 +12,6 @@ from transfer_app.lib.bag_checker import bagChecker
 
 from orgs.models import Archives, Organization
 
-
 def create_test_orgs():
     orgs = orgs.test.setup_tests.create_test_orgs()
     # add record types
