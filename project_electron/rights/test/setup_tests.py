@@ -2,15 +2,16 @@
 from __future__ import unicode_literals
 import os
 import pwd
+import string
+import random
 
 from django.conf import settings
-
-from orgs.test.setup_tests import *
 from transfer_app.lib.transfer_routine import *
 from transfer_app.lib.files_helper import *
 from transfer_app.lib.bag_checker import bagChecker
 
-from orgs.models import Archives
+from orgs.models import Archives, Organization
+
 
 def create_test_orgs():
     orgs = orgs.test.setup_tests.create_test_orgs()

@@ -6,12 +6,6 @@ import pwd
 from django.test import TransactionTestCase
 from django.conf import settings
 
-from orgs.test.setup_tests import *
-from transfer_app.lib.transfer_routine import *
-from transfer_app.lib.files_helper import *
-from transfer_app.lib.bag_checker import bagChecker
-
-from orgs.models import Archives
 
 class RightsTestCase(TransactionTestCase):
     def setUp(self):
@@ -20,7 +14,20 @@ class RightsTestCase(TransactionTestCase):
 
     def test_rights(self):
         # create
-        # model methods
+            # model methods
+                # get_rights_info_object
+                # get_rights_granted_objects
         # edit
         # delete
         pass
+
+    def test_rights_views(self):
+        pass
+        # create
+        # edit
+        # delete
+            # non ajax requests
+            # action != delete
+
+    def tearDown(self):
+        orgs.test.setup_tests.delete_test_orgs(self.orgs)
