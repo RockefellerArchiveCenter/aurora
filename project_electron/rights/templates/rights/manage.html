@@ -122,7 +122,7 @@
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $('.dynamic-form:first').clone(true).get(0);
     $(row).removeAttr('id').insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
-    $(row).children().children().children().each(function() {
+    $(row).find('[name^='+prefix+']').each(function() {
 	    updateElementIndex(this, prefix, formCount);
 	    $(this).val('');
     });
@@ -155,7 +155,7 @@
 	    return addForm(this, 'rightsstatementrightsgranted_set');
     });
     $('.delete-row').click(function() {
-	    return deleteForm(this, 'form');
+	    return deleteForm(this, 'rightsstatementrightsgranted_set');
     })
 
   });
