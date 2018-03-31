@@ -19,7 +19,7 @@ class RightsForm(forms.ModelForm):
 		}
 		widgets = {
 			'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
-			'applies_to_type': forms.widgets.CheckboxSelectMultiple(),
+			'applies_to_type': forms.widgets.CheckboxSelectMultiple(attrs={'class': 'list-unstyled'}),
 		}
 
 	def __init__(self, *args, **kwargs):

@@ -44,18 +44,35 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         for v in values:
             record_type = RecordType.objects.get_or_create(name=v.name)[0]
             applies_to_type_choices.append((record_type.pk, record_type.name))
-        context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement, initial={'applies_to_type': ['grant records', 'communications and publications']})
+        context['basis_form'] = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
         return context
 
     def post(self, request, *args, **kwargs):
         applies_to_type = request.POST.getlist('applies_to_type')
-        if self.kwargs.get('pk'):
-            rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
-            form = RightsForm(request.POST, instance=rights_statement)
-        else:
+        organization = Organization.objects.get(pk=self.request.GET.get('org'))
+        values = BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(bagit_profile__in=BagItProfile.objects.filter(applies_to_organization=organization), field='record_type'))
+        applies_to_type_choices = []
+        for v in values:
+            record_type = RecordType.objects.get_or_create(name=v.name)[0]
+            applies_to_type_choices.append((record_type.pk, record_type.name))
+
+        if not self.kwargs.get('pk'):
             form = RightsForm(request.POST)
-            rights_statement = form.save(commit=False)
-            rights_statement.organization = Organization.objects.get(pk=request.GET.get('org'))
+            if form.is_valid():
+                rights_statement = form.save(commit=False)
+                rights_statement.organization = organization
+                rights_statement.save()
+            else:
+                return render(request, 'rights/manage.html', {
+                    'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
+                    'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
+                    'organization': organization, 'basis_form': form})
+        else:
+            rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
+
+        for record_type in applies_to_type:
+            rights_statement.applies_to_type.clear()
+            rights_statement.applies_to_type.add(record_type)
 
         if rights_statement.rights_basis == 'Copyright':
             formset = CopyrightFormSet(request.POST, instance=rights_statement)
@@ -69,15 +86,16 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         else:
             formset = OtherFormSet(request.POST, instance=rights_statement)
             formset_key = 'other_form'
+
         if formset.is_valid():
-            rights_statement.save()
-            for record_type in applies_to_type:
-                rights_statement.applies_to_type.clear()
-                rights_statement.applies_to_type.add(record_type)
             formset.save()
             return redirect('rights-grants', rights_statement.pk)
         else:
-            return render(request,'rights/manage.html', {formset_key: formset, 'basis_form': form})
+            organization = Organization.objects.get(pk=self.request.GET.get('org'))
+            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
+            return render(request, 'rights/manage.html', {
+                'organization': organization, formset_key: formset, 'basis_form': basis_form})
+
 
 class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
@@ -92,8 +110,8 @@ class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView
                 obj.delete()
                 resp['success'] = 1
 
-
         return self.render_to_json_response(resp, **kwargs)
+
 
 class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'
@@ -112,12 +130,14 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
+        organization = rights_statement.organization
         formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
         if formset.is_valid():
             formset.save()
             return redirect('rights-detail', self.kwargs.get('pk'))
         else:
-            return render(request,'rights/manage.html', {'granted_formset': formset})
+            return render(request, 'rights/manage.html', {'organization': organization, 'granted_formset': formset})
+
 
 class RightsDetailView(OrgReadViewMixin, DetailView):
     template_name = 'rights/detail.html'
