@@ -103,7 +103,7 @@ class RightsTestCase(TransactionTestCase):
             org = random.choice(self.orgs)
             rights_statement.organization = org
             rights_statement.save()
-            self.assertTrue(len(org.rights_statements >= 1))
+            self.assertTrue(org.rights_statements)
 
         # Assign rights statements to archives
         for archive in self.archives:
