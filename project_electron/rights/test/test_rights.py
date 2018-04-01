@@ -117,9 +117,10 @@ class RightsTestCase(TransactionTestCase):
             remove_file_or_dir(archive.machine_file_path)
 
         # Delete rights statement
-        to_delete = random.choice(rights_statement)
-        to_delete.delete()
-        self.assertEqual(len(RightsStatement.objects.all()), len(RECORD_TYPES)-1)
+        previous_length = len(RightsStatement.objects.all())
+        to_delete = random.choice(RightsStatement.objects.all())
+        self.assertTrue(to_delete.delete())
+        self.assertEqual(len(RightsStatement.objects.all()), previous_length-1)
 
     def tearDown(self):
         org_setup.delete_test_orgs(self.orgs)
