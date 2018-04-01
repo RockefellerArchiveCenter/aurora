@@ -66,7 +66,16 @@ class RightsTestCase(TransactionTestCase):
         rights_info.save()
 
     def add_rights_granted(self, rights_statement):
-        pass
+        for x in xrange(random.randint(1, 2)):
+            rights_granted = RightsStatementRightsGranted(
+                rights_statement=rights_statement,
+                act=random.choice(['publish', 'disseminate','replicate', 'migrate', 'modify', 'use', 'delete']),
+                start_date=random_date(1984),
+                end_date_period=15,
+                rights_granted_note=random_string(100),
+                restriction=random.choice(['allow', 'disallow', 'conditional'])
+                )
+            rights_granted.save()
 
     def test_rights(self):
         for record_type in RECORD_TYPES:
