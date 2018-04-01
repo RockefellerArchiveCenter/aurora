@@ -8,6 +8,7 @@ import random
 import datetime
 
 from django.conf import settings
+from django.contrib.auth.models import Group
 from transfer_app.lib.transfer_routine import *
 from transfer_app.lib.files_helper import *
 from transfer_app.lib.bag_checker import bagChecker
@@ -25,10 +26,20 @@ def random_date(year):
     except ValueError:
         random_date(year)
 
+
 def create_record_types(record_types):
     # waiting for previous PR
     for type in record_types:
         pass
+
+
+def create_test_groups(names):
+    groups = []
+    for name in names:
+        group = Group(name=name)
+        group.save()
+        groups.append(group)
+    return groups
 
 
 def create_test_orgs():

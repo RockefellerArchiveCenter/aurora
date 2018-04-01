@@ -3,12 +3,14 @@ from __future__ import unicode_literals
 import os
 import pwd
 from datetime import datetime
-from django.test import TransactionTestCase
+from django.test import TransactionTestCase, RequestFactory
 from django.conf import settings
+from django.urls import reverse
 from rights.test.setup_tests import *
-from orgs.models import Archives, Organization
+from orgs.models import Archives, Organization, User
 from orgs.test import setup_tests as org_setup
 from rights.models import *
+from rights.views import *
 
 RECORD_TYPES = [
     "administrative records", "board materials",
@@ -18,9 +20,17 @@ RECORD_TYPES = [
 
 class RightsTestCase(TransactionTestCase):
     def setUp(self):
+        self.factory = RequestFactory()
         self.record_types = create_record_types(RECORD_TYPES)
         self.orgs = create_test_orgs()
         self.archives = create_test_archives(self.orgs)
+        self.groups = create_test_groups(['managing_archivists'])
+        print self.groups
+        self.user = User.objects.create_user(
+            organization=random.choice(self.orgs),
+            username='Test User', email="test@example.com",
+            )
+        self.user.groups = self.groups
 
     def create_rights_statement(self, record_type):
         rights_bases = ['Copyright', 'Statute', 'License', 'Other']
@@ -31,7 +41,7 @@ class RightsTestCase(TransactionTestCase):
         )
         rights_statement.save()
 
-    def add_rights_info(self, rights_statement):
+    def create_rights_info(self, rights_statement):
         if rights_statement.rights_basis == 'Statute':
             rights_info = RightsStatementStatute(
                 statute_citation=random_string(50),
@@ -65,7 +75,7 @@ class RightsTestCase(TransactionTestCase):
         rights_info.rights_statement = rights_statement
         rights_info.save()
 
-    def add_rights_granted(self, rights_statement):
+    def create_rights_granted(self, rights_statement):
         for x in xrange(random.randint(1, 2)):
             rights_granted = RightsStatementRightsGranted(
                 rights_statement=rights_statement,
@@ -80,11 +90,11 @@ class RightsTestCase(TransactionTestCase):
     def test_rights(self):
         for record_type in RECORD_TYPES:
             self.create_rights_statement(record_type)
-        self.assertEquals(len(RightsStatement.objects.all()), len(RECORD_TYPES))
+        self.assertEqual(len(RightsStatement.objects.all()), len(RECORD_TYPES))
 
         for rights_statement in RightsStatement.objects.all():
-            self.add_rights_info(rights_statement)
-            self.add_rights_granted(rights_statement)
+            self.create_rights_info(rights_statement)
+            self.create_rights_granted(rights_statement)
 
             # Make sure correct rights info objects were assigned
             if rights_statement.rights_basis == 'Statute':
@@ -116,25 +126,58 @@ class RightsTestCase(TransactionTestCase):
             remove_file_or_dir(os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
             remove_file_or_dir(archive.machine_file_path)
 
+        # Rights statements are cloned when assigned, so we should have more of them now
+        assigned_length = len(RightsStatement.objects.all())
+        self.assertEqual(assigned_length, len(RECORD_TYPES)+len(Archives.objects.all()))
+
+        # Test GET requests in views
+        for view in (
+                ('rights-update', RightsManageView),
+                ('rights-grants', RightsGrantsManageView),
+                ('rights-detail', RightsDetailView),
+                ('rights-add', 'RightsManageView'),
+                ):
+            rights_statement = random.choice(RightsStatement.objects.all())
+            request = self.factory.get(reverse(view[0], kwargs={"pk": rights_statement.pk}))
+            request.user = self.user
+            response = view[1].as_view()(request, pk=rights_statement.pk)
+            self.assertEqual(response.status_code, 200)
+            # test rights-detail and rights-grants get_context_data function
+
+        # Test POST requests in views
+        rights_statement = random.choice(RightsStatement.objects.all())
+
+        # Create new rights statement
+        new_request = self.factory.post(reverse('rights-add'), rights_statement)
+        new_request.user = self.user
+        update_response = RightsManageView.as_view()(new_request)
+        self.assertEqual(update_response.status_code, 200)
+
+        # Update rights statement
+        update_request = self.factory.post(reverse('rights-update', kwargs={"pk": rights_statement.pk}), rights_statement)
+        update_request.user = self.user
+        update_response = RightsManageView.as_view()(update_request, pk=rights_statement.pk)
+        self.assertEqual(update_response.status_code, 200)
+
+        # Add rights granted
+        grant_request = self.factory.post(reverse('rights-grants', kwargs={"pk": rights_statement.pk}), rights_statement)
+        grant_request.user = self.user
+        grant_response = RightsGrantsManageView.as_view()(grant_request, pk=rights_statement.pk)
+        self.assertEqual(grant_response.status_code, 200)
+
+        # Delete rights statements
+        delete_request = self.factory.post(reverse('rights-delete', kwargs={"pk": rights_statement.pk}), rights_statement)
+        delete_request.user = self.user
+        delete_response = RightsGrantsManageView.as_view()(delete_request, pk=rights_statement.pk, action='delete')
+        self.assertEqual(delete_response.status_code, 200)
+
+        # non ajax requests
+        # action != delete
+
         # Delete rights statement
-        previous_length = len(RightsStatement.objects.all())
         to_delete = random.choice(RightsStatement.objects.all())
         self.assertTrue(to_delete.delete())
-        self.assertEqual(len(RightsStatement.objects.all()), previous_length-1)
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length-1) # this is going to fail
 
     def tearDown(self):
         org_setup.delete_test_orgs(self.orgs)
-
-
-class RightsViewsTestCase():
-    pass
-
-    def test_rights_views(self):
-        pass
-        # Get with pk
-        # Get without pk
-        # Post with pk
-        # Post without pk
-        # delete
-            # non ajax requests
-            # action != delete
