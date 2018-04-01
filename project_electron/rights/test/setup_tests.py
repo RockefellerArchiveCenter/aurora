@@ -40,34 +40,21 @@ def create_test_orgs():
 
 
 def create_test_archives(orgs):
-    # tuple of tuples
-    bags_ref = (
-
-        ('valid_bag', ''),
-
-    )
-
+    bags_ref = ['valid_bag']
     bags = []
 
     for ref in bags_ref:
-
-        create_target_bags(ref[0], settings.TEST_BAGS_DIR, orgs[0])
-
-        # creates test bags
+        create_target_bags(ref, settings.TEST_BAGS_DIR, orgs[0])
         tr = TransferRoutine()
         tr.setup_routine()
         tr.run_routine()
         for trans in tr.transfers:
-
-            # building machine ident
             machine_file_identifier = Archives().gen_identifier(
                 trans['file_name'],
                 trans['org'],
                 trans['date'],
                 trans['time']
             )
-
-            # creates archive from dict
             archive = Archives.initial_save(
                 orgs[0],
                 None,
@@ -83,12 +70,7 @@ def create_test_archives(orgs):
             archive.organization.name = 'Ford Foundation'
             archive.organization.save()
 
-            bag = bagChecker(archive)
-            bags.append(bag)
-
-            # deleting path in processing and tmp dir
-            remove_file_or_dir(os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
-            remove_file_or_dir(archive.machine_file_path)
+            bags.append(archive)
 
     return bags
 

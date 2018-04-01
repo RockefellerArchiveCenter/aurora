@@ -107,14 +107,19 @@ class RightsTestCase(TransactionTestCase):
 
         # Assign rights statements to archives
         for archive in self.archives:
-            self.assertTrue(archive.assign_rights())
+            bag = bagChecker(archive)
+
+            # this calls assign_rights
+            self.assertTrue(bag.bag_passed_all())
+
+            # # deleting path in processing and tmp dir
+            remove_file_or_dir(os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
+            remove_file_or_dir(archive.machine_file_path)
 
         # Delete rights statement
         to_delete = random.choice(rights_statement)
         to_delete.delete()
-        self.assertTrue(len(RightsStatement.objects.all()) == len(RECORD_TYPES)-1)
-        # test there aren't orphaned things?
-        pass
+        self.assertEqual(len(RightsStatement.objects.all()), len(RECORD_TYPES)-1)
 
     def tearDown(self):
         org_setup.delete_test_orgs(self.orgs)
