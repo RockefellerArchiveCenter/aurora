@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import os
 import pwd
 import string
 import random
+import datetime
 
 from django.conf import settings
 from transfer_app.lib.transfer_routine import *
@@ -12,6 +14,16 @@ from transfer_app.lib.bag_checker import bagChecker
 from orgs.models import Archives, Organization
 from orgs.test import setup_tests as org_setup
 
+
+def random_string(length):
+    return ''.join(random.choice(string.ascii_letters) for m in range(length))
+
+
+def random_date(year):
+    try:
+        return datetime.datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
+    except ValueError:
+        random_date(year)
 
 def create_record_types(record_types):
     # waiting for previous PR

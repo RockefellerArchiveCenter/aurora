@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import os
 import pwd
-
+from datetime import datetime
 from django.test import TransactionTestCase
 from django.conf import settings
 from rights.test.setup_tests import *
@@ -32,7 +32,38 @@ class RightsTestCase(TransactionTestCase):
         rights_statement.save()
 
     def add_rights_info(self, rights_statement):
-        pass
+        if rights_statement.rights_basis == 'Statute':
+            rights_info = RightsStatementStatute(
+                statute_citation=random_string(50),
+                statute_applicable_start_date=random_date(1960),
+                statute_applicable_end_date=random_date(1990),
+                statute_end_date_period=20,
+                statute_note=random_string(40)
+            )
+        elif rights_statement.rights_basis == 'Other':
+            rights_info = RightsStatementOther(
+                other_rights_basis=random.choice(['Donor', 'Policy']),
+                other_rights_applicable_start_date=random_date(1978),
+                other_rights_end_date_period=20,
+                other_rights_end_date_open=True,
+                other_rights_note=random_string(50)
+            )
+        elif rights_statement.rights_basis == 'Copyright':
+            rights_info = RightsStatementCopyright(
+                copyright_status=random.choice(['copyrighted', 'public domain', 'unknown']),
+                copyright_applicable_start_date=random_date(1950),
+                copyright_end_date_period=40,
+                copyright_note=random_string(70)
+            )
+        elif rights_statement.rights_basis == 'License':
+            rights_info = RightsStatementLicense(
+                license_applicable_start_date=random_date(1980),
+                license_start_date_period=10,
+                license_end_date_open=True,
+                license_note=random_string(60)
+            )
+        rights_info.rights_statement = rights_statement
+        rights_info.save()
 
     def add_rights_granted(self, rights_statement):
         pass
@@ -40,21 +71,36 @@ class RightsTestCase(TransactionTestCase):
     def test_rights(self):
         for record_type in RECORD_TYPES:
             self.create_rights_statement(record_type)
-        self.assertTrue(len(RightsStatement.objects.all()) == len(RECORD_TYPES))
+        self.assertEquals(len(RightsStatement.objects.all()), len(RECORD_TYPES))
 
         for rights_statement in RightsStatement.objects.all():
             self.add_rights_info(rights_statement)
             self.add_rights_granted(rights_statement)
-            self.assertTrue(len(rights_statement.get_rights_info_object()) == 1)
-            self.assertTrue(len(rights_statement.get_rights_granted_object()) == 2)
 
+            # Make sure correct rights info objects were assigned
+            if rights_statement.rights_basis == 'Statute':
+                self.assertIsInstance(rights_statement.get_rights_info_object(), RightsStatementStatute)
+            elif rights_statement.rights_basis == 'Other':
+                self.assertIsInstance(rights_statement.get_rights_info_object(), RightsStatementOther)
+            elif rights_statement.rights_basis == 'Copyright':
+                self.assertIsInstance(rights_statement.get_rights_info_object(), RightsStatementCopyright)
+            elif rights_statement.rights_basis == 'License':
+                self.assertIsInstance(rights_statement.get_rights_info_object(), RightsStatementLicense)
+
+            # Make sure RightsGranted objects were created
+            self.assertIsNot(False, rights_statement.get_rights_granted_objects())
+
+            # Assign rights statements to organization
             org = random.choice(self.orgs)
             rights_statement.organization = org
+            rights_statement.save()
             self.assertTrue(len(org.rights_statements >= 1))
 
+        # Assign rights statements to archives
         for archive in self.archives:
             self.assertTrue(archive.assign_rights())
 
+        # Delete rights statement
         to_delete = random.choice(rights_statement)
         to_delete.delete()
         self.assertTrue(len(RightsStatement.objects.all()) == len(RECORD_TYPES)-1)
