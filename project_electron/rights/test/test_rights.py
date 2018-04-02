@@ -28,7 +28,7 @@ class RightsTestCase(TransactionTestCase):
         self.groups = create_test_groups(['managing_archivists'])
         self.user = User.objects.create_user(
             organization=random.choice(self.orgs),
-            username='', email="test@example.com",
+            username=settings.TEST_USER['USERNAME'], email="test@example.com",
             )
         self.user.groups = self.groups
 
@@ -131,7 +131,7 @@ class RightsTestCase(TransactionTestCase):
         self.assertEqual(assigned_length, len(RECORD_TYPES)+len(Archives.objects.all()))
 
         # Test GET views
-        self.client.login(username='', password='')
+        self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
         for view in ['rights-update', 'rights-grants', 'rights-detail']:
             rights_statement = random.choice(RightsStatement.objects.all())
             response = self.client.get(reverse(view, kwargs={'pk': rights_statement.pk}))
