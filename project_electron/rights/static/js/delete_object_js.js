@@ -19,8 +19,8 @@ $(function () {
   			if (len_rows <= 1){
   				$(table).fadeOut().remove();
 
-  				$('.has-no-objects-p').closest('.box-body').removeClass('no-padding');
-  				$('.has-no-objects-p').fadeIn()
+  				$('.has-no-' + object_type + '-p').closest('.box-body').removeClass('no-padding');
+  				$('.has-no-' + object_type + '-p').show()
           $('.'+object_type+'-add').fadeIn();
   			}
   		} else {
