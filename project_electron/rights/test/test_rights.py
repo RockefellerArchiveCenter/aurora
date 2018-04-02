@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import os
 import pwd
 from datetime import datetime
-from django.test import TransactionTestCase, RequestFactory
+from django.test import TransactionTestCase, RequestFactory, Client
 from django.conf import settings
 from django.urls import reverse
 from rights.test.setup_tests import *
@@ -25,12 +25,12 @@ class RightsTestCase(TransactionTestCase):
         self.orgs = create_test_orgs()
         self.archives = create_test_archives(self.orgs)
         self.groups = create_test_groups(['managing_archivists'])
-        print self.groups
         self.user = User.objects.create_user(
             organization=random.choice(self.orgs),
             username='Test User', email="test@example.com",
             )
         self.user.groups = self.groups
+        self.factory.force_login(self.user)
 
     def create_rights_statement(self, record_type):
         rights_bases = ['Copyright', 'Statute', 'License', 'Other']
