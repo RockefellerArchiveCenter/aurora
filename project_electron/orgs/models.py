@@ -474,7 +474,7 @@ class Archives(models.Model):
         try:
             bag_data = self.get_bag_data()
             RightsStatement = apps.get_model('rights', 'RightsStatement')
-            rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type=bag_data['record_type'], archive__isnull=True)
+            rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type__name=bag_data['record_type'], archive__isnull=True)
             for statement in rights_statements:
                 rights_info = statement.get_rights_info_object()
                 rights_granted = statement.get_rights_granted_objects()
