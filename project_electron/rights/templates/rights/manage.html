@@ -14,6 +14,7 @@
           {% csrf_token %}
           <div class="box-body">
             {{ basis_form.management_form }}
+            {{ basis_form.non_form_errors }}
             {% include 'rights/form_fields.html' with form=basis_form %}
             {% for field in basis_form.hidden_fields %}
               {{field}}
@@ -64,13 +65,13 @@
               </div>
         	    {% endfor %}
               <div>
-      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default pull-right"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
+      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
       	       </div>
             {% endif %}
           </div>
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>
-            <a type="reset" class="btn btn-danger" href="{% url 'app_home' %}">Cancel</a>
+            <a type="reset" class="btn btn-danger" href="{% url 'orgs-detail' organization.pk %}">Cancel</a>
           </div>
         </form>
       </div>
@@ -104,15 +105,11 @@
     if (formsets[basis]) {
       $('#' + formsets[basis]).show();
     }
-
   }
 
   function updateElementIndex(el, prefix, ndx) {
-    console.log(el)
 		var id_regex = new RegExp('(' + prefix + '-\\d+)');
-    console.log(id_regex)
 		var replacement = prefix + '-' + ndx;
-    console.log(replacement)
 		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
@@ -121,8 +118,9 @@
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $('.dynamic-form:first').clone(true).get(0);
-    $(row).removeAttr('id').insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
-    $(row).children().children().children().each(function() {
+    updateElementIndex(row, prefix, formCount)
+    $(row).insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
+    $(row).find('[name^='+prefix+']').each(function() {
 	    updateElementIndex(this, prefix, formCount);
 	    $(this).val('');
     });
@@ -130,21 +128,14 @@
 	    deleteForm(this, prefix);
     });
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-    return false;
   }
 
   function deleteForm(btn, prefix) {
-    $(btn).parents('.dynamic-form').remove();
-    var forms = $('.dynamic-form');
+    form = $(btn).closest('.dynamic-form')
+		inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
+		$(form).children().append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
-    for (var i=0, formCount=forms.length; i<formCount; i++) {
-	    $(forms.get(i)).children().not(':last').children().each(function() {
-	        updateElementIndex(this, prefix, i);
-	    });
-    }
-    return false;
   }
-
 
   $(document).ready(function() {
     // active formset changer
@@ -155,7 +146,7 @@
 	    return addForm(this, 'rightsstatementrightsgranted_set');
     });
     $('.delete-row').click(function() {
-	    return deleteForm(this, 'form');
+	    return deleteForm(this, 'rightsstatementrightsgranted_set');
     })
 
   });
