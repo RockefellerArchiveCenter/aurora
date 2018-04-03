@@ -3,7 +3,8 @@ from __future__ import unicode_literals
 import os
 import pwd
 from datetime import datetime
-from django.test import TransactionTestCase, RequestFactory, Client
+from urlparse import urljoin
+from django.test import TestCase, RequestFactory, Client
 from django.conf import settings
 from django.urls import reverse
 from rights.test.setup_tests import *
@@ -11,18 +12,20 @@ from orgs.models import Archives, Organization, User
 from orgs.test import setup_tests as org_setup
 from rights.models import *
 from rights.views import *
+from rights.forms import *
 
-RECORD_TYPES = [
+record_types = [
     "administrative records", "board materials",
     "communications and publications", "grant records",
     "annual reports"]
+rights_bases = ['Copyright', 'Statute', 'License', 'Other']
 
 
-class RightsTestCase(TransactionTestCase):
+class RightsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.factory = RequestFactory()
-        self.record_types = create_record_types(RECORD_TYPES)
+        self.record_types = create_record_types(record_types)
         self.orgs = create_test_orgs()
         self.archives = create_test_archives(self.orgs)
         self.groups = create_test_groups(['managing_archivists'])
@@ -33,13 +36,12 @@ class RightsTestCase(TransactionTestCase):
         self.user.groups = self.groups
 
     def create_rights_statement(self, record_type):
-        rights_bases = ['Copyright', 'Statute', 'License', 'Other']
         rights_statement = RightsStatement(
             organization=random.choice(self.orgs),
-            applies_to_type=record_type,
             rights_basis=random.choice(rights_bases),
         )
         rights_statement.save()
+        rights_statement.applies_to_type.add(record_type)
 
     def create_rights_info(self, rights_statement):
         if rights_statement.rights_basis == 'Statute':
@@ -88,9 +90,9 @@ class RightsTestCase(TransactionTestCase):
             rights_granted.save()
 
     def test_rights(self):
-        for record_type in RECORD_TYPES:
+        for record_type in self.record_types:
             self.create_rights_statement(record_type)
-        self.assertEqual(len(RightsStatement.objects.all()), len(RECORD_TYPES))
+        self.assertEqual(len(RightsStatement.objects.all()), len(self.record_types))
 
         for rights_statement in RightsStatement.objects.all():
             self.create_rights_info(rights_statement)
@@ -128,7 +130,7 @@ class RightsTestCase(TransactionTestCase):
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
-        self.assertEqual(assigned_length, len(RECORD_TYPES)+len(Archives.objects.all()))
+        self.assertEqual(assigned_length, len(record_types)+len(Archives.objects.all()))
 
         # Test GET views
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
@@ -140,19 +142,38 @@ class RightsTestCase(TransactionTestCase):
         self.assertEqual(add_response.status_code, 200)
 
         # Test POST requests in views
-        # rights_statement = random.choice(RightsStatement.objects.all())
+        # TODO: replace hardcoded values with randomly generated variables
+        # TODO: something still wrong with this POST request - I don't think it's creating a RightsStatementCopyright object
+        new_request = self.client.post(urljoin(reverse('rights-add'), '?org={}'.format(self.orgs[0].pk)), {
+            'rights_basis': 'Copyright',
+            'applies_to_type': [1, ],
+            'rightsstatementcopyright_set-INITIAL_FORMS': 0,
+            'rightsstatementcopyright_set-TOTAL_FORMS': 1,
+            'rightsstatementcopyright_set-0-copyright_note': "Test note",
+            'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
+            'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
+             }
+        )
+        # we should be redirected
+        self.assertEqual(new_request.status_code, 302)
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1)
+        # check that we created a rights basis object
+        # check that note text is right
 
-        # Create new rights statement
-        # new_request = self.factory.post(reverse('rights-add'), rights_statement)
-        # new_request.user = self.user
-        # update_response = RightsManageView.as_view()(new_request)
-        # self.assertEqual(update_response.status_code, 200)
-
-        # Update rights statement
-        # update_request = self.factory.post(reverse('rights-update', kwargs={"pk": rights_statement.pk}), rights_statement)
-        # update_request.user = self.user
-        # update_response = RightsManageView.as_view()(update_request, pk=rights_statement.pk)
-        # self.assertEqual(update_response.status_code, 200)
+        rights_statement = RightsStatement.objects.all().last()
+        copyright_basis = RightsStatementCopyright.objects.all().last()
+        update_request = self.client.post(reverse('rights-update', kwargs={"pk": rights_statement.pk}), {
+            'rights_basis': 'Copyright',
+            'applies_to_type': [1, ],
+            'rightsstatementcopyright_set-INITIAL_FORMS': 1,
+            'rightsstatementcopyright_set-TOTAL_FORMS': 1,
+            'rightsstatementcopyright_set-0-id': copyright_basis.pk,
+            'rightsstatementcopyright_set-0-copyright_note': "Revised test note",
+        })
+        self.assertEqual(update_request.status_code, 200)
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1)
+        # make sure we still have one rights basis object
+        # note text is right
 
         # Add rights granted
         # grant_request = self.factory.post(reverse('rights-grants', kwargs={"pk": rights_statement.pk}), rights_statement)
@@ -172,7 +193,7 @@ class RightsTestCase(TransactionTestCase):
         # Delete rights statement
         to_delete = random.choice(RightsStatement.objects.all())
         self.assertTrue(to_delete.delete())
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length-1) # this is going to fail
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length) # this is going to fail
 
     def tearDown(self):
         org_setup.delete_test_orgs(self.orgs)

@@ -88,6 +88,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             return redirect('rights-grants', rights_statement.pk)
         else:
             organization = rights_statement.organization
+            applies_to_type_choices = self.get_applies_to_type_choices(organization)
             basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
             return render(request, self.template_name, {
                 'organization': organization, formset_data['key']: formset,

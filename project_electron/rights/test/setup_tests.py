@@ -14,6 +14,7 @@ from transfer_app.lib.files_helper import *
 from transfer_app.lib.bag_checker import bagChecker
 from orgs.models import Archives, Organization
 from orgs.test import setup_tests as org_setup
+from rights.models import RecordType
 
 
 def random_string(length):
@@ -28,9 +29,13 @@ def random_date(year):
 
 
 def create_record_types(record_types):
-    # waiting for previous PR
-    for type in record_types:
-        pass
+    objects = []
+    for record_type in record_types:
+        object = RecordType.objects.create(
+            name=record_type
+        )
+        objects.append(object)
+    return objects
 
 
 def create_test_groups(names):
