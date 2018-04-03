@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import ast
 import os
 import pwd
 from datetime import datetime
@@ -78,6 +79,7 @@ class RightsTestCase(TestCase):
         rights_info.save()
 
     def create_rights_granted(self, rights_statement):
+        all_rights_granted = []
         for x in xrange(random.randint(1, 2)):
             rights_granted = RightsStatementRightsGranted(
                 rights_statement=rights_statement,
@@ -88,6 +90,8 @@ class RightsTestCase(TestCase):
                 restriction=random.choice(['allow', 'disallow', 'conditional'])
                 )
             rights_granted.save()
+            all_rights_granted.append(rights_granted)
+        return all_rights_granted
 
     def test_rights(self):
         for record_type in self.record_types:
@@ -143,7 +147,6 @@ class RightsTestCase(TestCase):
 
         # Test POST requests in views
         # TODO: replace hardcoded values with randomly generated variables
-        # TODO: something still wrong with this POST request - I don't think it's creating a RightsStatementCopyright object
         new_request = self.client.post(urljoin(reverse('rights-add'), '?org={}'.format(self.orgs[0].pk)), {
             'rights_basis': 'Copyright',
             'applies_to_type': [1, ],
@@ -161,39 +164,45 @@ class RightsTestCase(TestCase):
         # check that note text is right
 
         rights_statement = RightsStatement.objects.all().last()
-        copyright_basis = RightsStatementCopyright.objects.all().last()
-        update_request = self.client.post(reverse('rights-update', kwargs={"pk": rights_statement.pk}), {
+        copyright_basis = rights_statement.rightsstatementcopyright_set.all()[0]
+        update_request = self.client.post(reverse('rights-update', kwargs={'pk': rights_statement.pk}), {
             'rights_basis': 'Copyright',
             'applies_to_type': [1, ],
             'rightsstatementcopyright_set-INITIAL_FORMS': 1,
             'rightsstatementcopyright_set-TOTAL_FORMS': 1,
             'rightsstatementcopyright_set-0-id': copyright_basis.pk,
             'rightsstatementcopyright_set-0-copyright_note': "Revised test note",
+            'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
+            'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
         })
-        self.assertEqual(update_request.status_code, 200)
+        # we should be redirected
+        self.assertEqual(update_request.status_code, 302)
         self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1)
-        # make sure we still have one rights basis object
-        # note text is right
+        self.assertEqual(len(rights_statement.rightsstatementcopyright_set.all()), 1)
+        self.assertEqual(rights_statement.rightsstatementcopyright_set.all()[0].copyright_note, "Revised test note")
 
-        # Add rights granted
-        # grant_request = self.factory.post(reverse('rights-grants', kwargs={"pk": rights_statement.pk}), rights_statement)
-        # grant_request.user = self.user
-        # grant_response = RightsGrantsManageView.as_view()(grant_request, pk=rights_statement.pk)
-        # self.assertEqual(grant_response.status_code, 200)
+        grant_request = self.client.post(reverse('rights-grants', kwargs={'pk': rights_statement.pk}), {
+            'rightsstatementrightsgranted_set-TOTAL_FORMS': 1,
+            'rightsstatementrightsgranted_set-INITIAL_FORMS': 1,
+            'rightsstatementrightsgranted_set-0-id': 1,
+            'rightsstatementrightsgranted_set-0-act': 'publish',
+            'rightsstatementrightsgranted_set-0-restriction': 'allow',
+            'rightsstatementrightsgranted_set-0-rights_granted_note': 'Grant note'
+        })
+        self.assertEqual(grant_request.status_code, 302)
 
         # Delete rights statements
-        # delete_request = self.factory.post(reverse('rights-delete', kwargs={"pk": rights_statement.pk}), rights_statement)
-        # delete_request.user = self.user
-        # delete_response = RightsGrantsManageView.as_view()(delete_request, pk=rights_statement.pk, action='delete')
-        # self.assertEqual(delete_response.status_code, 200)
-
-        # non ajax requests
-        # action != delete
+        delete_request = self.client.get(reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}), {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(delete_request.status_code, 200)
+        resp = ast.literal_eval(delete_request.content)
+        self.assertEqual(resp['success'], 1)
+        non_ajax_request = self.client.get(reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
+        self.assertEqual(non_ajax_request.status_code, 404)
 
         # Delete rights statement
         to_delete = random.choice(RightsStatement.objects.all())
         self.assertTrue(to_delete.delete())
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length) # this is going to fail
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length-1)
 
     def tearDown(self):
         org_setup.delete_test_orgs(self.orgs)
