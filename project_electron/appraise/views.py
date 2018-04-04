@@ -39,6 +39,10 @@ class AppraiseView(ArchivistMixin, View):
                                     rdata['success'] = 1
                                 elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
                                     appraisal_decision = 0
+                                    try:
+                                        appraisal_decision = int(request.GET['appraisal_decision'])
+                                    except Exception as e:
+                                        print e
                                 upload.process_status = (70 if appraisal_decision else 60)
                                 BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                 upload.save()
