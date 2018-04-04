@@ -7,6 +7,7 @@ from datetime import datetime
 from urlparse import urljoin
 from django.test import TestCase, RequestFactory, Client
 from django.conf import settings
+from django.core import serializers
 from django.urls import reverse
 from rights.test.setup_tests import *
 from orgs.models import Archives, Organization, User
@@ -20,6 +21,48 @@ record_types = [
     "communications and publications", "grant records",
     "annual reports"]
 rights_bases = ['Copyright', 'Statute', 'License', 'Other']
+basis_data = [
+    {
+        'rights_basis': 'Copyright',
+        'applies_to_type': [1, ],
+        'rightsstatementcopyright_set-INITIAL_FORMS': 0,
+        'rightsstatementcopyright_set-TOTAL_FORMS': 1,
+        'rightsstatementcopyright_set-0-copyright_note': "Test note",
+        'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
+        'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
+    },
+    {
+        'rights_basis': 'Statute',
+        'applies_to_type': [1, ],
+        'rightsstatementstatute_set-INITIAL_FORMS': 0,
+        'rightsstatementstatute_set-TOTAL_FORMS': 1,
+        'rightsstatementstatute_set-0-statute_note': "Test note",
+        'rightsstatementstatute_set-0-statute_citation': 'Test statute citation',
+        'rightsstatementstatute_set-0-statute_jurisdiction': 'us',
+    },
+    {
+        'rights_basis': 'License',
+        'applies_to_type': [1, ],
+        'rightsstatementlicense_set-INITIAL_FORMS': 0,
+        'rightsstatementlicense_set-TOTAL_FORMS': 1,
+        'rightsstatementlicense_set-0-license_note': "Test note",
+    },
+    {
+        'rights_basis': 'Other',
+        'applies_to_type': [1, ],
+        'rightsstatementother_set-INITIAL_FORMS': 0,
+        'rightsstatementother_set-TOTAL_FORMS': 1,
+        'rightsstatementother_set-0-other_rights_note': "Test note",
+        'rightsstatementother_set-0-other_rights_basis': 'Donor',
+    }
+]
+grant_data = {
+    'rightsstatementrightsgranted_set-TOTAL_FORMS': 1,
+    'rightsstatementrightsgranted_set-INITIAL_FORMS': 0,
+    'rightsstatementrightsgranted_set-0-act': random.choice(['publish', 'disseminate', 'replicate', 'migrate', 'modify', 'use', 'delete']),
+    'rightsstatementrightsgranted_set-0-restriction': random.choice(['allow', 'disallow', 'conditional']),
+    'rightsstatementrightsgranted_set-0-rights_granted_note': 'Grant note'
+}
 
 
 class RightsTestCase(TestCase):
@@ -145,51 +188,34 @@ class RightsTestCase(TestCase):
         add_response = self.client.get(reverse('rights-add'), {'org': self.orgs[0].pk})
         self.assertEqual(add_response.status_code, 200)
 
-        # Test POST requests in views
-        # TODO: replace hardcoded values with randomly generated variables
-        new_request = self.client.post(urljoin(reverse('rights-add'), '?org={}'.format(self.orgs[0].pk)), {
-            'rights_basis': 'Copyright',
-            'applies_to_type': [1, ],
-            'rightsstatementcopyright_set-INITIAL_FORMS': 0,
-            'rightsstatementcopyright_set-TOTAL_FORMS': 1,
-            'rightsstatementcopyright_set-0-copyright_note': "Test note",
-            'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
-            'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
-             }
-        )
-        # we should be redirected
-        self.assertEqual(new_request.status_code, 302)
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1)
-        # check that we created a rights basis object
-        # check that note text is right
+        # TODO: add param to url config
+        # Creating new RightsStatements
+        post_organization = random.choice(self.orgs)
+        new_basis_data = random.choice(basis_data)
+        new_request = self.client.post(urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
+        self.assertEqual(new_request.status_code, 302, "Request was not redirected")
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1, "Another rights statement was mistakenly created")
+        self.assertEqual(RightsStatement.objects.last().rights_basis, new_basis_data['rights_basis'], "Rights bases do not match")
 
-        rights_statement = RightsStatement.objects.all().last()
-        copyright_basis = rights_statement.rightsstatementcopyright_set.all()[0]
-        update_request = self.client.post(reverse('rights-update', kwargs={'pk': rights_statement.pk}), {
-            'rights_basis': 'Copyright',
-            'applies_to_type': [1, ],
-            'rightsstatementcopyright_set-INITIAL_FORMS': 1,
-            'rightsstatementcopyright_set-TOTAL_FORMS': 1,
-            'rightsstatementcopyright_set-0-id': copyright_basis.pk,
-            'rightsstatementcopyright_set-0-copyright_note': "Revised test note",
-            'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
-            'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
-        })
-        # we should be redirected
-        self.assertEqual(update_request.status_code, 302)
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1)
-        self.assertEqual(len(rights_statement.rightsstatementcopyright_set.all()), 1)
-        self.assertEqual(rights_statement.rightsstatementcopyright_set.all()[0].copyright_note, "Revised test note")
+        # Updating RightsStatements
+        rights_statement = RightsStatement.objects.last()
+        updated_basis_data = new_basis_data
+        if updated_basis_data['rights_basis'] == 'Other':
+            basis_set = 'rightsstatementother_set'
+            note_key = 'other_rights_note'
+        else:
+            basis_set = 'rightsstatement{}_set'.format(updated_basis_data['rights_basis'].lower())
+            note_key = '{}_note'.format(updated_basis_data['rights_basis'].lower())
+        updated_basis_data[basis_set+'-0-'+note_key] = 'Revised test note'
+        basis_objects = getattr(rights_statement, basis_set).all()
+        updated_basis_data[basis_set+'-0-id'] = basis_objects[0].pk
+        update_request = self.client.post(reverse('rights-update', kwargs={'pk': rights_statement.pk}), updated_basis_data)
+        self.assertEqual(update_request.status_code, 302, "Request was not redirected")
+        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1, "Another rights statement was mistakenly created")
 
-        grant_request = self.client.post(reverse('rights-grants', kwargs={'pk': rights_statement.pk}), {
-            'rightsstatementrightsgranted_set-TOTAL_FORMS': 1,
-            'rightsstatementrightsgranted_set-INITIAL_FORMS': 1,
-            'rightsstatementrightsgranted_set-0-id': 1,
-            'rightsstatementrightsgranted_set-0-act': 'publish',
-            'rightsstatementrightsgranted_set-0-restriction': 'allow',
-            'rightsstatementrightsgranted_set-0-rights_granted_note': 'Grant note'
-        })
-        self.assertEqual(grant_request.status_code, 302)
+        # RightsStatementRightsGranted
+        grant_request = self.client.post(reverse('rights-grants', kwargs={'pk': rights_statement.pk}), grant_data)
+        self.assertEqual(grant_request.status_code, 302, "Request was not redirected")
 
         # Delete rights statements
         delete_request = self.client.get(reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}), {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
