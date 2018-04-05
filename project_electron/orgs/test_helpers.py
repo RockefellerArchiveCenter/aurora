@@ -8,6 +8,7 @@ import random
 import string
 from django.contrib.auth.models import Group
 from orgs.models import Archives, Organization, User, BAGLogCodes
+from orgs.test import setup_tests as org_setup
 from rights.models import *
 from project_electron import config, settings
 from transfer_app.lib import files_helper as FH
@@ -31,7 +32,16 @@ def random_date(year):
         return datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
     # accounts for leap year values
     except ValueError:
+
         random_date(year)
+
+
+def random_name(prefix, suffix):
+    return "{} {} {}".format(
+        prefix,
+        random.choice(string.letters),
+        suffix
+    )
 
 
 ####################################
@@ -71,13 +81,37 @@ def create_test_groups(names=None):
 
 
 # Review
-def create_test_org():
-    test_org = Organization.objects.get_or_create(
-        name='Ford Foundation',
-        machine_name='org1'
-    )
-    print 'Test organization {org} created'.format(org=test_org[0].name)
-    return test_org[0]
+def create_test_orgs(org_count=1):
+    """creates random orgs based on org_count"""
+    if org_count < 1:
+        return False
+
+    generated_orgs = []
+    while True:
+        if len(generated_orgs) == org_count:
+            break
+        new_org_name = random_name(random.choice(org_setup.POTUS_NAMES), random.choice(org_setup.COMPANY_SUFFIX))
+        try:
+            org_exist = Organization.objects.get(name=new_org_name)
+            continue
+        except Organization.DoesNotExist as e:
+            pass
+
+        test_org = Organization(
+            name=new_org_name,
+            machine_name='org{}'.format((len(generated_orgs)+1))
+            )
+        test_org.save()
+        generated_orgs.append(test_org)
+
+        print 'Test organization {} -- {} created'.format(test_org.name, test_org.machine_name)
+
+    return generated_orgs
+
+
+def delete_test_orgs(orgs=[]):
+    for org in orgs:
+        org.delete()
 
 
 # Creates test user given a username and organization.
@@ -97,46 +131,38 @@ def create_test_user(username=None, org=None):
     return test_user
 
 
-# Review (From RightsStatement tests)
-def create_test_archives(orgs):
-    bags_ref = ['valid_bag']
-    bags = []
+# Creates Archive objects by running bags through TransferRoutine
+def create_test_archive(transfer, org):
+    machine_file_identifier = Archives().gen_identifier(
+        transfer['file_name'],
+        transfer['org'],
+        transfer['date'],
+        transfer['time']
+    )
+    archive = Archives.initial_save(
+        org,
+        None,
+        transfer['file_path'],
+        transfer['file_size'],
+        transfer['file_modtime'],
+        machine_file_identifier,
+        transfer['file_type'],
+        transfer['bag_it_name']
+    )
 
-    for ref in bags_ref:
-        create_target_bags(ref, settings.TEST_BAGS_DIR, orgs[0])
-        tr = TransferRoutine()
-        tr.setup_routine()
-        tr.run_routine()
-        for trans in tr.transfers:
-            machine_file_identifier = Archives().gen_identifier(
-                trans['file_name'],
-                trans['org'],
-                trans['date'],
-                trans['time']
-            )
-            archive = Archives.initial_save(
-                orgs[0],
-                None,
-                trans['file_path'],
-                trans['file_size'],
-                trans['file_modtime'],
-                machine_file_identifier,
-                trans['file_type'],
-                trans['bag_it_name']
-            )
+    # updating the name since the bag info reflects ford
+    archive.organization.name = 'Ford Foundation'
+    archive.organization.save()
 
-            # updating the name since the bag info reflects ford
-            archive.organization.name = 'Ford Foundation'
-            archive.organization.save()
-
-            bags.append(archive)
-
-    return bags
+    return archive
 
 
-# review (From RightsStatement tests)
+# Creates target bags to be picked up by a TransferRoutine based on a string.
+# This allows processing of bags serialized in multiple formats at once.
 def create_target_bags(target_str, test_bags_dir, org):
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
+    if len(target_bags) < 1:
+        return False
 
     # setting ownership of paths to root
     root_uid = pwd.getpwnam('root').pw_uid
@@ -147,7 +173,7 @@ def create_target_bags(target_str, test_bags_dir, org):
             path.join(test_bags_dir,bags),
             org.org_machine_upload_paths()[0]
         )
-        # rename extracted path -- add index suffix to prevent collision
+        # Renames extracted path -- add index suffix to prevent collision
         created_path = path.join(org.org_machine_upload_paths()[0], bags.split('.')[0])
         new_path = '{}{}'.format(created_path, index)
         rename(created_path, new_path)
@@ -155,6 +181,13 @@ def create_target_bags(target_str, test_bags_dir, org):
 
         # chowning path to root
         FH.chown_path_to_root(new_path)
+
+
+def run_transfer_routine():
+    tr = TransferRoutine()
+    tr.setup_routine()
+    tr.run_routine()
+    return tr
 
 
 # Creates a rights statement given a record type, organization and rights basis.

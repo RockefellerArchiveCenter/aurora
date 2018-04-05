@@ -1,25 +1,26 @@
 from django.test import TransactionTestCase
 
-from orgs.test.setup_tests import *
+from orgs import test_helpers
 
 from transfer_app.lib.transfer_routine import *
 from transfer_app.lib.files_helper import *
 
 import random
 
+
 class TransferRoutineTestCase(TransactionTestCase):
     def setUp(self):
-        self.orgs = create_test_orgs()
+        self.orgs = test_helpers.create_test_orgs(org_count=3)
 
     def test_setup_routine(self):
         self.TR = TransferRoutine()
 
-        #has active orgs
+        # has active orgs
         self.sub_test_db_has_active_orgs()
-        
-        #verify orgs upload paths exist and if 1 doesn't then drop for active dict
+
+        # verify orgs upload paths exist and if 1 doesn't then drop for active dict
         self.sub_test_verify_organizations_paths()
-        
+
         # still have active orgs
 
         # builds content dict
@@ -28,7 +29,7 @@ class TransferRoutineTestCase(TransactionTestCase):
         pass
 
     def tearDown(self):
-        delete_test_orgs(self.orgs)
+        test_helpers.delete_test_orgs(self.orgs)
 
     def sub_test_db_has_active_orgs(self):
         self.change_all_orgs_in_list_status(self.orgs, False)   # turns all test orgs inactive
@@ -47,13 +48,7 @@ class TransferRoutineTestCase(TransactionTestCase):
         self.TR.verify_organizations_paths()
         self.assertNotEqual(original_active_count,len(self.TR.active_organizations))
 
-
-
     def change_all_orgs_in_list_status(self, orgs ={}, Status=False):
         for org in orgs:
             org.is_active = Status
             org.save()
-
-
-
-

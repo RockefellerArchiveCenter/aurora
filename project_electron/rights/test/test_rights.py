@@ -9,12 +9,10 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 from orgs import test_helpers
-from orgs.test import setup_tests as org_setup
 from rights.forms import *
 from rights.models import *
 from rights.test.setup_tests import *
 from rights.views import *
-from transfer_app.lib import files_helper as FH
 from transfer_app.lib.bag_checker import bagChecker
 
 
@@ -22,8 +20,13 @@ class RightsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.record_types = test_helpers.create_test_record_types(record_types)
-        self.orgs = org_setup.create_test_orgs(org_count=1)
-        self.archives = test_helpers.create_test_archives(self.orgs)
+        self.orgs = test_helpers.create_test_orgs(org_count=1)
+        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = test_helpers.run_transfer_routine()
+        self.archives = []
+        for transfer in tr.transfers:
+            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            self.archives.append(archive)
         self.groups = test_helpers.create_test_groups(['managing_archivists'])
         self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
@@ -65,10 +68,6 @@ class RightsTestCase(TestCase):
 
             # this calls assign_rights
             self.assertTrue(bag.bag_passed_all())
-
-            # # deleting path in processing and tmp dir
-            FH.remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
-            FH.remove_file_or_dir(archive.machine_file_path)
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
@@ -141,4 +140,4 @@ class RightsTestCase(TestCase):
         self.assertEqual(len(RightsStatement.objects.all()), assigned_length-1)
 
     def tearDown(self):
-        org_setup.delete_test_orgs(self.orgs)
+        test_helpers.delete_test_orgs(self.orgs)
