@@ -15,27 +15,9 @@ from transfer_app.lib.transfer_routine import TransferRoutine
 
 # General variables and setup routines
 
-
-# still used??
-def setup_tmp_dir():
-    if path.isdir(config.TESTING_TMP_DIR):
-        FH.remove_file_or_dir(config.TESTING_TMP_DIR)
-    else:
-        makedirs(config.TESTING_TMP_DIR)
-
-
-def remove_tmp_dir():
-    FH.remove_file_or_dir(config.TESTING_TMP_DIR)
-
-
-def create_test_baglog_code(code):
-    baglog_code = BAGLogCodes(
-        code_short=code,
-        code_type='T',
-        code_desc='Test code',
-    )
-    baglog_code.save()
-    print "BAGLogCode {} created".format(baglog_code)
+####################################
+# Generic functions
+####################################
 
 
 # Returns a random string of specified length
@@ -165,7 +147,7 @@ def create_target_bags(target_str, test_bags_dir, org):
             path.join(test_bags_dir,bags),
             org.org_machine_upload_paths()[0]
         )
-        # rename extracted path -- add index suffix to prevent colision
+        # rename extracted path -- add index suffix to prevent collision
         created_path = path.join(org.org_machine_upload_paths()[0], bags.split('.')[0])
         new_path = '{}{}'.format(created_path, index)
         rename(created_path, new_path)
@@ -173,17 +155,6 @@ def create_target_bags(target_str, test_bags_dir, org):
 
         # chowning path to root
         FH.chown_path_to_root(new_path)
-
-
-# Review
-def get_bag_extensions(bag_names):
-    extensions = ['.tar', '.tar.gz', '.zip']
-    bag_list = []
-    for name in bag_names:
-        bag_list.append(name)
-        for e in extensions:
-            bag_list.append('{}{}'.format(name, e))
-    return bag_list
 
 
 # Creates a rights statement given a record type, organization and rights basis.

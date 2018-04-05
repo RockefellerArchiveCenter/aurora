@@ -8,8 +8,8 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs.test import setup_tests as org_setup
 from orgs import test_helpers
+from orgs.test import setup_tests as org_setup
 from rights.forms import *
 from rights.models import *
 from rights.test.setup_tests import *
@@ -37,7 +37,8 @@ class RightsTestCase(TestCase):
 
         for rights_statement in RightsStatement.objects.all():
             test_helpers.create_rights_info(rights_statement=rights_statement)
-            test_helpers.create_rights_granted(rights_statement=rights_statement, granted_count=random.randint(1, 2))
+            test_helpers.create_rights_granted(
+                rights_statement=rights_statement, granted_count=random.randint(1, 2))
 
             # Make sure correct rights info objects were assigned
             if rights_statement.rights_basis == 'Statute':
@@ -85,10 +86,16 @@ class RightsTestCase(TestCase):
         # Creating new RightsStatements
         post_organization = random.choice(self.orgs)
         new_basis_data = random.choice(basis_data)
-        new_request = self.client.post(urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
-        self.assertEqual(new_request.status_code, 302, "Request was not redirected")
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1, "Another rights statement was mistakenly created")
-        self.assertEqual(RightsStatement.objects.last().rights_basis, new_basis_data['rights_basis'], "Rights bases do not match")
+        new_request = self.client.post(
+            urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
+        self.assertEqual(
+            new_request.status_code, 302, "Request was not redirected")
+        self.assertEqual(
+            len(RightsStatement.objects.all()), assigned_length+1,
+            "Another rights statement was mistakenly created")
+        self.assertEqual(
+            RightsStatement.objects.last().rights_basis, new_basis_data['rights_basis'],
+            "Rights bases do not match")
 
         # Updating RightsStatements
         rights_statement = RightsStatement.objects.last()
@@ -102,20 +109,30 @@ class RightsTestCase(TestCase):
         updated_basis_data[basis_set+'-0-'+note_key] = 'Revised test note'
         basis_objects = getattr(rights_statement, basis_set).all()
         updated_basis_data[basis_set+'-0-id'] = basis_objects[0].pk
-        update_request = self.client.post(reverse('rights-update', kwargs={'pk': rights_statement.pk}), updated_basis_data)
-        self.assertEqual(update_request.status_code, 302, "Request was not redirected")
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length+1, "Another rights statement was mistakenly created")
+        update_request = self.client.post(
+            reverse('rights-update', kwargs={'pk': rights_statement.pk}),
+            updated_basis_data)
+        self.assertEqual(
+            update_request.status_code, 302, "Request was not redirected")
+        self.assertEqual(
+            len(RightsStatement.objects.all()), assigned_length+1,
+            "Another rights statement was mistakenly created")
 
         # RightsStatementRightsGranted
-        grant_request = self.client.post(reverse('rights-grants', kwargs={'pk': rights_statement.pk}), grant_data)
-        self.assertEqual(grant_request.status_code, 302, "Request was not redirected")
+        grant_request = self.client.post(
+            reverse('rights-grants', kwargs={'pk': rights_statement.pk}), grant_data)
+        self.assertEqual(
+            grant_request.status_code, 302, "Request was not redirected")
 
         # Delete rights statements
-        delete_request = self.client.get(reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}), {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        delete_request = self.client.get(
+            reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}),
+            {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(delete_request.status_code, 200)
         resp = ast.literal_eval(delete_request.content)
         self.assertEqual(resp['success'], 1)
-        non_ajax_request = self.client.get(reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
+        non_ajax_request = self.client.get(
+            reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
         self.assertEqual(non_ajax_request.status_code, 404)
 
         # Delete rights statement
