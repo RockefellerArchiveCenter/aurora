@@ -21,7 +21,6 @@ class AppraiseView(ArchivistMixin, View):
 
             if request.user.has_privs('APPRAISER'):
 
-
                 if 'req_form' in request.GET:
                     if request.GET['req_form'] == 'appraise':
                         if 'req_type' in request.GET and 'upload_id' in request.GET:
@@ -43,8 +42,8 @@ class AppraiseView(ArchivistMixin, View):
                                         appraisal_decision = int(request.GET['appraisal_decision'])
                                     except Exception as e:
                                         print e
-                                upload.process_status = (70 if appraisal_decision else 60)
-                                BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+                                    upload.process_status = (70 if appraisal_decision else 60)
+                                    BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                 upload.save()
                                 rdata['success'] = 1
 
