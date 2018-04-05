@@ -1,78 +1,31 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import ast
-import os
-import pwd
-from datetime import datetime
-from urlparse import urljoin
-from django.test import TestCase, RequestFactory, Client
-from django.conf import settings
-from django.core import serializers
-from django.urls import reverse
-from rights.test.setup_tests import *
-from orgs.models import Archives, Organization, User
-from orgs.test import setup_tests as org_setup
-from rights.models import *
-from rights.views import *
-from rights.forms import *
 
-record_types = [
-    "administrative records", "board materials",
-    "communications and publications", "grant records",
-    "annual reports"]
-rights_bases = ['Copyright', 'Statute', 'License', 'Other']
-basis_data = [
-    {
-        'rights_basis': 'Copyright',
-        'applies_to_type': [1, ],
-        'rightsstatementcopyright_set-INITIAL_FORMS': 0,
-        'rightsstatementcopyright_set-TOTAL_FORMS': 1,
-        'rightsstatementcopyright_set-0-copyright_note': "Test note",
-        'rightsstatementcopyright_set-0-copyright_status': 'copyrighted',
-        'rightsstatementcopyright_set-0-copyright_jurisdiction': 'us',
-    },
-    {
-        'rights_basis': 'Statute',
-        'applies_to_type': [1, ],
-        'rightsstatementstatute_set-INITIAL_FORMS': 0,
-        'rightsstatementstatute_set-TOTAL_FORMS': 1,
-        'rightsstatementstatute_set-0-statute_note': "Test note",
-        'rightsstatementstatute_set-0-statute_citation': 'Test statute citation',
-        'rightsstatementstatute_set-0-statute_jurisdiction': 'us',
-    },
-    {
-        'rights_basis': 'License',
-        'applies_to_type': [1, ],
-        'rightsstatementlicense_set-INITIAL_FORMS': 0,
-        'rightsstatementlicense_set-TOTAL_FORMS': 1,
-        'rightsstatementlicense_set-0-license_note': "Test note",
-    },
-    {
-        'rights_basis': 'Other',
-        'applies_to_type': [1, ],
-        'rightsstatementother_set-INITIAL_FORMS': 0,
-        'rightsstatementother_set-TOTAL_FORMS': 1,
-        'rightsstatementother_set-0-other_rights_note': "Test note",
-        'rightsstatementother_set-0-other_rights_basis': 'Donor',
-    }
-]
-grant_data = {
-    'rightsstatementrightsgranted_set-TOTAL_FORMS': 1,
-    'rightsstatementrightsgranted_set-INITIAL_FORMS': 0,
-    'rightsstatementrightsgranted_set-0-act': random.choice(['publish', 'disseminate', 'replicate', 'migrate', 'modify', 'use', 'delete']),
-    'rightsstatementrightsgranted_set-0-restriction': random.choice(['allow', 'disallow', 'conditional']),
-    'rightsstatementrightsgranted_set-0-rights_granted_note': 'Grant note'
-}
+import ast
+from os.path import join
+import random
+from urlparse import urljoin
+from django.test import TestCase, Client
+from django.conf import settings
+from django.urls import reverse
+from orgs.models import Archives, User
+from orgs.test import setup_tests as org_setup
+from orgs import test_helpers
+from rights.forms import *
+from rights.models import *
+from rights.test.setup_tests import *
+from rights.views import *
+from transfer_app.lib import files_helper as FH
+from transfer_app.lib.bag_checker import bagChecker
 
 
 class RightsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.factory = RequestFactory()
-        self.record_types = create_record_types(record_types)
-        self.orgs = create_test_orgs()
-        self.archives = create_test_archives(self.orgs)
-        self.groups = create_test_groups(['managing_archivists'])
+        self.record_types = test_helpers.create_test_record_types(record_types)
+        self.orgs = org_setup.create_test_orgs(org_count=1)
+        self.archives = test_helpers.create_test_archives(self.orgs)
+        self.groups = test_helpers.create_test_groups(['managing_archivists'])
         self.user = User.objects.create_user(
             organization=random.choice(self.orgs),
             username=settings.TEST_USER['USERNAME'], email="test@example.com",
@@ -90,33 +43,33 @@ class RightsTestCase(TestCase):
     def create_rights_info(self, rights_statement):
         if rights_statement.rights_basis == 'Statute':
             rights_info = RightsStatementStatute(
-                statute_citation=random_string(50),
-                statute_applicable_start_date=random_date(1960),
-                statute_applicable_end_date=random_date(1990),
+                statute_citation=test_helpers.random_string(50),
+                statute_applicable_start_date=test_helpers.random_date(1960),
+                statute_applicable_end_date=test_helpers.random_date(1990),
                 statute_end_date_period=20,
-                statute_note=random_string(40)
+                statute_note=test_helpers.random_string(40)
             )
         elif rights_statement.rights_basis == 'Other':
             rights_info = RightsStatementOther(
                 other_rights_basis=random.choice(['Donor', 'Policy']),
-                other_rights_applicable_start_date=random_date(1978),
+                other_rights_applicable_start_date=test_helpers.random_date(1978),
                 other_rights_end_date_period=20,
                 other_rights_end_date_open=True,
-                other_rights_note=random_string(50)
+                other_rights_note=test_helpers.random_string(50)
             )
         elif rights_statement.rights_basis == 'Copyright':
             rights_info = RightsStatementCopyright(
                 copyright_status=random.choice(['copyrighted', 'public domain', 'unknown']),
-                copyright_applicable_start_date=random_date(1950),
+                copyright_applicable_start_date=test_helpers.random_date(1950),
                 copyright_end_date_period=40,
-                copyright_note=random_string(70)
+                copyright_note=test_helpers.random_string(70)
             )
         elif rights_statement.rights_basis == 'License':
             rights_info = RightsStatementLicense(
-                license_applicable_start_date=random_date(1980),
+                license_applicable_start_date=test_helpers.random_date(1980),
                 license_start_date_period=10,
                 license_end_date_open=True,
-                license_note=random_string(60)
+                license_note=test_helpers.random_string(60)
             )
         rights_info.rights_statement = rights_statement
         rights_info.save()
@@ -127,9 +80,9 @@ class RightsTestCase(TestCase):
             rights_granted = RightsStatementRightsGranted(
                 rights_statement=rights_statement,
                 act=random.choice(['publish', 'disseminate','replicate', 'migrate', 'modify', 'use', 'delete']),
-                start_date=random_date(1984),
+                start_date=test_helpers.random_date(1984),
                 end_date_period=15,
-                rights_granted_note=random_string(100),
+                rights_granted_note=test_helpers.random_string(100),
                 restriction=random.choice(['allow', 'disallow', 'conditional'])
                 )
             rights_granted.save()
@@ -172,8 +125,8 @@ class RightsTestCase(TestCase):
             self.assertTrue(bag.bag_passed_all())
 
             # # deleting path in processing and tmp dir
-            remove_file_or_dir(os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
-            remove_file_or_dir(archive.machine_file_path)
+            FH.remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
+            FH.remove_file_or_dir(archive.machine_file_path)
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
@@ -188,7 +141,6 @@ class RightsTestCase(TestCase):
         add_response = self.client.get(reverse('rights-add'), {'org': self.orgs[0].pk})
         self.assertEqual(add_response.status_code, 200)
 
-        # TODO: add param to url config
         # Creating new RightsStatements
         post_organization = random.choice(self.orgs)
         new_basis_data = random.choice(basis_data)
