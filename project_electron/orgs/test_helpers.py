@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import datetime
+from datetime import datetime
 from os import path, chdir, makedirs, listdir, rename
 import pwd
 import random
 import string
 from django.contrib.auth.models import Group
 from orgs.models import Archives, Organization, User, BAGLogCodes
-from rights.models import RecordType
+from rights.models import *
 from project_electron import config, settings
 from transfer_app.lib import files_helper as FH
 from transfer_app.lib.transfer_routine import TransferRoutine
@@ -46,7 +46,7 @@ def random_string(length):
 # Feturns a random date in a given year
 def random_date(year):
     try:
-        return datetime.datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
+        return datetime.strptime('{} {}'.format(random.randint(1, 366), year), '%j %Y')
     # accounts for leap year values
     except ValueError:
         random_date(year)
@@ -70,6 +70,7 @@ def create_test_record_types(record_types=None):
             name=record_type
         )
         objects.append(object)
+        print 'Test record type {record_type} created'.format(record_type=object.name)
     return objects
 
 
@@ -83,6 +84,7 @@ def create_test_groups(names=None):
         group = Group(name=name)
         group.save()
         groups.append(group)
+        print 'Test group {group} created'.format(group=group.name)
     return groups
 
 
@@ -92,44 +94,26 @@ def create_test_org():
         name='Ford Foundation',
         machine_name='org1'
     )
-    print 'Test organization {} created'.format(test_org[0].name)
+    print 'Test organization {org} created'.format(org=test_org[0].name)
     return test_org[0]
 
 
-# review
-def create_test_user(org):
-    test_user = User(organization=org).save()
-    print 'Test user created'
+# Creates test user given a username and organization.
+# If no username is given, the default username supplied in settings is used.
+# If no organization is given, an organization is randomly chosen.
+def create_test_user(username=None, org=None):
+    if username is None:
+        username = settings.TEST_USER['USERNAME']
+    if org is None:
+        org = random.choice(Organization.objects.all())
+    test_user = User(
+        username=username,
+        email='test@example.org',
+        organization=org)
+    test_user.save()
+    print 'Test user {username} created'.format(username=username)
     return test_user
 
-# Review
-def create_test_archive(bag_name, org):
-    # user = self.create_test_user(org)
-    bag_file_path = path.join(path.split(settings.BASE_DIR)[0], 'test_bags', bag_name)
-    # TODO: this should be replaced with calls to functions, but will require some refactoring
-    extension = path.splitext(bag_file_path)
-    tar_accepted_ext = ['.gz', '.tar']
-    if extension[-1] in tar_accepted_ext:
-        file_type = 'TAR'
-    elif extension[-1] == '.zip':
-        file_type = 'ZIP'
-    else:
-        file_type = 'OTHER'
-
-    archive = Archives(
-        organization=org,
-        # user_uploaded = user,
-        machine_file_path=bag_file_path,
-        machine_file_size=FH.file_get_size(bag_file_path, file_type),
-        # TODO: fix naive datetime warning
-        machine_file_upload_time=FH.file_modified_time(bag_file_path),
-        machine_file_identifier="{}{}{}".format(bag_name, org, datetime.datetime.now()),
-        machine_file_type=file_type,
-        bag_it_name=(bag_file_path.split('/')[-1]).split('.')[0],
-    )
-    archive.save()
-    print "Archive {} saved!".format(archive)
-    return archive
 
 # Review (From RightsStatement tests)
 def create_test_archives(orgs):
@@ -200,3 +184,79 @@ def get_bag_extensions(bag_names):
         for e in extensions:
             bag_list.append('{}{}'.format(name, e))
     return bag_list
+
+
+# Creates a rights statement given a record type, organization and rights basis.
+# If any one of these values are not given, random values are assigned.
+def create_rights_statement(record_type=None, org=None, rights_basis=None):
+    if record_type is None:
+        record_type = random.choice(RecordType.objects.all())
+    if org is None:
+        org = random.choice(Organization.objects.all())
+    if rights_basis is None:
+        rights_basis = random.choices(['Copyright', 'Statute', 'License', 'Other'])
+    rights_statement = RightsStatement(
+        organization=org,
+        rights_basis=rights_basis,
+    )
+    rights_statement.save()
+    rights_statement.applies_to_type.add(record_type)
+
+
+# Creates a rights info object given a rights statement
+# If no rights statement is given, a random value is selected
+def create_rights_info(rights_statement=None):
+    if rights_statement is None:
+        rights_statement = random.choice(RightsStatement.objects.all())
+    if rights_statement.rights_basis == 'Statute':
+        rights_info = RightsStatementStatute(
+            statute_citation=random_string(50),
+            statute_applicable_start_date=random_date(1960),
+            statute_applicable_end_date=random_date(1990),
+            statute_end_date_period=20,
+            statute_note=random_string(40)
+        )
+    elif rights_statement.rights_basis == 'Other':
+        rights_info = RightsStatementOther(
+            other_rights_basis=random.choice(['Donor', 'Policy']),
+            other_rights_applicable_start_date=random_date(1978),
+            other_rights_end_date_period=20,
+            other_rights_end_date_open=True,
+            other_rights_note=random_string(50)
+        )
+    elif rights_statement.rights_basis == 'Copyright':
+        rights_info = RightsStatementCopyright(
+            copyright_status=random.choice(['copyrighted', 'public domain', 'unknown']),
+            copyright_applicable_start_date=random_date(1950),
+            copyright_end_date_period=40,
+            copyright_note=random_string(70)
+        )
+    elif rights_statement.rights_basis == 'License':
+        rights_info = RightsStatementLicense(
+            license_applicable_start_date=random_date(1980),
+            license_start_date_period=10,
+            license_end_date_open=True,
+            license_note=random_string(60)
+        )
+    rights_info.rights_statement = rights_statement
+    rights_info.save()
+
+
+# Creates one or more rights granted objects, based on the grant count.
+# If no rights statement is given, a random value is selected
+def create_rights_granted(rights_statement=None, granted_count=1):
+    if rights_statement is None:
+        rights_statement = random.choice(RightsStatement.objects.all())
+    all_rights_granted = []
+    for x in xrange(granted_count):
+        rights_granted = RightsStatementRightsGranted(
+            rights_statement=rights_statement,
+            act=random.choice(['publish', 'disseminate','replicate', 'migrate', 'modify', 'use', 'delete']),
+            start_date=random_date(1984),
+            end_date_period=15,
+            rights_granted_note=random_string(100),
+            restriction=random.choice(['allow', 'disallow', 'conditional'])
+            )
+        rights_granted.save()
+        all_rights_granted.append(rights_granted)
+    return all_rights_granted

@@ -8,7 +8,6 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs.models import Archives, User
 from orgs.test import setup_tests as org_setup
 from orgs import test_helpers
 from rights.forms import *
@@ -26,77 +25,19 @@ class RightsTestCase(TestCase):
         self.orgs = org_setup.create_test_orgs(org_count=1)
         self.archives = test_helpers.create_test_archives(self.orgs)
         self.groups = test_helpers.create_test_groups(['managing_archivists'])
-        self.user = User.objects.create_user(
-            organization=random.choice(self.orgs),
-            username=settings.TEST_USER['USERNAME'], email="test@example.com",
-            )
+        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
-
-    def create_rights_statement(self, record_type):
-        rights_statement = RightsStatement(
-            organization=random.choice(self.orgs),
-            rights_basis=random.choice(rights_bases),
-        )
-        rights_statement.save()
-        rights_statement.applies_to_type.add(record_type)
-
-    def create_rights_info(self, rights_statement):
-        if rights_statement.rights_basis == 'Statute':
-            rights_info = RightsStatementStatute(
-                statute_citation=test_helpers.random_string(50),
-                statute_applicable_start_date=test_helpers.random_date(1960),
-                statute_applicable_end_date=test_helpers.random_date(1990),
-                statute_end_date_period=20,
-                statute_note=test_helpers.random_string(40)
-            )
-        elif rights_statement.rights_basis == 'Other':
-            rights_info = RightsStatementOther(
-                other_rights_basis=random.choice(['Donor', 'Policy']),
-                other_rights_applicable_start_date=test_helpers.random_date(1978),
-                other_rights_end_date_period=20,
-                other_rights_end_date_open=True,
-                other_rights_note=test_helpers.random_string(50)
-            )
-        elif rights_statement.rights_basis == 'Copyright':
-            rights_info = RightsStatementCopyright(
-                copyright_status=random.choice(['copyrighted', 'public domain', 'unknown']),
-                copyright_applicable_start_date=test_helpers.random_date(1950),
-                copyright_end_date_period=40,
-                copyright_note=test_helpers.random_string(70)
-            )
-        elif rights_statement.rights_basis == 'License':
-            rights_info = RightsStatementLicense(
-                license_applicable_start_date=test_helpers.random_date(1980),
-                license_start_date_period=10,
-                license_end_date_open=True,
-                license_note=test_helpers.random_string(60)
-            )
-        rights_info.rights_statement = rights_statement
-        rights_info.save()
-
-    def create_rights_granted(self, rights_statement):
-        all_rights_granted = []
-        for x in xrange(random.randint(1, 2)):
-            rights_granted = RightsStatementRightsGranted(
-                rights_statement=rights_statement,
-                act=random.choice(['publish', 'disseminate','replicate', 'migrate', 'modify', 'use', 'delete']),
-                start_date=test_helpers.random_date(1984),
-                end_date_period=15,
-                rights_granted_note=test_helpers.random_string(100),
-                restriction=random.choice(['allow', 'disallow', 'conditional'])
-                )
-            rights_granted.save()
-            all_rights_granted.append(rights_granted)
-        return all_rights_granted
 
     def test_rights(self):
         for record_type in self.record_types:
-            self.create_rights_statement(record_type)
+            test_helpers.create_rights_statement(
+                record_type=record_type, org=random.choice(self.orgs),
+                rights_basis=random.choice(rights_bases))
         self.assertEqual(len(RightsStatement.objects.all()), len(self.record_types))
 
         for rights_statement in RightsStatement.objects.all():
-            self.create_rights_info(rights_statement)
-            self.create_rights_granted(rights_statement)
+            test_helpers.create_rights_info(rights_statement=rights_statement)
+            test_helpers.create_rights_granted(rights_statement=rights_statement, granted_count=random.randint(1, 2))
 
             # Make sure correct rights info objects were assigned
             if rights_statement.rights_basis == 'Statute':
@@ -130,7 +71,7 @@ class RightsTestCase(TestCase):
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
-        self.assertEqual(assigned_length, len(record_types)+len(Archives.objects.all()))
+        self.assertEqual(assigned_length, len(record_types)+len(self.archives))
 
         # Test GET views
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
