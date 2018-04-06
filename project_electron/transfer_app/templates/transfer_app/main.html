@@ -104,32 +104,34 @@
     //-------------
     //- DONUT CHART -
     //-------------
-    var yearPieChartCanvas = $('#{{k}}YearRecordTypesPieChart').get(0).getContext('2d')
-    var yearPieChart       = new Chart(yearPieChartCanvas)
-    var {{k}}YearPieData        = [
-      {% for record_type in org.record_types_by_year %}
-            {
-              value    : {{record_type.value}},
-              color    : "{{record_type.color}}",
-              highlight: "{{record_type.color}}",
-              label    : "{{record_type.label}}"
-            }{% if not forloop.last %},{%endif%}
+    if ($('#{{k}}YearRecordTypesPieChart').length){
+      var yearPieChartCanvas = $('#{{k}}YearRecordTypesPieChart').get(0).getContext('2d')
+      var yearPieChart       = new Chart(yearPieChartCanvas)
+      var {{k}}YearPieData        = [
+        {% for record_type in org.record_types_by_year %}
+              {
+                value    : {{record_type.value}},
+                color    : "{{record_type.color}}",
+                highlight: "{{record_type.color}}",
+                label    : "{{record_type.label}}"
+              }{% if not forloop.last %},{%endif%}
 
-      {% endfor %}
-    ]
-    var pieOptions     = {
-      segmentShowStroke    : true,
-      segmentStrokeColor   : '#fff',
-      segmentStrokeWidth   : 2,
-      percentageInnerCutout: 50, // This is 0 for Pie charts
-      animationSteps       : 100,
-      animationEasing      : 'easeOutBounce',
-      animateRotate        : true,
-      animateScale         : false,
-      responsive           : true,
-      maintainAspectRatio  : true,
+        {% endfor %}
+      ]
+      var pieOptions     = {
+        segmentShowStroke    : true,
+        segmentStrokeColor   : '#fff',
+        segmentStrokeWidth   : 2,
+        percentageInnerCutout: 50, // This is 0 for Pie charts
+        animationSteps       : 100,
+        animationEasing      : 'easeOutBounce',
+        animateRotate        : true,
+        animateScale         : false,
+        responsive           : true,
+        maintainAspectRatio  : true,
+      }
+      var chart = yearPieChart.Doughnut({{k}}YearPieData, pieOptions)
     }
-    var chart = yearPieChart.Doughnut({{k}}YearPieData, pieOptions)
 
     {% endfor %}
 

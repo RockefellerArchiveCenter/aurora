@@ -106,10 +106,10 @@
           <h3 class="box-title">Record types transferred during last 12 months</h3>
         </div>
         <div class="box-body">
-          {% if record_type in org.record_types_by_year %}
+          {% if org.record_types_by_year %}
             <canvas id="{{k}}YearRecordTypesPieChart" style="height: 281px; width: 562px;" width="562" height="281"></canvas>
           {% else %}
-          <p>There are no record types available.</p>
+          <p>There are no record type data available.</p>
           {% endif %}
         </div>
       </div>
