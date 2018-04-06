@@ -28,3 +28,7 @@ class RightsStatementOtherAdmin(admin.ModelAdmin):
 @admin.register(RightsStatementRightsGranted)
 class RightsStatementRightsGrantedAdmin(admin.ModelAdmin):
 	pass
+
+@admin.register(RecordType)
+class RecordType(admin.ModelAdmin):
+	pass

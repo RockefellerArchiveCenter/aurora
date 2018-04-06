@@ -11,12 +11,11 @@
     <tbody>
       {% for statement in org.rights_statements %}
       <tr rel="{{ statement.pk }}">
-        <td>{{statement.applies_to_type}}</td>
+        <td>{% for t in statement.applies_to_type.all %}{{t}}{% if not forloop.last %}<br />{%endif%}{% endfor %}</td>
         <td>{{statement.rights_basis}}</td>
         <td>{{statement.get_table_data.notes}}</td>
         <td class="text-right">
           <a href="{% url 'rights-detail' statement.pk %}" class="btn btn-primary btn-sm">View</a>
-
           {% if request.user.is_superuser %}
             <a href="{% url 'rights-update' statement.pk %}" class="btn btn-warning btn-sm">Edit</a>
             <a href="{% url 'rights-api' statement.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="rights-statement">Delete</a>
@@ -28,4 +27,4 @@
   </table>
 {% endif %}
 
-<p class="has-no-rights-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
+<p class="has-no-rights-statement-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
