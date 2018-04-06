@@ -222,7 +222,6 @@ class BagItProfileManageView(View):
                 if formset.is_valid():
                     formset.save()
                 else:
-                    print formset.errors
                     return render(request, self.template_name, {
                         'organization': bagit_profile.applies_to_organization,
                         'form': bagit_profile,

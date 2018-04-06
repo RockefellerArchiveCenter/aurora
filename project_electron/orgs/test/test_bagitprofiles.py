@@ -20,15 +20,10 @@ class BagItProfileTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.orgs = test_helpers.create_test_orgs(org_count=1)
-        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
-        self.archives = []
-        for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
-            self.archives.append(archive)
         self.groups = test_helpers.create_test_groups(['managing_archivists'])
         self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
+        self.user.org = self.orgs[0]
         self.bagitprofiles = []
         self.baginfos = []
 
@@ -51,15 +46,18 @@ class BagItProfileTestCase(TestCase):
             for info in self.baginfos:
                 test_helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
 
+            self.assertEqual(len(ManifestsRequired.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(AcceptSerialization.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(AcceptBagItVersion.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(TagManifestsRequired.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(TagFilesRequired.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(BagItProfileBagInfo.objects.all()), len(self.bagitprofiles)*len(BAGINFO_FIELD_CHOICES))
+            for info in BagItProfileBagInfo.objects.all():
+                self.assertTrue(len(info.bagitprofilebaginfovalues_set.all()) > 0)
 
-            # Get org's bagit profiles
-
-        # Validate against BagIt Profiles
-        for archive in self.archives:
-            bag = bagChecker(archive)
-
-            # this calls assign_rights
-            self.assertTrue(bag.bag_passed_all())
+        # Get bagit profiles for each org
+        for org in self.orgs:
+            self.assertTrue(org.bagit_profiles)
 
         # Test GET views
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
@@ -70,60 +68,114 @@ class BagItProfileTestCase(TestCase):
         add_response = self.client.get(reverse('bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
         self.assertEqual(add_response.status_code, 200)
 
-        # Creating new RightsStatements
-        # post_organization = random.choice(self.orgs)
-        # new_basis_data = random.choice(basis_data)
-        # new_request = self.client.post(
-        #     urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
-        # self.assertEqual(
-        #     new_request.status_code, 302, "Request was not redirected")
-        # self.assertEqual(
-        #     len(RightsStatement.objects.all()), assigned_length+1,
-        #     "Another rights statement was mistakenly created")
-        # self.assertEqual(
-        #     RightsStatement.objects.last().rights_basis, new_basis_data['rights_basis'],
-        #     "Rights bases do not match")
+        # Creating new BagItProfile
+        organization = random.choice(self.orgs)
+        new_request = self.client.post(
+            reverse('bagit-profiles-add', kwargs={'pk': organization.pk}), {
+                'contact_email': 'archive@rockarch.org',
+                'source_organization': self.user.org.pk,
+                'applies_to_organization': organization.pk,
+                'allow_fetch': random.choice([True, False]),
+                'external_descripton': test_helpers.random_string(100),
+                'serialization': random.choice(['forbidden', 'required', 'optional']),
+                'version': 0,
 
-        # Updating RightsStatements
-        # rights_statement = RightsStatement.objects.last()
-        # updated_basis_data = new_basis_data
-        # if updated_basis_data['rights_basis'] == 'Other':
-        #     basis_set = 'rightsstatementother_set'
-        #     note_key = 'other_rights_note'
-        # else:
-        #     basis_set = 'rightsstatement{}_set'.format(updated_basis_data['rights_basis'].lower())
-        #     note_key = '{}_note'.format(updated_basis_data['rights_basis'].lower())
-        # updated_basis_data[basis_set+'-0-'+note_key] = 'Revised test note'
-        # basis_objects = getattr(rights_statement, basis_set).all()
-        # updated_basis_data[basis_set+'-0-id'] = basis_objects[0].pk
-        # update_request = self.client.post(
-        #     reverse('rights-update', kwargs={'pk': rights_statement.pk}),
-        #     updated_basis_data)
-        # self.assertEqual(
-        #     update_request.status_code, 302, "Request was not redirected")
-        # self.assertEqual(
-        #     len(RightsStatement.objects.all()), assigned_length+1,
-        #     "Another rights statement was mistakenly created")
+                'bag_info-INITIAL_FORMS': 0,
+                'bag_info-TOTAL_FORMS': 1,
+                'bag_info-0-required': random.choice([True, False]),
+                'bag_info-0-field': random.choice(BAGINFO_FIELD_CHOICES)[0],
+                'bag_info-0-repeatable': random.choice([True, False]),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': test_helpers.random_string(20),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 0,
 
-        # RightsStatementRightsGranted
-        # grant_request = self.client.post(
-        #     reverse('rights-grants', kwargs={'pk': rights_statement.pk}), grant_data)
-        # self.assertEqual(
-        #     grant_request.status_code, 302, "Request was not redirected")
+                'serialization-INITIAL_FORMS': 0,
+                'serialization-TOTAL_FORMS': 1,
+                'serialization-0-name': random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']),
 
-        # Delete rights statements
-        # delete_request = self.client.get(
-        #     reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}),
-        #     {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        # self.assertEqual(delete_request.status_code, 200)
-        # resp = ast.literal_eval(delete_request.content)
-        # self.assertEqual(resp['success'], 1)
-        # non_ajax_request = self.client.get(
-        #     reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
-        # self.assertEqual(non_ajax_request.status_code, 404)
+                'tag_files-TOTAL_FORMS': 1,
+                'tag_files-INITIAL_FORMS': 0,
+                'tag_files-0-name': test_helpers.random_string(20),
+
+                'tag_manifests-TOTAL_FORMS': 1,
+                'tag_manifests-INITIAL_FORMS': 0,
+                'tag_manifests-0-name': random.choice(['sha256', 'md5']),
+
+                'version-TOTAL_FORMS': 1,
+                'version-INITIAL_FORMS': 0,
+                'version-0-name': random.choice(['0.96', 0.97]),
+
+                'manifests-TOTAL_FORMS': 1,
+                'manifests-INITIAL_FORMS': 0,
+                'manifests-0-name': random.choice(['sha256', 'md5']),
+            })
+        self.assertEqual(
+            new_request.status_code, 302, "Request was not redirected")
+
+        # Updating BagItProfile
+        profile = BagItProfile.objects.last()
+        update_request = self.client.post(
+            reverse('bagit-profiles-edit', kwargs={'pk': organization.pk, 'profile_pk': profile.pk}), {
+                'contact_email': 'archive@rockarch.org',
+                'source_organization': self.user.org.pk,
+                'applies_to_organization': organization.pk,
+                'allow_fetch': random.choice([True, False]),
+                'external_descripton': test_helpers.random_string(100),
+                'serialization': random.choice(['forbidden', 'required', 'optional']),
+                'version': 0,
+
+                'bag_info-INITIAL_FORMS': 1,
+                'bag_info-TOTAL_FORMS': 1,
+                'bag_info-0-id': 1,
+                'bag_info-0-required': random.choice([True, False]),
+                'bag_info-0-field': random.choice(BAGINFO_FIELD_CHOICES)[0],
+                'bag_info-0-repeatable': random.choice([True, False]),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': test_helpers.random_string(20),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-id': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 1,
+
+                'serialization-INITIAL_FORMS': 1,
+                'serialization-TOTAL_FORMS': 1,
+                'serialization-0-id': 1,
+                'serialization-0-name': random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']),
+
+                'tag_files-TOTAL_FORMS': 1,
+                'tag_files-INITIAL_FORMS': 1,
+                'tag_files-0-id': 1,
+                'tag_files-0-name': test_helpers.random_string(20),
+
+                'tag_manifests-TOTAL_FORMS': 1,
+                'tag_manifests-INITIAL_FORMS': 1,
+                'tag_manifests-0-id': 1,
+                'tag_manifests-0-name': random.choice(['sha256', 'md5']),
+
+                'version-TOTAL_FORMS': 1,
+                'version-INITIAL_FORMS': 1,
+                'version-0-id': 1,
+                'version-0-name': random.choice(['0.96', 0.97]),
+
+                'manifests-TOTAL_FORMS': 1,
+                'manifests-INITIAL_FORMS': 1,
+                'manifests-0-id': 1,
+                'manifests-0-name': random.choice(['sha256', 'md5']),
+            })
+        self.assertEqual(
+            update_request.status_code, 302, "Request was not redirected")
 
         # Delete bagit profile
-        previous_len = len(self.bagitprofiles)
+        delete_request = self.client.get(
+            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}),
+            {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(delete_request.status_code, 200)
+        resp = ast.literal_eval(delete_request.content)
+        self.assertEqual(resp['success'], 1)
+        non_ajax_request = self.client.get(
+            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}))
+        self.assertEqual(non_ajax_request.status_code, 404)
+
+        # Delete bagit profile
+        previous_len = len(BagItProfile.objects.all())
         to_delete = random.choice(self.bagitprofiles)
         self.assertTrue(to_delete.delete())
         self.assertEqual(len(BagItProfile.objects.all()), previous_len-1)
