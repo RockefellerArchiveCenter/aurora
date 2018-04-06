@@ -7,7 +7,7 @@ import pwd
 import random
 import string
 from django.contrib.auth.models import Group
-from orgs.models import Archives, Organization, User, BAGLogCodes
+from orgs.models import *
 from orgs.test import setup_tests as org_setup
 from rights.models import *
 from project_electron import config, settings
@@ -264,3 +264,96 @@ def create_rights_granted(rights_statement=None, granted_count=1):
         rights_granted.save()
         all_rights_granted.append(rights_granted)
     return all_rights_granted
+
+
+def create_test_bagitprofile(applies_to_organization=None):
+    if applies_to_organization is None:
+        applies_to_organization = random.choice(Organization.objects.all())
+    profile = BagItProfile(
+        applies_to_organization=applies_to_organization,
+        source_organization=random.choice(Organization.objects.all()),
+        external_descripton=random_string(150),
+        version=1,
+        contact_email="test@example.org",
+        allow_fetch=random.choice([True, False]),
+        serialization=random.choice(['forbidden', 'required', 'optional'])
+    )
+    profile.save()
+    return profile
+
+
+def create_test_manifestsrequired(bagitprofile=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    manifests_required = ManifestsRequired(
+        bagit_profile=bagitprofile,
+        name=random.choice(['sha256', 'md5']))
+    manifests_required.save()
+    return manifests_required
+
+
+def create_test_acceptserialization(bagitprofile=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    accept_serialization = AcceptSerialization(
+        bagit_profile=bagitprofile,
+        name=random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']))
+    accept_serialization.save()
+    return accept_serialization
+
+
+def create_test_acceptbagitversion(bagitprofile=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    acceptbagitversion = AcceptBagItVersion(
+        name=random.choice(['0.96', 0.97]),
+        bagit_profile=bagitprofile)
+    acceptbagitversion.save()
+    return acceptbagitversion
+
+
+def create_test_tagmanifestsrequired(bagitprofile=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    tagmanifestsrequired = TagManifestsRequired(
+        name=random.choice(['sha256', 'md5']),
+        bagit_profile=bagitprofile)
+    tagmanifestsrequired.save()
+    return tagmanifestsrequired
+
+
+def create_test_tagfilesrequired(bagitprofile=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    tagfilesrequired = TagFilesRequired(
+        name=random_string(150),
+        bagit_profile=bagitprofile)
+    tagfilesrequired.save()
+    return tagfilesrequired
+
+
+def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
+    if bagitprofile is None:
+        bagitprofile = random.choice(BagItProfile.objects.all())
+    if field is None:
+        field = random.choice(org_setup.BAGINFO_FIELD_CHOICES)
+    bag_info = BagItProfileBagInfo(
+        bagit_profile=bagitprofile,
+        field=field,
+        required=random.choice([True, False]),
+        repeatable=random.choice([True, False]))
+    bag_info.save()
+    return bag_info
+
+
+def create_test_bagitprofilebaginfovalues(baginfo=None):
+    if baginfo is None:
+        baginfo = random.choice(BagItProfileBagInfo.objects.all())
+    values = []
+    for i in xrange(random.randint(1, 5)):
+        bag_info_value = BagItProfileBagInfoValues(
+            bagit_profile_baginfo=baginfo,
+            name=random_string(25))
+        bag_info_value.save()
+        values.append(bag_info_value)
+    return values

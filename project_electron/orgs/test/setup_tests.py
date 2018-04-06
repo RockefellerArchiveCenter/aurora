@@ -41,3 +41,26 @@ bags_ref = (
     # ('no_metadata_file', '', ''),
     # ('empty_payload_directory', 'GBERR', True),
 )
+
+BAGINFO_FIELD_CHOICES = (
+    ('source_organization', 'Source-Organization'),
+    ('organization_address', 'Organization-Address'),
+    ('contact_name', 'Contact-Name'),
+    ('contact_phone', 'Contact-Phone'),
+    ('contact_email', 'Contact-Email'),
+    ('external_descripton', 'External-Description'),
+    ('external_identifier', 'External-Identifier'),
+    ('internal_sender_description', 'Internal-Sender-Description'),
+    ('internal_sender_identifier', 'Internal-Sender-Identifier'),
+    ('title', 'Title'),
+    ('date_start', 'Date-Start'),
+    ('date_end', 'Date-End'),
+    ('record_creators', 'Record-Creators'),
+    ('record_type', 'Record-Type'),
+    ('language', 'Language'),
+    ('bagging_date', 'Bagging-Date'),
+    ('bag_group_identifier', 'Bag-Group-Identifier'),
+    ('bag_count', 'Bag-Count'),
+    ('bag_size', 'Bag-Size'),
+    ('payload_oxum', 'Payload-Oxum'),
+)
