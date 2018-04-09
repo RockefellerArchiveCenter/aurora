@@ -160,6 +160,7 @@ def create_test_archive(transfer, org):
 # Creates target bags to be picked up by a TransferRoutine based on a string.
 # This allows processing of bags serialized in multiple formats at once.
 def create_target_bags(target_str, test_bags_dir, org):
+    moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
         return False
@@ -181,6 +182,9 @@ def create_target_bags(target_str, test_bags_dir, org):
 
         # chowning path to root
         FH.chown_path_to_root(new_path)
+        moved_bags.append(new_path)
+
+    return moved_bags
 
 
 def run_transfer_routine():
@@ -193,8 +197,7 @@ def run_transfer_routine():
 # Creates a rights statement given a record type, organization and rights basis.
 # If any one of these values are not given, random values are assigned.
 def create_rights_statement(record_type=None, org=None, rights_basis=None):
-    if record_type is None:
-        record_type = random.choice(RecordType.objects.all())
+    record_type = record_type if record_type else random.choice(RecordType.objects.all())
     if org is None:
         org = random.choice(Organization.objects.all())
     if rights_basis is None:
@@ -210,8 +213,7 @@ def create_rights_statement(record_type=None, org=None, rights_basis=None):
 # Creates a rights info object given a rights statement
 # If no rights statement is given, a random value is selected
 def create_rights_info(rights_statement=None):
-    if rights_statement is None:
-        rights_statement = random.choice(RightsStatement.objects.all())
+    rights_statement = rights_statement if rights_statement else random.choice(RightsStatement.objects.all())
     if rights_statement.rights_basis == 'Statute':
         rights_info = RightsStatementStatute(
             statute_citation=random_string(50),
@@ -249,8 +251,7 @@ def create_rights_info(rights_statement=None):
 # Creates one or more rights granted objects, based on the grant count.
 # If no rights statement is given, a random value is selected
 def create_rights_granted(rights_statement=None, granted_count=1):
-    if rights_statement is None:
-        rights_statement = random.choice(RightsStatement.objects.all())
+    rights_statement = rights_statement if rights_statement else random.choice(RightsStatement.objects.all())
     all_rights_granted = []
     for x in xrange(granted_count):
         rights_granted = RightsStatementRightsGranted(
@@ -267,8 +268,7 @@ def create_rights_granted(rights_statement=None, granted_count=1):
 
 
 def create_test_bagitprofile(applies_to_organization=None):
-    if applies_to_organization is None:
-        applies_to_organization = random.choice(Organization.objects.all())
+    applies_to_organization = applies_to_organization if applies_to_organization else random.choice(Organization.objects.all())
     profile = BagItProfile(
         applies_to_organization=applies_to_organization,
         source_organization=random.choice(Organization.objects.all()),
@@ -283,8 +283,7 @@ def create_test_bagitprofile(applies_to_organization=None):
 
 
 def create_test_manifestsrequired(bagitprofile=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     manifests_required = ManifestsRequired(
         bagit_profile=bagitprofile,
         name=random.choice(['sha256', 'md5']))
@@ -293,8 +292,7 @@ def create_test_manifestsrequired(bagitprofile=None):
 
 
 def create_test_acceptserialization(bagitprofile=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     accept_serialization = AcceptSerialization(
         bagit_profile=bagitprofile,
         name=random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']))
@@ -303,8 +301,7 @@ def create_test_acceptserialization(bagitprofile=None):
 
 
 def create_test_acceptbagitversion(bagitprofile=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     acceptbagitversion = AcceptBagItVersion(
         name=random.choice(['0.96', 0.97]),
         bagit_profile=bagitprofile)
@@ -313,8 +310,7 @@ def create_test_acceptbagitversion(bagitprofile=None):
 
 
 def create_test_tagmanifestsrequired(bagitprofile=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     tagmanifestsrequired = TagManifestsRequired(
         name=random.choice(['sha256', 'md5']),
         bagit_profile=bagitprofile)
@@ -323,8 +319,7 @@ def create_test_tagmanifestsrequired(bagitprofile=None):
 
 
 def create_test_tagfilesrequired(bagitprofile=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     tagfilesrequired = TagFilesRequired(
         name=random_string(150),
         bagit_profile=bagitprofile)
@@ -333,8 +328,7 @@ def create_test_tagfilesrequired(bagitprofile=None):
 
 
 def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
-    if bagitprofile is None:
-        bagitprofile = random.choice(BagItProfile.objects.all())
+    bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     if field is None:
         field = random.choice(org_setup.BAGINFO_FIELD_CHOICES)
     bag_info = BagItProfileBagInfo(
@@ -347,8 +341,7 @@ def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
 
 
 def create_test_bagitprofilebaginfovalues(baginfo=None):
-    if baginfo is None:
-        baginfo = random.choice(BagItProfileBagInfo.objects.all())
+    baginfo = baginfo if baginfo else random.choice(BagItProfileBagInfo.objects.all())
     values = []
     for i in xrange(random.randint(1, 5)):
         bag_info_value = BagItProfileBagInfoValues(

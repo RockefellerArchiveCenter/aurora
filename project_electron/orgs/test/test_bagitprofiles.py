@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import ast
+import bagit
 from os.path import join
 import random
 from urlparse import urljoin
@@ -121,47 +122,67 @@ class BagItProfileTestCase(TestCase):
                 'applies_to_organization': organization.pk,
                 'allow_fetch': random.choice([True, False]),
                 'external_descripton': test_helpers.random_string(100),
-                'serialization': random.choice(['forbidden', 'required', 'optional']),
-                'version': 0,
+                'serialization': 'optional',
+                'version': 1,
 
                 'bag_info-INITIAL_FORMS': 1,
                 'bag_info-TOTAL_FORMS': 1,
                 'bag_info-0-id': 1,
-                'bag_info-0-required': random.choice([True, False]),
-                'bag_info-0-field': random.choice(BAGINFO_FIELD_CHOICES)[0],
-                'bag_info-0-repeatable': random.choice([True, False]),
-                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': test_helpers.random_string(20),
+                'bag_info-0-required': True,
+                'bag_info-0-field': 'source_organization',
+                'bag_info-0-repeatable': False,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': 'Ford Foundation',
                 'nested_bag_info-0_bagitprofilebaginfovalues_set-0-id': 1,
                 'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
                 'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 1,
 
                 'serialization-INITIAL_FORMS': 1,
-                'serialization-TOTAL_FORMS': 1,
+                'serialization-TOTAL_FORMS': 3,
                 'serialization-0-id': 1,
-                'serialization-0-name': random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']),
+                'serialization-0-name': 'application/zip',
+                'serialization-1-name': 'application/x-tar',
+                'serialization-2-name': 'application/x-gzip',
 
                 'tag_files-TOTAL_FORMS': 1,
                 'tag_files-INITIAL_FORMS': 1,
                 'tag_files-0-id': 1,
-                'tag_files-0-name': test_helpers.random_string(20),
+                'tag_files-0-DELETE': True,
 
                 'tag_manifests-TOTAL_FORMS': 1,
                 'tag_manifests-INITIAL_FORMS': 1,
                 'tag_manifests-0-id': 1,
-                'tag_manifests-0-name': random.choice(['sha256', 'md5']),
+                'tag_manifests-0-DELETE': True,
 
-                'version-TOTAL_FORMS': 1,
+                'version-TOTAL_FORMS': 2,
                 'version-INITIAL_FORMS': 1,
                 'version-0-id': 1,
-                'version-0-name': random.choice(['0.96', 0.97]),
+                'version-0-name': '0.96',
+                'version-1-name': 0.97,
 
-                'manifests-TOTAL_FORMS': 1,
+                'manifests-TOTAL_FORMS': 0,
                 'manifests-INITIAL_FORMS': 1,
                 'manifests-0-id': 1,
-                'manifests-0-name': random.choice(['sha256', 'md5']),
+                'manifests-0-DELETE': True,
             })
         self.assertEqual(
             update_request.status_code, 302, "Request was not redirected")
+
+        # use the above BagItProfile to validate an archive
+        ## This doesn't work because bagit-profiles assumes the profile is available via HTTP
+        bag_paths = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        for path in bag_paths:
+            bag = bagit.Bag(path)
+            bag.info['Source-Organization'] = 'Ford Foundation'
+            bag.info['BagIt-Profile-Identifier'] = profile.bagit_profile_identifier
+            print bag.info
+            bag.save()
+
+        tr = test_helpers.run_transfer_routine()
+
+        for transfer in tr.transfers:
+            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            test_bag = bagChecker(archive)
+            self.assertTrue(test_bag.bag_passed_all())
 
         # Delete bagit profile
         delete_request = self.client.get(
