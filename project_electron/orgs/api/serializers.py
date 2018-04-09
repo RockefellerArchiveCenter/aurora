@@ -95,7 +95,8 @@ class BagItProfileSerializer(serializers.BaseSerializer):
                 "Version": obj.version,
                 "External-Description": obj.external_descripton,
                 "Contact-Email": obj.contact_email,
-                "BagIt-Profile-Identifier": obj.bagit_profile_identifier
+                "BagIt-Profile-Identifier": obj.bagit_profile_identifier,
+                "Source-Organization": obj.source_organization.name
             },
             'Bag-Info': bag_info,
             'Manifests-Required': manifests_required,
