@@ -64,12 +64,9 @@ class bagChecker():
             return False
         else:
 
-            try:
-                if not self.bag_info_data['BagIt_Profile_Identifier'] in [self.archiveObj.organization.bagit_profile_identifier, self.RAC_profile_identifier]:
-                    self.bag_exception = "Bag Identifier location is invalid"
-                    return False
-            except Exception as e:
-                print e
+            if not self.bag_info_data['BagIt_Profile_Identifier'] in [getattr(self.archiveObj.organization, 'bagit_profile_identifier', None), self.RAC_profile_identifier]:
+                self.bag_exception = "Bag Identifier location is invalid"
+                return False
 
             try:
                 profile = bagit_profile.Profile(self.bag_info_data['BagIt_Profile_Identifier'])

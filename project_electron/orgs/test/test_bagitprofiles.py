@@ -167,18 +167,9 @@ class BagItProfileTestCase(TestCase):
         self.assertEqual(
             update_request.status_code, 302, "Request was not redirected")
 
-        # use the above BagItProfile to validate an archive
-        ## This doesn't work because bagit-profiles assumes the profile is available via HTTP
+        # Ensure bags are validated
         bag_paths = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        for path in bag_paths:
-            bag = bagit.Bag(path)
-            bag.info['Source-Organization'] = 'Ford Foundation'
-            bag.info['BagIt-Profile-Identifier'] = profile.bagit_profile_identifier
-            print bag.info
-            bag.save()
-
         tr = test_helpers.run_transfer_routine()
-
         for transfer in tr.transfers:
             archive = test_helpers.create_test_archive(transfer, self.orgs[0])
             test_bag = bagChecker(archive)
@@ -194,12 +185,6 @@ class BagItProfileTestCase(TestCase):
         non_ajax_request = self.client.get(
             reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}))
         self.assertEqual(non_ajax_request.status_code, 404)
-
-        # Delete bagit profile
-        previous_len = len(BagItProfile.objects.all())
-        to_delete = random.choice(self.bagitprofiles)
-        self.assertTrue(to_delete.delete())
-        self.assertEqual(len(BagItProfile.objects.all()), previous_len-1)
 
     def tearDown(self):
         test_helpers.delete_test_orgs(self.orgs)
