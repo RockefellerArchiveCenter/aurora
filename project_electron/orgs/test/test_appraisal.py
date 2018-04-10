@@ -11,7 +11,7 @@ from django.conf import settings
 from django.urls import reverse
 from orgs import test_helpers
 from orgs.models import Archives
-from appraise.views import AppraiseView
+from orgs.appraise.views import AppraiseView
 from transfer_app.lib.bag_checker import bagChecker
 
 
