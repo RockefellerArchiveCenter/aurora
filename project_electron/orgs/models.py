@@ -122,7 +122,7 @@ class User(AbstractUser):
 
     organization =          models.ForeignKey(Organization, null=True, blank=False)
     is_machine_account =    models.BooleanField(default=True)
-    from_ldap =             models.BooleanField(editable=False, default=False)
+    from_ldap =             models.BooleanField(default=False)
     is_new_account =        models.BooleanField(default=False)
     is_org_admin =          models.BooleanField(default=False)
 

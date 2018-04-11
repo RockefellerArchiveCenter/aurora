@@ -9,7 +9,7 @@ from orgs.models import User, BagItProfile, BagItProfileBagInfo, BagItProfileBag
 class OrgUserUpdateForm(forms.ModelForm):
 	class Meta:
 		model = User
-		fields = ['is_active','first_name','last_name','email','organization','groups']
+		fields = ['is_active','first_name','last_name','email','organization','groups','from_ldap']
 
 
 class RACSuperUserUpdateForm(forms.ModelForm):
