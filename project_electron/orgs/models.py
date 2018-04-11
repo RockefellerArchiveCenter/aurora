@@ -188,20 +188,9 @@ class User(AbstractUser):
                 new_username = ldap_auth.create_user(self.organization.machine_name, self.email,self.get_full_name(),self.last_name)
                 if not new_username:
                     ## raise exception here and hook into message chain
-                    pass
+                    return
                 else:
                     self.username = new_username
-
-
-
-            # if ldap is preferred user creation
-                # get next increment of RA (prefix -- XXX) and match trailing numbers with UID
-                # Create User / add user to group / create random password
-                # ! if user didin't create, need to raise and make sure save doesn't occur
-
-            # else 
-                # use django native user creation
-            pass
         else:
 
             if self.from_ldap:
