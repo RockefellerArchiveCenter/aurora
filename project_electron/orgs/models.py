@@ -127,6 +127,8 @@ class User(AbstractUser):
     is_org_admin =          models.BooleanField(default=False)
 
     AbstractUser._meta.get_field('email').blank = False
+    AbstractUser._meta.get_field('first_name').blank = False
+    AbstractUser._meta.get_field('last_name').blank = False
 
     def in_group(self,GRP):
         return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
@@ -180,7 +182,25 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
 
         if self.pk is None:
+            # All ldap account creation should follow a standard, since the app doesn't have username in form
+            if self.from_ldap:
+                ldap_auth = LDAP_Manager()
+                new_username = ldap_auth.create_user(self.organization.machine_name, self.email,self.get_full_name(),self.last_name)
+                if not new_username:
+                    ## raise exception here and hook into message chain
+                    pass
+                else:
+                    self.username = new_username
 
+
+
+            # if ldap is preferred user creation
+                # get next increment of RA (prefix -- XXX) and match trailing numbers with UID
+                # Create User / add user to group / create random password
+                # ! if user didin't create, need to raise and make sure save doesn't occur
+
+            # else 
+                # use django native user creation
             pass
         else:
 
@@ -189,7 +209,7 @@ class User(AbstractUser):
                 if orig.organization != self.organization:
                     if RAC_CMD.del_from_org(self.username):
                         if RAC_CMD.add2grp(self.organization.machine_name,self.username):
-                                print 'GROUP CHANGED'
+                            print 'GROUP CHANGED'
 
                     ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
                     if orig.organization:
