@@ -182,7 +182,6 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
 
         if self.pk is None:
-            self.from_ldap = True
             # All ldap account creation should follow a standard, since the app doesn't have username in form
             if self.from_ldap:
                 ldap_auth = LDAP_Manager()

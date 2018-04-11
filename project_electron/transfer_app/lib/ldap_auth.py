@@ -72,7 +72,7 @@ class LDAP_Manager():
             return False
 
         # create user in ldap
-        uid = self.next_uid_increment()
+        uid = self.__next_uid_increment()
         if not uid:
             print 'wasn\'t able to create UID'
             return False
@@ -99,8 +99,8 @@ class LDAP_Manager():
         return uid if (RAC_CMD.add_user(uid) and RAC_CMD.add2grp(org, uid)) else False
 
 
-    def next_uid_increment(self):
-        """return next incremental value based on XX00000 defined in config"""
+    def __next_uid_increment(self):
+        """return next incremental value based on XX00000 defined in config; run inside conn, doesn't bind or unbind"""
         if not self.__connected or not self.get_all_users(False):
             return False
 
