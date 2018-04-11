@@ -26,15 +26,13 @@
                     <li class="list-group-item">
                         <b>Total Uploads</b> <a class="pull-right">{{ object.total_uploads }}</a>
                     </li>
-                    {% comment %}
-                    <li class="list-group-item">
-                        <b></b> <a class="pull-right">13,287</a>
-                    </li>
-                    {% endcomment %}
                 </ul>
 
-                {% if request.user.is_superuser or request.user.pk == object.pk %}
+                {% if request.user.is_manager or request.user.is_superuser %}
                     <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
+                {% endif %}
+                {% if request.user.pk == object.pk %}
+                    <a href="{% url 'password-change' %}" class="btn btn-default btn-block">change password</a>
                 {% endif %}
 
             </div>
@@ -64,15 +62,9 @@
                 <strong><i class="fa fa-pencil margin-r-5"></i> Groups</strong>
 
                 <p>
-                    {% if object.is_superuser %}
-                        <span class="label label-success">RACAdmin</span>
-                    {% endif %}
-                    {% if object.is_staff %}
-                        <span class="label label-success">RACUser</span>
-                    {% endif %}
-                    {% if object.is_org_admin %}
-                        <span class="label label-success">OrgAdmin</span>
-                    {% endif %}
+                  {% for group in object.groups.all %}
+                    <span class="label label-default">{{ group.name }}</span>
+                  {% endfor %}
                 </p>
             </div>
         </div>

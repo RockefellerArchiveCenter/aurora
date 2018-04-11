@@ -8,12 +8,17 @@
 	cursor: pointer;
 }
 .pointer-row:hover{
-	background-color: #00c0ef;
+	background-color: #00c0ef !important;
 }
 
 .mar-top20{
 	margin-top: 20px;
 }
+
+.mar-top10{
+	margin-top: 10px;
+}
+
 .box-comment-icon{
 	width: 30px;
 	height: 30px;
@@ -62,9 +67,6 @@
 	font-size: 30px;
 }
 
-
-
-
 .content-header > .breadcrumb {
 	display: block;
 	position: relative;
@@ -92,22 +94,6 @@
 	padding: 0;
 	border: none;
 	margin-top: 2px;
-}
-
-table {
-	font-family: arial, sans-serif;
-	border-collapse: collapse;
-	width: 100%;
-}
-
-td, th {
-  border: 1px solid #cccccc;
-  text-align: left;
-  padding: 8px;
-}
-
-tr:nth-child(even) {
-  background-color: #e0e0e0;
 }
 
 .container {

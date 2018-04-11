@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from django.utils.translation import gettext as _
+from django.apps import apps
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from transfer_app import RAC_CMD
 from django.urls import reverse
-from django.apps import apps
+from django.utils.translation import gettext as _
 
-from django.contrib import messages
-from django.conf import settings
-
+from transfer_app import RAC_CMD
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
@@ -30,6 +30,9 @@ class Organization(models.Model):
 
     def rights_statements(self):
         return self.rightsstatement_set.all()
+
+    def bagit_profiles(self):
+        return BagItProfile.objects.filter(applies_to_organization=self)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
@@ -96,6 +99,12 @@ class Organization(models.Model):
             return False
         return organization
 
+    def org_machine_upload_paths(self):
+        return [
+            '{}{}/upload/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name),
+            '{}{}/processing/'.format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
+        ]
+
     def __unicode__(self):
         return self.name
 
@@ -107,6 +116,10 @@ class Organization(models.Model):
 
 class User(AbstractUser):
 
+    appraiser_groups = [u"appraisal_archivists", u"managing_archivists"]
+    accessioner_groups = [u"accessioning_archivists", u"managing_archivists"]
+    managing_group = [u"managing_archivists"]
+
     organization =          models.ForeignKey(Organization, null=True, blank=False)
     is_machine_account =    models.BooleanField(default=True)
     from_ldap =             models.BooleanField(editable=False, default=False)
@@ -116,7 +129,36 @@ class User(AbstractUser):
     AbstractUser._meta.get_field('email').blank = False
 
     def in_group(self,GRP):
-        return User.objects.filter(pk=self.pk, groups_name=GRP).exists()
+        return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
+
+    def is_archivist(self):
+        """friendlier way to check if staff"""
+        return self.is_staff
+
+    def has_privs(self, priv_type=None):
+        """resolves group clusters for user object"""
+        if not self.is_staff:
+            return False
+        if self.is_superuser:
+            return True
+        groups = []
+        if priv_type == 'APPRAISER':
+            groups = User.appraiser_groups
+        elif priv_type == 'ACCESSIONER':
+            groups = User.accessioner_groups
+        elif priv_type == 'MANAGING':
+            groups = User.managing_group
+
+        if not groups: return False
+
+        return self.groups.filter(name__in=groups).exists()
+
+
+    def is_manager(self):
+        return self.groups.filter(name='managing_archivists').exists()
+
+    def can_appraise(self):
+        return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
     def check_password_ldap(self, password):
         from orgs.ldap_mixin import _LDAPUserExtension
@@ -262,7 +304,7 @@ class Archives(models.Model):
         (90, 'Accessioned')
     )
 
-    organization =          models.ForeignKey(Organization)
+    organization =          models.ForeignKey(Organization, related_name="transfers")
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =     models.CharField(max_length=100)
     machine_file_size =     models.CharField(max_length= 30)
@@ -284,9 +326,27 @@ class Archives(models.Model):
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
 
-    def gen_identifier(self,fname,org,date,time):
-        return "{}{}{}{}".format(fname,org,date,time)
+    @staticmethod
+    def gen_identifier(fname,org,date,time):
+        """returns an identifier if doesn't exists already, Else False"""
+        iden = "{}{}{}{}".format(fname,org,date,time)
+        return (False if Archives.objects.filter(machine_file_identifier = iden) else iden)
 
+    @classmethod
+    def initial_save(cls, org, user, file_path, file_size, file_modtime, identifier,file_type, bag_it_name):
+        archive = cls(
+            organization =          org,
+            user_uploaded =         user,
+            machine_file_path =     file_path,
+            machine_file_size =     file_size,
+            machine_file_upload_time =  file_modtime,
+            machine_file_identifier =   identifier,
+            machine_file_type       =   file_type,
+            bag_it_name =               bag_it_name,
+            process_status = 20
+        )
+        archive.save()
+        return archive
     def get_error_codes(self):
         if self.bag_it_valid:
             return ''
@@ -312,15 +372,8 @@ class Archives(models.Model):
     def get_bag_failure(self, LAST_ONLY = True):
         if self.bag_it_valid:
             return False
-        flist = [
-            'NORG','BFNM',
-            'BTAR','BTAR2','BZIP','BZIP2',
-            'BDIR','EXERR',
-            'GBERR', 'RBERR',
-            'MDERR', 'DTERR', 'FSERR',
-            'VIRUS','BIERR'
-        ]
-        get_error_obj = BAGLog.objects.filter(archive=self,code__code_short__in=flist)
+        flist = ['BE',]
+        get_error_obj = BAGLog.objects.filter(archive=self,code__code_type__in=flist)
         if not get_error_obj:
             return False
         return get_error_obj[0] if LAST_ONLY else get_error_obj
@@ -483,26 +536,37 @@ class Archives(models.Model):
         ordering = ['machine_file_upload_time']
 
 class BAGLogCodes(models.Model):
+    """
+    Codes used in writing logs items.
 
+    These codes are divided into four categories:
+        Bag Error - errors caused by an invalid bag, such as BagIt validation failure
+        General Error - errors not specifically caused by an invalid bag, such as a virus scan connection failure
+        Info - informational messages about system activity such as cron job start and end
+        Success - messages indicating the successful completion of a human or machine process or activity
+
+    Each code has a next_action field to provide information about additional system actions that have
+    occurred as a result of the successful or failed process or activity.
+    """
     eCat_bagit_validation = ['BTAR2','BZIP2',]
     eCat_rac_profile = ['FSERR','MDERR','DTERR']
 
     code_short = models.CharField(max_length=5)
     code_types = (
-        ('T', 'Transfer'),
-        ('E', 'Error'),
+        ('BE', 'Bag Error'),
+        ('GE', 'General Error'),
         ('I', 'Info'),
-
+        ('S', 'Success'),
     )
-    code_type = models.CharField(max_length=5, choices=code_types)
+    code_type = models.CharField(max_length=15, choices=code_types)
     code_desc = models.CharField(max_length=60)
+    next_action = models.CharField(max_length=255, null=True, blank=True)
     def __unicode__(self):
         return "{} : {}".format(self.code_short,self.code_desc)
 
 class BAGLog(models.Model):
-
     code = models.ForeignKey(BAGLogCodes)
-    archive = models.ForeignKey(Archives, blank=True,null=True)
+    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='notifications')
     log_info = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now=True)
 
@@ -539,8 +603,8 @@ class BAGLog(models.Model):
         ordering = ['-created_time']
 
 class BagInfoMetadata(models.Model):
-    archive =                       models.ForeignKey(Archives)
-    source_organization =           models.ForeignKey(Organization, blank=True,null=True)
+    archive =                       models.OneToOneField(Archives, related_name='metadata')
+    source_organization =           models.ForeignKey(Organization, blank=True,null=True,)
     external_identifier =           models.CharField(max_length=256)
     internal_sender_description =   models.TextField()
     title =                         models.CharField(max_length=256)
@@ -554,3 +618,87 @@ class BagInfoMetadata(models.Model):
     bag_group_identifier =          models.CharField(max_length=256)
     payload_oxum =                  models.CharField(max_length=20)
     bagit_profile_identifier =      models.URLField()
+
+class BagItProfile(models.Model):
+    applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
+    source_organization = models.ForeignKey(Organization, related_name='source_organization')
+    external_descripton = models.TextField(blank=True)
+    version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
+    bagit_profile_identifier = models.URLField(blank=True)
+    contact_email = models.EmailField()
+    allow_fetch = models.BooleanField(default=False)
+    SERIALIZATION_CHOICES = (
+        ('forbidden', 'forbidden'),
+        ('required', 'required'),
+        ('optional', 'optional'),
+    )
+    serialization = models.CharField(choices=SERIALIZATION_CHOICES, max_length=25, default='optional')
+
+class ManifestsRequired(models.Model):
+    MANIFESTS_REQUIRED_CHOICES = (
+        ('sha256', 'sha256'),
+        ('md5', 'md5')
+    )
+    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='manifests_required')
+
+class AcceptSerialization(models.Model):
+    ACCEPT_SERIALIZATION_CHOICES = (
+        ('application/zip', 'application/zip'),
+        ('application/x-tar', 'application/x-tar'),
+        ('application/x-gzip', 'application/x-gzip'),
+    )
+    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='accept_serialization')
+
+class AcceptBagItVersion(models.Model):
+    BAGIT_VERSION_NAME_CHOICES = (
+        ('0.96', '0.96'),
+        ('0.97', '0.97'),
+    )
+    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class TagManifestsRequired(models.Model):
+    TAG_MANIFESTS_REQUIRED_CHOICES = (
+        ('sha256', 'sha256'),
+        ('md5', 'md5')
+    )
+    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class TagFilesRequired(models.Model):
+    name = models.CharField(max_length=256)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class BagItProfileBagInfo(models.Model):
+    bagit_profile = models.ForeignKey(BagItProfile)
+    FIELD_CHOICES = (
+        ('source_organization', 'Source-Organization'),
+        ('organization_address', 'Organization-Address'),
+        ('contact_name', 'Contact-Name'),
+        ('contact_phone', 'Contact-Phone'),
+        ('contact_email', 'Contact-Email'),
+        ('external_descripton', 'External-Description'),
+        ('external_identifier', 'External-Identifier'),
+        ('internal_sender_description', 'Internal-Sender-Description'),
+        ('internal_sender_identifier', 'Internal-Sender-Identifier'),
+        ('title', 'Title'),
+        ('date_start', 'Date-Start'),
+        ('date_end', 'Date-End'),
+        ('record_creators', 'Record-Creators'),
+        ('record_type', 'Record-Type'),
+        ('language', 'Language'),
+        ('bagging_date', 'Bagging-Date'),
+        ('bag_group_identifier', 'Bag-Group-Identifier'),
+        ('bag_count', 'Bag-Count'),
+        ('bag_size', 'Bag-Size'),
+        ('payload_oxum', 'Payload-Oxum'),
+    )
+    field = models.CharField(choices=FIELD_CHOICES, max_length=100)
+    required = models.NullBooleanField(default=False, null=True)
+    repeatable = models.NullBooleanField(default=True, null=True)
+
+class BagItProfileBagInfoValues(models.Model):
+    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
+    name = models.CharField(max_length=256)
