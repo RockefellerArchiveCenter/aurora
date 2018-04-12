@@ -1,3 +1,6 @@
+before_script:
+  - cd /data/htdocs/aurora/project_electron
+
 stages:
   - test
 
