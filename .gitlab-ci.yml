@@ -7,4 +7,4 @@ build_aurora:
   tags:
     - build
     - test
-  script: ./manage.py test -v 3
+  script: pwd
