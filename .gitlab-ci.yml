@@ -1,0 +1,10 @@
+stages:
+  - test
+
+build_aurora:
+  stage:
+    test
+  tags:
+    - build
+    - test
+  script: ./manage.py test -v 3
