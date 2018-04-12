@@ -29,7 +29,7 @@ class Organization(models.Model):
     acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
 
     def rights_statements(self):
-        return self.rightsstatement_set.all()
+        return self.rightsstatement_set.filter(archive__isnull=True)
 
     def bagit_profiles(self):
         return BagItProfile.objects.filter(applies_to_organization=self)
