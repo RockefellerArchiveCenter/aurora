@@ -63,7 +63,7 @@ def delete_system_group(organization_machine_name):
     if not organization_machine_name.startswith('org'):
         return False
     has_ERR = False
-    command = 'sudo /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
+    command = 'sudo sh /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
     output = None
     try:
         output = check_output(command,shell=True,stderr=STDOUT)
