@@ -1,6 +1,10 @@
 FROM python:2.7
 
-RUN apt-get update && apt-get -y install apt-utils libsasl2-dev python-dev libldap2-dev libssl-dev &&  mkdir -p /data/htdocs
+RUN apt-get update && apt-get -y install apt-utils libsasl2-dev python-dev libldap2-dev libssl-dev
+
+COPY scripts/RAC* /usr/local/bin/
+
+RUN mkdir -p /data/htdocs
 
 COPY . /data/htdocs/aurora
 
