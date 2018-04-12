@@ -326,6 +326,9 @@ class Archives(models.Model):
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
 
+    def rights_statements(self):
+        return self.rightsstatement_set.all()
+
     @staticmethod
     def gen_identifier(fname,org,date,time):
         """returns an identifier if doesn't exists already, Else False"""
