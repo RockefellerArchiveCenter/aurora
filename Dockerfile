@@ -1,8 +1,16 @@
 FROM python:2.7
 
-RUN apt-get update && apt-get -y install sudo apt-utils libsasl2-dev python-dev libldap2-dev libssl-dev
+RUN apt-get update && apt-get -y install sudo apt-utils libsasl2-dev python-dev libldap2-dev libssl-dev python-pip libmysqlclient-dev vim ssh
+
+RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
 
 COPY scripts/RAC* /usr/local/bin/
+COPY scripts/ldap.secret /etc/
+COPY scripts/ldap.conf /etc/ldap/
+
+RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
+
+RUN chmod +x /usr/local/bin/RAC*
 
 RUN mkdir -p /data/htdocs/aurora/
 
