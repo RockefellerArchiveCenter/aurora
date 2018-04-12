@@ -5,7 +5,7 @@ import grp, pwd
 
 
 def add_org(org_name):
-    command = 'sudo /usr/local/bin/RACaddorg {}'.format(org_name)
+    command = 'sudo sh /usr/local/bin/RACaddorg {}'.format(org_name)
 
     output = None
     try:
@@ -78,7 +78,7 @@ def del_from_org(machine_user_id):
 
     for group in ugroups:
         
-        command = 'sudo /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
+        command = 'sudo sh /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
 
         output = None
         try:
