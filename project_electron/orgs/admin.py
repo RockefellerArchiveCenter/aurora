@@ -34,7 +34,7 @@ class BagInfoMetadata(admin.ModelAdmin):
 class AccessionAdmin(admin.ModelAdmin):
     pass
 
-  @admin.register(BagItProfile)
+@admin.register(BagItProfile)
 class BagItProfile(admin.ModelAdmin):
 	pass
 
