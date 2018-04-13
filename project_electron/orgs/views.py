@@ -1,19 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, View
-from django.contrib.auth.views import PasswordChangeView
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
-from django.urls import reverse
-from django.shortcuts import get_object_or_404
+from decimal import *
+import json
+from urlparse import urljoin
 
-from orgs.models import Organization, User, Archives
-from orgs.form import OrgUserUpdateForm, RACSuperUserUpdateForm, UserPasswordChangeForm
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
+from django.http import JsonResponse, Http404
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
+
+from orgs.models import Archives, Organization, User, BagItProfile
+from orgs.form import *
 from orgs.authmixins import *
 
 from rights.models import RightsStatement
 
+from transfer_app.mixins import JSONResponseMixin
 
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'
@@ -158,3 +165,101 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
     def get_success_url(self):
         return reverse('users-detail', kwargs={'pk': self.request.user.pk})
+
+class BagItProfileManageView(View):
+    template_name = 'orgs/bagit_profiles/manage.html'
+    model = BagItProfile
+
+    def get(self, request, *args, **kwargs):
+        applies_to_organization = Organization.objects.get(pk=self.kwargs.get('pk'))
+        source_organization = self.request.user.organization
+        profile = None
+        if 'profile_pk' in kwargs:
+            profile = get_object_or_404(BagItProfile, pk=self.kwargs.get('profile_pk'))
+            form = BagItProfileForm(instance=profile)
+        else:
+            form = BagItProfileForm(
+                initial={
+                    'applies_to_organization': applies_to_organization,
+                    'source_organization': source_organization,
+                    'contact_email': 'archive@rockarch.org',
+                }
+            )
+        bag_info_formset = BagItProfileBagInfoFormset(instance=profile, prefix='bag_info')
+        manifests_formset = ManifestsRequiredFormset(instance=profile, prefix='manifests')
+        serialization_formset = AcceptSerializationFormset(instance=profile, prefix='serialization')
+        version_formset = AcceptBagItVersionFormset(instance=profile, prefix='version')
+        tag_manifests_formset = TagManifestsRequiredFormset(instance=profile, prefix='tag_manifests')
+        tag_files_formset = TagFilesRequiredFormset(instance=profile, prefix='tag_files')
+        return render(request, self.template_name, {
+            'form': form,
+            'bag_info_formset': bag_info_formset,
+            'manifests_formset': manifests_formset,
+            'serialization_formset': serialization_formset,
+            'version_formset': version_formset,
+            'tag_manifests_formset': tag_manifests_formset,
+            'tag_files_formset': tag_files_formset,
+            'meta_page_title': 'BagIt Profile',
+            'organization': applies_to_organization,
+            })
+
+    def post(self, request, *args, **kwargs):
+        instance = None
+        if self.kwargs.get('profile_pk'):
+            instance = get_object_or_404(BagItProfile, pk=self.kwargs.get('profile_pk'))
+        form = BagItProfileForm(request.POST, instance=instance)
+        if form.is_valid():
+            bagit_profile = form.save()
+            bag_info_formset = BagItProfileBagInfoFormset(request.POST, instance=bagit_profile, prefix='bag_info')
+            manifests_formset = ManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='manifests')
+            serialization_formset = AcceptSerializationFormset(request.POST, instance=bagit_profile, prefix='serialization')
+            version_formset = AcceptBagItVersionFormset(request.POST, instance=bagit_profile, prefix='version')
+            tag_manifests_formset = TagManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='tag_manifests')
+            tag_files_formset = TagFilesRequiredFormset(request.POST, instance=bagit_profile, prefix='tag_files')
+            forms_to_save = [bag_info_formset, manifests_formset, serialization_formset, version_formset, tag_manifests_formset, tag_files_formset]
+            for formset in forms_to_save:
+                if formset.is_valid():
+                    formset.save()
+                else:
+                    print formset.errors
+                    return render(request, self.template_name, {
+                        'organization': bagit_profile.applies_to_organization,
+                        'form': bagit_profile,
+                        'bag_info_formset': bag_info_formset,
+                        'manifests_formset': manifests_formset,
+                        'serialization_formset': serialization_formset,
+                        'version_formset': version_formset,
+                        'tag_manifests_formset': tag_files_formset,
+                        'tag_files_formset': tag_files_formset,
+                        'meta_page_title': 'BagIt Profile',
+                        })
+            bagit_profile.version = bagit_profile.version + Decimal(1)
+            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(urljoin(reverse('organization-bagit-profiles', args={bagit_profile.applies_to_organization.pk}), '{}.json'.format(bagit_profile.pk)))
+            bagit_profile.save()
+            return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
+        return render(request, self.template_name, {
+            'form': form,
+            'organization': form.applies_to_organization,
+            'bag_info_formset': BagItProfileBagInfoFormset(request.POST, prefix='bag_info'),
+            'manifests_formset': ManifestsRequiredFormset(request.POST, prefix='manifests'),
+            'serialization_formset': AcceptSerializationFormset(request.POST, prefix='serialization'),
+            'version_formset': AcceptBagItVersionFormset(request.POST, prefix='version'),
+            'tag_manifests_formset': TagManifestsRequiredFormset(request.POST, prefix='tag_manifests'),
+            'tag_files_formset': TagFilesRequiredFormset(request.POST, prefix='tag_files'),
+            'meta_page_title': 'BagIt Profile',
+            })
+
+class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
+
+    def render_to_response(self, context, **kwargs):
+        if not self.request.is_ajax():
+            raise Http404
+        resp = {'success': 0}
+
+        if 'action' in self.kwargs:
+            obj = get_object_or_404(BagItProfile,pk=context['profile_pk'])
+            if self.kwargs['action'] == 'delete':
+                obj.delete()
+                resp['success'] = 1
+
+        return self.render_to_json_response(resp, **kwargs)

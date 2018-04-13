@@ -9,21 +9,17 @@ from orgs.accession.models import Accession
 
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
+class RecordType(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __unicode__(self): return self.name
 
 
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
     accession = models.ForeignKey(Accession, null=True, blank=True)
-    # Eventually these choices should be replaced by a call to get record types associated with this organization
-    APPLIES_TO_TYPE_CHOICES = (
-        ('administrative records', 'Administrative Records'),
-        ('annual reports', 'Annual Reports'),
-        ('board materials', 'Board Materials'),
-        ('communications and publications', 'Communications and Publications'),
-        ('grant records', 'Grant Records'),
-    )
-    applies_to_type = models.CharField(choices=APPLIES_TO_TYPE_CHOICES, max_length=100)
+    applies_to_type = models.ManyToManyField(RecordType)
     RIGHTS_BASIS_CHOICES = (
         ('Copyright', 'Copyright'),
         ('Statute', 'Statute'),
@@ -33,7 +29,7 @@ class RightsStatement(models.Model):
     rights_basis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
 
     def __unicode__(self):
-        return '{}: {}: {}'.format(self.organization, self.applies_to_type, self.rights_basis)
+        return '{}: {}'.format(self.organization, self.rights_basis)
 
     def get_rights_info_object(self):
         if self.rights_basis == 'Copyright':

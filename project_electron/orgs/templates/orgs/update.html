@@ -42,34 +42,14 @@
 </div>
 
 <div class="row">
-	<div class="col-md-12">
-		<div class="box box-info">
-			<div class="box-header with-border">
-				<h3 class="box-title">Bag-It Profile</h3>
-			</div>
-			<div class="box-body">
-						<div class="pull-left">bag it profile name</div>
-						<div class="pull-right">
-							<button href="#" class="btn btn-primary btn-sm">View</button>
-							<button href="#" class="btn btn-warning btn-sm">Edit</button>
-							<button href="#" class="btn btn-danger btn-sm">Delete</button>
-						</div>
-			</div>
-		</div>
+	<div class="col-sm-12">
+		{% include 'parts/profiles_box.html' %}
 	</div>
 </div>
 
 <div class="row">
-	<div class="col-md-12">
-		<div class="box box-info">
-			<div class="box-header with-border">
-				<h3 class="box-title">Rights Statements</h3>
-				{% if request.user.is_superuser %}<a href="{% url 'rights-add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
-			</div>
-			<div class="box-body {% if object.rights_statements %}no-padding{% endif %}">
-				{% include 'parts/rights_table.html' with org=object %}
-			</div>
-		</div>
+	<div class="col-sm-12">
+		{% include 'parts/rights_box.html' %}
 	</div>
 </div>
 

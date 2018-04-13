@@ -1,7 +1,6 @@
 import os
 from os import stat, remove, listdir, walk
 from os.path import isdir, getmtime, getsize, splitext, isfile
-from pwd import getpwuid
 import re
 import datetime
 import tarfile
@@ -9,14 +8,15 @@ import zipfile
 from distutils.dir_util import copy_tree
 from shutil import rmtree, move
 import psutil
-
-from transfer_app.lib.virus_scanner import VirusScan
+import pwd
 
 from django.conf import settings
+from project_electron import config
 from orgs.models import BAGLog, Organization
 
-import transfer_app.lib.log_print as Pter
 
+import transfer_app.lib.log_print as Pter
+from transfer_app.lib.virus_scanner import VirusScan
 
 def open_files_list():
     """Return a list of files open on the linux system"""
@@ -83,7 +83,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     return files
 
 def file_owner(file_path):
-    return getpwuid(stat(file_path).st_uid).pw_name
+    return pwd.getpwuid(stat(file_path).st_uid).pw_name
 
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(getmtime(file_path))
@@ -135,6 +135,23 @@ def tar_has_top_level_only(file_path):
             return False
     return top_dir
 
+def anon_extract_all(path, tmp_dir):
+    """determine which path type, return extraction results"""
+    # is it a dir
+    if isdir(path):
+        return dir_extract_all(path,tmp_dir)
+    else:
+        # is it a tar
+        if path.endswith('tar.gz') or path.endswith('.tar'):
+            return tar_extract_all(path, tmp_dir)
+
+        # is it a zip
+        if path.endswith('.zip'):
+            return zip_extract_all(path, tmp_dir)
+
+    return False
+
+
 def zip_extract_all(file_path, tmp_dir):
     extracted = False
     try:
@@ -151,6 +168,7 @@ def tar_extract_all(file_path, tmp_dir):
     try:
         tf = tarfile.open(file_path, 'r:*')
         tf.extractall(tmp_dir)
+        print tmp_dir
         tf.close()
         extracted = True
     except Exception as e:
@@ -235,3 +253,8 @@ def get_file_contents(f):
         print e
     finally:
         return data
+
+def chown_path_to_root(path):
+    if is_dir_or_file(path):
+        root_uid = pwd.getpwnam('root').pw_uid
+        os.chown(path,root_uid,root_uid)

@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import datetime
 from dateutil.relativedelta import relativedelta
 
-from django.utils.translation import gettext as _
+from django.apps import apps
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from transfer_app import RAC_CMD
 from django.urls import reverse
-from django.apps import apps
+from django.utils.translation import gettext as _
 
-from django.contrib import messages
-from django.conf import settings
-
+from transfer_app import RAC_CMD
 from transfer_app.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
@@ -30,6 +30,9 @@ class Organization(models.Model):
 
     def rights_statements(self):
         return self.rightsstatement_set.all()
+
+    def bagit_profiles(self):
+        return BagItProfile.objects.filter(applies_to_organization=self)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by('username')
@@ -324,9 +327,27 @@ class Archives(models.Model):
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
 
-    def gen_identifier(self,fname,org,date,time):
-        return "{}{}{}{}".format(fname,org,date,time)
+    @staticmethod
+    def gen_identifier(fname,org,date,time):
+        """returns an identifier if doesn't exists already, Else False"""
+        iden = "{}{}{}{}".format(fname,org,date,time)
+        return (False if Archives.objects.filter(machine_file_identifier = iden) else iden)
 
+    @classmethod
+    def initial_save(cls, org, user, file_path, file_size, file_modtime, identifier,file_type, bag_it_name):
+        archive = cls(
+            organization =          org,
+            user_uploaded =         user,
+            machine_file_path =     file_path,
+            machine_file_size =     file_size,
+            machine_file_upload_time =  file_modtime,
+            machine_file_identifier =   identifier,
+            machine_file_type       =   file_type,
+            bag_it_name =               bag_it_name,
+            process_status = 20
+        )
+        archive.save()
+        return archive
     def get_error_codes(self):
         if self.bag_it_valid:
             return ''
@@ -605,3 +626,87 @@ class BagInfoMetadata(models.Model):
     bag_group_identifier =          models.CharField(max_length=256)
     payload_oxum =                  models.CharField(max_length=20)
     bagit_profile_identifier =      models.URLField()
+
+class BagItProfile(models.Model):
+    applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
+    source_organization = models.ForeignKey(Organization, related_name='source_organization')
+    external_descripton = models.TextField(blank=True)
+    version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
+    bagit_profile_identifier = models.URLField(blank=True)
+    contact_email = models.EmailField()
+    allow_fetch = models.BooleanField(default=False)
+    SERIALIZATION_CHOICES = (
+        ('forbidden', 'forbidden'),
+        ('required', 'required'),
+        ('optional', 'optional'),
+    )
+    serialization = models.CharField(choices=SERIALIZATION_CHOICES, max_length=25, default='optional')
+
+class ManifestsRequired(models.Model):
+    MANIFESTS_REQUIRED_CHOICES = (
+        ('sha256', 'sha256'),
+        ('md5', 'md5')
+    )
+    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='manifests_required')
+
+class AcceptSerialization(models.Model):
+    ACCEPT_SERIALIZATION_CHOICES = (
+        ('application/zip', 'application/zip'),
+        ('application/x-tar', 'application/x-tar'),
+        ('application/x-gzip', 'application/x-gzip'),
+    )
+    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name='accept_serialization')
+
+class AcceptBagItVersion(models.Model):
+    BAGIT_VERSION_NAME_CHOICES = (
+        ('0.96', '0.96'),
+        ('0.97', '0.97'),
+    )
+    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class TagManifestsRequired(models.Model):
+    TAG_MANIFESTS_REQUIRED_CHOICES = (
+        ('sha256', 'sha256'),
+        ('md5', 'md5')
+    )
+    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class TagFilesRequired(models.Model):
+    name = models.CharField(max_length=256)
+    bagit_profile = models.ForeignKey(BagItProfile)
+
+class BagItProfileBagInfo(models.Model):
+    bagit_profile = models.ForeignKey(BagItProfile)
+    FIELD_CHOICES = (
+        ('source_organization', 'Source-Organization'),
+        ('organization_address', 'Organization-Address'),
+        ('contact_name', 'Contact-Name'),
+        ('contact_phone', 'Contact-Phone'),
+        ('contact_email', 'Contact-Email'),
+        ('external_descripton', 'External-Description'),
+        ('external_identifier', 'External-Identifier'),
+        ('internal_sender_description', 'Internal-Sender-Description'),
+        ('internal_sender_identifier', 'Internal-Sender-Identifier'),
+        ('title', 'Title'),
+        ('date_start', 'Date-Start'),
+        ('date_end', 'Date-End'),
+        ('record_creators', 'Record-Creators'),
+        ('record_type', 'Record-Type'),
+        ('language', 'Language'),
+        ('bagging_date', 'Bagging-Date'),
+        ('bag_group_identifier', 'Bag-Group-Identifier'),
+        ('bag_count', 'Bag-Count'),
+        ('bag_size', 'Bag-Size'),
+        ('payload_oxum', 'Payload-Oxum'),
+    )
+    field = models.CharField(choices=FIELD_CHOICES, max_length=100)
+    required = models.NullBooleanField(default=False, null=True)
+    repeatable = models.NullBooleanField(default=True, null=True)
+
+class BagItProfileBagInfoValues(models.Model):
+    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
+    name = models.CharField(max_length=256)

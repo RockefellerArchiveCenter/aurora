@@ -5,30 +5,27 @@ import json
 from os.path import isfile, join
 from pycountry import languages
 
+from django.conf import settings
+from project_electron import config
+
 from transfer_app.lib import files_helper as FH
 from transfer_app.form import BagInfoForm
 from orgs.models import BAGLog, Archives
-
-
 
 class bagChecker():
 
     def __init__(self,archiveObj):
 
-        self.tmp_path = '/data/tmp/'
-
+        self.tmp_path = settings.TRANSFER_EXTRACT_TMP
         self.RAC_profile_identifier = 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json'
         self.bag_dates_to_validate = ['Date_Start', 'Date_End', 'Bagging_Date']
-
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
         self.archive_path = '{}{}'.format(self.tmp_path, self.archiveObj.bag_it_name)
         self.ecode = ''
         self.bag = {}
-        self.bag_info_data = []
+        self.bag_info_data = {}
         self.bag_exception = ''
-
-
 
     def _extract_archive(self):
         print 'attempts to archive'
@@ -121,13 +118,11 @@ class bagChecker():
     def _has_valid_datatypes(self):
         """Assumes a valid bag/bag info; returns true if all datatypes in bag pass"""
         dates = []
-
-        for k, v in self.bag_info_data.iteritems():
+        for k,v in self.bag_info_data.iteritems():
             if k in self.bag_dates_to_validate:
                 dates.append(v)
 
         langz = self.bag_info_data.get('Language', None)
-
         if dates:
             for date in dates:
                 try:
@@ -171,6 +166,7 @@ class bagChecker():
             return self.bag_failed()
 
         if not self._is_generic_bag():
+            print 'didnt pass bag validation'
             self.ecode = 'GBERR'
             return self.bag_failed()
 
@@ -193,14 +189,17 @@ class bagChecker():
 
         if not self._has_valid_metadata_file():
             self.ecode = 'MDERR'
+            print 'metadata file is not valid'
             return self.bag_failed()
 
         if not self.archiveObj.save_bag_data(self.bag_info_data):
             self.ecode = 'BIERR'
+            print 'could not save bag-info data'
             return self.bag_failed()
 
         if not self.archiveObj.assign_rights():
             self.ecode = 'RSERR'
+            print 'could not assign rights'
             return self.bag_failed()
 
         BAGLog.log_it('PBAGP', self.archiveObj)
