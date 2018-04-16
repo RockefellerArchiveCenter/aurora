@@ -64,7 +64,7 @@ ROOT_URLCONF = 'project_electron.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'orgs', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -199,4 +199,7 @@ TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
 TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
 
 TEST_BAGS_DIR = CF.TEST_BAGS_DIR
+<<<<<<< HEAD
 TEST_USER = CF.TEST_USER
+=======
+>>>>>>> master

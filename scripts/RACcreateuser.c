@@ -13,7 +13,7 @@
  *       objectClass: person
  *       objectClass: posixAccount
  *       objectClass: top
- *       cn: RA00001                
+ *       cn: RA00001
  *       uid: RA00001
  *       sn: na
  *       uidNumber: 900001
@@ -37,10 +37,10 @@
 //
 //
 
-const char *_LDAPSERVER = "xx.xx.xx.xx";
+const char *_LDAPSERVER = "10.10.1.236";
 const char *_LDAPSEARCHBASE = "ou=People,dc=ROCK,dc=org,dc=gke";
 const char _LDAPUSER[1024];
-const char *_LDAPSECRET = "/path/to/ldap/pw";
+const char *_LDAPSECRET = "/etc/ldap.secret";
 
 
 const char *INIT_HOME = "/home/%s";
@@ -85,7 +85,7 @@ char *rtrim(char *s)
 
 char *trim(char *s)
 {
-    return rtrim(ltrim(s)); 
+    return rtrim(ltrim(s));
 }
 
 int lookuprootdn() {
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
 
     char syscall[1024];
 
-    //Start syslog	
+    //Start syslog
     openlog ("RACcreateuser", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
     syslog(LOG_NOTICE, "RACcreateuser started by User %d", getuid ());
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
 
     // Get the ldap password
     if ((passwd = fopen(_LDAPSECRET, "r")) == NULL) {
-        syslog(LOG_NOTICE, "FATAL: Could not open LDAP password file."); 
+        syslog(LOG_NOTICE, "FATAL: Could not open LDAP password file.");
         exit(1);
     }
     fgets(_LDAPPASSWD, 1024, passwd);
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
     {
 	//No account specified on command line; ask the user for input.
         syslog(LOG_NOTICE, "FATAL: No USERID on input parm.");
-        exit(2); 
+        exit(2);
     }
     else
     {
@@ -181,9 +181,9 @@ int main(int argc, char *argv[]) {
      /* Get a handle to an LDAP connection. */
 
      if ( (ld = ldap_init( _LDAPSERVER, LDAP_PORT )) == NULL ) {
-          perror( "ldap_init" );
+          perror( "ldap_initialize" );
           return( 1 );
-     } 
+     }
 
     int rc;
     int protocol_version = LDAP_VERSION3;
@@ -317,7 +317,7 @@ int main(int argc, char *argv[]) {
             syslog(LOG_NOTICE, "Account %s created sucessfully.\n",ldap_firstaccount);
         }
 
-// Change the "finger" information for the user. 
+// Change the "finger" information for the user.
     snprintf(syscall, 1024, "%s -f \"%s\" -o \"%s\" -w \"%s\" %s",
              chfn, ldap_fullname, ldap_roomnumber,
              ldap_phonenumber, ldap_firstaccount);
