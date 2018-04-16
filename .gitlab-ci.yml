@@ -10,4 +10,6 @@ build_aurora:
   tags:
     - build
     - test
-  script: ./manage.py test transfer_app.test -v 3
+  script: 
+    - ./manage.py test transfer_app.test -v 3
+    - export
