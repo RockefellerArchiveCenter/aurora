@@ -65,9 +65,9 @@ class RightsGrantedForm(forms.ModelForm):
         widgets = {
             'act': forms.widgets.Select(attrs={'class': 'form-control'}),
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
-            'start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+			      'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'rights_granted_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
@@ -103,13 +103,12 @@ class RightsCopyrightForm(forms.ModelForm):
         widgets = {
             'copyright_status': forms.widgets.Select(attrs={'class': 'form-control'}),
             'copyright_jurisdiction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'copyright_status_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'copyright_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'copyright_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'copyright_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
-            'copyright_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
-            'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
-
+            'copyright_status_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'copyright_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'copyright_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+			      'copyright_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
+			      'copyright_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
+			      'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 class RightsStatuteForm(forms.ModelForm):
     class Meta:
@@ -143,10 +142,10 @@ class RightsStatuteForm(forms.ModelForm):
         widgets = {
             'statute_jurisdiction': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_citation': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'statute_determination_date': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'statute_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'statute_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'statute_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'statute_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'statute_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'statute_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+			      'statute_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}) }
 
@@ -178,9 +177,9 @@ class RightsOtherRightsForm(forms.ModelForm):
             }
         widgets = {
             'other_rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
-            'other_rights_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'other_rights_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'other_rights_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'other_rights_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'other_rights_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+			      'other_rights_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'other_rights_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'other_rights_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3})
             }
@@ -211,9 +210,9 @@ class RightsLicenseForm(forms.ModelForm):
             'license_end_date_period': "The number of years after the end date for which this rights basis applies. Will be used to calculate date ranges based on dates for each transfer",}
         widgets = {
             'license_terms': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'license_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'license_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control'}),
-            'license_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'license_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+            'license_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
+			      'license_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 

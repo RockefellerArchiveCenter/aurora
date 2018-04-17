@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from accession.views import *
+from orgs.accession.views import *
 
 urlpatterns = [
     url(r'^$', 	AccessionView.as_view(), name='accession-main'),

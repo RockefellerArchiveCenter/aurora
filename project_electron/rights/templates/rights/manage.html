@@ -23,28 +23,36 @@
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
               {% for form in copyright_form %}
-                {% include 'rights/form_fields.html' %}
+                {% for field in form.visible_fields %}
+                  {% include 'rights/form_fields.html' %}
+                {% endfor %}
               {% endfor %}
             </div>
             <div id='license_formset'>
               {{ license_form.management_form }}
               {{ license_form.non_form_errors }}
               {% for form in license_form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
+                {% endfor %}
               {% endfor %}
             </div>
             <div id='statute_formset'>
               {{ statute_form.management_form }}
               {{ statute_form.non_form_errors }}
               {% for form in statute_form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
+                {% endfor %}
               {% endfor %}
             </div>
             <div id='other_formset'>
               {{ other_form.management_form }}
               {{ other_form.non_form_errors }}
               {% for form in other_form %}
+                {% for field in form.visible_fields %}
                   {% include 'rights/form_fields.html' %}
+                {% endfor %}
               {% endfor %}
             </div>
             {% if granted_formset %}
@@ -60,7 +68,9 @@
                         <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
                       </div>
                     </div>
-        	        {% include 'rights/form_fields.html' %}
+                    {% for field in form.visible_fields %}
+                      {% include 'rights/form_fields.html' %}
+                    {% endfor %}
                 </div>
               </div>
         	    {% endfor %}

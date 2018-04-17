@@ -26,7 +26,7 @@ urlpatterns = [
     url(r'^app/orgs/',          include('orgs.urls')),
     url(r'^app/users/',         include('orgs.user_urls')),
     url(r'^app/password/',      include('rac_user.urls')),
-    url(r'^app/accession/',     include('accession.urls')),
+    url(r'^app/accession/',     include('orgs.accession.urls')),
     url(r'^app/appraise/',      include('orgs.appraise.urls')),
     url(r'^app/rights/',        include('rights.urls')),
     url(r'^$',                  SplashView.as_view()),
