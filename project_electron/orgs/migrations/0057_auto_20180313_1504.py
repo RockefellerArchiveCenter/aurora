@@ -32,7 +32,7 @@ def add_codes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('orgs', '0049_auto_20171221_1631'),
+        ('orgs', '0056_auto_20171221_1631'),
     ]
 
     operations = [
