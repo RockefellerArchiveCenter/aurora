@@ -24,7 +24,7 @@
     <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-body">
-          {% include 'rights/form_fields.html' with field=form.resource %}
+          {% include 'accession/form_fields.html' with field=form.resource %}
           <button class="btn btn-default">Find in ArchivesSpace</button>
         </div>
       </div>
@@ -33,13 +33,13 @@
 
   <div class="box box-primary">
     <div class="box-body">
-      {% include 'rights/form_fields.html' with field=form.title %}
+      {% include 'accession/form_fields.html' with field=form.title %}
       <div class="row">
         <div class="col-md-6">
-          {% include 'rights/form_fields.html' with field=form.start_date%}
+          {% include 'accession/form_fields.html' with field=form.start_date%}
         </div>
         <div class="col-md-6">
-          {% include 'rights/form_fields.html' with field=form.end_date%}
+          {% include 'accession/form_fields.html' with field=form.end_date%}
         </div>
       </div>
       <!-- Leaving this unimplemented for now because we'll need to build out ArchivesSpace integration first -->
@@ -75,9 +75,9 @@
         </div>
       </div>
       {{form.access_restriction}}
-      {% include 'rights/form_fields.html' with field=form.description %}
-      {% include 'rights/form_fields.html' with field=form.access_restrictions %}
-      {% include 'rights/form_fields.html' with field=form.use_restrictions %}
+      {% include 'accession/form_fields.html' with field=form.description %}
+      {% include 'accession/form_fields.html' with field=form.access_restrictions %}
+      {% include 'accession/form_fields.html' with field=form.use_restrictions %}
     </div>
   </div>
 
@@ -92,7 +92,6 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Record Type</th>
             <th>Basis</th>
             <th>Rights Notes</th>
           </tr>
@@ -101,7 +100,6 @@
           {% regroup rights_statements by rights_group as merged_rights %}
           {% for statement in merged_rights %}
           <tr>
-            <td>{{statement.list.0.applies_to_type}}</td>
             <td>{{statement.list.0.rights_basis}}</td>
             <td>{{statement.list.0.get_table_data.notes}}</td>
           </tr>
