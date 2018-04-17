@@ -49,7 +49,7 @@
         {% endcomment %}
 
         <li>
-          <h5 id="welcomeli">{{request.user.username}}</h5>
+          <h5 id="welcomeli">{% if request.user.first_name %}{{request.user.first_name}}{% else %}{{request.user.username}}{% endif %}</h5>
         </li>
 
         <!-- User Account Menu -->
