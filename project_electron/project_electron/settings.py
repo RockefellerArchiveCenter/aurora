@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'orgs.middleware.AuthenticationMiddlewareJWT'
 ]
 
 ROOT_URLCONF = 'project_electron.urls'
@@ -82,7 +83,15 @@ WSGI_APPLICATION = 'project_electron.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 50
+    'PAGE_SIZE': 50,
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
 # Database
@@ -199,4 +208,3 @@ TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
 
 TEST_BAGS_DIR = CF.TEST_BAGS_DIR
 TEST_USER = CF.TEST_USER
-
