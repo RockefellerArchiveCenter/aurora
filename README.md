@@ -13,6 +13,24 @@ Aurora is a Django web application that can receive, virus check and validate tr
 
 Application functionality currently assumes a SLES server and a particular LDAP configuration. Future development will include improving the portability of the application.
 
+
+## API
+
+Aurora comes with a RESTful API, built using the Django Rest Framework. In addition to interacting with the API via your favorite command-line client, you can also use the browsable API interface available in the application.
+
+### Authentication
+
+Aurora uses JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
+
+To get your token, send a POST request to the `/get-token/` endpoint, passing your username and password:
+
+      $ curl -X POST -d "username=admin&password=password123" http://localhost:8000/api/get-token/
+
+Your token will be returned in the response. You can then use the token in requests such as:
+
+      $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/orgs/1/
+
+
 ## User groups and permissions
 
 Aurora implements the following user groups and associated permissions:
