@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 import random
+from rights.models import RightsStatementCopyright, RightsStatementLicense, RightsStatementOther, RightsStatementStatute
 
 # Variables and setup routines for RightsStatements
 
@@ -52,3 +53,14 @@ grant_data = {
     'rightsstatementrightsgranted_set-0-restriction': random.choice(['allow', 'disallow', 'conditional']),
     'rightsstatementrightsgranted_set-0-rights_granted_note': 'Grant note'
 }
+
+
+def get_rights_basis_type(rights_statement):
+    if rights_statement.rights_basis == 'Statute':
+        return RightsStatementStatute
+    elif rights_statement.rights_basis == 'Other':
+        return RightsStatementOther
+    elif rights_statement.rights_basis == 'Copyright':
+        return RightsStatementCopyright
+    elif rights_statement.rights_basis == 'License':
+        return RightsStatementLicense
