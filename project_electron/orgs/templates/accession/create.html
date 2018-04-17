@@ -92,7 +92,6 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Record Type</th>
             <th>Basis</th>
             <th>Rights Notes</th>
           </tr>
@@ -101,7 +100,6 @@
           {% regroup rights_statements by rights_group as merged_rights %}
           {% for statement in merged_rights %}
           <tr>
-            <td>{{statement.list.0.applies_to_type}}</td>
             <td>{{statement.list.0.rights_basis}}</td>
             <td>{{statement.list.0.get_table_data.notes}}</td>
           </tr>
