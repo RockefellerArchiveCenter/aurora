@@ -31,7 +31,7 @@ class RightsStatementSerializer(serializers.BaseSerializer):
                 'terms': getattr(basis_obj, 'license_terms', ''),
             }
         if obj.rights_basis == 'Statute':
-            basis_obj = RightsStatementStatue.objects.get(rights_statement=obj)
+            basis_obj = RightsStatementStatute.objects.get(rights_statement=obj)
             basis_dict = {
                 'jurisdiction': getattr(basis_obj, 'statute_jurisdiction', ''),
                 'determination_date': getattr(basis_obj, 'statute_status_determination_date', ''),
