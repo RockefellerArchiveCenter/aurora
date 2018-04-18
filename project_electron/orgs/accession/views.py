@@ -37,7 +37,6 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        print form
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
