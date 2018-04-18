@@ -2,19 +2,26 @@
 from __future__ import unicode_literals
 import os
 import pwd
-from django.test import TransactionTestCase
+import random
+from django.test import TransactionTestCase, Client
 from django.conf import settings
+from django.urls import reverse
 from orgs import test_helpers
 from orgs.test.setup_tests import *
 from transfer_app.lib.transfer_routine import *
 from transfer_app.lib.files_helper import *
 from transfer_app.lib.bag_checker import bagChecker
-from orgs.models import Archives
+from orgs.models import Archives, User
 
 
 class BagTestCase(TransactionTestCase):
     def setUp(self):
         self.orgs = test_helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
+        self.baglogcodes = test_helpers.create_test_baglogcodes()
+        self.groups = test_helpers.create_test_groups(['managing_archivists'])
+        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.user.groups = self.groups
+        self.client = Client()
 
     def test_bags(self):
 
@@ -93,6 +100,29 @@ class BagTestCase(TransactionTestCase):
                 ###############
                 # END -- TEST RESULTS OF Bag Checker
                 ###############
+
+                ###############
+                # START -- TEST Views
+                ###############
+
+                self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
+                for view in ['organization-list', 'archives-list', 'baglog-list', 'user-list', 'user-current']:
+                    resp = self.client.get(reverse(view))
+                    self.assertEqual(resp.status_code, 200)
+
+                for view in ['organization-detail', 'organization-events', 'organization-transfers']:
+                    resp = self.client.get(reverse(view, kwargs={'pk': random.choice(Organization.objects.all()).pk}))
+                    self.assertEqual(resp.status_code, 200)
+
+                resp = self.client.get(reverse('archives-detail', kwargs={'pk': random.choice(Archives.objects.all()).pk}))
+                self.assertEqual(resp.status_code, 200)
+
+                resp = self.client.get(reverse('baglog-detail', kwargs={'pk': random.choice(BAGLog.objects.all()).pk}))
+                self.assertEqual(resp.status_code, 200)
+
+                resp = self.client.get(reverse('user-detail', kwargs={'pk': random.choice(User.objects.all()).pk}))
+                self.assertEqual(resp.status_code, 200)
+
 
     def tearDown(self):
         test_helpers.delete_test_orgs(self.orgs)

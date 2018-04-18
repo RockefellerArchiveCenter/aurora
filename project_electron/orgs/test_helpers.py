@@ -114,6 +114,27 @@ def delete_test_orgs(orgs=[]):
         org.delete()
 
 
+def create_test_baglogcodes():
+    baglogcodes = (
+        ('ASAVE', 'I'),
+        ('PBAG', 'S'),
+        ('PBAGP', 'S'),
+        ('GBERR', 'BE'),
+        ('DTERR', 'BE'),
+        ('MDERR', 'BE'),
+    )
+    code_objects = []
+    for code in baglogcodes:
+        bag_log_code = BAGLogCodes(
+            code_short=code[0],
+            code_type=code[1],
+            code_desc=random_string(50),
+        )
+        bag_log_code.save()
+        code_objects.append(bag_log_code)
+    return code_objects
+
+
 # Creates test user given a username and organization.
 # If no username is given, the default username supplied in settings is used.
 # If no organization is given, an organization is randomly chosen.
