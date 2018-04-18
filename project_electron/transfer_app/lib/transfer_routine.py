@@ -115,7 +115,7 @@ class TransferRoutine(object):
     # remove org from Routine and log
     if ck > 0:
       self.active_organizations = [org for org in self.active_organizations if org not in orgs_to_remove]
-      Pter.plines(['{} orgs where removed from routine'.format(len(orgs_to_remove))])
+      Pter.plines(['{} orgs were removed from routine'.format(len(orgs_to_remove))])
 
   def build_contents_dictionary(self):
     org_dir_contents = {}
