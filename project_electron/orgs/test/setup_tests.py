@@ -41,3 +41,45 @@ bags_ref = (
     # ('no_metadata_file', '', ''),
     # ('empty_payload_directory', 'GBERR', True),
 )
+
+user_data = {'active': True, 'first_name': 'John', 'last_name': 'Doe', 'email':'test@example.org'}
+
+org_data = {'active': True, 'name': 'Test Organization', 'acquisition_type': 'donation'}
+
+views = {
+    'all': {
+        'list': [],
+        'org': [],
+        'archive': [],
+        'rights': [],
+        'profiles': [],
+    }
+    'donor': {
+        'list': [],
+        'org': [],
+        'archive': [],
+        'rights': [],
+        'profiles': [],
+    }
+    'managing_archivists': {
+        'list': [],
+        'org': [],
+        'archive': [],
+        'rights': [],
+        'profiles': [],
+    }
+    'accessioning_archivists': {
+        'list': [],
+        'org': [],
+        'archive': [],
+        'rights': [],
+        'profiles': [],
+    }
+    'appraisal_archivists': {
+        'list': [],
+        'org': [],
+        'archive': [],
+        'rights': [],
+        'profiles': [],
+    }
+}
