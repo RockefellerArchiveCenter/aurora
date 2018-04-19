@@ -64,10 +64,19 @@ class BagItProfileTestCase(TestCase):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
         profile = random.choice(self.bagitprofiles)
         org = profile.applies_to_organization
+
+        response = self.client.get(reverse('bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
+        self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
         self.assertEqual(response.status_code, 200)
-        add_response = self.client.get(reverse('bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
-        self.assertEqual(add_response.status_code, 200)
+
+        for view in ['bagitprofile-detail', 'organization-bagit-profiles']:
+            response = self.client.get(reverse(view, kwargs={'pk': org.pk}))
+            self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('bagitprofile-list'))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('organization-bagit-profiles/(?P<number>[0-9]+)', kwargs={'pk': org.pk, 'number': profile.pk}))
+        self.assertEqual(response.status_code, 200)
 
         # Creating new BagItProfile
         organization = random.choice(self.orgs)
