@@ -7,7 +7,7 @@ import pwd
 import random
 import string
 from django.contrib.auth.models import Group
-from orgs.models import Archives, Organization, User, BAGLogCodes
+from orgs.models import Archives, Organization, User, BAGLogCodes, RecordCreators
 from orgs.test import setup_tests as org_setup
 from rights.models import *
 from project_electron import config, settings
@@ -264,3 +264,30 @@ def create_rights_granted(rights_statement=None, granted_count=1):
         rights_granted.save()
         all_rights_granted.append(rights_granted)
     return all_rights_granted
+
+
+def create_test_record_creators(count=1):
+    record_creators = []
+    for n in xrange(count):
+        record_creator = RecordCreators(
+            name=random_string(50)
+        )
+        record_creator.save()
+        record_creators.append(record_creator)
+    return record_creators
+
+
+accession_data = {
+    'use_restrictions': random_string(100),
+    'access_restrictions': random_string(100),
+    'resource': 'http://example.org',
+    'description': random_string(150),
+    'end_date': random_date(1990),
+    'extent_size': '17275340',
+    'acquisition_type': random.choice(['donation', 'deposit', 'gift']),
+    'title': random_string(255),
+    'accession_number': '2018.184',
+    'start_date': random_date(1960),
+    'extent_files': '14',
+    'appraisal_note': random_string(150)
+}
