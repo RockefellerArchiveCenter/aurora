@@ -76,8 +76,8 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         else:
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
 
+        rights_statement.applies_to_type.clear()
         for record_type in applies_to_type:
-            rights_statement.applies_to_type.clear()
             rights_statement.applies_to_type.add(record_type)
 
         formset_data = self.get_formset(rights_statement.rights_basis)

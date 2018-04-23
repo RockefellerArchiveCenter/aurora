@@ -7,7 +7,8 @@ from rest_framework.response import Response
 
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
-from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer
+from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
+from rights.models import RightsStatement
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
@@ -49,6 +50,13 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         if page is not None:
             serializer = BAGLogSerializer(page, context={'request': request}, many=True)
             return self.get_paginated_response(serializer.data)
+        return Response(serializer.data)
+
+    @detail_route()
+    def rights_statements(self, request, *args, **kwargs):
+        org = self.get_object()
+        rights_statements = RightsStatement.objects.filter(archive__isnull=True, organization=org)
+        serializer = RightsStatementSerializer(rights_statements, context={'request': request}, many=True)
         return Response(serializer.data)
 
 

@@ -310,7 +310,8 @@ class Archives(models.Model):
         (40, 'Validated'),
         (60, 'Rejected'),
         (70, 'Accepted'),
-        (90, 'Accessioned')
+        (75, 'Accessioning Started'),
+        (90, 'Accession Complete')
     )
 
     organization =          models.ForeignKey(Organization, related_name="transfers")
@@ -481,6 +482,13 @@ class Archives(models.Model):
                 if field_value:
                     values[field_name] = getattr(bag_data, field_name, None)
         return values
+
+    def get_records_creators(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        if bag_data:
+            return list(bag_data.record_creators.all())
+        else:
+            return []
 
     def assign_rights(self):
         try:
