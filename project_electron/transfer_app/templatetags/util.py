@@ -9,4 +9,6 @@ def get_type(value):
 
 @register.filter
 def has_group(user, group_name):
+    if not user:
+        return False
     return user.groups.filter(name=group_name).exists()

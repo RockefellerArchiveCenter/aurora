@@ -2,7 +2,55 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
-from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, TagFilesRequired, TagManifestsRequired, AcceptSerialization, AcceptBagItVersion, User
+from orgs.models import *
+from rights.models import *
+
+
+class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RightsStatementRightsGranted
+        fields = ('act', 'start_date', 'end_date', 'rights_granted_note', 'restriction')
+
+
+class RightsStatementSerializer(serializers.BaseSerializer):
+    def to_representation(self, obj):
+        basis_key = obj.rights_basis.lower()
+        rights_granted = RightsStatementRightsGrantedSerializer(
+            RightsStatementRightsGranted.objects.filter(rights_statement=obj), many=True)
+
+        if obj.rights_basis == 'Copyright':
+            basis_obj = RightsStatementCopyright.objects.get(rights_statement=obj)
+            basis_dict = {
+                'jurisdiction': getattr(basis_obj, 'copyright_jurisdiction', ''),
+                'determination_date': getattr(basis_obj, 'copyright_status_determination_date', ''),
+            }
+        elif obj.rights_basis == 'License':
+            basis_obj = RightsStatementLicense.objects.get(rights_statement=obj)
+            basis_dict = {
+                'terms': getattr(basis_obj, 'license_terms', ''),
+            }
+        if obj.rights_basis == 'Statute':
+            basis_obj = RightsStatementStatute.objects.get(rights_statement=obj)
+            basis_dict = {
+                'jurisdiction': getattr(basis_obj, 'statute_jurisdiction', ''),
+                'determination_date': getattr(basis_obj, 'statute_status_determination_date', ''),
+                'citation': getattr(basis_obj, 'statute_citation', ''),
+            }
+        if obj.rights_basis == 'Other':
+            basis_obj = RightsStatementOther.objects.get(rights_statement=obj)
+            basis_dict = {
+                'other_rights_basis': getattr(basis_obj, 'other_rights_basis', ''),
+            }
+        common_dict = {
+            'rights_basis': obj.rights_basis,
+            'start_date': getattr(basis_obj, '{}_applicable_start_date'.format(basis_key), ''),
+            'end_date': getattr(basis_obj, '{}_applicable_end_date'.format(basis_key), ''),
+            'note': getattr(basis_obj, '{}_note'.format(basis_key), ''),
+            'rights_granted': rights_granted.data,
+        }
+        common_dict.update(basis_dict)
+        return common_dict
 
 
 class BAGLogResultSerializer(serializers.Serializer):
@@ -28,7 +76,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     def get_type(self, obj):
         if obj.code.code_type in ['BE', 'GE']:
             return "Reject"
-        elif obj.code.code_type in ['S']:
+        elif obj.code.code_type in ['I', 'S']:
             return "Accept"
 
 
@@ -49,6 +97,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer()
     notifications = BAGLogSerializer(many=True)
+    rights_statements = RightsStatementSerializer(many=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
 
@@ -56,7 +105,7 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         model = Archives
         fields = ('url', 'organization', 'bag_it_name', 'process_status',
                   'file_size', 'file_type', 'appraisal_note',
-                  'additional_error_info', 'metadata', 'notifications',
+                  'additional_error_info', 'metadata', 'rights_statements', 'notifications',
                   'created_time', 'modified_time')
 
 
@@ -113,11 +162,12 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
     events = serializers.HyperlinkedIdentityField(view_name='organization-events')
     bagit_profiles = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-bagit-profiles')
+    rights_statements = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-rights-statements')
 
     class Meta:
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
-                  'acquisition_type', 'bagit_profiles', 'transfers', 'events')
+                  'acquisition_type', 'bagit_profiles', 'rights_statements', 'transfers', 'events')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):

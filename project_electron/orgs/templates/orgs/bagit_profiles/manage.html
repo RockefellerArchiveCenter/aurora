@@ -153,6 +153,7 @@
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     var row = $(btn).prev('.dynamic-form').clone(true).get(0);
+		$(row).find('input').val('');
     $(row).insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');

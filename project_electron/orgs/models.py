@@ -29,7 +29,7 @@ class Organization(models.Model):
     acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
 
     def rights_statements(self):
-        return self.rightsstatement_set.all()
+        return self.rightsstatement_set.filter(archive__isnull=True)
 
     def bagit_profiles(self):
         return BagItProfile.objects.filter(applies_to_organization=self)
@@ -122,11 +122,13 @@ class User(AbstractUser):
 
     organization =          models.ForeignKey(Organization, null=True, blank=False)
     is_machine_account =    models.BooleanField(default=True)
-    from_ldap =             models.BooleanField(editable=False, default=False)
+    from_ldap =             models.BooleanField(default=False)
     is_new_account =        models.BooleanField(default=False)
     is_org_admin =          models.BooleanField(default=False)
 
     AbstractUser._meta.get_field('email').blank = False
+    AbstractUser._meta.get_field('first_name').blank = False
+    AbstractUser._meta.get_field('last_name').blank = False
 
     def in_group(self,GRP):
         return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
@@ -180,8 +182,15 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
 
         if self.pk is None:
-
-            pass
+            # All ldap account creation should follow a standard, since the app doesn't have username in form
+            if self.from_ldap:
+                ldap_auth = LDAP_Manager()
+                new_username = ldap_auth.create_user(self.organization.machine_name, self.email,self.get_full_name(),self.last_name)
+                if not new_username:
+                    ## raise exception here and hook into message chain
+                    return
+                else:
+                    self.username = new_username
         else:
 
             if self.from_ldap:
@@ -189,7 +198,7 @@ class User(AbstractUser):
                 if orig.organization != self.organization:
                     if RAC_CMD.del_from_org(self.username):
                         if RAC_CMD.add2grp(self.organization.machine_name,self.username):
-                                print 'GROUP CHANGED'
+                            print 'GROUP CHANGED'
 
                     ## SHOULD ACTUALLY REMOVE ANY GROUPS THAT MATCH REGEX ORGXXX
                     if orig.organization:
@@ -301,7 +310,8 @@ class Archives(models.Model):
         (40, 'Validated'),
         (60, 'Rejected'),
         (70, 'Accepted'),
-        (90, 'Accessioned')
+        (75, 'Accessioning Started'),
+        (90, 'Accession Complete')
     )
 
     organization =          models.ForeignKey(Organization, related_name="transfers")
@@ -325,6 +335,9 @@ class Archives(models.Model):
 
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
+
+    def rights_statements(self):
+        return self.rightsstatement_set.all()
 
     @staticmethod
     def gen_identifier(fname,org,date,time):
@@ -469,6 +482,13 @@ class Archives(models.Model):
                 if field_value:
                     values[field_name] = getattr(bag_data, field_name, None)
         return values
+
+    def get_records_creators(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        if bag_data:
+            return list(bag_data.record_creators.all())
+        else:
+            return []
 
     def assign_rights(self):
         try:

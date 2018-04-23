@@ -8,7 +8,7 @@ from django.views.generic import TemplateView, UpdateView
 
 from django.shortcuts import render, redirect
 
-from orgs.models import Archives
+from orgs.models import Archives, BAGLog
 from orgs.authmixins import ArchivistMixin
 
 class AppraiseView(ArchivistMixin, View):
@@ -20,7 +20,6 @@ class AppraiseView(ArchivistMixin, View):
             rdata['success'] = 0
 
             if request.user.has_privs('APPRAISER'):
-
 
                 if 'req_form' in request.GET:
                     if request.GET['req_form'] == 'appraise':
@@ -43,11 +42,10 @@ class AppraiseView(ArchivistMixin, View):
                                         appraisal_decision = int(request.GET['appraisal_decision'])
                                     except Exception as e:
                                         print e
-                                        appraisal_decision = 0
-
                                     upload.process_status = (70 if appraisal_decision else 60)
-                                    upload.save()
-                                    rdata['success'] = 1
+                                    BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+                                upload.save()
+                                rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 

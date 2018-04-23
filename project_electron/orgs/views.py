@@ -67,7 +67,6 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
     def get_success_url(self):
         return reverse('orgs-detail', kwargs={'pk': self.object.pk})
 
-
 class OrganizationListView(ArchivistMixin, ListView):
 
     template_name = 'orgs/list.html'

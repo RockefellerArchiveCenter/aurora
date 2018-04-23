@@ -25,6 +25,11 @@
             <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
           </a>
         </li>
+        <li>
+          <a href="{% url 'api-root' %}">
+            <i class="fa fa-plug"></i> <span>Browseable API</span>
+          </a>
+        </li>
         {% endif %}
 
         {% if request.user.is_staff %}

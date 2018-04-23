@@ -64,3 +64,7 @@ BAGINFO_FIELD_CHOICES = (
     ('bag_size', 'Bag-Size'),
     ('payload_oxum', 'Payload-Oxum'),
 )
+
+user_data = {'active': True, 'first_name': 'John', 'last_name': 'Doe', 'email':'test@example.org'}
+
+org_data = {'active': True, 'name': 'Test Organization', 'acquisition_type': 'donation'}

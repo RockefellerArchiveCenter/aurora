@@ -7,7 +7,7 @@ from django.views.generic import TemplateView, View, DetailView
 from django.db.models import Sum
 from django.shortcuts import render
 
-from orgs.models import Archives, Organization, User
+from orgs.models import Archives, Organization, User, BagInfoMetadata
 from rights.models import RightsStatement
 
 from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
@@ -32,33 +32,46 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['accessioned_count'] = Archives.objects.filter(process_status__gte=90, organization__in=org).count()
         data['month_labels'] = []
         data['upload_count_by_month'] = []
+        data['upload_count_by_year'] = 0
         data['upload_size_by_month'] = []
-        data['upload_size_by_year'] = []
+        data['upload_size_by_year'] = 0
+        data['record_types_by_year'] = []
 
         today = datetime.date.today()
         current = today - relativedelta(years=1)
+        year_archives = []
+        colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de']
 
         while current <= today:
             data['month_labels'].append(current.strftime("%B"))
-            upload_count = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month).count()
+            archives = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month)
+            for archive in archives:
+                year_archives.append(archive)
+            upload_count = archives.count()
             data['upload_count_by_month'].append(upload_count)
-            upload_size = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month).aggregate(Sum('machine_file_size'))
+            data['upload_count_by_year'] += upload_count
+            upload_size = archives.aggregate(Sum('machine_file_size'))
             if upload_size['machine_file_size__sum']:
                 data['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000)
+                data['upload_size_by_year'] += upload_size['machine_file_size__sum']/1000000
             else:
                 data['upload_size_by_month'].append(0)
+            labels = BagInfoMetadata.objects.filter(archive__in=archives).values_list('record_type', flat=True)
+            month_record_types = []
+            for (n, label) in enumerate(set(labels)):
+                number = BagInfoMetadata.objects.filter(archive__in=archives, record_type=label).count()
+                if label in data['record_types_by_year']:
+                    dict_index = next((index for (index, d) in enumerate(lst) if d["label"] == label), None)
+                    data['record_types_by_year'][dict_index]["value"] += number
+                else:
+                    data['record_types_by_year'].append({"label": label, "value": number, "color": colors[n]})
             current += relativedelta(months=1)
 
-        data['upload_count_by_year'] = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year).count()
-        year_upload_size = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year).aggregate(Sum('machine_file_size'))
-        if year_upload_size['machine_file_size__sum']:
-            data['upload_size_by_year'] = round(year_upload_size['machine_file_size__sum']/1000000, 2)
-        else:
-            data['upload_size_by_year'] = 0
         data['average_size'] = sum(data['upload_size_by_month'])/len(data['upload_size_by_month'])
         data['average_count'] = sum(data['upload_count_by_month'])/len(data['upload_count_by_month'])
         data['size_trend'] = round((data['upload_size_by_month'][-1] - data['average_size'])/100, 2)
         data['count_trend'] = round((data['upload_count_by_month'][-1] - data['average_count'])/100, 2)
+
         return data
 
     def get_context_data(self, **kwargs):
