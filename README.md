@@ -28,7 +28,7 @@ To get your token, send a POST request to the `/get-token/` endpoint, passing yo
 
 Your token will be returned in the response. You can then use the token in requests such as:
 
-      $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/orgs/1/
+      $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 
 
 ## User groups and permissions
