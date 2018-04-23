@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^app/password/',      include('rac_user.urls')),
     url(r'^app/accession/',     include('orgs.accession.urls')),
     url(r'^app/appraise/',      include('orgs.appraise.urls')),
-    url(r'^app/rights/',        include('rights.urls')),
+    url(r'^app/rights/',        include('orgs.rights.urls')),
     url(r'^$',                  SplashView.as_view()),
     url(r'^login/$',            auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
     url(r'^logout/$',           auth_views.logout, {'next_page': '/login'}, name='logout'),

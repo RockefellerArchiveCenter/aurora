@@ -5,8 +5,8 @@ from django.http import Http404
 
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 
-from rights.models import *
-from rights.forms import *
+from orgs.rights.models import *
+from orgs.rights.forms import *
 from orgs.models import BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues
 from orgs.authmixins import *
 from transfer_app.mixins import JSONResponseMixin

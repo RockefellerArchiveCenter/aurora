@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
 from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
-from rights.models import RightsStatement
+from orgs.rights.models import RightsStatement
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):

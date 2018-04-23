@@ -3,7 +3,7 @@ from django import forms
 from django.utils.translation import ugettext, ugettext_lazy as _
 from django.forms.models import inlineformset_factory
 
-from rights.models import *
+from orgs.rights.models import *
 from orgs.models import Organization
 
 

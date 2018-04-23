@@ -2,7 +2,7 @@ from django.urls import reverse, reverse_lazy
 
 from braces.views import GroupRequiredMixin, StaffuserRequiredMixin, SuperuserRequiredMixin, LoginRequiredMixin, UserPassesTestMixin
 
-from rights.models import RightsStatement
+from orgs.rights.models import RightsStatement
 from orgs.models import Archives, Organization, User
 
 class LoggedInMixinDefaults(LoginRequiredMixin):

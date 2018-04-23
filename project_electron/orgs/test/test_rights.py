@@ -9,10 +9,10 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 from orgs import test_helpers
-from rights.forms import *
-from rights.models import *
-from rights.test.setup_tests import *
-from rights.views import *
+from orgs.rights.forms import *
+from orgs.rights.models import *
+from orgs.rights.test.setup_tests import *
+from orgs.rights.views import *
 from transfer_app.lib.bag_checker import bagChecker
 
 

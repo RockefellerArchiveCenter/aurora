@@ -8,7 +8,7 @@ from django.db.models import Sum
 from django.shortcuts import render
 
 from orgs.models import Archives, Organization, User, BagInfoMetadata
-from rights.models import RightsStatement
+from orgs.rights.models import RightsStatement
 
 from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
 from orgs.formatmixins import CSVResponseMixin

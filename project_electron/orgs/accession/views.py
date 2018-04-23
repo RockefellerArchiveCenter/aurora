@@ -15,7 +15,7 @@ from orgs.authmixins import AccessioningArchivistMixin
 from orgs.accession.models import Accession
 from orgs.accession.forms import AccessionForm
 from orgs.accession.db_functions import GroupConcat
-from rights.models import RightsStatement
+from orgs.rights.models import RightsStatement
 
 
 class AccessionView(AccessioningArchivistMixin, ListView):
