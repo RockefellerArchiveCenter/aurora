@@ -13,7 +13,7 @@ from orgs.rights.forms import *
 from orgs.rights.models import *
 from orgs.rights.test.setup_tests import *
 from orgs.rights.views import *
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib.bag_checker import bagChecker
 
 
 class RightsTestCase(TestCase):

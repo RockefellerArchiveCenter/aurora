@@ -17,12 +17,12 @@ from django.conf.urls import url,include
 from django.contrib import admin
 from rac_user.views import SplashView
 from django.contrib.auth import views as auth_views
-from transfer_app.views import MainView
+from orgs.transfer_app.views import MainView
 
 urlpatterns = [
     url(r'^admin/',             admin.site.urls),
     url(r'^app/$',              MainView.as_view(), name='app_home'),
-    url(r'^app/transfers/',     include('transfer_app.urls')),
+    url(r'^app/transfers/',     include('orgs.transfer_app.urls')),
     url(r'^app/orgs/',          include('orgs.urls')),
     url(r'^app/users/',         include('orgs.user_urls')),
     url(r'^app/password/',      include('rac_user.urls')),

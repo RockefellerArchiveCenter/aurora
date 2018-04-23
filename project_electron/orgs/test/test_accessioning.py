@@ -11,7 +11,7 @@ from django.conf import settings
 from django.urls import reverse
 from orgs import test_helpers
 from orgs.models import Archives, RecordCreators
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib.bag_checker import bagChecker
 
 
 class AppraisalTestCase(TestCase):

@@ -8,9 +8,9 @@ from django.conf import settings
 from django.urls import reverse
 from orgs import test_helpers
 from orgs.test.setup_tests import *
-from transfer_app.lib.transfer_routine import *
-from transfer_app.lib.files_helper import *
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib.transfer_routine import *
+from orgs.lib.files_helper import *
+from orgs.lib.bag_checker import bagChecker
 from orgs.models import Archives, User
 
 

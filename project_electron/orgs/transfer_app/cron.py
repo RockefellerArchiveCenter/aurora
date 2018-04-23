@@ -2,14 +2,14 @@ import datetime
 
 from django_cron import CronJobBase, Schedule
 
-from transfer_app.lib import files_helper as FH
-from transfer_app.lib.transfer_routine import *
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib import files_helper as FH
+from orgs.lib.transfer_routine import *
+from orgs.lib.bag_checker import bagChecker
 
 from orgs.models import Archives, Organization, User, BAGLog
-from transfer_app.lib.mailer import Mailer
+from orgs.lib.mailer import Mailer
 
-import transfer_app.lib.log_print as Pter
+import orgs.lib.log_print as Pter
 
 class MyCronJob(CronJobBase):
     RUN_EVERY_MINS = 1 # every 2 hours

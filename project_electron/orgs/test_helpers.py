@@ -11,8 +11,8 @@ from orgs.models import Archives, Organization, User, BAGLogCodes, RecordCreator
 from orgs.test import setup_tests as org_setup
 from rights.models import *
 from project_electron import config, settings
-from transfer_app.lib import files_helper as FH
-from transfer_app.lib.transfer_routine import TransferRoutine
+from orgs.lib import files_helper as FH
+from orgs.lib.transfer_routine import TransferRoutine
 
 # General variables and setup routines
 

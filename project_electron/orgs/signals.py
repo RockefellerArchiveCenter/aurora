@@ -1,13 +1,13 @@
 import pwd
 import os
-from transfer_app.lib.files_helper import chown_path_to_root
+from orgs.lib.files_helper import chown_path_to_root
 
 from django.db.models.signals import pre_delete
 from django.dispatch import receiver
 
 from orgs.models import Organization
 
-from transfer_app.RAC_CMD import delete_system_group
+from orgs.transfer_app.RAC_CMD import delete_system_group
 
 @receiver(pre_delete, sender=Organization)
 def delete_organization(sender,instance,**kwargs):

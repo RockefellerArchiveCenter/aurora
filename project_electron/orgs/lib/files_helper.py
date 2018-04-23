@@ -15,8 +15,8 @@ from project_electron import config
 from orgs.models import BAGLog, Organization
 
 
-import transfer_app.lib.log_print as Pter
-from transfer_app.lib.virus_scanner import VirusScan
+import orgs.lib.log_print as Pter
+from orgs.lib.virus_scanner import VirusScan
 
 def open_files_list():
     """Return a list of files open on the linux system"""

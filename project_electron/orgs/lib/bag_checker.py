@@ -8,8 +8,7 @@ from pycountry import languages
 from django.conf import settings
 from project_electron import config
 
-from transfer_app.lib import files_helper as FH
-from transfer_app.form import BagInfoForm
+from orgs.lib import files_helper as FH
 from orgs.models import BAGLog, Archives
 
 class bagChecker():

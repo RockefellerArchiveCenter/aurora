@@ -3,7 +3,7 @@ import ldap.modlist as modlist
 
 from project_electron import config as CF
 
-from transfer_app import RAC_CMD
+from orgs.transfer_app import RAC_CMD
 
 class LDAP_Manager():
 
@@ -13,13 +13,13 @@ class LDAP_Manager():
         self.lconn = None
         self.__connected = False
         self.conn()
-        
+
         self.users = []
 
 
 
     def conn(self):
-        
+
         try:
             ldap.set_option(ldap.OPT_X_TLS_REQUIRE_CERT, ldap.OPT_X_TLS_NEVER)
             l = ldap.initialize(CF.AUTH_LDAP_SERVER_URI)
@@ -35,7 +35,7 @@ class LDAP_Manager():
             print e
 
     def get_all_users(self, unbind = True):
-        if not self.__connected: 
+        if not self.__connected:
             return False
         results = []
         try:
@@ -45,7 +45,7 @@ class LDAP_Manager():
             return False
         if unbind:
             self.__unbind()
-        
+
         for result in results[1:]:
             self.users.append(result[1]['uid'][0])
         return True
@@ -116,6 +116,3 @@ class LDAP_Manager():
 
     def __unbind(self):
         self.lconn.unbind_s()
-
-
-        

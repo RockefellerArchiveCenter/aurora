@@ -12,8 +12,8 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from transfer_app import RAC_CMD
-from transfer_app.lib.ldap_auth import LDAP_Manager
+from orgs.transfer_app import RAC_CMD
+from orgs.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):
     is_active =     models.BooleanField(default=True)

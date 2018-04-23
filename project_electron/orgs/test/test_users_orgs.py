@@ -13,7 +13,7 @@ from orgs import test_helpers
 from orgs.models import Archives, User
 from orgs.test import setup_tests
 from orgs.appraise.views import AppraiseView
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib.bag_checker import bagChecker
 
 org_count = 1
 

@@ -9,9 +9,9 @@ from django.conf import settings
 
 from orgs.models import Organization
 
-from transfer_app.lib.files_helper import *
-import transfer_app.lib.log_print as Pter
-from transfer_app.lib.virus_scanner import VirusScan
+from orgs.lib.files_helper import *
+import orgs.lib.log_print as Pter
+from orgs.lib.virus_scanner import VirusScan
 
 class TransferRoutine(object):
   def __init__(self, RUN = False):

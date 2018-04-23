@@ -2,8 +2,8 @@ from django.test import TransactionTestCase
 
 from orgs import test_helpers
 
-from transfer_app.lib.transfer_routine import *
-from transfer_app.lib.files_helper import *
+from orgs.lib.transfer_routine import *
+from orgs.lib.files_helper import *
 
 import random
 
