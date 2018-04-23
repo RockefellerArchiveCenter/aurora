@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'orgs.middleware.AuthenticationMiddlewareJWT'
 ]
 
 ROOT_URLCONF = 'project_electron.urls'
@@ -81,7 +82,7 @@ WSGI_APPLICATION = 'project_electron.wsgi.application'
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 50
+    'PAGE_SIZE': 50,
 }
 
 # Database
