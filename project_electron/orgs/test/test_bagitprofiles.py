@@ -70,9 +70,11 @@ class BagItProfileTestCase(TestCase):
         response = self.client.get(reverse('bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
         self.assertEqual(response.status_code, 200)
 
-        for view in ['bagitprofile-detail', 'organization-bagit-profiles']:
-            response = self.client.get(reverse(view, kwargs={'pk': org.pk}))
+        for view in [('bagitprofile-detail', self.bagitprofiles[0].pk ), ('organization-bagit-profiles', org.pk)]:
+            
+            response = self.client.get(reverse(view[0], kwargs={'pk': view[1]}))
             self.assertEqual(response.status_code, 200)
+
         response = self.client.get(reverse('bagitprofile-list'))
         self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('organization-bagit-profiles/(?P<number>[0-9]+)', kwargs={'pk': org.pk, 'number': profile.pk}))
