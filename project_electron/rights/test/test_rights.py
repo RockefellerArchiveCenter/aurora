@@ -20,6 +20,7 @@ class RightsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.record_types = test_helpers.create_test_record_types(record_types)
+        self.baglogcodes = test_helpers.create_test_baglogcodes()
         self.orgs = test_helpers.create_test_orgs(org_count=1)
         self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
         tr = test_helpers.run_transfer_routine()
@@ -96,6 +97,9 @@ class RightsTestCase(TestCase):
             self.assertEqual(response.status_code, 200)
         add_response = self.client.get(reverse('rights-add'), {'org': self.orgs[0].pk})
         self.assertEqual(add_response.status_code, 200)
+
+        resp = self.client.get(reverse('organization-rights-statements', kwargs={'pk': self.orgs[0].pk}))
+        self.assertEqual(resp.status_code, 200)
 
     def post_requests(self):
         # Creating new RightsStatements

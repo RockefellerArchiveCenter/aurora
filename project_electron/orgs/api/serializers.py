@@ -7,10 +7,11 @@ from rights.models import *
 
 
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
+    note = serializers.StringRelatedField(source='rights_granted_note')
 
     class Meta:
         model = RightsStatementRightsGranted
-        fields = ('act', 'start_date', 'end_date', 'rights_granted_note', 'restriction')
+        fields = ('act', 'start_date', 'end_date', 'note', 'restriction')
 
 
 class RightsStatementSerializer(serializers.BaseSerializer):
@@ -24,6 +25,7 @@ class RightsStatementSerializer(serializers.BaseSerializer):
             basis_dict = {
                 'jurisdiction': getattr(basis_obj, 'copyright_jurisdiction', ''),
                 'determination_date': getattr(basis_obj, 'copyright_status_determination_date', ''),
+                'status': getattr(basis_obj, 'copyright_status', ''),
             }
         elif obj.rights_basis == 'License':
             basis_obj = RightsStatementLicense.objects.get(rights_statement=obj)
@@ -100,10 +102,11 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     rights_statements = RightsStatementSerializer(many=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
+    identifier = serializers.StringRelatedField(source='machine_file_identifier')
 
     class Meta:
         model = Archives
-        fields = ('url', 'organization', 'bag_it_name', 'process_status',
+        fields = ('url', 'identifier', 'organization', 'bag_it_name', 'process_status',
                   'file_size', 'file_type', 'appraisal_note',
                   'additional_error_info', 'metadata', 'rights_statements', 'notifications',
                   'created_time', 'modified_time')

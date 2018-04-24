@@ -114,6 +114,27 @@ def delete_test_orgs(orgs=[]):
         org.delete()
 
 
+def create_test_baglogcodes():
+    baglogcodes = (
+        ('ASAVE', 'I'),
+        ('PBAG', 'S'),
+        ('PBAGP', 'S'),
+        ('GBERR', 'BE'),
+        ('DTERR', 'BE'),
+        ('MDERR', 'BE'),
+    )
+    code_objects = []
+    for code in baglogcodes:
+        bag_log_code = BAGLogCodes(
+            code_short=code[0],
+            code_type=code[1],
+            code_desc=random_string(50),
+        )
+        bag_log_code.save()
+        code_objects.append(bag_log_code)
+    return code_objects
+
+
 # Creates test user given a username and organization.
 # If no username is given, the default username supplied in settings is used.
 # If no organization is given, an organization is randomly chosen.
@@ -247,6 +268,7 @@ def create_rights_info(rights_statement=None):
     rights_info.rights_statement = rights_statement
     rights_info.save()
 
+
 def create_rights_granted(rights_statement=None, granted_count=1):
     """Creates one or more rights granted objects, based on the grant count, if no rights statement is given, a random value is selected"""
     rights_statement = rights_statement if rights_statement else random.choice(RightsStatement.objects.all())
@@ -264,6 +286,7 @@ def create_rights_granted(rights_statement=None, granted_count=1):
         all_rights_granted.append(rights_granted)
     return all_rights_granted
 
+
 def create_test_bagitprofile(applies_to_organization=None):
     applies_to_organization = applies_to_organization if applies_to_organization else random.choice(Organization.objects.all())
     profile = BagItProfile(
@@ -278,6 +301,7 @@ def create_test_bagitprofile(applies_to_organization=None):
     profile.save()
     return profile
 
+
 def create_test_manifestsrequired(bagitprofile=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     manifests_required = ManifestsRequired(
@@ -285,6 +309,7 @@ def create_test_manifestsrequired(bagitprofile=None):
         name=random.choice(['sha256', 'md5']))
     manifests_required.save()
     return manifests_required
+
 
 def create_test_acceptserialization(bagitprofile=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
@@ -294,6 +319,7 @@ def create_test_acceptserialization(bagitprofile=None):
     accept_serialization.save()
     return accept_serialization
 
+
 def create_test_acceptbagitversion(bagitprofile=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     acceptbagitversion = AcceptBagItVersion(
@@ -301,6 +327,7 @@ def create_test_acceptbagitversion(bagitprofile=None):
         bagit_profile=bagitprofile)
     acceptbagitversion.save()
     return acceptbagitversion
+
 
 def create_test_tagmanifestsrequired(bagitprofile=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
@@ -310,6 +337,7 @@ def create_test_tagmanifestsrequired(bagitprofile=None):
     tagmanifestsrequired.save()
     return tagmanifestsrequired
 
+
 def create_test_tagfilesrequired(bagitprofile=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     tagfilesrequired = TagFilesRequired(
@@ -317,6 +345,7 @@ def create_test_tagfilesrequired(bagitprofile=None):
         bagit_profile=bagitprofile)
     tagfilesrequired.save()
     return tagfilesrequired
+
 
 def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
     bagitprofile = bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
@@ -330,6 +359,7 @@ def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
     bag_info.save()
     return bag_info
 
+
 def create_test_bagitprofilebaginfovalues(baginfo=None):
     baginfo = baginfo if baginfo else random.choice(BagItProfileBagInfo.objects.all())
     values = []
@@ -340,6 +370,7 @@ def create_test_bagitprofilebaginfovalues(baginfo=None):
         bag_info_value.save()
         values.append(bag_info_value)
     return values
+
 
 def create_test_record_creators(count=1):
     record_creators = []
