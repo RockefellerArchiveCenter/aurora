@@ -6,7 +6,7 @@ from os.path import isfile, join
 from pycountry import languages
 
 from django.conf import settings
-from project_electron import config
+from aurora import config
 
 from orgs.lib import files_helper as FH
 from orgs.models import BAGLog, Archives

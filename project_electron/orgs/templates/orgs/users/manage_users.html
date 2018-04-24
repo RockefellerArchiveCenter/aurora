@@ -1,4 +1,4 @@
-{% extends 'transfer_app/base.html' %}
+{% extends 'transfers/base.html' %}
 {% load tz %}
 
 {% block h1_title %}LDAP USERS{% endblock %}
@@ -28,7 +28,7 @@
                     {% for u in auth_accounts %}
                         <tr>
                             <td>
-                                {{ u.uid }} 
+                                {{ u.uid }}
                                 <a href="#" class="btn btn-sm btn-danger act-revoke" rel="{{ u.uid}}">Revoke</a>
                             </td>
                             <!-- <td>{{ u.authorized }}</td> -->

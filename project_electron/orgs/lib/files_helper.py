@@ -11,7 +11,7 @@ import psutil
 import pwd
 
 from django.conf import settings
-from project_electron import config
+from aurora import config
 from orgs.models import BAGLog, Organization
 
 

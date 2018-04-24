@@ -17,7 +17,7 @@ TIME_ZONE = 'America/New_York'
 
 ORG_ROOT_DIR = '/data/'
 
-STATIC_ROOT = '/data/project_electron_transfer/project_electron/static/'
+STATIC_ROOT = '/data/project_electron_transfer/aurora/static/'
 
 PROJECT_ROOT_DIR = '/home/user/bin/aurora/'
 

@@ -1,7 +1,7 @@
 import ldap
 import ldap.modlist as modlist
 
-from project_electron import config as CF
+from aurora import config as CF
 
 from orgs.transfers import RAC_CMD
 
