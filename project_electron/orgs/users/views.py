@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from braces.views import AnonymousRequiredMixin
 
 class SplashView(AnonymousRequiredMixin, TemplateView):
-    # template_name = 'transfer_app/splash.html'
+    # template_name = 'transfers/splash.html'
     # authenticated_redirect_url = reverse_lazy(u"app_home")
 
     def get(self, request):
@@ -25,7 +25,7 @@ class UserPasswordResetForm(PasswordResetForm):
                     'required': 'Please enter your email'})
 
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
-    template_name = 'rac_user/password_reset.html'
+    template_name = 'users/password_reset.html'
     form_class = UserPasswordResetForm
 
     def get_context_data(self, **kwargs):
@@ -34,7 +34,7 @@ class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
         return context
 
 class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
-    template_name = 'rac_user/password_reset_done.html'
+    template_name = 'users/password_reset_done.html'
 
     def get_context_data(self, **kwargs):
         context = super(PasswordResetDoneView, self).get_context_data(**kwargs)
@@ -54,7 +54,7 @@ class UserPasswordResetConfirmForm(SetPasswordForm):
                     'required': 'Please confirm your new password'})
 
 class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
-    template_name = 'rac_user/password_reset_confirm.html'
+    template_name = 'users/password_reset_confirm.html'
     form_class = UserPasswordResetConfirmForm
 
     def get_context_data(self, **kwargs):
@@ -63,7 +63,7 @@ class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmV
         return context
 
 class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):
-    template_name = 'rac_user/password_reset_complete.html'
+    template_name = 'users/password_reset_complete.html'
 
     def get_context_data(self, **kwargs):
         context = super(PasswordResetCompleteView, self).get_context_data(**kwargs)

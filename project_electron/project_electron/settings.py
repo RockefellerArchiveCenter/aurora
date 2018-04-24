@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rac_user',
     'orgs',
 ]
 
@@ -169,7 +168,7 @@ INSTALLED_APPS += [
 ]
 
 CRON_CLASSES = [
-    "transfer_app.cron.MyCronJob",
+    "transfers.cron.MyCronJob",
 ]
 
 UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE

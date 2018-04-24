@@ -15,22 +15,22 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from rac_user.views import SplashView
+from orgs.users.views import SplashView
 from django.contrib.auth import views as auth_views
-from orgs.transfer_app.views import MainView
+from orgs.transfers.views import MainView
 
 urlpatterns = [
     url(r'^admin/',             admin.site.urls),
     url(r'^app/$',              MainView.as_view(), name='app_home'),
-    url(r'^app/transfers/',     include('orgs.transfer_app.urls')),
+    url(r'^app/transfers/',     include('orgs.transfers.urls')),
     url(r'^app/orgs/',          include('orgs.urls')),
     url(r'^app/users/',         include('orgs.user_urls')),
-    url(r'^app/password/',      include('rac_user.urls')),
+    url(r'^app/password/',      include('orgs.users.urls')),
     url(r'^app/accession/',     include('orgs.accession.urls')),
     url(r'^app/appraise/',      include('orgs.appraise.urls')),
     url(r'^app/rights/',        include('orgs.rights.urls')),
     url(r'^$',                  SplashView.as_view()),
-    url(r'^login/$',            auth_views.login, {'template_name': 'rac_user/login.html'}, name='login'),
+    url(r'^login/$',            auth_views.login, {'template_name': 'users/login.html'}, name='login'),
     url(r'^logout/$',           auth_views.logout, {'next_page': '/login'}, name='logout'),
     url(r'^api/',               include('orgs.api.urls')),
 ]

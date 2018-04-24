@@ -20,7 +20,7 @@ from orgs.authmixins import *
 
 from rights.models import RightsStatement
 
-from orgs.transfer_app.mixins import JSONResponseMixin
+from orgs.mixins import JSONResponseMixin
 
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'orgs/create.html'

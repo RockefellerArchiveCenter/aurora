@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from orgs.views import *
-from orgs.transfer_app.views import *
+from orgs.transfers.views import *
 
 urlpatterns = [
     url(r'^$', TransfersView.as_view(), name='transfers'),

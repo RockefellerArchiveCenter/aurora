@@ -15,7 +15,7 @@ from orgs.formatmixins import CSVResponseMixin
 
 
 class MainView(LoggedInMixinDefaults, TemplateView):
-    template_name = "transfer_app/main.html"
+    template_name = "transfers/main.html"
 
     def get_org_data(self, org, org_name, users):
         data = {}
@@ -151,7 +151,7 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
 
 
 class TransferDetailView(OrgReadViewMixin, DetailView):
-    template_name = 'transfer_app/transfer_detail.html'
+    template_name = 'transfers/transfer_detail.html'
     model = Archives
 
     def get_context_data(self, **kwargs):

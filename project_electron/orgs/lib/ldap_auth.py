@@ -3,7 +3,7 @@ import ldap.modlist as modlist
 
 from project_electron import config as CF
 
-from orgs.transfer_app import RAC_CMD
+from orgs.transfers import RAC_CMD
 
 class LDAP_Manager():
 

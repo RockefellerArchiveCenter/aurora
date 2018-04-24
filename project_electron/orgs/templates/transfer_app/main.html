@@ -1,4 +1,4 @@
-{% extends 'transfer_app/base.html' %}
+{% extends 'transfers/base.html' %}
 {% load static %}
 {% load tz %}
 
@@ -17,7 +17,7 @@
 {% block content %}
 
 {% for k, org in data.items %}
- {% include 'transfer_app/dashboard.html' %}
+ {% include 'transfers/dashboard.html' %}
 {% endfor %}
 
 {% endblock %}

@@ -9,7 +9,7 @@ from orgs.rights.models import *
 from orgs.rights.forms import *
 from orgs.models import BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues
 from orgs.authmixins import *
-from orgs.transfer_app.mixins import JSONResponseMixin
+from orgs.mixins import JSONResponseMixin
 
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 from orgs.authmixins import OrgReadViewMixin
