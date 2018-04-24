@@ -8,4 +8,4 @@ class OrgsConfig(AppConfig):
     name = 'orgs'
 
     def ready(self):
-    	import orgs.signals
+        import orgs.signals

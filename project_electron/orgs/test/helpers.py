@@ -8,9 +8,9 @@ import random
 import string
 from django.contrib.auth.models import Group
 from orgs.models import *
-from orgs.test import setup_tests as org_setup
-from rights.models import *
-from project_electron import config, settings
+from orgs.test import setup as org_setup
+from orgs.rights.models import *
+from aurora import config, settings
 from orgs.lib import files_helper as FH
 from orgs.lib.transfer_routine import TransferRoutine
 

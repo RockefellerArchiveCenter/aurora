@@ -1,7 +1,6 @@
 from django.test import TransactionTestCase
 
-from orgs import test_helpers
-
+from orgs.test import helpers
 from orgs.lib.transfer_routine import *
 from orgs.lib.files_helper import *
 
@@ -10,7 +9,7 @@ import random
 
 class TransferRoutineTestCase(TransactionTestCase):
     def setUp(self):
-        self.orgs = test_helpers.create_test_orgs(org_count=3)
+        self.orgs = helpers.create_test_orgs(org_count=3)
 
     def test_setup_routine(self):
         self.TR = TransferRoutine()
@@ -29,7 +28,7 @@ class TransferRoutineTestCase(TransactionTestCase):
         pass
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)
 
     def sub_test_db_has_active_orgs(self):
         self.change_all_orgs_in_list_status(self.orgs, False)   # turns all test orgs inactive

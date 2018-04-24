@@ -8,10 +8,9 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
+from orgs.test import helpers, setup
 from orgs.rights.forms import *
 from orgs.rights.models import *
-from orgs.rights.test.setup_tests import *
 from orgs.rights.views import *
 from orgs.lib.bag_checker import bagChecker
 
@@ -19,24 +18,24 @@ from orgs.lib.bag_checker import bagChecker
 class RightsTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.record_types = test_helpers.create_test_record_types(record_types)
-        self.baglogcodes = test_helpers.create_test_baglogcodes()
-        self.orgs = test_helpers.create_test_orgs(org_count=1)
-        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
+        self.record_types = helpers.create_test_record_types(setup.record_types)
+        self.baglogcodes = helpers.create_test_baglogcodes()
+        self.orgs = helpers.create_test_orgs(org_count=1)
+        self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = helpers.run_transfer_routine()
         self.archives = []
         for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
-        self.groups = test_helpers.create_test_groups(['managing_archivists'])
-        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.groups = helpers.create_test_groups(['managing_archivists'])
+        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
 
     def test_rights(self):
         for record_type in self.record_types:
-            test_helpers.create_rights_statement(
+            helpers.create_rights_statement(
                 record_type=record_type, org=random.choice(self.orgs),
-                rights_basis=random.choice(rights_bases))
+                rights_basis=random.choice(setup.rights_bases))
         self.assertEqual(len(RightsStatement.objects.all()), len(self.record_types))
 
         for rights_statement in RightsStatement.objects.all():
@@ -51,7 +50,7 @@ class RightsTestCase(TestCase):
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
-        self.assertEqual(assigned_length, len(record_types)+len(self.archives))
+        self.assertEqual(assigned_length, len(setup.record_types)+len(self.archives))
 
         # Test GET views
         self.get_requests()
@@ -72,12 +71,12 @@ class RightsTestCase(TestCase):
     #############################################
 
     def assemble_rights_statement(self, rights_statement):
-        test_helpers.create_rights_info(rights_statement=rights_statement)
-        test_helpers.create_rights_granted(
+        helpers.create_rights_info(rights_statement=rights_statement)
+        helpers.create_rights_granted(
             rights_statement=rights_statement, granted_count=random.randint(1, 2))
 
         # Make sure correct rights info objects were assigned
-        rights_basis_type = get_rights_basis_type(rights_statement)
+        rights_basis_type = setup.get_rights_basis_type(rights_statement)
         self.assertIsInstance(rights_statement.get_rights_info_object(), rights_basis_type)
 
         # Make sure RightsGranted objects were created
@@ -104,7 +103,7 @@ class RightsTestCase(TestCase):
     def post_requests(self):
         # Creating new RightsStatements
         post_organization = random.choice(self.orgs)
-        new_basis_data = random.choice(basis_data)
+        new_basis_data = random.choice(setup.basis_data)
         previous_length = len(RightsStatement.objects.all())
         new_request = self.client.post(
             urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
@@ -140,7 +139,7 @@ class RightsTestCase(TestCase):
 
         # RightsStatementRightsGranted
         grant_request = self.client.post(
-            reverse('rights-grants', kwargs={'pk': rights_statement.pk}), grant_data)
+            reverse('rights-grants', kwargs={'pk': rights_statement.pk}), setup.grant_data)
         self.assertEqual(
             grant_request.status_code, 302, "Request was not redirected")
 
@@ -157,4 +156,4 @@ class RightsTestCase(TestCase):
         self.assertEqual(non_ajax_request.status_code, 404)
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)

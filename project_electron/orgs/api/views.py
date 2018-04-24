@@ -6,7 +6,7 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from orgs.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
-from orgs.authmixins import ArchivistMixin, OrgReadViewMixin
+from orgs.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
 from orgs.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
 from orgs.rights.models import RightsStatement
 

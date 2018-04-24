@@ -6,8 +6,8 @@ import random
 from django.test import TransactionTestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
-from orgs.test.setup_tests import *
+from orgs.test import helpers
+from orgs.test.setup import *
 from orgs.lib.transfer_routine import *
 from orgs.lib.files_helper import *
 from orgs.lib.bag_checker import bagChecker
@@ -16,10 +16,10 @@ from orgs.models import Archives, User
 
 class BagTestCase(TransactionTestCase):
     def setUp(self):
-        self.orgs = test_helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
-        self.baglogcodes = test_helpers.create_test_baglogcodes()
-        self.groups = test_helpers.create_test_groups(['managing_archivists'])
-        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.orgs = helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
+        self.baglogcodes = helpers.create_test_baglogcodes()
+        self.groups = helpers.create_test_groups(['managing_archivists'])
+        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
         self.client = Client()
 
@@ -31,7 +31,7 @@ class BagTestCase(TransactionTestCase):
         for ref in bags_ref:
 
             # creates test bags
-            test_helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0])
+            helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0])
 
             # init trans routine
             tr = TransferRoutine()
@@ -65,7 +65,7 @@ class BagTestCase(TransactionTestCase):
                 # END --  TEST RESULTS OF RUN ROUTINE
                 ###############
 
-                archive = test_helpers.create_test_archive(trans, self.orgs[0])
+                archive = helpers.create_test_archive(trans, self.orgs[0])
 
                 # checks if this is unique which it should not already be in the system
                 self.assertIsNot(False, archive.machine_file_identifier)
@@ -125,4 +125,4 @@ class BagTestCase(TransactionTestCase):
 
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)

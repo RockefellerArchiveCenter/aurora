@@ -9,9 +9,9 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
+from orgs.test import helpers
 from orgs.models import Archives, User
-from orgs.test import setup_tests
+from orgs.test import setup
 from orgs.appraise.views import AppraiseView
 from orgs.lib.bag_checker import bagChecker
 
@@ -21,18 +21,18 @@ org_count = 1
 class UserOrgTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.orgs = test_helpers.create_test_orgs(org_count=org_count)
-        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
+        self.orgs = helpers.create_test_orgs(org_count=org_count)
+        self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = helpers.run_transfer_routine()
         self.archives = []
         for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
 
     def test_users(self):
         for user in (('donor', 'ra00001'), ('managing_archivists', 'va0425'), ('appraisal_archivists', 'va0426'), ('accessioning_archivists', 'va0427')):
-            group = test_helpers.create_test_groups([user[0]])
-            user = test_helpers.create_test_user(username=user[1], org=random.choice(self.orgs))
+            group = helpers.create_test_groups([user[0]])
+            user = helpers.create_test_user(username=user[1], org=random.choice(self.orgs))
             user.groups = group
 
         # Group name, assertTrue methods, assertFalse methods
@@ -55,8 +55,8 @@ class UserOrgTestCase(TestCase):
         self.user_views()
 
     def test_orgs(self):
-        group = test_helpers.create_test_groups(['managing_archivists'])
-        user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        group = helpers.create_test_groups(['managing_archivists'])
+        user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         user.groups = group
         self.client.login(username=user.username, password=settings.TEST_USER['PASSWORD'])
 
@@ -64,7 +64,7 @@ class UserOrgTestCase(TestCase):
         self.org_views()
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)
 
     def user_views(self):
         user = User.objects.get(groups__name='managing_archivists')
@@ -74,7 +74,7 @@ class UserOrgTestCase(TestCase):
             response = self.client.get(reverse(view, kwargs={'pk': random.choice(User.objects.all()).pk}))
             self.assertEqual(response.status_code, 200)
 
-        user_data = setup_tests.user_data
+        user_data = setup.user_data
         user_data['organization'] = random.choice(self.orgs)
         response = self.client.post(reverse('users-add', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
         self.assertTrue(response.status_code, 200)
@@ -92,7 +92,7 @@ class UserOrgTestCase(TestCase):
             response = self.client.get(reverse(view, kwargs={'pk': random.choice(self.orgs).pk}))
             self.assertEqual(response.status_code, 200)
 
-        org_data = setup_tests.org_data
+        org_data = setup.org_data
         response = self.client.post(reverse('orgs-add'), org_data)
         self.assertTrue(response.status_code, 200)
 

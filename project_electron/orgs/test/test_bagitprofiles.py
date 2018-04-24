@@ -9,20 +9,20 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
+from orgs.test import helpers
 from orgs.form import BagItProfileForm, BagItProfileBagInfoForm, BagItProfileBagInfoValuesForm, ManifestsRequiredForm, AcceptSerializationForm, AcceptBagItVersionForm, TagFilesRequiredForm, TagManifestsRequiredForm, BagItProfileBagInfoFormset, BaseBagInfoFormset, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagFilesRequiredFormset, TagManifestsRequiredFormset
 from orgs.models import BagItProfile, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagFilesRequired, TagManifestsRequired, BagItProfileBagInfo, BagItProfileBagInfoValues
-from orgs.test.setup_tests import *
+from orgs.test.setup import *
 from orgs.views import BagItProfileManageView, BagItProfileAPIAdminView
-from transfer_app.lib.bag_checker import bagChecker
+from orgs.lib.bag_checker import bagChecker
 
 
 class BagItProfileTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.orgs = test_helpers.create_test_orgs(org_count=1)
-        self.groups = test_helpers.create_test_groups(['managing_archivists'])
-        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.orgs = helpers.create_test_orgs(org_count=1)
+        self.groups = helpers.create_test_groups(['managing_archivists'])
+        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
         self.user.org = self.orgs[0]
         self.bagitprofiles = []
@@ -32,25 +32,25 @@ class BagItProfileTestCase(TestCase):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
 
         for org in self.orgs:
-            profile = test_helpers.create_test_bagitprofile(applies_to_organization=org)
+            profile = helpers.create_test_bagitprofile(applies_to_organization=org)
             response = self.client.get(reverse('bagitprofile-detail', kwargs={'pk': profile.pk}))
             self.assertEqual(response.status_code, 200)
             self.bagitprofiles.append(profile)
         self.assertEqual(len(self.bagitprofiles), len(self.orgs))
 
         for profile in self.bagitprofiles:
-            test_helpers.create_test_manifestsrequired(bagitprofile=profile)
-            test_helpers.create_test_acceptserialization(bagitprofile=profile)
-            test_helpers.create_test_acceptbagitversion(bagitprofile=profile)
-            test_helpers.create_test_tagmanifestsrequired(bagitprofile=profile)
-            test_helpers.create_test_tagfilesrequired(bagitprofile=profile)
+            helpers.create_test_manifestsrequired(bagitprofile=profile)
+            helpers.create_test_acceptserialization(bagitprofile=profile)
+            helpers.create_test_acceptbagitversion(bagitprofile=profile)
+            helpers.create_test_tagmanifestsrequired(bagitprofile=profile)
+            helpers.create_test_tagfilesrequired(bagitprofile=profile)
             for field in BAGINFO_FIELD_CHOICES:
-                baginfo = test_helpers.create_test_bagitprofilebaginfo(bagitprofile=profile, field=field)
+                baginfo = helpers.create_test_bagitprofilebaginfo(bagitprofile=profile, field=field)
                 self.baginfos.append(baginfo)
             self.assertEqual(len(BagItProfileBagInfo.objects.all()), len(BAGINFO_FIELD_CHOICES))
 
             for info in self.baginfos:
-                test_helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
+                helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
 
             self.assertEqual(len(ManifestsRequired.objects.all()), len(self.bagitprofiles))
             self.assertEqual(len(AcceptSerialization.objects.all()), len(self.bagitprofiles))
@@ -88,7 +88,7 @@ class BagItProfileTestCase(TestCase):
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
                 'allow_fetch': random.choice([True, False]),
-                'external_descripton': test_helpers.random_string(100),
+                'external_descripton': helpers.random_string(100),
                 'serialization': random.choice(['forbidden', 'required', 'optional']),
                 'version': 0,
 
@@ -97,7 +97,7 @@ class BagItProfileTestCase(TestCase):
                 'bag_info-0-required': random.choice([True, False]),
                 'bag_info-0-field': random.choice(BAGINFO_FIELD_CHOICES)[0],
                 'bag_info-0-repeatable': random.choice([True, False]),
-                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': test_helpers.random_string(20),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': helpers.random_string(20),
                 'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
                 'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 0,
 
@@ -107,7 +107,7 @@ class BagItProfileTestCase(TestCase):
 
                 'tag_files-TOTAL_FORMS': 1,
                 'tag_files-INITIAL_FORMS': 0,
-                'tag_files-0-name': test_helpers.random_string(20),
+                'tag_files-0-name': helpers.random_string(20),
 
                 'tag_manifests-TOTAL_FORMS': 1,
                 'tag_manifests-INITIAL_FORMS': 0,
@@ -132,7 +132,7 @@ class BagItProfileTestCase(TestCase):
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
                 'allow_fetch': random.choice([True, False]),
-                'external_descripton': test_helpers.random_string(100),
+                'external_descripton': helpers.random_string(100),
                 'serialization': 'optional',
                 'version': 1,
 
@@ -179,10 +179,10 @@ class BagItProfileTestCase(TestCase):
             update_request.status_code, 302, "Request was not redirected")
 
         # Ensure bags are validated
-        bag_paths = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
+        bag_paths = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = helpers.run_transfer_routine()
         for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            archive = helpers.create_test_archive(transfer, self.orgs[0])
             test_bag = bagChecker(archive)
             self.assertTrue(test_bag.bag_passed_all())
 
@@ -198,4 +198,4 @@ class BagItProfileTestCase(TestCase):
         self.assertEqual(non_ajax_request.status_code, 404)
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)

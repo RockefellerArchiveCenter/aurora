@@ -163,14 +163,14 @@ class User(AbstractUser):
         return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
     def check_password_ldap(self, password):
-        from orgs.ldap_mixin import _LDAPUserExtension
+        from orgs.mixins.ldap_mixin import _LDAPUserExtension
         ldap_interface = _LDAPUserExtension()
         if ldap_interface.authenticate(username=self.username, password=password):
             return True
         return False
 
     def set_password_ldap(self, raw_password):
-        from orgs.ldap_mixin import _LDAPUserExtension
+        from orgs.mixins.ldap_mixin import _LDAPUserExtension
         ldap_interface = _LDAPUserExtension()
         if ldap_interface.set_password(username=self.username,password=raw_password):
             self.password = make_password(raw_password)
@@ -493,7 +493,7 @@ class Archives(models.Model):
     def assign_rights(self):
         try:
             bag_data = self.get_bag_data()
-            RightsStatement = apps.get_model('rights', 'RightsStatement')
+            RightsStatement = apps.get_model('orgs', 'RightsStatement')
             rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type__name=bag_data['record_type'], archive__isnull=True)
             for statement in rights_statements:
                 rights_info = statement.get_rights_info_object()

@@ -10,8 +10,8 @@ from django.shortcuts import render
 from orgs.models import Archives, Organization, User, BagInfoMetadata
 from orgs.rights.models import RightsStatement
 
-from orgs.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
-from orgs.formatmixins import CSVResponseMixin
+from orgs.mixins.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
+from orgs.mixins.formatmixins import CSVResponseMixin
 
 
 class MainView(LoggedInMixinDefaults, TemplateView):

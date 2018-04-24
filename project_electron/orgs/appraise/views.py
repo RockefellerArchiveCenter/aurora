@@ -9,7 +9,7 @@ from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render, redirect
 
 from orgs.models import Archives, BAGLog
-from orgs.authmixins import ArchivistMixin
+from orgs.mixins.authmixins import ArchivistMixin
 
 class AppraiseView(ArchivistMixin, View):
     template_name = "appraise/main.html"

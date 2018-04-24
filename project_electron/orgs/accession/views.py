@@ -11,7 +11,7 @@ from django.contrib import messages
 
 from django.shortcuts import render, redirect
 from orgs.models import Archives, RecordCreators, Organization, BAGLog
-from orgs.authmixins import AccessioningArchivistMixin
+from orgs.mixins.authmixins import AccessioningArchivistMixin
 from orgs.accession.models import Accession
 from orgs.accession.forms import AccessionForm
 from orgs.accession.db_functions import GroupConcat

@@ -9,7 +9,7 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
+from orgs.test import helpers
 from orgs.models import Archives, RecordCreators
 from orgs.lib.bag_checker import bagChecker
 
@@ -17,16 +17,16 @@ from orgs.lib.bag_checker import bagChecker
 class AppraisalTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.orgs = test_helpers.create_test_orgs(org_count=1)
-        self.record_creators = test_helpers.create_test_record_creators(count=3)
-        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
+        self.orgs = helpers.create_test_orgs(org_count=1)
+        self.record_creators = helpers.create_test_record_creators(count=3)
+        self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = helpers.run_transfer_routine()
         self.archives = []
         for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
-        self.groups = test_helpers.create_test_groups(['accessioning_archivists'])
-        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.groups = helpers.create_test_groups(['accessioning_archivists'])
+        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
 
     def test_accessioning(self):
@@ -60,7 +60,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(record_response.status_code, 200)
 
     def post_views(self, id_list):
-        accession_data = test_helpers.accession_data
+        accession_data = helpers.accession_data
         accession_data['creators'] = [creator.id for creator in RecordCreators.objects.all()]
         new_request = self.client.post(
             urljoin(reverse('accession-record'), '?transfers={}'.format(id_list)), accession_data)
@@ -68,4 +68,4 @@ class AppraisalTestCase(TestCase):
             new_request.status_code, 302, "Request was not redirected")
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)

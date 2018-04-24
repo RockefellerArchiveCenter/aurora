@@ -9,7 +9,7 @@ from urlparse import urljoin
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from orgs import test_helpers
+from orgs.test import helpers
 from orgs.models import Archives
 from orgs.appraise.views import AppraiseView
 from orgs.lib.bag_checker import bagChecker
@@ -18,15 +18,15 @@ from orgs.lib.bag_checker import bagChecker
 class AppraisalTestCase(TestCase):
     def setUp(self):
         self.client = Client()
-        self.orgs = test_helpers.create_test_orgs(org_count=1)
-        self.bags = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = test_helpers.run_transfer_routine()
+        self.orgs = helpers.create_test_orgs(org_count=1)
+        self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = helpers.run_transfer_routine()
         self.archives = []
         for transfer in tr.transfers:
-            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
-        self.groups = test_helpers.create_test_groups(['appraisal_archivists'])
-        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.groups = helpers.create_test_groups(['appraisal_archivists'])
+        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.groups = self.groups
 
     def test_appraisal(self):
@@ -80,4 +80,4 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(len(response.context['uploads']), len(self.archives)-2)
 
     def tearDown(self):
-        test_helpers.delete_test_orgs(self.orgs)
+        helpers.delete_test_orgs(self.orgs)
