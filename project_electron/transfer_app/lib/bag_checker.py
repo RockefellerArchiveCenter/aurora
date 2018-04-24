@@ -6,6 +6,7 @@ from os.path import isfile, join
 from pycountry import languages
 
 from django.conf import settings
+from django.urls import reverse
 from project_electron import config
 
 from transfer_app.lib import files_helper as FH
@@ -63,8 +64,8 @@ class bagChecker():
             return False
         else:
 
-            if self.bag_info_data['BagIt_Profile_Identifier'] != self.RAC_profile_identifier:
-                self.bag_exception = "Bag Identifier is not RAC version"
+            if not self.bag_info_data['BagIt_Profile_Identifier'] in [getattr(self.archiveObj.organization, 'bagit_profile_identifier', None), self.RAC_profile_identifier]:
+                self.bag_exception = "Bag Identifier location is invalid"
                 return False
 
             try:

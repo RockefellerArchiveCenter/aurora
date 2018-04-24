@@ -2,8 +2,6 @@
 from __future__ import unicode_literals
 
 from decimal import *
-import json
-from urlparse import urljoin
 
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib import messages
@@ -234,7 +232,7 @@ class BagItProfileManageView(View):
                         'meta_page_title': 'BagIt Profile',
                         })
             bagit_profile.version = bagit_profile.version + Decimal(1)
-            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(urljoin(reverse('organization-bagit-profiles', args={bagit_profile.applies_to_organization.pk}), '{}.json'.format(bagit_profile.pk)))
+            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(reverse('bagitprofile-detail', kwargs={'pk': bagit_profile.id, 'format': 'json'}))
             bagit_profile.save()
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
