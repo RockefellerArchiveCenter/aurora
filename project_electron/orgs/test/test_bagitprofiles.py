@@ -29,8 +29,12 @@ class BagItProfileTestCase(TestCase):
         self.baginfos = []
 
     def test_bagitprofiles(self):
+        self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
+
         for org in self.orgs:
             profile = test_helpers.create_test_bagitprofile(applies_to_organization=org)
+            response = self.client.get(reverse('bagitprofile-detail', kwargs={'pk': profile.pk}))
+            self.assertEqual(response.status_code, 200)
             self.bagitprofiles.append(profile)
         self.assertEqual(len(self.bagitprofiles), len(self.orgs))
 
@@ -43,6 +47,7 @@ class BagItProfileTestCase(TestCase):
             for field in BAGINFO_FIELD_CHOICES:
                 baginfo = test_helpers.create_test_bagitprofilebaginfo(bagitprofile=profile, field=field)
                 self.baginfos.append(baginfo)
+            self.assertEqual(len(BagItProfileBagInfo.objects.all()), len(BAGINFO_FIELD_CHOICES))
 
             for info in self.baginfos:
                 test_helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
@@ -52,7 +57,6 @@ class BagItProfileTestCase(TestCase):
             self.assertEqual(len(AcceptBagItVersion.objects.all()), len(self.bagitprofiles))
             self.assertEqual(len(TagManifestsRequired.objects.all()), len(self.bagitprofiles))
             self.assertEqual(len(TagFilesRequired.objects.all()), len(self.bagitprofiles))
-            self.assertEqual(len(BagItProfileBagInfo.objects.all()), len(self.bagitprofiles)*len(BAGINFO_FIELD_CHOICES))
             for info in BagItProfileBagInfo.objects.all():
                 self.assertTrue(len(info.bagitprofilebaginfovalues_set.all()) > 0)
 
@@ -61,7 +65,6 @@ class BagItProfileTestCase(TestCase):
             self.assertTrue(org.bagit_profiles)
 
         # Test GET views
-        self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
         profile = random.choice(self.bagitprofiles)
         org = profile.applies_to_organization
 
@@ -70,11 +73,8 @@ class BagItProfileTestCase(TestCase):
         response = self.client.get(reverse('bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
         self.assertEqual(response.status_code, 200)
 
-        for view in [('bagitprofile-detail', self.bagitprofiles[0].pk ), ('organization-bagit-profiles', org.pk)]:
-            
-            response = self.client.get(reverse(view[0], kwargs={'pk': view[1]}))
-            self.assertEqual(response.status_code, 200)
-
+        response = self.client.get(reverse('organization-bagit-profiles', kwargs={'pk': org.pk}))
+        self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('bagitprofile-list'))
         self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse('organization-bagit-profiles/(?P<number>[0-9]+)', kwargs={'pk': org.pk, 'number': profile.pk}))
