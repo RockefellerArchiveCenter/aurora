@@ -1,0 +1,201 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
+import ast
+import bagit
+from os.path import join
+import random
+from urlparse import urljoin
+from django.test import TestCase, Client
+from django.conf import settings
+from django.urls import reverse
+from orgs import test_helpers
+from orgs.form import BagItProfileForm, BagItProfileBagInfoForm, BagItProfileBagInfoValuesForm, ManifestsRequiredForm, AcceptSerializationForm, AcceptBagItVersionForm, TagFilesRequiredForm, TagManifestsRequiredForm, BagItProfileBagInfoFormset, BaseBagInfoFormset, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagFilesRequiredFormset, TagManifestsRequiredFormset
+from orgs.models import BagItProfile, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagFilesRequired, TagManifestsRequired, BagItProfileBagInfo, BagItProfileBagInfoValues
+from orgs.test.setup_tests import *
+from orgs.views import BagItProfileManageView, BagItProfileAPIAdminView
+from transfer_app.lib.bag_checker import bagChecker
+
+
+class BagItProfileTestCase(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.orgs = test_helpers.create_test_orgs(org_count=1)
+        self.groups = test_helpers.create_test_groups(['managing_archivists'])
+        self.user = test_helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
+        self.user.groups = self.groups
+        self.user.org = self.orgs[0]
+        self.bagitprofiles = []
+        self.baginfos = []
+
+    def test_bagitprofiles(self):
+        self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
+
+        for org in self.orgs:
+            profile = test_helpers.create_test_bagitprofile(applies_to_organization=org)
+            response = self.client.get(reverse('bagitprofile-detail', kwargs={'pk': profile.pk}))
+            self.assertEqual(response.status_code, 200)
+            self.bagitprofiles.append(profile)
+        self.assertEqual(len(self.bagitprofiles), len(self.orgs))
+
+        for profile in self.bagitprofiles:
+            test_helpers.create_test_manifestsrequired(bagitprofile=profile)
+            test_helpers.create_test_acceptserialization(bagitprofile=profile)
+            test_helpers.create_test_acceptbagitversion(bagitprofile=profile)
+            test_helpers.create_test_tagmanifestsrequired(bagitprofile=profile)
+            test_helpers.create_test_tagfilesrequired(bagitprofile=profile)
+            for field in BAGINFO_FIELD_CHOICES:
+                baginfo = test_helpers.create_test_bagitprofilebaginfo(bagitprofile=profile, field=field)
+                self.baginfos.append(baginfo)
+            self.assertEqual(len(BagItProfileBagInfo.objects.all()), len(BAGINFO_FIELD_CHOICES))
+
+            for info in self.baginfos:
+                test_helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
+
+            self.assertEqual(len(ManifestsRequired.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(AcceptSerialization.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(AcceptBagItVersion.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(TagManifestsRequired.objects.all()), len(self.bagitprofiles))
+            self.assertEqual(len(TagFilesRequired.objects.all()), len(self.bagitprofiles))
+            for info in BagItProfileBagInfo.objects.all():
+                self.assertTrue(len(info.bagitprofilebaginfovalues_set.all()) > 0)
+
+        # Get bagit profiles for each org
+        for org in self.orgs:
+            self.assertTrue(org.bagit_profiles)
+
+        # Test GET views
+        profile = random.choice(self.bagitprofiles)
+        org = profile.applies_to_organization
+
+        response = self.client.get(reverse('bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(reverse('organization-bagit-profiles', kwargs={'pk': org.pk}))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('bagitprofile-list'))
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get(reverse('organization-bagit-profiles/(?P<number>[0-9]+)', kwargs={'pk': org.pk, 'number': profile.pk}))
+        self.assertEqual(response.status_code, 200)
+
+        # Creating new BagItProfile
+        organization = random.choice(self.orgs)
+        new_request = self.client.post(
+            reverse('bagit-profiles-add', kwargs={'pk': organization.pk}), {
+                'contact_email': 'archive@rockarch.org',
+                'source_organization': self.user.org.pk,
+                'applies_to_organization': organization.pk,
+                'allow_fetch': random.choice([True, False]),
+                'external_descripton': test_helpers.random_string(100),
+                'serialization': random.choice(['forbidden', 'required', 'optional']),
+                'version': 0,
+
+                'bag_info-INITIAL_FORMS': 0,
+                'bag_info-TOTAL_FORMS': 1,
+                'bag_info-0-required': random.choice([True, False]),
+                'bag_info-0-field': random.choice(BAGINFO_FIELD_CHOICES)[0],
+                'bag_info-0-repeatable': random.choice([True, False]),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': test_helpers.random_string(20),
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 0,
+
+                'serialization-INITIAL_FORMS': 0,
+                'serialization-TOTAL_FORMS': 1,
+                'serialization-0-name': random.choice(['application/zip', 'application/x-tar', 'application/x-gzip']),
+
+                'tag_files-TOTAL_FORMS': 1,
+                'tag_files-INITIAL_FORMS': 0,
+                'tag_files-0-name': test_helpers.random_string(20),
+
+                'tag_manifests-TOTAL_FORMS': 1,
+                'tag_manifests-INITIAL_FORMS': 0,
+                'tag_manifests-0-name': random.choice(['sha256', 'md5']),
+
+                'version-TOTAL_FORMS': 1,
+                'version-INITIAL_FORMS': 0,
+                'version-0-name': random.choice(['0.96', 0.97]),
+
+                'manifests-TOTAL_FORMS': 1,
+                'manifests-INITIAL_FORMS': 0,
+                'manifests-0-name': random.choice(['sha256', 'md5']),
+            })
+        self.assertEqual(
+            new_request.status_code, 302, "Request was not redirected")
+
+        # Updating BagItProfile
+        profile = BagItProfile.objects.last()
+        update_request = self.client.post(
+            reverse('bagit-profiles-edit', kwargs={'pk': organization.pk, 'profile_pk': profile.pk}), {
+                'contact_email': 'archive@rockarch.org',
+                'source_organization': self.user.org.pk,
+                'applies_to_organization': organization.pk,
+                'allow_fetch': random.choice([True, False]),
+                'external_descripton': test_helpers.random_string(100),
+                'serialization': 'optional',
+                'version': 1,
+
+                'bag_info-INITIAL_FORMS': 1,
+                'bag_info-TOTAL_FORMS': 1,
+                'bag_info-0-id': 1,
+                'bag_info-0-required': True,
+                'bag_info-0-field': 'source_organization',
+                'bag_info-0-repeatable': False,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-name': 'Ford Foundation',
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-0-id': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-TOTAL_FORMS': 1,
+                'nested_bag_info-0_bagitprofilebaginfovalues_set-INITIAL_FORMS': 1,
+
+                'serialization-INITIAL_FORMS': 1,
+                'serialization-TOTAL_FORMS': 3,
+                'serialization-0-id': 1,
+                'serialization-0-name': 'application/zip',
+                'serialization-1-name': 'application/x-tar',
+                'serialization-2-name': 'application/x-gzip',
+
+                'tag_files-TOTAL_FORMS': 1,
+                'tag_files-INITIAL_FORMS': 1,
+                'tag_files-0-id': 1,
+                'tag_files-0-DELETE': True,
+
+                'tag_manifests-TOTAL_FORMS': 1,
+                'tag_manifests-INITIAL_FORMS': 1,
+                'tag_manifests-0-id': 1,
+                'tag_manifests-0-DELETE': True,
+
+                'version-TOTAL_FORMS': 2,
+                'version-INITIAL_FORMS': 1,
+                'version-0-id': 1,
+                'version-0-name': '0.96',
+                'version-1-name': 0.97,
+
+                'manifests-TOTAL_FORMS': 0,
+                'manifests-INITIAL_FORMS': 1,
+                'manifests-0-id': 1,
+                'manifests-0-DELETE': True,
+            })
+        self.assertEqual(
+            update_request.status_code, 302, "Request was not redirected")
+
+        # Ensure bags are validated
+        bag_paths = test_helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
+        tr = test_helpers.run_transfer_routine()
+        for transfer in tr.transfers:
+            archive = test_helpers.create_test_archive(transfer, self.orgs[0])
+            test_bag = bagChecker(archive)
+            self.assertTrue(test_bag.bag_passed_all())
+
+        # Delete bagit profile
+        delete_request = self.client.get(
+            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}),
+            {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(delete_request.status_code, 200)
+        resp = ast.literal_eval(delete_request.content)
+        self.assertEqual(resp['success'], 1)
+        non_ajax_request = self.client.get(
+            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}))
+        self.assertEqual(non_ajax_request.status_code, 404)
+
+    def tearDown(self):
+        test_helpers.delete_test_orgs(self.orgs)

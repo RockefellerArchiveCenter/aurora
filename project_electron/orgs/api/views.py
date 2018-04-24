@@ -60,8 +60,9 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class BagItProfileViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
+    model = BagItProfile
     queryset = BagItProfile.objects.all()
     serializer_class = BagItProfileSerializer
 
