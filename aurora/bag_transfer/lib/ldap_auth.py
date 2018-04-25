@@ -2,7 +2,7 @@ import ldap
 import ldap.modlist as modlist
 
 from aurora import config as CF
-from bag_transfer.transfers import RAC_CMD
+from bag_transfer.lib import RAC_CMD
 
 
 class LDAP_Manager():

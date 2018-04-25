@@ -168,7 +168,7 @@ INSTALLED_APPS += [
 ]
 
 CRON_CLASSES = [
-    "transfers.cron.MyCronJob",
+    "transfers.lib.DiscoverTransfers",
 ]
 
 UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE

@@ -7,7 +7,7 @@ from django.dispatch import receiver
 
 from bag_transfer.models import Organization
 
-from bag_transfer.transfers.RAC_CMD import delete_system_group
+from bag_transfer.lib.RAC_CMD import delete_system_group
 
 
 @receiver(pre_delete, sender=Organization)

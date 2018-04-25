@@ -12,7 +12,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext as _
 
-from bag_transfer.transfers import RAC_CMD
+from bag_transfer.lib import RAC_CMD
 from bag_transfer.lib.ldap_auth import LDAP_Manager
 
 class Organization(models.Model):

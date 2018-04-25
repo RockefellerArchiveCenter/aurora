@@ -125,13 +125,14 @@ def create_test_baglogcodes():
     )
     code_objects = []
     for code in baglogcodes:
-        bag_log_code = BAGLogCodes(
-            code_short=code[0],
-            code_type=code[1],
-            code_desc=random_string(50),
-        )
-        bag_log_code.save()
-        code_objects.append(bag_log_code)
+        if not BAGLogCodes.objects.filter(code_short=code[0]).exists():
+            bag_log_code = BAGLogCodes(
+                code_short=code[0],
+                code_type=code[1],
+                code_desc=random_string(50),
+            )
+            bag_log_code.save()
+            code_objects.append(bag_log_code)
     return code_objects
 
 

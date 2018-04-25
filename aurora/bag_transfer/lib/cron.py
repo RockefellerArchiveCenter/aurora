@@ -10,11 +10,11 @@ from bag_transfer.models import Archives, Organization, User, BAGLog
 from bag_transfer.lib.mailer import Mailer
 
 
-class MyCronJob(CronJobBase):
-    RUN_EVERY_MINS = 1 # every 2 hours
+class DiscoverTransfers(CronJobBase):
+    RUN_EVERY_MINS = 1
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
-    code = 'transfers.my_cron_job'    # a unique code
+    code = 'transfers.discover_transfers'
 
     def do(self):
         Pter.cron_open()
