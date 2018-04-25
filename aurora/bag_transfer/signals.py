@@ -9,11 +9,12 @@ from bag_transfer.models import Organization
 
 from bag_transfer.transfers.RAC_CMD import delete_system_group
 
+
 @receiver(pre_delete, sender=Organization)
-def delete_organization(sender,instance,**kwargs):
+def delete_organization(sender, instance, **kwargs):
 
-	# update group of upload path to root
-	chown_path_to_root(instance.org_machine_upload_paths()[0])
+    # update group of upload path to root
+    chown_path_to_root(instance.org_machine_upload_paths()[0])
 
-	# remove system group
-	delete_system_group(instance.machine_name)
+    # remove system group
+    delete_system_group(instance.machine_name)

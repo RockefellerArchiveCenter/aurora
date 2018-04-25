@@ -1,8 +1,10 @@
 from rest_framework.request import Request
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+
 from django.utils.deprecation import MiddlewareMixin
 from django.utils.functional import SimpleLazyObject
 from django.contrib.auth.middleware import get_user
+
 
 def get_user_jwt(request):
     user = get_user(request)

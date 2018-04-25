@@ -8,13 +8,13 @@ from django.views.generic import ListView, View
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
-
 from django.shortcuts import render, redirect
-from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog
-from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.forms import AccessionForm
 from bag_transfer.accession.db_functions import GroupConcat
+from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
+from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog
 from bag_transfer.rights.models import RightsStatement
 
 

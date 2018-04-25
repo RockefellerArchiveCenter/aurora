@@ -1,5 +1,6 @@
 import pyclamd
 
+
 class VirusScan:
     RESULT_CONNERR = 0
 
@@ -20,11 +21,11 @@ class VirusScan:
         except pyclamd.ConnectionError as e:
             print e
             print 'trying ClamdNetworkSocket'
-            
+
             try:
                 self.clamObj = pyclamd.ClamdNetworkSocket()
                 self.clamObj.ping()
-                connected= True
+                connected = True
             except pyclamd.ConnectionError as e:
                 # todo: can chain an email here
                 print e
@@ -33,6 +34,3 @@ class VirusScan:
 
     def scan(self, file_or_dir):
         self.scan_result = self.clamObj.scan_file(file_or_dir)
-
-
-

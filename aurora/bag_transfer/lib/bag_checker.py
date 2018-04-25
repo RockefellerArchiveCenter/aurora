@@ -7,14 +7,15 @@ from pycountry import languages
 
 from django.conf import settings
 from django.urls import reverse
-from aurora import config
 
+from aurora import config
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog, Archives
 
+
 class bagChecker():
 
-    def __init__(self,archiveObj):
+    def __init__(self, archiveObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP
         self.RAC_profile_identifier = 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json'

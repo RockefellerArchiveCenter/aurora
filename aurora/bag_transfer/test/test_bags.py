@@ -3,9 +3,11 @@ from __future__ import unicode_literals
 import os
 import pwd
 import random
+
 from django.test import TransactionTestCase, Client
 from django.conf import settings
 from django.urls import reverse
+
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import *
 from bag_transfer.lib.transfer_routine import *

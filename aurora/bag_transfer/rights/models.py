@@ -4,8 +4,10 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models
+
 from bag_transfer.models import Organization, Archives
 from bag_transfer.accession.models import Accession
+
 
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675

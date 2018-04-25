@@ -1,6 +1,7 @@
 from django.core.mail import EmailMessage
 from django.conf import settings as CF
 
+
 class Mailer():
     def __init__(self,subject ='',to=[],text_content=''):
         self.subject = subject
@@ -59,12 +60,9 @@ class Mailer():
                 (lcodes['PBAG'] if lcodes else '--'),
                 (lcodes['PBAGP'] if lcodes else '--'),
                 CF.BASE_URL + 'app'
-                   
             )
         elif mess_code == 'TRANS_FAIL_VAL':
             self.subject = 'Your Transfer Failed Validation'
-
-
 
             eparts = [
                 'An error occurred for the transfer {} during {} at {}. The transfer has been deleted from our systems.',
@@ -73,7 +71,6 @@ class Mailer():
 
             error_obj = archive_obj.get_bag_failure(LAST_ONLY=True)
 
-
             self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),
                 (error_obj.code.code_desc if error_obj else '--'),
@@ -81,11 +78,9 @@ class Mailer():
                 CF.BASE_URL + 'app/transfers/'
             )
 
-            #additional errs
+            # additional errs
             additional_errors = archive_obj.get_additional_errors()
             if additional_errors:
                 self.text_content += '\r\n\r\nAdditional Error Information:\r\n\r\n'
                 for err in additional_errors:
                     self.text_content += '{}\r\n\r\n'.format(err)
-
-

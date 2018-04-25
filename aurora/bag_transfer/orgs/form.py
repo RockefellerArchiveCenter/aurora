@@ -45,42 +45,42 @@ class BagItProfileBagInfoForm(forms.ModelForm):
 class BagItProfileBagInfoValuesForm(forms.ModelForm):
     class Meta:
         model = BagItProfileBagInfoValues
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
 
 
 class ManifestsRequiredForm(forms.ModelForm):
     class Meta:
         model = ManifestsRequired
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 
 class AcceptSerializationForm(forms.ModelForm):
     class Meta:
         model = AcceptSerialization
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 
 class AcceptBagItVersionForm(forms.ModelForm):
     class Meta:
         model = AcceptBagItVersion
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 
 class TagManifestsRequiredForm(forms.ModelForm):
     class Meta:
         model = TagManifestsRequired
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
 
 
 class TagFilesRequiredForm(forms.ModelForm):
     class Meta:
         model = TagFilesRequired
-        fields = ['name',]
+        fields = ('name',)
         widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control'})}
 
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
@@ -106,6 +106,7 @@ class BaseBagInfoFormset(forms.BaseInlineFormSet):
                             BagItProfileBagInfoValuesFormset.get_default_prefix()),
 
                         )
+
     def is_valid(self):
         result = super(BaseBagInfoFormset, self).is_valid()
 

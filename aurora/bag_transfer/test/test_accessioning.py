@@ -6,9 +6,11 @@ import json
 from os.path import join
 import random
 from urlparse import urljoin
+
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
+
 from bag_transfer.test import helpers
 from bag_transfer.models import Archives, RecordCreators
 from bag_transfer.lib.bag_checker import bagChecker

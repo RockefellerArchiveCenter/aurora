@@ -5,9 +5,11 @@ import ast
 from os.path import join
 import random
 from urlparse import urljoin
+
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
+
 from bag_transfer.test import helpers, setup
 from bag_transfer.rights.forms import *
 from bag_transfer.rights.models import *

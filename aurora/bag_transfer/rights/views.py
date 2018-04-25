@@ -4,15 +4,14 @@ from __future__ import unicode_literals
 from django.http import Http404
 
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
+from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 
+from bag_transfer.models import BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues
 from bag_transfer.rights.models import *
 from bag_transfer.rights.forms import *
-from bag_transfer.models import BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues
 from bag_transfer.mixins.authmixins import *
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 
-from django.shortcuts import render, redirect, render_to_response, get_object_or_404
-from bag_transfer.mixins.authmixins import OrgReadViewMixin
 
 class RightsManageView(ManagingArchivistMixin, CreateView):
     template_name = 'rights/manage.html'

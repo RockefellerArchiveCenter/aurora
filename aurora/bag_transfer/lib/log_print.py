@@ -4,7 +4,6 @@ long_wrapper_str = '############################'
 medium_wrapper_str = '###############'
 
 
-
 def plines(lst, WRAPPER=0, tab=0, pref='',line_after=False):
 
     if WRAPPER:
@@ -25,6 +24,7 @@ def plines(lst, WRAPPER=0, tab=0, pref='',line_after=False):
         if line_after:
             print '\n'
 
+
 def flines(lst, start=False,end=False,tab=2,pref='',line_after=False):
 
     if start:
@@ -39,6 +39,7 @@ def flines(lst, start=False,end=False,tab=2,pref='',line_after=False):
 
 def cron_open():
     plines(['CRON STARTING', datetime.datetime.now()], 1)
-        
+
+
 def spacer():
     print '\n'

@@ -2,14 +2,13 @@
 from __future__ import unicode_literals, division
 import datetime
 from dateutil.relativedelta import relativedelta
-from django.views.generic import TemplateView, View, DetailView
 
+from django.views.generic import TemplateView, View, DetailView
 from django.db.models import Sum
 from django.shortcuts import render
 
 from bag_transfer.models import Archives, Organization, User, BagInfoMetadata
 from bag_transfer.rights.models import RightsStatement
-
 from bag_transfer.mixins.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
 

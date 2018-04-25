@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+from django import forms
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
-from django import forms
 from django.shortcuts import render, redirect
 
 from braces.views import AnonymousRequiredMixin

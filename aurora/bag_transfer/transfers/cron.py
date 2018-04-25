@@ -5,11 +5,10 @@ from django_cron import CronJobBase, Schedule
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import *
 from bag_transfer.lib.bag_checker import bagChecker
-
+import bag_transfer.lib.log_print as Pter
 from bag_transfer.models import Archives, Organization, User, BAGLog
 from bag_transfer.lib.mailer import Mailer
 
-import bag_transfer.lib.log_print as Pter
 
 class MyCronJob(CronJobBase):
     RUN_EVERY_MINS = 1 # every 2 hours

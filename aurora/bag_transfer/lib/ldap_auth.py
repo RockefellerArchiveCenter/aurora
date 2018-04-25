@@ -2,21 +2,16 @@ import ldap
 import ldap.modlist as modlist
 
 from aurora import config as CF
-
 from bag_transfer.transfers import RAC_CMD
 
+
 class LDAP_Manager():
-
-
-
     def __init__(self):
         self.lconn = None
         self.__connected = False
         self.conn()
 
         self.users = []
-
-
 
     def conn(self):
 
@@ -97,7 +92,6 @@ class LDAP_Manager():
             return False
 
         return uid if (RAC_CMD.add_user(uid) and RAC_CMD.add2grp(org, uid)) else False
-
 
     def __next_uid_increment(self):
         """return next incremental value based on XX00000 defined in config; run inside conn, doesn't bind or unbind"""

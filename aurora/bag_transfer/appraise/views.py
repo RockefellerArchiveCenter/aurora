@@ -5,11 +5,11 @@ import json
 from django.http import HttpResponse
 from django.views import View
 from django.views.generic import TemplateView, UpdateView
-
 from django.shortcuts import render, redirect
 
 from bag_transfer.models import Archives, BAGLog
 from bag_transfer.mixins.authmixins import ArchivistMixin
+
 
 class AppraiseView(ArchivistMixin, View):
     template_name = "appraise/main.html"

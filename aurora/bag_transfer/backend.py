@@ -1,11 +1,11 @@
 from django_auth_ldap.backend import LDAPBackend, _LDAPUser
 from django.contrib.auth import get_user_model
+
 from bag_transfer.models import User
+
 
 class RACLDAPBackend(LDAPBackend):
     """ A custom LDAP authentication backend """
-
-
 
     def authenticate(self, request=None, username=None, password=None, **kwargs):
         if bool(password) or self.settings.PERMIT_EMPTY_PASSWORD:

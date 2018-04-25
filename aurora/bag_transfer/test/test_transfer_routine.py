@@ -1,10 +1,10 @@
+import random
+
 from django.test import TransactionTestCase
 
 from bag_transfer.test import helpers
 from bag_transfer.lib.transfer_routine import *
 from bag_transfer.lib.files_helper import *
-
-import random
 
 
 class TransferRoutineTestCase(TransactionTestCase):
