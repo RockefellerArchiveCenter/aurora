@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'orgs',
+    'bag_transfer',
 ]
 
 MIDDLEWARE = [
@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'orgs.middleware.AuthenticationMiddlewareJWT'
+    'bag_transfer.middleware.AuthenticationMiddlewareJWT'
 ]
 
 ROOT_URLCONF = 'aurora.urls'
@@ -60,7 +60,7 @@ ROOT_URLCONF = 'aurora.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'orgs', 'templates')],
+        'DIRS': [os.path.join(BASE_DIR, 'bag_transfer', 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,7 +91,7 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = (
     # 'django_auth_ldap.backend.LDAPBackend',
-    'orgs.backend.RACLDAPBackend',
+    'bag_transfer.backend.RACLDAPBackend',
     # 'django.contrib.auth.backends.ModelBackend', removing local account access
 )
 
@@ -113,7 +113,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_USER_MODEL = 'orgs.User'
+AUTH_USER_MODEL = 'bag_transfer.User'
 LOGIN_REDIRECT_URL = '/app'
 
 # Internationalization

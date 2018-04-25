@@ -15,21 +15,21 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
-from orgs.users.views import SplashView
+from bag_transfer.users.views import SplashView
 from django.contrib.auth import views as auth_views
-from orgs.transfers.views import MainView
+from bag_transfer.transfers.views import MainView
 
 urlpatterns = [
     url(r'^admin/',             admin.site.urls),
     url(r'^app/$',              MainView.as_view(), name='app_home'),
-    url(r'^app/transfers/',     include('orgs.transfers.urls')),
-    url(r'^app/orgs/',          include('orgs.urls')),
-    url(r'^app/users/',         include('orgs.users.urls')),
-    url(r'^app/accession/',     include('orgs.accession.urls')),
-    url(r'^app/appraise/',      include('orgs.appraise.urls')),
-    url(r'^app/rights/',        include('orgs.rights.urls')),
+    url(r'^app/transfers/',     include('bag_transfer.transfers.urls')),
+    url(r'^app/orgs/',          include('bag_transfer.urls')),
+    url(r'^app/users/',         include('bag_transfer.users.urls')),
+    url(r'^app/accession/',     include('bag_transfer.accession.urls')),
+    url(r'^app/appraise/',      include('bag_transfer.appraise.urls')),
+    url(r'^app/rights/',        include('bag_transfer.rights.urls')),
     url(r'^$',                  SplashView.as_view()),
     url(r'^login/$',            auth_views.login, {'template_name': 'users/login.html'}, name='login'),
     url(r'^logout/$',           auth_views.logout, {'next_page': '/login'}, name='logout'),
-    url(r'^api/',               include('orgs.api.urls')),
+    url(r'^api/',               include('bag_transfer.api.urls')),
 ]
