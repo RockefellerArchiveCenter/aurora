@@ -12,10 +12,9 @@ from django.utils import timezone
 from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
 
 from bag_transfer.models import Archives, Organization, User, BagItProfile
-from bag_transfer.form import *
+from bag_transfer.orgs.form import *
 from bag_transfer.mixins.authmixins import *
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-
 from bag_transfer.rights.models import RightsStatement
 
 

@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^admin/',             admin.site.urls),
     url(r'^app/$',              MainView.as_view(), name='app_home'),
     url(r'^app/transfers/',     include('bag_transfer.transfers.urls')),
-    url(r'^app/orgs/',          include('bag_transfer.urls')),
+    url(r'^app/orgs/',          include('bag_transfer.orgs.urls')),
     url(r'^app/users/',         include('bag_transfer.users.urls')),
     url(r'^app/accession/',     include('bag_transfer.accession.urls')),
     url(r'^app/appraise/',      include('bag_transfer.appraise.urls')),

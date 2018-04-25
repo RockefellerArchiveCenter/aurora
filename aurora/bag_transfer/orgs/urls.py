@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from bag_transfer.views import *
+from bag_transfer.orgs.views import *
 
 urlpatterns = [
 

@@ -6,15 +6,17 @@ import bagit
 from os.path import join
 import random
 from urlparse import urljoin
+
 from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
-from bag_transfer.test import helpers
-from bag_transfer.form import BagItProfileForm, BagItProfileBagInfoForm, BagItProfileBagInfoValuesForm, ManifestsRequiredForm, AcceptSerializationForm, AcceptBagItVersionForm, TagFilesRequiredForm, TagManifestsRequiredForm, BagItProfileBagInfoFormset, BaseBagInfoFormset, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagFilesRequiredFormset, TagManifestsRequiredFormset
-from bag_transfer.models import BagItProfile, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagFilesRequired, TagManifestsRequired, BagItProfileBagInfo, BagItProfileBagInfoValues
-from bag_transfer.test.setup import *
-from bag_transfer.views import BagItProfileManageView, BagItProfileAPIAdminView
+
 from bag_transfer.lib.bag_checker import bagChecker
+from bag_transfer.test import helpers
+from bag_transfer.test.setup import *
+from bag_transfer.orgs.form import BagItProfileForm, BagItProfileBagInfoForm, BagItProfileBagInfoValuesForm, ManifestsRequiredForm, AcceptSerializationForm, AcceptBagItVersionForm, TagFilesRequiredForm, TagManifestsRequiredForm, BagItProfileBagInfoFormset, BaseBagInfoFormset, BagItProfileBagInfoFormset, ManifestsRequiredFormset, AcceptSerializationFormset, AcceptBagItVersionFormset, TagFilesRequiredFormset, TagManifestsRequiredFormset
+from bag_transfer.models import BagItProfile, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagFilesRequired, TagManifestsRequired, BagItProfileBagInfo, BagItProfileBagInfoValues
+from bag_transfer.orgs.views import BagItProfileManageView, BagItProfileAPIAdminView
 
 
 class BagItProfileTestCase(TestCase):
