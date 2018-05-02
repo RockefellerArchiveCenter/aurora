@@ -9,7 +9,7 @@ from django.contrib.auth.models import Group
 def create_groups(apps, schema_editor):
     groups_to_add = ('managing_archivists', 'appraisal_archivists', 'accessioning_archivists')
 
-    for group in codes_to_add:
+    for group in groups_to_add:
         if not Group.objects.filter(name=group).exists():
             Group.objects.create(name=group)
 
