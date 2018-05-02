@@ -4,11 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations
 
-# ('BE', 'Bag Error'),
-# ('GE', 'General Error'),
-# ('I', 'Info'),
-# ('S', 'Success'),
-
 
 def create_baglogs(apps, schema_editor):
     codes_to_add = (
