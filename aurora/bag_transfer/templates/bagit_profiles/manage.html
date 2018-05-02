@@ -22,7 +22,7 @@
 							{{ manifests_formset.management_form }}
 							{{ manifests_formset.non_form_errors }}
 							{% for form in manifests_formset %}
-								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
 						</div>
 					</div>
@@ -33,7 +33,7 @@
 							{{ serialization_formset.management_form }}
 							{{ serialization_formset.non_form_errors }}
 							{% for form in serialization_formset %}
-								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
 						</div>
 					</div>
@@ -44,7 +44,7 @@
 							{{ version_formset.management_form }}
 							{{ version_formset.non_form_errors }}
 							{% for form in version_formset %}
-								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
 						</div>
 					</div>
@@ -55,7 +55,7 @@
 							{{ tag_manifests_formset.management_form }}
 							{{ tag_manifests_formset.non_form_errors }}
 							{% for form in tag_manifests_formset %}
-								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
 						</div>
 					</div>
@@ -66,7 +66,7 @@
 							{{ tag_files_formset.management_form }}
 							{{ tag_files_formset.non_form_errors }}
 							{% for form in tag_files_formset %}
-								{% include 'orgs/bagit_profiles/repeating_form.html' %}
+								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
 						</div>
 					</div>
@@ -81,7 +81,7 @@
 						{% endfor %}
 						<div class="row">
 							<div class="col-xs-6">
-								{% include 'orgs/bagit_profiles/baginfo_form_fields.html' %}
+								{% include 'bagit_profiles/baginfo_form_fields.html' %}
 							</div>
 							<div class="col-xs-6">
 								{% if form.nested %}
@@ -91,7 +91,7 @@
 									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first and forloop.last %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
 									<label>Values</label>
 									{% for form in form.nested.forms %}
-						        {% include 'orgs/bagit_profiles/repeating_form.html' %}
+						        {% include 'bagit_profiles/repeating_form.html' %}
 					        {% endfor %}
 								</div>
 								{% endif %}
