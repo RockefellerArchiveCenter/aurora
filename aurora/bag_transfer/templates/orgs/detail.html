@@ -61,21 +61,6 @@
 			</div>
 		</div>
 
-		<div class="box box-info">
-			<div class="box-header with-border">
-				<h3 class="box-title">Acquisition Type</h3>
-				<div class="box-body">
-					<div class="row">
-						<div class="col-sm-12">
-							{% if object.acquisition_type %}
-								<p>{{object.get_acquisition_type_display}}</p>
-							{% endif %}
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-
 <div class="row">
 	<div class="col-md-12">
 		{% include 'parts/profiles_box.html' %}
