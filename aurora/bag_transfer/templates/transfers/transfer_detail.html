@@ -2,7 +2,7 @@
 {% load tz static %}
 {% load util %}
 
-{% block h1_title %}{{ object.bag_or_failed_name }} <small><span class="label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span></small>{% endblock %}
+{% block h1_title %}{{ object.bag_or_failed_name }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
 
 {% block content %}
 
