@@ -1,0 +1,62 @@
+{% extends 'transfers/base.html' %}
+
+{% block h1_title %}Accessioning Queue{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-default">
+      <div class="box-body">
+          {% if not uploads %}
+        <div>No pending accessions</div>
+          {% else %}
+        <table id="accession_table" class="table table-striped dataTable">
+          <thead>
+            <tr>
+              <th>Organization</th>
+              <th>Record Creator(s)</th>
+              <th>Record Type</th>
+              <th></th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% regroup uploads by transfer_group as upload_groups %}
+            {% for group in upload_groups %}
+            <tr>
+              <td>{{group.list.0.organization}}</td>
+              <td>{% for r in group.list.0.get_bag_data.record_creators %}
+      						{{ r }} <br />
+      					{% endfor %}
+              </td>
+              <td>{{group.list.0.get_bag_data.record_type}}</td>
+              <td><a href="{% url 'accession-record' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}}</span></a></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  $(function () {
+    $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
+    $('#accession_table').DataTable({
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25
+    })
+  })
+</script>
+{% endblock %}

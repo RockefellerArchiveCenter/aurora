@@ -7,9 +7,9 @@ Aurora is a Django web application that can receive, virus check and validate tr
 ## Installation
 
 1.  Install requirements in `requirements.txt`
-2.  Rename `project_electron/config.py.example` to `project_electron/config.py` and update settings as necessary
-3.  Run `python project_electron/manage.py migrate`
-4.  For a local development server run `python project_electron/manage.py runserver`
+2.  Rename `aurora/config.py.example` to `aurora/config.py` and update settings as necessary
+3.  Run `python aurora/manage.py migrate`
+4.  For a local development server run `python aurora/manage.py runserver`
 
 Application functionality currently assumes a SLES server and a particular LDAP configuration. Future development will include improving the portability of the application.
 
