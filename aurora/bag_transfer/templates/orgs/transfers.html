@@ -37,6 +37,9 @@ Transfers
   $(document).ready(function() {
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#org_transfers').DataTable({
+			columnDefs  : [
+	       { type: 'file-size', targets: 5}
+	     ],
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
@@ -46,6 +49,9 @@ Transfers
       'pageLength'  : 25
     })
 		$('#user_transfers').DataTable({
+			columnDefs  : [
+	       { type: 'file-size', targets: 5}
+	     ],
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
