@@ -17,14 +17,14 @@ Application functionality currently assumes a SLES server and a specific LDAP co
 
 ## Transferring digital records
 
-Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing three subdirectories: `uploads`, `processing` and ``. Any new files or directories in the `uploads` subdirectory are submitted Aurora's queue for processing.
+Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing three subdirectories: `uploads`, `processing` and `logs`. Any new files or directories in the `uploads` subdirectory are submitted Aurora's queue for processing.
 
-At a high level, transfers are processed as as follows:
+At a high level, transfers are processed as follows:
 - Transfers are checked to ensure they have a valid filename, in other words that the top-level directory (for unserialized bags) or filename (for serialized bags) does not contain illegal characters.
-- Transfers are checked for viruses
-- Transfers are checked to ensure they have only one top-level directory
+- Transfers are checked for viruses.
+- Transfers are checked to ensure they have only one top-level directory.
 - Size of transfers is checked to ensure it doesn't exceed `TRANSFER_FILESIZE_MAX`.
-- Transfers are validated against the BagIt specification using `bagit-python`
+- Transfers are validated against the BagIt specification using `bagit-python`.
 - Transfers are validated against the BagIt Profile specified in their `bag-info.txt` file using `bagit-profiles-validator`.
 - Relevant PREMIS rights statements are assigned to transfers (see Organization Management section for details).
 
@@ -36,7 +36,7 @@ Although the upfront validation provided by Aurora (particularly the BagIt Profi
 
 ## Accessioning Digital Records
 
-Once transfers have been accepted, they are moved to the accessioning queue, where they are grouped by organization, record creators and record type. Archivists with the necessary permissions can create accession record, which represent data about one or (usually) more transfers.
+Once transfers have been accepted, they are moved to the accessioning queue, where they are grouped by organization, record creators and record type. Archivists with the necessary permissions can create accession records, which represent data about one or (usually) more transfers.
 
 
 ## Organization Management
@@ -143,7 +143,7 @@ Your token will be returned in the response. You can then use the token in reque
 
 ## Scripts
 
-Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/project_electron_transfer/blob/scripts/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
+Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/aurora/blob/master/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
 
 -   **upload.sh**: identifies new uploads, can be configured to run as a cron job on your desired interval. (Bash)
 -   **RACaddorg**: creates a new organization on the server (Bash)
