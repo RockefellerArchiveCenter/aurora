@@ -55,16 +55,16 @@ class MainView(LoggedInMixinDefaults, TemplateView):
                 data['upload_size_by_year'] += upload_size['machine_file_size__sum']/1000000
             else:
                 data['upload_size_by_month'].append(0)
-            labels = BagInfoMetadata.objects.filter(archive__in=archives).values_list('record_type', flat=True)
-            month_record_types = []
-            for (n, label) in enumerate(set(labels)):
-                number = BagInfoMetadata.objects.filter(archive__in=archives, record_type=label).count()
-                if label in data['record_types_by_year']:
-                    dict_index = next((index for (index, d) in enumerate(lst) if d["label"] == label), None)
-                    data['record_types_by_year'][dict_index]["value"] += number
-                else:
-                    data['record_types_by_year'].append({"label": label, "value": number, "color": colors[n]})
             current += relativedelta(months=1)
+
+        labels = BagInfoMetadata.objects.filter(archive__in=year_archives).values_list('record_type', flat=True)
+        for (n, label) in enumerate(set(labels)):
+            number = BagInfoMetadata.objects.filter(archive__in=year_archives, record_type=label).count()
+            if label in data['record_types_by_year']:
+                dict_index = next((index for (index, d) in enumerate(lst) if d["label"] == label), None)
+                data['record_types_by_year'][dict_index]["value"] += number
+            else:
+                data['record_types_by_year'].append({"label": label, "value": number, "color": colors[n]})
 
         data['average_size'] = sum(data['upload_size_by_month'])/len(data['upload_size_by_month'])
         data['average_count'] = sum(data['upload_count_by_month'])/len(data['upload_count_by_month'])
