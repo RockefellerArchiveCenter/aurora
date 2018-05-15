@@ -90,3 +90,8 @@ class RightsStatementRightsGrantedAdmin(admin.ModelAdmin):
 @admin.register(RecordType)
 class RecordType(admin.ModelAdmin):
     pass
+
+
+@admin.register(RecordCreators)
+class RecordCreators(admin.ModelAdmin):
+    pass

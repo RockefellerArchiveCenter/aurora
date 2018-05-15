@@ -7,7 +7,8 @@ from rest_framework.response import Response
 
 from bag_transfer.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
-from bag_transfer.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
+from bag_transfer.accession.models import Accession
+from bag_transfer.api.serializers import AccessionSerializer, OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
 from bag_transfer.rights.models import RightsStatement
 
 
@@ -16,6 +17,13 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     model = Organization
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
+
+    @detail_route()
+    def accessions(self, request, *args, **kwargs):
+        org = self.get_object()
+        accessions = Accession.objects.filter(organization=org)
+        serializer = AccessionSerializer(accessions, context={'request': request}, many=True)
+        return Response(serializer.data)
 
     @detail_route()
     def bagit_profiles(self, request, *args, **kwargs):
@@ -88,3 +96,9 @@ class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         user = User.objects.get(id=request.user.pk)
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
+
+
+class AccessionViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
+    """Endpoint for Accessions"""
+    queryset = Accession.objects.all()
+    serializer_class = AccessionSerializer

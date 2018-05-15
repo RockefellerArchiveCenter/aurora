@@ -169,14 +169,24 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     events = serializers.HyperlinkedIdentityField(view_name='organization-events')
     bagit_profiles = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-bagit-profiles')
     rights_statements = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-rights-statements')
+    accessions = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-accessions')
 
     class Meta:
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
-                  'acquisition_type', 'bagit_profiles', 'rights_statements', 'transfers', 'events')
+                  'acquisition_type', 'accessions', 'bagit_profiles',
+                  'events', 'rights_statements', 'transfers')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'username', 'email', 'is_staff', 'is_active', 'date_joined', 'organization')
+
+
+class AccessionSerializer(serializers.HyperlinkedModelSerializer):
+    creators = serializers.StringRelatedField(many=True)
+
+    class Meta:
+        model = Accession
+        fields = '__all__'

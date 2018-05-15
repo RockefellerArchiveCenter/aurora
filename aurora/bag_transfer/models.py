@@ -486,7 +486,7 @@ class Archives(models.Model):
     def get_records_creators(self):
         bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
         if bag_data:
-            return list(bag_data.record_creators.all())
+            return list(bag_data.record_creators.all()) + [bag_data.source_organization]
         else:
             return []
 

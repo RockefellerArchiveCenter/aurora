@@ -104,6 +104,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
             # We'll need to revisit this once we build out ArchivesSpace integration
             'creators': record_creators,
+            'organization': organization,
             })
         return render(request, self.template_name, {
             'form': form,
