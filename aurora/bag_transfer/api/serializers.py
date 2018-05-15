@@ -18,6 +18,8 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
 class RightsStatementSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):
         basis_key = obj.rights_basis.lower()
+        if basis_key == 'other':
+            basis_key = 'other_rights'
         rights_granted = RightsStatementRightsGrantedSerializer(
             RightsStatementRightsGranted.objects.filter(rights_statement=obj), many=True)
 
