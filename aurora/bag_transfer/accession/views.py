@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.accession.forms import AccessionForm
+from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog
@@ -37,6 +37,8 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
+        print form
+        creators_formset = CreatorsFormSet(request.POST)
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
@@ -51,11 +53,14 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             for statement in merged_rights_statements:
                 statement.accession = accession
                 statement.save()
-            messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
-            return redirect('accession-main')
+            if creators_formset.is_valid():
+                creators_formset.save()
+                messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
+                return redirect('accession-main')
         return render(request, self.template_name, {
             'meta_page_title': 'Create Accession Record',
             'form': form,
+            'creators_formset': creators_formset,
             'rights_statements': rights_statements,
             'transfers': transfers_list
             })
@@ -104,11 +109,14 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'acquisition_type': organization.acquisition_type,
             'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
             'organization': organization,
+            'creators': record_creators,
             })
+        creators_formset = CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=record_creators))
+        print type(organization)
         return render(request, self.template_name, {
             'form': form,
+            'creators_formset': creators_formset,
             'meta_page_title': 'Create Accession Record',
             'transfers': transfers_list,
             'rights_statements': rights_statements,
-            'creators': record_creators,
             })

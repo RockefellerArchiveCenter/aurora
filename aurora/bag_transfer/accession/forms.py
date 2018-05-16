@@ -1,6 +1,6 @@
 from django import forms
-from django.utils.translation import ugettext, ugettext_lazy as _
 
+from bag_transfer.models import RecordCreators
 from bag_transfer.accession.models import Accession
 
 
@@ -31,6 +31,17 @@ class AccessionForm(forms.ModelForm):
             'extent_size': forms.widgets.HiddenInput(),
             'acquisition_type': forms.widgets.HiddenInput(),
             'appraisal_note': forms.widgets.HiddenInput(),
-            # this should be revisited once ArchivesSpace integration is completed
-            'creators': forms.widgets.SelectMultiple(),
+            'organization': forms.widgets.HiddenInput(),
+            'creators': forms.widgets.MultipleHiddenInput(),
         }
+
+
+CreatorsFormSet = forms.modelformset_factory(
+    RecordCreators,
+    fields=('name', 'type'),
+    extra=0,
+    widgets={
+        'name': forms.widgets.TextInput(attrs={'class': 'form-control col-sm-8'}),
+        'type': forms.widgets.Select(attrs={'class': 'form-control'})
+    },
+)

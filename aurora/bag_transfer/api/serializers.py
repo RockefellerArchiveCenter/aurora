@@ -221,6 +221,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     creators = RecordCreatorsSerializer(many=True)
     external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
     transfers = ArchivesListSerializer(source='accession_transfers', many=True)
+    organization = serializers.StringRelatedField()
 
     class Meta:
         model = Accession

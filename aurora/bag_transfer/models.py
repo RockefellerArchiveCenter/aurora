@@ -306,7 +306,7 @@ class RecordCreators(models.Model):
         ('organization', 'Organization'),
         ('person', 'Person'),
     )
-    type = models.CharField(max_length=50, choices=TYPE_CHOICES, null=True, blank=True)
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES)
 
     def __unicode__(self):
         return self.name
