@@ -7,6 +7,21 @@ from bag_transfer.models import *
 from bag_transfer.rights.models import *
 
 
+class ExternalIdentifierSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AbstractExternalIdentifier
+        fields = ('identifier', 'source', 'created', 'last_modified',)
+
+
+class RecordCreatorsSerializer(serializers.ModelSerializer):
+    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
+
+    class Meta:
+        model = RecordCreators
+        fields = ('name', 'type', 'external_identifiers')
+
+
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
     note = serializers.StringRelatedField(source='rights_granted_note')
 
@@ -88,7 +103,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
     source_organization = serializers.StringRelatedField()
     language = serializers.StringRelatedField(many=True)
-    record_creators = serializers.StringRelatedField(many=True)
+    record_creators = RecordCreatorsSerializer(many=True)
 
     class Meta:
         model = BagInfoMetadata
@@ -106,12 +121,16 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
     identifier = serializers.StringRelatedField(source='machine_file_identifier')
+    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
+    parents = ExternalIdentifierSerializer(source='parent_identifier', many=True)
+    collections = ExternalIdentifierSerializer(source='collection_identifier', many=True)
 
     class Meta:
         model = Archives
-        fields = ('url', 'identifier', 'organization', 'bag_it_name', 'process_status',
-                  'file_size', 'file_type', 'appraisal_note',
-                  'additional_error_info', 'metadata', 'rights_statements', 'notifications',
+        fields = ('url', 'identifier', 'external_identifiers', 'organization',
+                  'bag_it_name', 'process_status', 'file_size', 'file_type',
+                  'appraisal_note', 'additional_error_info', 'metadata',
+                  'rights_statements', 'parents', 'collections', 'notifications',
                   'created_time', 'modified_time')
 
 
@@ -185,7 +204,8 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
-    creators = serializers.StringRelatedField(many=True)
+    creators = RecordCreatorsSerializer(many=True)
+    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
 
     class Meta:
         model = Accession

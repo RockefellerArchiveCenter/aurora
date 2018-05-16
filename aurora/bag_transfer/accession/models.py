@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
-from bag_transfer.models import Organization, RecordCreators
+from bag_transfer.models import Organization, RecordCreators, AbstractExternalIdentifier
 
 
 class Accession(models.Model):
@@ -21,3 +21,7 @@ class Accession(models.Model):
     acquisition_type = models.CharField(max_length=200)
     appraisal_note = models.TextField(blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='accession', null=True, blank=True)
+
+
+class AccessionExternalIdentifier(AbstractExternalIdentifier):
+    accession = models.ForeignKey(Accession, on_delete=models.CASCADE, related_name='external_identifier')

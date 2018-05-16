@@ -15,6 +15,20 @@ from django.utils.translation import gettext as _
 from bag_transfer.lib import RAC_CMD
 from bag_transfer.lib.ldap_auth import LDAP_Manager
 
+
+class AbstractExternalIdentifier(models.Model):
+    identifier = models.CharField(max_length=200)
+    created = models.DateTimeField(auto_now=True)
+    last_modified = models.DateTimeField(auto_now_add=True)
+    SOURCE_CHOICES = (
+        ('archivesspace', 'ArchivesSpace'),
+        ('aurora', 'Aurora'),
+        ('archivematica', 'Archivematica'),
+        ('fedora', 'Fedora'),
+    )
+    source = models.CharField(max_length=100, choices=SOURCE_CHOICES)
+
+
 class Organization(models.Model):
     is_active =     models.BooleanField(default=True)
     name =          models.CharField(max_length=60, unique=True)
@@ -114,6 +128,7 @@ class Organization(models.Model):
     class Meta:
         ordering = ['name']
 
+
 class User(AbstractUser):
 
     appraiser_groups = [u"appraisal_archivists", u"managing_archivists"]
@@ -155,7 +170,6 @@ class User(AbstractUser):
 
         return self.groups.filter(name__in=groups).exists()
 
-
     def is_manager(self):
         return self.groups.filter(name='managing_archivists').exists()
 
@@ -177,7 +191,6 @@ class User(AbstractUser):
             self._password = raw_password
             return True
         return False
-
 
     def save(self, *args, **kwargs):
 
@@ -285,17 +298,30 @@ class User(AbstractUser):
     class Meta:
         ordering = ['username']
 
+
 class RecordCreators(models.Model):
     name = models.CharField(max_length=100)
+    TYPE_CHOICES = (
+        ('family', 'Family'),
+        ('organization', 'Organization'),
+        ('person', 'Person'),
+    )
+    type = models.CharField(max_length=50, choices=TYPE_CHOICES, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
+
+
+class RecordCreatorsExternalIdentifier(AbstractExternalIdentifier):
+    record_creator = models.ForeignKey(RecordCreators, on_delete=models.CASCADE, related_name='external_identifier')
+
 
 class LanguageCode(models.Model):
     code = models.CharField(max_length=3)
 
     def __unicode__(self):
         return self.code
+
 
 class Archives(models.Model):
     machine_file_types = (
@@ -360,6 +386,7 @@ class Archives(models.Model):
         )
         archive.save()
         return archive
+
     def get_error_codes(self):
         if self.bag_it_valid:
             return ''
@@ -369,7 +396,6 @@ class Archives(models.Model):
         if self.bag_it_valid:
             return None
         return [b for b in BAGLog.objects.filter(archive=self).exclude(code__code_short__in=['ASAVE','PBAG'])]
-
 
     def get_bag_validations(self):
         if not self.bag_it_valid:
@@ -555,9 +581,22 @@ class Archives(models.Model):
     class Meta:
         ordering = ['machine_file_upload_time']
 
+
+class ArchiveExternalIdentifier(AbstractExternalIdentifier):
+    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='external_identifier')
+
+
+class ParentExternalIdentifier(AbstractExternalIdentifier):
+    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='parent_identifier')
+
+
+class CollectionExternalIdentifier(AbstractExternalIdentifier):
+    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='collection_identifier')
+
+
 class BAGLogCodes(models.Model):
     """
-    Codes used in writing logs items.
+    Codes used in writing log items.
 
     These codes are divided into four categories:
         Bag Error - errors caused by an invalid bag, such as BagIt validation failure
@@ -581,8 +620,10 @@ class BAGLogCodes(models.Model):
     code_type = models.CharField(max_length=15, choices=code_types)
     code_desc = models.CharField(max_length=60)
     next_action = models.CharField(max_length=255, null=True, blank=True)
+
     def __unicode__(self):
         return "{} : {}".format(self.code_short,self.code_desc)
+
 
 class BAGLog(models.Model):
     code = models.ForeignKey(BAGLogCodes)
@@ -622,6 +663,7 @@ class BAGLog(models.Model):
     class Meta:
         ordering = ['-created_time']
 
+
 class BagInfoMetadata(models.Model):
     archive =                       models.OneToOneField(Archives, related_name='metadata')
     source_organization =           models.ForeignKey(Organization, blank=True,null=True,)
@@ -639,6 +681,7 @@ class BagInfoMetadata(models.Model):
     payload_oxum =                  models.CharField(max_length=20)
     bagit_profile_identifier =      models.URLField()
 
+
 class BagItProfile(models.Model):
     applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
     source_organization = models.ForeignKey(Organization, related_name='source_organization')
@@ -654,6 +697,7 @@ class BagItProfile(models.Model):
     )
     serialization = models.CharField(choices=SERIALIZATION_CHOICES, max_length=25, default='optional')
 
+
 class ManifestsRequired(models.Model):
     MANIFESTS_REQUIRED_CHOICES = (
         ('sha256', 'sha256'),
@@ -661,6 +705,7 @@ class ManifestsRequired(models.Model):
     )
     name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
     bagit_profile = models.ForeignKey(BagItProfile, related_name='manifests_required')
+
 
 class AcceptSerialization(models.Model):
     ACCEPT_SERIALIZATION_CHOICES = (
@@ -671,6 +716,7 @@ class AcceptSerialization(models.Model):
     name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
     bagit_profile = models.ForeignKey(BagItProfile, related_name='accept_serialization')
 
+
 class AcceptBagItVersion(models.Model):
     BAGIT_VERSION_NAME_CHOICES = (
         ('0.96', '0.96'),
@@ -678,6 +724,7 @@ class AcceptBagItVersion(models.Model):
     )
     name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
     bagit_profile = models.ForeignKey(BagItProfile)
+
 
 class TagManifestsRequired(models.Model):
     TAG_MANIFESTS_REQUIRED_CHOICES = (
@@ -687,9 +734,11 @@ class TagManifestsRequired(models.Model):
     name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
     bagit_profile = models.ForeignKey(BagItProfile)
 
+
 class TagFilesRequired(models.Model):
     name = models.CharField(max_length=256)
     bagit_profile = models.ForeignKey(BagItProfile)
+
 
 class BagItProfileBagInfo(models.Model):
     bagit_profile = models.ForeignKey(BagItProfile)
@@ -718,6 +767,7 @@ class BagItProfileBagInfo(models.Model):
     field = models.CharField(choices=FIELD_CHOICES, max_length=100)
     required = models.NullBooleanField(default=False, null=True)
     repeatable = models.NullBooleanField(default=True, null=True)
+
 
 class BagItProfileBagInfoValues(models.Model):
     bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
