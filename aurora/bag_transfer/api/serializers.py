@@ -15,11 +15,10 @@ class ExternalIdentifierSerializer(serializers.ModelSerializer):
 
 
 class RecordCreatorsSerializer(serializers.ModelSerializer):
-    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
 
     class Meta:
         model = RecordCreators
-        fields = ('name', 'type', 'external_identifiers')
+        fields = ('name', 'type',)
 
 
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
@@ -116,7 +115,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer()
-    notifications = BAGLogSerializer(many=True)
+    events = BAGLogSerializer(many=True)
     rights_statements = RightsStatementSerializer(many=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
@@ -130,8 +129,16 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'identifier', 'external_identifiers', 'organization',
                   'bag_it_name', 'process_status', 'file_size', 'file_type',
                   'appraisal_note', 'additional_error_info', 'metadata',
-                  'rights_statements', 'parents', 'collections', 'notifications',
+                  'rights_statements', 'parents', 'collections', 'events',
                   'created_time', 'modified_time')
+
+
+class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
+    identifier = serializers.StringRelatedField(source='machine_file_identifier')
+
+    class Meta:
+        model = Archives
+        fields = ('url', 'identifier', 'created_time', 'modified_time')
 
 
 class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
@@ -183,6 +190,13 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         }
 
 
+class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = BagItProfile
+        fields = ("url", "external_descripton", "version", "applies_to_organization")
+
+
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
     events = serializers.HyperlinkedIdentityField(view_name='organization-events')
@@ -206,7 +220,15 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     creators = RecordCreatorsSerializer(many=True)
     external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
+    transfers = ArchivesListSerializer(source='accession_transfers', many=True)
 
     class Meta:
         model = Accession
         fields = '__all__'
+
+
+class AccessionListSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Accession
+        fields = ('url', 'title', 'accession_number', 'created', 'last_modified')

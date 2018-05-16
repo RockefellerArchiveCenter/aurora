@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from datetime import datetime
+
 from django.db import models
 from bag_transfer.models import Organization, RecordCreators, AbstractExternalIdentifier
 
@@ -13,7 +15,7 @@ class Accession(models.Model):
     end_date = models.DateTimeField()
     extent_files = models.PositiveIntegerField()
     extent_size = models.PositiveIntegerField()
-    creators = models.ManyToManyField(RecordCreators)
+    creators = models.ManyToManyField(RecordCreators, blank=True)
     description = models.TextField()
     access_restrictions = models.TextField()
     use_restrictions = models.TextField()
@@ -21,7 +23,8 @@ class Accession(models.Model):
     acquisition_type = models.CharField(max_length=200)
     appraisal_note = models.TextField(blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='accession', null=True, blank=True)
-
+    created = models.DateTimeField(auto_now=True)
+    last_modified = models.DateTimeField(auto_now_add=True)
 
 class AccessionExternalIdentifier(AbstractExternalIdentifier):
     accession = models.ForeignKey(Accession, on_delete=models.CASCADE, related_name='external_identifier')

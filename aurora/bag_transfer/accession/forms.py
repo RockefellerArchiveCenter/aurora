@@ -32,5 +32,5 @@ class AccessionForm(forms.ModelForm):
             'acquisition_type': forms.widgets.HiddenInput(),
             'appraisal_note': forms.widgets.HiddenInput(),
             # this should be revisited once ArchivesSpace integration is completed
-            'creators': forms.widgets.MultipleHiddenInput(),
+            'creators': forms.widgets.SelectMultiple(),
         }

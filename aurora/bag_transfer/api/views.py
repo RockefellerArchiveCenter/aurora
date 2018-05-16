@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from bag_transfer.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
 from bag_transfer.accession.models import Accession
-from bag_transfer.api.serializers import AccessionSerializer, OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
+from bag_transfer.api.serializers import *
 from bag_transfer.rights.models import RightsStatement
 
 
@@ -72,13 +72,25 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
     model = BagItProfile
     queryset = BagItProfile.objects.all()
-    serializer_class = BagItProfileSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return BagItProfileListSerializer
+        if self.action == 'retrieve':
+            return BagItProfileSerializer
+        return BagItProfileSerializer
 
 
 class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for transfers"""
     queryset = Archives.objects.all()
-    serializer_class = ArchivesSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ArchivesListSerializer
+        if self.action == 'retrieve':
+            return ArchivesSerializer
+        return ArchivesSerializer
 
 
 class BAGLogViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
@@ -101,4 +113,10 @@ class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 class AccessionViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for Accessions"""
     queryset = Accession.objects.all()
-    serializer_class = AccessionSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AccessionListSerializer
+        if self.action == 'retrieve':
+            return AccessionSerializer
+        return AccessionSerializer

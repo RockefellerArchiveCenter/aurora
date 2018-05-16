@@ -42,16 +42,20 @@
           {% include 'accession/form_fields.html' with field=form.end_date%}
         </div>
       </div>
-      <!-- Leaving this unimplemented for now because we'll need to build out ArchivesSpace integration first -->
+      {% if creators|length > 0 %}
       <div class="row">
         <div class="col-md-6">
           <div class="form-group">
             <label>Identified Creators</label>
-            <div class="help-block">Agent records for these creators were found in ArchivesSpace</div>
+            <div class="help-block">Agent records for these creators exist in ArchivesSpace</div>
             <h4>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
+              {% for creator in creators %}
+                {% for identifier in creator.external_identifiers %}
+                  {% if identifier.source == 'archivesspace' %}
+                    <span class="label label-primary">{{creator.name}}</span></span>
+                  {% endif %}
+                {% endfor %}
+              {% endfor %}
             </h4>
           </div>
         </div>
@@ -59,21 +63,26 @@
           <div class="form-group">
             <label>Unidentified Creators</label>
             <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
-            <div class="row">
-              <div class="col-md-8">
-                <input type="text" class="form-control" value="" />
-              </div>
-              <div class="col-md-4">
-                <select class="form-control">
-                    <option>person</option>
-                    <option>corporate body</option>
-                    <option>family</option>
-                  </select>
-              </div>
-            </div>
+            {% for creator in creators %}
+              {% if not creator.external_identifiers %}
+                <div class="row">
+                  <div class="col-md-8">
+                    <input type="text" class="form-control" value="{{creator}}">
+                  </div>
+                  <div class="col-md-4">
+                    <select class="form-control">
+                        <option>person</option>
+                        <option>organization</option>
+                        <option>family</option>
+                      </select>
+                  </div>
+                </div>
+              {% endif %}
+            {% endfor %}
           </div>
         </div>
       </div>
+      {% endif %}
       {{form.access_restriction}}
       {% include 'accession/form_fields.html' with field=form.description %}
       {% include 'accession/form_fields.html' with field=form.access_restrictions %}

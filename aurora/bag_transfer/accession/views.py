@@ -46,6 +46,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             for transfer in transfers_list:
                 BAGLog.log_it('BACC', transfer)
                 transfer.process_status = 75
+                transfer.accession = accession
                 transfer.save()
             for statement in merged_rights_statements:
                 statement.accession = accession
@@ -102,13 +103,12 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'use_restrictions': ' '.join(set(notes.get('copyright', []))),
             'acquisition_type': organization.acquisition_type,
             'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
-            # We'll need to revisit this once we build out ArchivesSpace integration
-            'creators': record_creators,
             'organization': organization,
             })
         return render(request, self.template_name, {
             'form': form,
             'meta_page_title': 'Create Accession Record',
             'transfers': transfers_list,
-            'rights_statements': rights_statements
+            'rights_statements': rights_statements,
+            'creators': record_creators,
             })

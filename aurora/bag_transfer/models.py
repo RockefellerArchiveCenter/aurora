@@ -312,10 +312,6 @@ class RecordCreators(models.Model):
         return self.name
 
 
-class RecordCreatorsExternalIdentifier(AbstractExternalIdentifier):
-    record_creator = models.ForeignKey(RecordCreators, on_delete=models.CASCADE, related_name='external_identifier')
-
-
 class LanguageCode(models.Model):
     code = models.CharField(max_length=3)
 
@@ -340,6 +336,7 @@ class Archives(models.Model):
         (90, 'Accession Complete')
     )
 
+    accession =             models.ForeignKey('Accession', related_name="accession_transfers", null=True, blank=True)
     organization =          models.ForeignKey(Organization, related_name="transfers")
     user_uploaded =         models.ForeignKey(User, null=True)
     machine_file_path =     models.CharField(max_length=100)
@@ -512,7 +509,7 @@ class Archives(models.Model):
     def get_records_creators(self):
         bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
         if bag_data:
-            return list(bag_data.record_creators.all()) + [bag_data.source_organization]
+            return list(bag_data.record_creators.all())
         else:
             return []
 
