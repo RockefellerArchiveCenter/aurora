@@ -624,7 +624,7 @@ class BAGLogCodes(models.Model):
 
 class BAGLog(models.Model):
     code = models.ForeignKey(BAGLogCodes)
-    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='notifications')
+    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='events')
     log_info = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now=True)
 
