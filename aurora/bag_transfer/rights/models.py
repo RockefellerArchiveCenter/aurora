@@ -20,7 +20,7 @@ class RecordType(models.Model):
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization)
     archive = models.ForeignKey(Archives, null=True, blank=True)
-    accession = models.ForeignKey(Accession, null=True, blank=True)
+    accession = models.ForeignKey(Accession, null=True, blank=True, related_name="rights_statements")
     applies_to_type = models.ManyToManyField(RecordType)
     RIGHTS_BASIS_CHOICES = (
         ('Copyright', 'Copyright'),
