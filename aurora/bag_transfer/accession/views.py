@@ -4,15 +4,20 @@ from __future__ import unicode_literals
 import random
 from datetime import datetime
 
+import json
+
 from django.views.generic import ListView, View
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
 from django.shortcuts import render, redirect
 
+from aurora import settings
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
+from bag_transfer.api.clients import AquariusClient
+from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
 from bag_transfer.rights.models import RightsStatement
@@ -54,7 +59,19 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
                 statement.save()
             if creators_formset.is_valid():
                 creators_formset.save()
-                messages.success(request, ' Accession {} created successfully!'.format(accession.accession_number))
+                if hasattr(settings, 'AQUARIUS'):
+                    try:
+                        client = AquariusClient()
+                        serializer = AccessionSerializer(accession, context={'request': request})
+                        resp = client.save_accession(json.dumps(serializer.data))
+                        if resp:
+                            messages.success(request, ' Accession {} created successfully and saved in ArchiveSpace at {}.'.format(accession.accession_number, resp['uri']))
+                        else:
+                            messages.error(request, ' Accession {} created but was not saved in ArchiveSpace.'.format(accession.accession_number))
+                    except Exception as e:
+                        messages.error(request, ' Accession {} created but not saved in ArchiveSpace. {}'.format(accession.accession_number, e))
+                else:
+                    messages.success(request, ' Accession {} created successfully.'.format(accession.accession_number))
                 return redirect('accession-main')
         return render(request, self.template_name, {
             'meta_page_title': 'Create Accession Record',
@@ -100,7 +117,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
         languages_list = list(set(languages_list))
         language = LanguageCode.objects.get_or_create(code='und')[0]
         if len(languages_list) == 1:
-            language = languages_list[0]
+            LanguageCode.objects.get_or_create(code=languages_list[0])[0]
         if len(languages_list) > 1:
             language = LanguageCode.objects.get_or_create(code='mul')[0]
         form = AccessionForm(initial={
@@ -121,7 +138,6 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'creators': record_creators,
             })
         creators_formset = CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=record_creators))
-        print language
         return render(request, self.template_name, {
             'form': form,
             'creators_formset': creators_formset,
