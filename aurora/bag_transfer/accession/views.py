@@ -14,7 +14,7 @@ from bag_transfer.accession.models import Accession
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
-from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog
+from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
 from bag_transfer.rights.models import RightsStatement
 
 
@@ -37,7 +37,6 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
-        print form
         creators_formset = CreatorsFormSet(request.POST)
         id_list = map(int, request.GET.get('transfers').split(','))
         transfers_list = Archives.objects.filter(pk__in=id_list)
@@ -75,6 +74,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
         dates = {'start': [], 'end': []}
         creators_list = []
         descriptions_list = []
+        languages_list = []
         extent_files = 0
         extent_size = 0
         for transfer in transfers_list:
@@ -85,7 +85,9 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             dates['end'].append(bag_data.get('date_end', ''))
             notes['appraisal'].append(bag_data.get('appraisal_note', ''))
             descriptions_list.append(bag_data.get('internal_sender_description', ''))
-            creators_list = creators_list + transfer.get_records_creators()
+            for language in bag_data.get('language', []):
+                languages_list.append(language)
+            creators_list += transfer.get_records_creators()
         for statement in rights_statements:
             rights_info = statement.get_rights_info_object()
             rights_granted = statement.get_rights_granted_objects()
@@ -95,6 +97,12 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             for grant in rights_granted:
                 notes[statement.rights_basis.lower()].append(grant.rights_granted_note)
         record_creators = list(set(creators_list))
+        languages_list = list(set(languages_list))
+        language = LanguageCode.objects.get_or_create(code='und')[0]
+        if len(languages_list) == 1:
+            language = languages_list[0]
+        if len(languages_list) > 1:
+            language = LanguageCode.objects.get_or_create(code='mul')[0]
         form = AccessionForm(initial={
             'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data.get('record_type', '')),
             # faked for now, will eventually get this from ArchivesSpace
@@ -109,10 +117,11 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'acquisition_type': organization.acquisition_type,
             'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
             'organization': organization,
+            'language': language,
             'creators': record_creators,
             })
         creators_formset = CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=record_creators))
-        print type(organization)
+        print language
         return render(request, self.template_name, {
             'form': form,
             'creators_formset': creators_formset,

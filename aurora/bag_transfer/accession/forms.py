@@ -32,6 +32,7 @@ class AccessionForm(forms.ModelForm):
             'acquisition_type': forms.widgets.HiddenInput(),
             'appraisal_note': forms.widgets.HiddenInput(),
             'organization': forms.widgets.HiddenInput(),
+            'language': forms.widgets.HiddenInput(),
             'creators': forms.widgets.MultipleHiddenInput(),
         }
 

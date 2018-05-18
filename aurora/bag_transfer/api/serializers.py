@@ -223,6 +223,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     transfers = ArchivesListSerializer(source='accession_transfers', many=True)
     organization = serializers.StringRelatedField()
     rights_statements = RightsStatementSerializer(many=True)
+    language = serializers.StringRelatedField()
 
     class Meta:
         model = Accession
