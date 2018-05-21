@@ -100,3 +100,18 @@ class RecordCreators(admin.ModelAdmin):
 @admin.register(AccessionExternalIdentifier)
 class AccessionExternalIdentifier(admin.ModelAdmin):
     pass
+
+
+@admin.register(CollectionExternalIdentifier)
+class CollectionExternalIdentifier(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ParentExternalIdentifier)
+class ParentExternalIdentifier(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ArchiveExternalIdentifier)
+class ArchiveExternalIdentifier(admin.ModelAdmin):
+    pass

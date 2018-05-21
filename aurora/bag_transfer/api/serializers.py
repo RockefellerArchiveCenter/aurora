@@ -83,14 +83,14 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     type = serializers.SerializerMethodField()
     summary = serializers.CharField(source='code.code_desc')
     object = serializers.HyperlinkedRelatedField(source='archive',
-                                                 queryset='archive',
-                                                 view_name='archives-detail')
+                                                 view_name='archives-detail',
+                                                 read_only=True)
     result = BAGLogResultSerializer(source='code.next_action')
     endTime = serializers.StringRelatedField(source='created_time')
 
     class Meta:
         model = BAGLog
-        fields = ('url', 'type', 'summary', 'object', 'result', 'endTime',)
+        fields = ('url', 'type', 'summary', 'object', 'result', 'endTime')
 
     def get_type(self, obj):
         if obj.code.code_type in ['BE', 'GE']:
@@ -101,7 +101,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
     source_organization = serializers.StringRelatedField()
-    language = serializers.StringRelatedField(many=True)
+    language = serializers.StringRelatedField(many=True, read_only=True)
     record_creators = RecordCreatorsSerializer(many=True)
 
     class Meta:
@@ -131,6 +131,26 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
                   'appraisal_note', 'additional_error_info', 'metadata',
                   'rights_statements', 'parents', 'collections', 'events',
                   'created_time', 'modified_time')
+
+    def update(self, instance, validated_data):
+        instance.process_status = validated_data.get('process_status', instance.process_status)
+        instance.save()
+
+        IDENTIFIERS = (
+         ('parent_identifier', ParentExternalIdentifier),
+         ('collection_identifier', CollectionExternalIdentifier),
+         ('external_identifier', ArchiveExternalIdentifier),
+        )
+
+        for t in IDENTIFIERS:
+            for item in validated_data.get(t[0], getattr(instance, t[0])):
+                if not t[1].objects.filter(identifier=item['identifier'], archive=instance).exists():
+                    identifier = t[1].objects.create(
+                        identifier=item['identifier'],
+                        source=item['source'],
+                        archive=instance)
+
+        return instance
 
 
 class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):

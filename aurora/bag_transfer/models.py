@@ -350,8 +350,8 @@ class Archives(models.Model):
 
     additional_error_info = models.CharField(max_length=255,null=True,blank=True)
     process_status =        models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
-    created_time =          models.DateTimeField(auto_now=True) # process time
-    modified_time =         models.DateTimeField(auto_now_add=True)
+    created_time =          models.DateTimeField(auto_now_add=True) # process time
+    modified_time =         models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return '{}: {}'.format(self.pk, self.bag_or_failed_name())

@@ -52,7 +52,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bag_transfer.middleware.AuthenticationMiddlewareJWT'
+    'bag_transfer.middleware.AuthenticationMiddlewareJWT',
 ]
 
 ROOT_URLCONF = 'aurora.urls'

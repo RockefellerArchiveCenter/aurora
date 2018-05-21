@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, mixins
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
@@ -81,9 +81,12 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
         return BagItProfileSerializer
 
 
-class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+class ArchivesViewSet(ArchivistMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Endpoint for transfers"""
     queryset = Archives.objects.all()
+
+    def dispatch(self, *args, **kwargs):
+        return super(ArchivesViewSet, self).dispatch(*args, **kwargs)
 
     def get_serializer_class(self):
         if self.action == 'list':
