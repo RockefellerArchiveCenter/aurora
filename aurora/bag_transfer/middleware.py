@@ -9,10 +9,11 @@ from django.contrib.auth.middleware import get_user
 def get_user_jwt(request):
     user = get_user(request)
     if user.is_authenticated():
-        print user
+        return user
     try:
         user_jwt = JSONWebTokenAuthentication().authenticate(Request(request))
         if user_jwt is not None:
+            request.csrf_processing_done = True
             return user_jwt[0]
     except:
         pass
