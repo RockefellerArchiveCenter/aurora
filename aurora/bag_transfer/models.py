@@ -333,6 +333,8 @@ class Archives(models.Model):
         (60, 'Rejected'),
         (70, 'Accepted'),
         (75, 'Accessioning Started'),
+        (80, 'Archivematica Processing Started'),
+        (85, 'Archivematica Processing Complete'),
         (90, 'Accession Complete')
     )
 
