@@ -23,3 +23,22 @@ class AquariusClient(object):
         if resp.status_code != 200:
             return False
         return resp.json()
+
+
+class FornaxClient(object):
+
+    def __init__(self):
+        self.client = ElectronBond(
+            baseurl=settings.FORNAX['baseurl'],
+            username=settings.FORNAX['username'],
+            password=settings.FORNAX['password'],
+        )
+        if not self.client.authorize():
+            return False
+        return True
+
+    def save_accession(self, data):
+        resp = self.client.post('transform/', data=data)
+        if resp.status_code != 200:
+            return False
+        return resp.json()

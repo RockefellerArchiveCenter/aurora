@@ -16,7 +16,7 @@ from aurora import settings
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
-from bag_transfer.api.clients import AquariusClient
+from bag_transfer.api.clients import AquariusClient, FornaxClient
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
@@ -40,6 +40,21 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
     model = Accession
     form_class = AccessionForm
 
+    def deliver_data(self, consumer, client, data, request):
+        if hasattr(settings, consumer.upper()):
+            try:
+                client = client()
+                serializer = AccessionSerializer(data, context={'request': request})
+                resp = client.save_accession(json.dumps(serializer.data))
+                if resp:
+                    messages.success(request, ' Accession {} created successfully and saved in {} at {}.'.format(data.accession_number, consumer, resp['uri']))
+                else:
+                    messages.error(request, ' Accession {} created but was not saved in {}.'.format(data.accession_number, consumer))
+            except Exception as e:
+                messages.error(request, ' Accession {} created but not saved in {}. {}'.format(data.accession_number, consumer, e))
+        else:
+            messages.success(request, ' Accession {} created successfully.'.format(data.accession_number))
+
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
         creators_formset = CreatorsFormSet(request.POST)
@@ -59,19 +74,8 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
                 statement.save()
             if creators_formset.is_valid():
                 creators_formset.save()
-                if hasattr(settings, 'AQUARIUS'):
-                    try:
-                        client = AquariusClient()
-                        serializer = AccessionSerializer(accession, context={'request': request})
-                        resp = client.save_accession(json.dumps(serializer.data))
-                        if resp:
-                            messages.success(request, ' Accession {} created successfully and saved in ArchiveSpace at {}.'.format(accession.accession_number, resp['uri']))
-                        else:
-                            messages.error(request, ' Accession {} created but was not saved in ArchiveSpace.'.format(accession.accession_number))
-                    except Exception as e:
-                        messages.error(request, ' Accession {} created but not saved in ArchiveSpace. {}'.format(accession.accession_number, e))
-                else:
-                    messages.success(request, ' Accession {} created successfully.'.format(accession.accession_number))
+                self.deliver_data('aquarius', AquariusClient, accession, request)
+                self.deliver_data('fornax', FornaxClient, accession, request)
                 return redirect('accession-main')
         return render(request, self.template_name, {
             'meta_page_title': 'Create Accession Record',
