@@ -13,7 +13,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 
 from aurora import settings
-from bag_transfer.accession.models import Accession
+from bag_transfer.accession.models import Accession, AccessionExternalIdentifier
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.clients import AquariusClient, FornaxClient
@@ -42,16 +42,25 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
 
     def deliver_data(self, consumer, client, data, request):
         if hasattr(settings, consumer.upper()):
+            print consumer
             try:
                 client = client()
                 serializer = AccessionSerializer(data, context={'request': request})
                 resp = client.save_accession(json.dumps(serializer.data))
                 if resp:
+                    if 'identifiers' in resp:
+                        for identifier in resp['identifiers']:
+                            if identifier['source'] == 'archivesspace':
+                                AccessionExternalIdentifier.objects.create(
+                                    accession=data,
+                                    identifier=identifier['identifier'],
+                                    source='archivesspace',
+                                )
                     messages.success(request, ' Accession {} created successfully and saved in {} at {}.'.format(data.accession_number, consumer, resp['uri']))
                 else:
-                    messages.error(request, ' Accession {} created but was not saved in {}.'.format(data.accession_number, consumer))
+                    messages.warning(request, ' Accession {} created but was not saved in {}.'.format(data.accession_number, consumer))
             except Exception as e:
-                messages.error(request, ' Accession {} created but not saved in {}. {}'.format(data.accession_number, consumer, e))
+                messages.warning(request, ' Accession {} created but not saved in {}. {}'.format(data.accession_number, consumer, e))
         else:
             messages.success(request, ' Accession {} created successfully.'.format(data.accession_number))
 
