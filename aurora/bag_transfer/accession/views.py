@@ -40,29 +40,20 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
     model = Accession
     form_class = AccessionForm
 
-    def deliver_data(self, consumer, client, data, request):
+    def deliver_data(self, consumer, client, data):
         if hasattr(settings, consumer.upper()):
-            print consumer
             try:
                 client = client()
-                serializer = AccessionSerializer(data, context={'request': request})
-                resp = client.save_accession(json.dumps(serializer.data))
+                resp = client.save_accession(data)
+                print data
                 if resp:
-                    if 'identifiers' in resp:
-                        for identifier in resp['identifiers']:
-                            if identifier['source'] == 'archivesspace':
-                                AccessionExternalIdentifier.objects.create(
-                                    accession=data,
-                                    identifier=identifier['identifier'],
-                                    source='archivesspace',
-                                )
-                    messages.success(request, ' Accession {} created successfully and saved in {} at {}.'.format(data.accession_number, consumer, resp['uri']))
+                    return True
                 else:
-                    messages.warning(request, ' Accession {} created but was not saved in {}.'.format(data.accession_number, consumer))
+                    return False
             except Exception as e:
-                messages.warning(request, ' Accession {} created but not saved in {}. {}'.format(data.accession_number, consumer, e))
+                return False
         else:
-            messages.success(request, ' Accession {} created successfully.'.format(data.accession_number))
+            return True
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -72,6 +63,8 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         if form.is_valid():
             accession = form.save()
+            accession.process_status = 10
+            accession.save()
             merged_rights_statements = RightsStatement.merge_rights(rights_statements)
             for transfer in transfers_list:
                 BAGLog.log_it('BACC', transfer)
@@ -83,8 +76,21 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
                 statement.save()
             if creators_formset.is_valid():
                 creators_formset.save()
-                self.deliver_data('aquarius', AquariusClient, accession, request)
-                self.deliver_data('fornax', FornaxClient, accession, request)
+                serializer = AccessionSerializer(accession, context={'request': request})
+                if self.deliver_data('aquarius', AquariusClient, json.dumps(serializer.data)):
+                    messages.success(
+                        request,
+                        ' Accession {} created successfully and sent to {}.'.format(
+                            accession.accession_number, 'ArchivesSpace'))
+                    accession.process_status = 20
+                    accession.save()
+                    if self.deliver_data(request, 'fornax', FornaxClient, json.dumps(serializer.data)):
+                        messages.success(
+                            request,
+                            ' Accession {} created successfully and sent to {}.'.format(
+                                accession.accession_number, 'Archivematica'))
+                        accession.process_status = 30
+                        accession.save()
                 return redirect('accession-main')
         return render(request, self.template_name, {
             'meta_page_title': 'Create Accession Record',
@@ -158,3 +164,4 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'transfers': transfers_list,
             'rights_statements': rights_statements,
             })
+                                                                                                                                                                                                                                                                                                                                

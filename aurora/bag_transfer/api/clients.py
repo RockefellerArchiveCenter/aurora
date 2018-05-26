@@ -22,6 +22,14 @@ class AquariusClient(object):
         resp = self.client.post('transform/', data=data)
         if resp.status_code != 200:
             return False
+        if 'identifiers' in resp:
+            for identifier in resp['identifiers']:
+                if identifier['source'] == 'archivesspace':
+                    AccessionExternalIdentifier.objects.create(
+                        accession=data,
+                        identifier=identifier['identifier'],
+                        source='archivesspace',
+                    )
         return resp.json()
 
 
@@ -29,16 +37,16 @@ class FornaxClient(object):
 
     def __init__(self):
         self.client = ElectronBond(
-            baseurl=settings.FORNAX['baseurl'],
-            username=settings.FORNAX['username'],
-            password=settings.FORNAX['password'],
+            baseurl=settings.AQUARIUS['baseurl'],
+            username=settings.AQUARIUS['username'],
+            password=settings.AQUARIUS['password'],
         )
         if not self.client.authorize():
             return False
         return True
 
     def save_accession(self, data):
-        resp = self.client.post('transform/', data=data)
+        resp = self.client.post('sips/', data=data)
         if resp.status_code != 200:
             return False
         return resp.json()

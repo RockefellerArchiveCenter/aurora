@@ -6,11 +6,11 @@ from rest_framework_jwt.views import obtain_jwt_token
 from bag_transfer.api.views import AccessionViewSet, OrganizationViewSet, ArchivesViewSet, BAGLogViewSet, BagItProfileViewSet, UserViewSet
 
 router = DefaultRouter()
-router.register(r'accessions', AccessionViewSet)
+router.register(r'accessions', AccessionViewSet, 'accession')
 router.register(r'bagit_profiles', BagItProfileViewSet)
 router.register(r'events', BAGLogViewSet)
 router.register(r'orgs', OrganizationViewSet)
-router.register(r'transfers', ArchivesViewSet)
+router.register(r'transfers', ArchivesViewSet, 'archives')
 router.register(r'users', UserViewSet)
 
 urlpatterns = [

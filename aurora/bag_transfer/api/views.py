@@ -83,10 +83,16 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
 
 class ArchivesViewSet(ArchivistMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Endpoint for transfers"""
-    queryset = Archives.objects.all()
 
     def dispatch(self, *args, **kwargs):
         return super(ArchivesViewSet, self).dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        queryset = queryset = Archives.objects.all()
+        process_status = self.request.GET.get('process_status', "")
+        if process_status != "":
+            queryset = queryset.filter(process_status=int(process_status))
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -115,7 +121,13 @@ class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 
 class AccessionViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for Accessions"""
-    queryset = Accession.objects.all()
+
+    def get_queryset(self):
+        queryset = Accession.objects.all()
+        process_status = self.request.GET.get('process_status', "")
+        if process_status != "":
+            queryset = queryset.filter(process_status=int(process_status))
+        return queryset
 
     def get_serializer_class(self):
         if self.action == 'list':

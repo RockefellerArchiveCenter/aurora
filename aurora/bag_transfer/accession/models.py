@@ -26,6 +26,12 @@ class Accession(models.Model):
     language = models.ForeignKey(LanguageCode, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now=True)
     last_modified = models.DateTimeField(auto_now_add=True)
+    PROCESS_STATUS_CHOICES = (
+        (10, 'Accession created'),
+        (20, 'Accession delivered to ArchivesSpace'),
+        (30, 'Accession delivered to Archivematica')
+    )
+    process_status = models.PositiveSmallIntegerField(choices=PROCESS_STATUS_CHOICES, default=10, null=True, blank=True)
 
 
 class AccessionExternalIdentifier(AbstractExternalIdentifier):
