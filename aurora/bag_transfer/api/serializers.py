@@ -218,17 +218,13 @@ class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
-    transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
-    events = serializers.HyperlinkedIdentityField(view_name='organization-events')
     bagit_profiles = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-bagit-profiles')
     rights_statements = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-rights-statements')
-    accessions = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-accessions')
 
     class Meta:
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
-                  'acquisition_type', 'accessions', 'bagit_profiles',
-                  'events', 'rights_statements', 'transfers')
+                  'acquisition_type', 'bagit_profiles', 'rights_statements')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
