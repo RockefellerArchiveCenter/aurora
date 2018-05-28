@@ -139,8 +139,13 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             LanguageCode.objects.get_or_create(code=languages_list[0])[0]
         if len(languages_list) > 1:
             language = LanguageCode.objects.get_or_create(code='mul')[0]
+        title = '{} {}'.format(organization, bag_data.get('record_type', ''))
+        if len(record_creators) > 0:
+            title = '{}, {} {}'.format(
+                organization, ', '.join([creator.name for creator in record_creators]),
+                bag_data.get('record_type', ''))
         form = AccessionForm(initial={
-            'title': '{}, {} {}'.format(organization, ', '.join([creator.name for creator in record_creators]), bag_data.get('record_type', '')),
+            'title': title,
             # faked for now, will eventually get this from ArchivesSpace
             'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
             'start_date': sorted(dates.get('start', []))[0],
