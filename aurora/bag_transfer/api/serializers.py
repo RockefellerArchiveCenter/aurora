@@ -144,7 +144,11 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
 
         for t in IDENTIFIERS:
             for item in validated_data.get(t[0], getattr(instance, t[0])):
-                if not t[1].objects.filter(identifier=item['identifier'], archive=instance).exists():
+                if t[1].objects.filter(source=item['source'], archive=instance).exists():
+                    identifier = t[1].objects.filter(source=item['source'], archive=instance)[0]
+                    identifier.identifier = item['identifier']
+                    identifier.save()
+                else:
                     identifier = t[1].objects.create(
                         identifier=item['identifier'],
                         source=item['source'],
@@ -244,6 +248,11 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Accession
         fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.process_status = validated_data.get('process_status', instance.process_status)
+        instance.save()
+        return instance
 
 
 class AccessionListSerializer(serializers.HyperlinkedModelSerializer):
