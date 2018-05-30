@@ -1,5 +1,5 @@
 before_script:
-  - cd /data/htdocs/aurora/project_electron
+  - cd /data/htdocs/aurora/aurora
 
 stages:
   - test
@@ -10,6 +10,6 @@ build_aurora:
   tags:
     - build
     - test
-  script: 
+  script:
     - ./manage.py test transfer_app.test -v 3
     - export

@@ -1,5 +1,5 @@
-from orgs.models import Organization
-from transfer_app.RAC_CMD import add_org
+from bag_transfer.models import Organization
+from bag_transfer.lib.RAC_CMD import add_org
 orgs = Organization.objects.all()
 org_ids = []
 for org in orgs:
