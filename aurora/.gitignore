@@ -1,3 +1,4 @@
 *.pyc
 test_scripts/
 .coverage
+.DS_Store
