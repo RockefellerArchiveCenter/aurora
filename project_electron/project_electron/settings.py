@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     'rac_user',
     'transfer_app',
     'orgs',
-    'appraise',
-    'accession',
     'rights',
 ]
 
@@ -199,3 +197,4 @@ TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
 TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
 
 TEST_BAGS_DIR = CF.TEST_BAGS_DIR
+TEST_USER = CF.TEST_USER

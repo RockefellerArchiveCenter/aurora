@@ -1,55 +1,47 @@
-import string
-import random
-
-from orgs.models import Organization
-
 POTUS_NAMES = [
-	'Ford',
-	'Obama',
-	'Trump',
-	'Bush',
-	'Clinton'
+    'Ford',
+    'Obama',
+    'Trump',
+    'Bush',
+    'Clinton'
 ]
 COMPANY_SUFFIX = [
-	'Foundation', 'Group', 'Org'
+    'Foundation', 'Group', 'Org'
 ]
 TEST_ORG_COUNT = 3
 
-def create_rand_name(p1,p3):
-	return "{} {} {}".format(
-		p1[random.randrange(len(p1))],
-		random.choice(string.letters),
-		p3[random.randrange(len(p3))]
-	)
+# tuple of tuples
+# (str that test bag starts with, ecode, test on bag checker, test on transfer routine)
+bags_ref = (
+    ('invalid<filename', 'BFNM', False, True),
 
-def create_test_orgs(org_count=TEST_ORG_COUNT):
-	"""creates random orgs based on org_count"""
-	if org_count < 1:
-		return False
+    ('valid_bag', ''),
 
-	generated_orgs = []
-	while True:
-		if len(generated_orgs) == org_count:
-			break
-		new_org_name = create_rand_name(POTUS_NAMES,COMPANY_SUFFIX)
-		try:
-			org_exist = Organization.objects.get(name=new_org_name)
-			continue
-		except Organization.DoesNotExist as e:
-			pass
-		
-		test_org = Organization(
-			name = new_org_name,
-			machine_name = 'org{}'.format((len(generated_orgs)+1))
-		)
-		test_org.save()
-		generated_orgs.append(test_org)
+    ('changed_file', 'GBERR', True),
+    ('missing_bag_manifest', 'GBERR', True),
+    ('missing_bag_declaration', 'GBERR', True),
+    ('missing_payload_directory', 'GBERR', True),
+    ('missing_payload_manifest', 'GBERR', True),
 
-		print 'Test organization {} -- {} created'.format(test_org.name,test_org.machine_name)
+    ('missing_description', 'RBERR', True),
+    ('missing_record_type', 'RBERR', True),
+    ('missing_source_organization', 'RBERR', True),
+    ('missing_title', 'RBERR', True),
+    ('repeating_record_type', 'RBERR', True),
+    ('repeating_source_organization', 'RBERR', True),
+    ('repeating_title', 'RBERR', True),
+    ('unauthorized_record_type', 'RBERR', True),
+    ('unauthorized_source_organization', 'RBERR', True),
 
-	return generated_orgs
-		
+    ('invalid_metadata_file', 'MDERR', True),
+    ('invalid_datatype_date', 'DTERR', True),
+    ('invalid_datatype_language', 'DTERR', True),
 
-def delete_test_orgs(orgs = []):
-	for org in orgs:
-		org.delete()
+    # The following are valid bags, and should not fail
+    # ('no_metadata_file', '', ''),
+    # ('empty_payload_directory', 'GBERR', True),
+)
+
+user_data = {'active': True, 'first_name': 'John', 'last_name': 'Doe', 'email':'test@example.org'}
+
+org_data = {'active': True, 'name': 'Test Organization', 'acquisition_type': 'donation'}

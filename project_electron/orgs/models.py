@@ -29,7 +29,7 @@ class Organization(models.Model):
     acquisition_type = models.CharField(max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
 
     def rights_statements(self):
-        return self.rightsstatement_set.all()
+        return self.rightsstatement_set.filter(archive__isnull=True)
 
     def bagit_profiles(self):
         return BagItProfile.objects.filter(applies_to_organization=self)
@@ -310,7 +310,8 @@ class Archives(models.Model):
         (40, 'Validated'),
         (60, 'Rejected'),
         (70, 'Accepted'),
-        (90, 'Accessioned')
+        (75, 'Accessioning Started'),
+        (90, 'Accession Complete')
     )
 
     organization =          models.ForeignKey(Organization, related_name="transfers")
@@ -334,6 +335,9 @@ class Archives(models.Model):
 
     def bag_or_failed_name(self):
         return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
+
+    def rights_statements(self):
+        return self.rightsstatement_set.all()
 
     @staticmethod
     def gen_identifier(fname,org,date,time):
@@ -479,11 +483,18 @@ class Archives(models.Model):
                     values[field_name] = getattr(bag_data, field_name, None)
         return values
 
+    def get_records_creators(self):
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        if bag_data:
+            return list(bag_data.record_creators.all())
+        else:
+            return []
+
     def assign_rights(self):
         try:
             bag_data = self.get_bag_data()
             RightsStatement = apps.get_model('rights', 'RightsStatement')
-            rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type=bag_data['record_type'], archive__isnull=True)
+            rights_statements = RightsStatement.objects.filter(organization=self.organization, applies_to_type__name=bag_data['record_type'], archive__isnull=True)
             for statement in rights_statements:
                 rights_info = statement.get_rights_info_object()
                 rights_granted = statement.get_rights_granted_objects()
