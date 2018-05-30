@@ -1,0 +1,29 @@
+{% if org.bagit_profiles %}
+  <table class="table table-striped bagit-profile-table">
+    <thead>
+      <tr>
+        <th>Identifier</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for profile in org.bagit_profiles %}
+      <tr rel="{{ profile.pk }}">
+        <td>{{profile.bagit_profile_identifier}} <span class="badge">Version {{profile.version}}</span></td>
+        <td>{{profile.external_descripton}}</td>
+        <td class="text-right col-md-2">
+          <a href="{% url 'bagitprofile-detail' pk=profile.pk format='json' %}" class="btn btn-primary btn-sm">View</a>
+
+          {% if request.user.is_superuser %}
+            <a href="{% url 'bagit-profiles-edit' pk=org.pk profile_pk=profile.pk %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'bagit-profiles-api' org.pk profile.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="bagit-profile">Delete</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+<p class="has-no-bagit-profile-p" {% if org.bagit_profiles %}style="display:none"{% endif %}>{{org.name}} has no BagIt Profiles.</p>

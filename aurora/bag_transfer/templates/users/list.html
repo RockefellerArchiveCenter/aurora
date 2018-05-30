@@ -1,0 +1,33 @@
+{% extends 'transfers/base.html' %}
+{% load tz %}
+
+{% block h1_title %}
+  Users
+  {% if request.user.is_superuser %}
+    <a href="{% url 'users-add' pk=next_unassigned_user.pk %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add User</a>
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="nav-tabs-custom">
+    <ul class="nav nav-tabs">
+  		<li class="active"><a href="#tab_all_users" data-toggle="tab">All Users</a></li>
+  		<li class=""><a href="#tab_org_users" data-toggle="tab">Users by Organization</a></li>
+    </ul>
+    <div class="tab-content">
+    	<div class="tab-pane active table-responsive" id="tab_all_users">
+        {% for blk in users_list %}
+          {% include "users/user_table.html" %}
+        {% endfor %}
+    	</div>
+    	<div class="tab-pane" id="tab_org_users">
+        {% for blk in org_users_list %}
+          {% include "users/user_table.html" with list_type="org" %}
+        {% endfor %}
+    	</div>
+
+    </div>
+  </div>
+
+{% endblock %}

@@ -1,0 +1,93 @@
+{% extends 'transfers/base.html' %}
+{% load tz %}
+
+{% block h1_title %}LDAP USERS{% endblock %}
+
+{% block content %}
+
+
+<span class="csrf_token" style="display:none">{% csrf_token %}</span>
+
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">Authorized LDAP Accounts</h3>
+            </div>
+            <div class="box-body">
+
+                <table class="table" id="">
+                    <thead>
+                        <tr>
+                            <th>UID</th>
+                            <!-- <th></th> -->
+                        </tr>
+                    <thead>
+                    <tbody>
+                    {% for u in auth_accounts %}
+                        <tr>
+                            <td>
+                                {{ u.uid }}
+                                <a href="#" class="btn btn-sm btn-danger act-revoke" rel="{{ u.uid}}">Revoke</a>
+                            </td>
+                            <!-- <td>{{ u.authorized }}</td> -->
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="box box-solid">
+            <div class="box-header with-border">
+                <h3 class="box-title">UnAuthorized LDAP Accounts</h3>
+            </div>
+            <div class="box-body">
+
+                <table class="table" id="">
+                    <thead>
+                        <tr>
+                            <th>UID</th>
+                            <!-- <th></th> -->
+                        </tr>
+                    <thead>
+                    <tbody>
+                    {% for u in unauth_accounts %}
+                        <tr>
+                            <td>
+                                {{ u.uid }}
+                                <a href="#" class="btn btn-sm btn-success act-allow" rel="{{ u.uid}}">Allow</a>
+                            </td>
+                            <!-- <td>{{ u.authorized }}</td> -->
+
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+    $(document).ready(function(){
+        $('.act-revoke,.act-allow').click(function(e){
+            e.preventDefault();
+            var uid = $(this).attr('rel');
+            var token = $('[name=csrfmiddlewaretoken]').val();
+            var action = '0';
+            if ($(this).hasClass('act-allow')) action = 1;
+            $.post('.',{'uid': uid , 'action': action, 'csrfmiddlewaretoken' : token}, function(resp){
+                if(resp){
+                    location.reload();
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

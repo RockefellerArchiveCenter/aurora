@@ -1,0 +1,129 @@
+{% extends 'transfers/base.html' %}
+
+{% block h1_title %}{{form.accession_number.value}} <small>{{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
+
+{% block content %}
+
+{% if form.errors %}
+  <div class="alert alert-danger">
+    <h4><i class="icon fa fa-ban"></i> Form Error</h4>
+    {% for field in form %}
+      {%if field.errors %}
+      <p>Error for field {{field.name}}: {{ field.errors|striptags }}</p>
+      {% endif %}
+    {% endfor %}
+  </div>
+{% endif %}
+
+<form role="form" method="post">
+  {% csrf_token %}
+  {% for hidden in form.hidden_fields %}
+    {{hidden}}
+  {% endfor %}
+  <div class="row">
+    <div class="col-md-12">
+      <div class="box box-primary">
+        <div class="box-body">
+          {% include 'accession/form_fields.html' with field=form.resource %}
+          <button class="btn btn-default">Find in ArchivesSpace</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="box box-primary">
+    <div class="box-body">
+      {% include 'accession/form_fields.html' with field=form.title %}
+      <div class="row">
+        <div class="col-md-6">
+          {% include 'accession/form_fields.html' with field=form.start_date%}
+        </div>
+        <div class="col-md-6">
+          {% include 'accession/form_fields.html' with field=form.end_date%}
+        </div>
+      </div>
+      <!-- Leaving this unimplemented for now because we'll need to build out ArchivesSpace integration first -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Identified Creators</label>
+            <div class="help-block">Agent records for these creators were found in ArchivesSpace</div>
+            <h4>
+              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
+              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
+              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
+            </h4>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Unidentified Creators</label>
+            <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
+            <div class="row">
+              <div class="col-md-8">
+                <input type="text" class="form-control" value="" />
+              </div>
+              <div class="col-md-4">
+                <select class="form-control">
+                    <option>person</option>
+                    <option>corporate body</option>
+                    <option>family</option>
+                  </select>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {{form.access_restriction}}
+      {% include 'accession/form_fields.html' with field=form.description %}
+      {% include 'accession/form_fields.html' with field=form.access_restrictions %}
+      {% include 'accession/form_fields.html' with field=form.use_restrictions %}
+    </div>
+  </div>
+
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Rights Statements</h3>
+      <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+      </div>
+    </div>
+    <div class="box-body no-padding">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Basis</th>
+            <th>Rights Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% regroup rights_statements by rights_group as merged_rights %}
+          {% for statement in merged_rights %}
+          <tr>
+            <td>{{statement.list.0.rights_basis}}</td>
+            <td>{{statement.list.0.get_table_data.notes}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="box box-primary">
+    <div class="box-header with-border">
+      <h3 class="box-title">Transfers</h3>
+      <div class="box-tools pull-right">
+        <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+      </div>
+    </div>
+    <div class="box-body">
+      {% include 'parts/transfer_table.html' with uploads=transfers %}
+    </div>
+  </div>
+
+  <button type="submit" class="btn btn-primary">Submit</button>
+  <a href="{% url 'accession-main' %}" class="btn btn-danger">Cancel</a>
+
+</form>
+
+{% endblock %}
