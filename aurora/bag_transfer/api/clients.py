@@ -50,3 +50,23 @@ class FornaxClient(object):
         if resp.status_code != 200:
             return False
         return resp.json()
+
+
+class AltairClient(object):
+
+    def __init__(self):
+        self.client = ElectronBond(
+            baseurl=settings.ALTAIR['baseurl'],
+            username=settings.ALTAIR['username'],
+            password=settings.ALTAIR['password'],
+        )
+        try:
+            self.client.authorize()
+        except Exception as e:
+            print e
+
+    def get_next_accession_number(self):
+        resp = self.client.get('next-accession-number')
+        if resp.status_code != 200:
+            return False
+        return resp.json()['display_string']

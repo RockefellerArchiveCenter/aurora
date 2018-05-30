@@ -16,7 +16,7 @@ from aurora import settings
 from bag_transfer.accession.models import Accession, AccessionExternalIdentifier
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
-from bag_transfer.api.clients import AquariusClient, FornaxClient
+from bag_transfer.api.clients import AquariusClient, FornaxClient, AltairClient
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
@@ -106,6 +106,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
         rights_statements = RightsStatement.objects.filter(archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
         # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
         organization = transfers_list[0].organization
+        accession_number = AltairClient().get_next_accession_number()
         notes = {'appraisal': []}
         dates = {'start': [], 'end': []}
         creators_list = []
@@ -147,7 +148,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
         form = AccessionForm(initial={
             'title': title,
             # faked for now, will eventually get this from ArchivesSpace
-            'accession_number': '{}.{}'.format(datetime.now().year, random.randint(0, 999)),
+            'accession_number': accession_number,
             'start_date': sorted(dates.get('start', []))[0],
             'end_date': sorted(dates.get('end', []))[-1],
             'description': ' '.join(set(descriptions_list)),
