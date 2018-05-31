@@ -27,10 +27,4 @@ COPY scripts/add_orgs_for_container.py /data/htdocs/aurora/
 
 WORKDIR /data/htdocs/aurora/aurora
 
-RUN ./manage.py shell < ../add_orgs_for_container.py
-
-CMD ["python","/data/htdocs/aurora/aurora/manage.py","runserver","0.0.0.0:8000"]
-
 EXPOSE 8000
-
-#ENTRYPOINT ["/data/htdocs/aurora/aurora"]

@@ -85,8 +85,19 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
+# DATABASES = {
+#     'default': CF.db_configs,
+# }
+
 DATABASES = {
-    'default': CF.db_configs,
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'mysql',
+        'USER': 'root',
+        'PASSWORD': 'example',
+        'HOST': 'db',
+        'PORT': 3306,
+    }
 }
 
 AUTHENTICATION_BACKENDS = (
