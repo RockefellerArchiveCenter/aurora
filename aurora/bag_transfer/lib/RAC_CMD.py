@@ -78,7 +78,7 @@ def del_from_org(machine_user_id):
     has_ERR = False
 
     for group in ugroups:
-        
+
         command = 'sudo sh /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
 
         output = None
