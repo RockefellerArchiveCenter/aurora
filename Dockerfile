@@ -1,13 +1,28 @@
 FROM python:2.7
 
-RUN apt-get update && apt-get -y install sudo apt-utils libsasl2-dev python-dev libldap2-dev libssl-dev python-pip default-libmysqlclient-dev vim ssh
+RUN apt-get update \
+  && echo 'slapd/root_password password password' | debconf-set-selections \
+  && echo 'slapd/root_password_again password password' | debconf-set-selections \
+  && DEBIAN_FRONTEND=noninteractive apt-get -y install sudo \
+    apt-utils \
+    default-libmysqlclient-dev \
+    ldap-utils \
+    libldap2-dev \
+    libsasl2-dev \
+    libssl-dev \
+    python-dev \
+    python-pip \
+    slapd \
+    ssh \
+    vim \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
 
 COPY scripts/RAC* /usr/local/bin/
 COPY scripts/ldap.secret /etc/
 COPY scripts/ldap.conf /etc/
-
 
 RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
 
@@ -27,4 +42,4 @@ COPY scripts/add_orgs_for_container.py /data/htdocs/aurora/
 
 WORKDIR /data/htdocs/aurora/aurora
 
-EXPOSE 8000
+EXPOSE 389 8000

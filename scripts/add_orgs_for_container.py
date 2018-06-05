@@ -1,5 +1,6 @@
 from bag_transfer.models import Organization, User
 from bag_transfer.lib.RAC_CMD import add_org
+from aurora import settings
 
 orgs = Organization.objects.all()
 org_ids = []
@@ -23,7 +24,7 @@ else:
         add_org(org_to_add)
 
 if len(User.objects.all()) == 0:
-    user = User.objects.create_user("username", password="password")
+    user = User.objects.create_user(settings.TEST_USER['USERNAME'], password=settings.TEST_USER['PASSWORD'])
     user.is_superuser = True
     user.is_staff = True
     user.organization = orgs[0]

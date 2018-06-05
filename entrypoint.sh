@@ -18,6 +18,11 @@ python manage.py shell < ../add_orgs_for_container.py
   #     cp aurora/config.py.example aurora/config.py
   # fi
 
+
+#Start LDAP
+echo "Starting LDAP"
+service slapd start
+
 #Start server
 echo "Starting server"
 python manage.py runserver 0.0.0.0:8000
