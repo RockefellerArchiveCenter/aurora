@@ -5,6 +5,12 @@ services:
     image: mysql:5.7
     environment:
       MYSQL_ROOT_PASSWORD: example
+  ldap:
+    build: ldap/
+    volumes:
+      - .:/code
+    ports:
+      - "389:389"
   web:
     build: .
     entrypoint: /code/entrypoint.sh
@@ -14,3 +20,4 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - ldap

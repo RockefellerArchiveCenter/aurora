@@ -1,0 +1,8 @@
+dn: dc=archive
+objectClass: domain
+objectClass: top
+dc: archive
+
+dn: ou=People,dc=archive
+objectClass: organizationalUnit
+ou: People

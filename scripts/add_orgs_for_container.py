@@ -24,7 +24,8 @@ else:
         add_org(org_to_add)
 
 if len(User.objects.all()) == 0:
-    user = User.objects.create_user(settings.TEST_USER['USERNAME'], password=settings.TEST_USER['PASSWORD'])
+    user = User.objects.create_user("admin", password="password")
     user.is_superuser = True
     user.is_staff = True
     user.organization = orgs[0]
+    user.save()

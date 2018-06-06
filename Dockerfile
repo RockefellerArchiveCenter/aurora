@@ -21,8 +21,6 @@ RUN apt-get update \
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
 
 COPY scripts/RAC* /usr/local/bin/
-COPY scripts/ldap.secret /etc/
-COPY scripts/ldap.conf /etc/
 
 RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
 
