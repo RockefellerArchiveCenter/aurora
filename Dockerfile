@@ -36,8 +36,8 @@ COPY aurora/ /data/htdocs/aurora/aurora
 
 RUN pip install -r /data/htdocs/aurora/requirements.txt
 
-COPY scripts/add_orgs_for_container.py /data/htdocs/aurora/
+copy scripts/add_orgs_for_container.py /data/htdocs/aurora/
 
 WORKDIR /data/htdocs/aurora/aurora
 
-EXPOSE 389 8000
+EXPOSE 8000

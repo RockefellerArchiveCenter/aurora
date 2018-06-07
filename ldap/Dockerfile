@@ -11,8 +11,8 @@ COPY *.ldif /ldap/
 RUN service slapd start ;\
   cd /ldap &&\
 	 ldapadd -Y EXTERNAL -H ldapi:/// -f config.ldif &&\
-   ldapadd -x -D cn=admin,dc=archive -w password -c -f structure.ldif &&\
-   ldapadd -x -D cn=admin,dc=archive -w password -c -f users.ldif
+   ldapadd -x -D cn=admin,dc=archive,dc=org -w password -c -f structure.ldif &&\
+   ldapadd -x -D cn=admin,dc=archive,dc=org -w password -c -f users.ldif
 
 EXPOSE 389
 

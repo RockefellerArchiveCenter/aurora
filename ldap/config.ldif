@@ -10,12 +10,12 @@ objectClass: olcDatabaseConfig
 objectClass: olcHdbConfig
 olcDatabase: {2}hdb
 olcDbDirectory: /var/lib/ldap
-olcSuffix: dc=archive
-olcAccess: {0}to attrs=userPassword,shadowLastChange by self write by anonymous auth by dn="cn=admin,dc=archive" write by * none
+olcSuffix: dc=archive,dc=org
+olcAccess: {0}to attrs=userPassword,shadowLastChange by self write by anonymous auth by dn="cn=admin,dc=archive,dc=org" write by * none
 olcAccess: {1}to dn.base="" by * read
-olcAccess: {2}to * by self write by dn="cn=admin,dc=archive" write by * read
+olcAccess: {2}to * by self write by dn="cn=admin,dc=archive,dc=org" write by * read
 olcLastMod: TRUE
-olcRootDN: cn=admin,dc=archive
+olcRootDN: cn=admin,dc=archive,dc=org
 olcRootPW: password
 olcDbCheckpoint: 512 30
 olcDbConfig: {0}set_cachesize 0 2097152 0

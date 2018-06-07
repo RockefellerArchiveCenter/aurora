@@ -4,6 +4,38 @@ from aurora import settings
 
 orgs = Organization.objects.all()
 org_ids = []
+DEFAULT_USERS = [
+    {
+        "username": "admin",
+        "password": "password",
+        "superuser": True,
+        "staff": True,
+    },
+    {
+        "username": "donor",
+        "password": "password",
+        "superuser": False,
+        "staff": False,
+    },
+    {
+        "username": "manager",
+        "password": "password",
+        "superuser": False,
+        "staff": True,
+    },
+    {
+        "username": "appraiser",
+        "password": "password",
+        "superuser": False,
+        "staff": True,
+    },
+    {
+        "username": "accessioner",
+        "password": "password",
+        "superuser": False,
+        "staff": True,
+    }
+]
 
 if len(orgs) == 0:
     Organization.objects.create(name="Test Organization")
@@ -24,8 +56,10 @@ else:
         add_org(org_to_add)
 
 if len(User.objects.all()) == 0:
-    user = User.objects.create_user("admin", password="password")
-    user.is_superuser = True
-    user.is_staff = True
-    user.organization = orgs[0]
-    user.save()
+    print "Creating Users"
+    for user in DEFAULT_USERS:
+        new_user = User.objects.create_user(user['username'], password=user['password'])
+        new_user.is_superuser = user['superuser']
+        new_user.is_staff = user['staff']
+        new_user.organization = orgs[0]
+        new_user.save()

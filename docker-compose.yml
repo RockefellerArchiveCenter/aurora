@@ -16,6 +16,7 @@ services:
     entrypoint: /code/entrypoint.sh
     volumes:
       - .:/code
+      - ./aurora/:/data/htdocs/aurora/aurora/
     ports:
       - "8000:8000"
     depends_on:
