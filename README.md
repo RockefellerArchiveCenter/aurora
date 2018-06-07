@@ -7,17 +7,33 @@ The name of the application is a reference both to the natural light display oft
 
 ## Installation
 
-1.  Install requirements in `requirements.txt` by running `pip install -r requirements.txt`.
-2.  Rename `aurora/config.py.example` to `aurora/config.py` and update settings as necessary.
-3.  Run `python aurora/manage.py migrate`.
-4.  For a local development server run `python aurora/manage.py runserver`.
+### Quickstart
+1. Install [Docker](https://www.docker.com/community-edition)
+2. Clone this repository
+        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
+3. Build and run Aurora
+        $ cd aurora
+        $ docker-compose up
+4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`
 
-Application functionality currently assumes a SLES server and a specific LDAP configuration. Future development will include improving the portability of the application through containerization.
+### User accounts
+
+By default, Aurora comes with five user accounts:
+
+|Username|Password|User Role|
+|---|---|---|
+|admin|password|System Administrator|
+|donor|password|Read Only User|
+|appraiser|password|Appraisal Archivist|
+|accessioner|password|Accessioning Archivist|
+|manager|password|Managing Archivist|
+
+See below for permissions associated with each user role.
 
 
 ## Transferring digital records
 
-Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing three subdirectories: `uploads`, `processing` and `logs`. Any new files or directories in the `uploads` subdirectory are submitted Aurora's queue for processing.
+Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing two subdirectories: `uploads` and `processing`. Any new files or directories in the `uploads` subdirectory are added to Aurora's processing queue.
 
 At a high level, transfers are processed as follows:
 - Transfers are checked to ensure they have a valid filename, in other words that the top-level directory (for unserialized bags) or filename (for serialized bags) does not contain illegal characters.
@@ -54,13 +70,13 @@ Organizations can be created or deleted by archivists with the necessary permiss
 
 ## User Management
 
-Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign groups to them.
+Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign them to roles.
 
-### User groups and permissions
+### User roles and permissions
 
-Aurora implements the following user groups and associated permissions:
+Aurora implements the following user roles and associated permissions:
 
-#### All Users
+#### Read Only User
 
 All users have a few basic permissions:
 
@@ -86,20 +102,20 @@ In addition to the permissions for **All Users**, users who are archivists have 
 *  View appraisal queue
 *  View accessioning queue
 
-##### Appraisal Archivists
+##### Appraisal Archivist
 
 In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
 
 *  Accept or reject transfers
 *  Add appraisal notes to transfers
 
-##### Accessioning Archivists
+##### Accessioning Archivist
 
 In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
 
 *  Create accession records
 
-##### Managing Archivists
+##### Managing Archivist
 
 In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
 

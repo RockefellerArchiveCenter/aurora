@@ -1,16 +1,19 @@
 #!/bin/bash
 
+/code/wait-for-it.sh db:5432 --
+
+# Create config.py if it doesn't exist
+if [ ! -f aurora/config.py ]; then
+    echo "Creating config file"
+    cp aurora/config.py.example aurora/config.py
+fi
+
 # Apply database migrations
-/code/wait-for-it.sh db:5432 -- echo "Applying database migrations"
+echo "Applying database migrations"
 python manage.py migrate
 
-  # if [ ! -f aurora/config.py ]; then
-  #     echo "Creating config file"
-  #     cp aurora/config.py.example aurora/config.py
-  # fi
-
 # Create initial organizations and users
-echo "Creating organizations"
+echo "Setting up organizations and users"
 python manage.py shell < ../add_orgs_for_container.py
 
 #Start server

@@ -1,65 +1,62 @@
-##
-#   After Updating with your configs,
-#   rename/save as to config.py
-##
+###############
+#   This is a sample configuration file, intended for demonstration purposes only.
+#   Be sure to change configuration values as necessary for production use.
+#
+#   If you're using the Docker container, this file was automatically created
+#   the first time you started the container.
+##############
 
 DEBUG = True
 
-db_configs = {
-  'ENGINE' :    'django.db.backends.mysql',
-  'NAME' :  '',
-  'USER' :  '',
-  'PASSWORD':   '',
-  'HOST':   '',
+DEFAULT_DB = {
+      'ENGINE': 'django.db.backends.mysql',
+      'NAME': 'mysql',
+      'USER': 'root',
+      'PASSWORD': 'example',
+      'HOST': 'db',
+      'PORT': 3306,
 }
-ALLOWED_HOSTS = ['localhost']
+
+ALLOWED_HOSTS = ['localhost',]
+
+BASE_URL = 'http://localhost/'
+
 TIME_ZONE = 'America/New_York'
 
+# Directory configs
 ORG_ROOT_DIR = '/data/'
+STATIC_ROOT = '/data/htdocs/aurora/aurora/static/'
+PROJECT_ROOT_DIR = '/data/htdocs/aurora/'
 
-STATIC_ROOT = '/data/project_electron_transfer/aurora/static/'
+# Unit test configs
+TEST_BAGS_DIR = '/data/htdocs/aurora/test_bags/'
+TEST_USER = {'USERNAME': 'va0425', 'PASSWORD': 'ractest1'}
 
-PROJECT_ROOT_DIR = '/home/user/bin/aurora/'
-
-TMP_DIR = '/data/tmp/'
-
-# UNIT TESTING
-TESTING_TMP_DIR = '/tmp/'
-TEST_BAGS_DIR = '/home/user/bin/aurora/test_bags/'
+# Transfer configs
+TRANSFER_FILESIZE_MAX = 2000
 TRANSFER_UPLOADS_ROOT = '/data/'
 TRANSFER_EXTRACT_TMP = '/data/tmp/'
+UPLOAD_LOG_FILE = '/data/uploads_to_process'
 
-# LDAP GLOBALS
-
+# LDAP configs
 LDAP_OPTIONS_X_TLS_REQUIRE_CERT = False
 LDAP_OPTIONS_REFERRALS = False
-AUTH_LDAP_SERVER_URI =      ""
-AUTH_LDAP_BIND_DN =         ""
-AUTH_LDAP_BIND_PASSWORD =   ""
-LDAP_SEARCH_DN =			""
-LDAP_SEARCH_REGEX =			"(uid=%(user)s)"
+AUTH_LDAP_SERVER_URI =      "ldap://ldap"
+AUTH_LDAP_BIND_DN =         "cn=admin,ou=People,dc=archive,dc=org"
+AUTH_LDAP_BIND_PASSWORD =   "password"
+LDAP_SEARCH_DN =                        "ou=People,dc=archive,dc=org"
+LDAP_SEARCH_REGEX =                     "(uid=%(user)s)"
 AUTH_LDAP_ALWAYS_UPDATE_USER = False
-
 LDAP_OBJECT_CLASSES = ["inetOrgPerson","person", "posixAccount", "top"]
 LDAP_GID_NUMBER = ["100"]
 LDAP_UID_PREFIX = "RA"
 
-UPLOAD_LOG_FILE = '/data/uploads_to_process'
-
-# EMAIL
+# Email configs
 EMAIL_HOST = 'mail.example.com'
 EMAIL_PORT = 123
 EMAIL_HOST_USER = 'test@example.com'
 EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-# TEST STUFF
 EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
-
-BASE_URL = 'http://localhost/'
-
-HOST_ORG_ID = 1
-
-TRANSFER_FILESIZE_MAX = 2000

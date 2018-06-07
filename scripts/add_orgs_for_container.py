@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Group
+
 from bag_transfer.models import Organization, User
 from bag_transfer.lib.RAC_CMD import add_org
 from aurora import settings
@@ -22,21 +24,25 @@ DEFAULT_USERS = [
         "password": "password",
         "superuser": False,
         "staff": True,
+        "groups": ["managing_archivists"],
     },
     {
         "username": "appraiser",
         "password": "password",
         "superuser": False,
         "staff": True,
+        "groups": ["appraisal_archivists"],
     },
     {
         "username": "accessioner",
         "password": "password",
         "superuser": False,
         "staff": True,
+        "groups": ["accessioning_archivists"],
     }
 ]
 
+print "Creating organizations"
 if len(orgs) == 0:
     Organization.objects.create(name="Test Organization")
     orgs = Organization.objects.all()
@@ -56,10 +62,14 @@ else:
         add_org(org_to_add)
 
 if len(User.objects.all()) == 0:
-    print "Creating Users"
+    print "Creating users"
     for user in DEFAULT_USERS:
         new_user = User.objects.create_user(user['username'], password=user['password'])
         new_user.is_superuser = user['superuser']
         new_user.is_staff = user['staff']
         new_user.organization = orgs[0]
+        if 'groups' in user:
+            for group in user['groups']:
+                g = Group.objects.get_or_create(name=group)[0]
+                new_user.groups.add(g)
         new_user.save()
