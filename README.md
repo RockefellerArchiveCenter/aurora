@@ -161,7 +161,6 @@ Your token will be returned in the response. You can then use the token in reque
 
 Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/aurora/blob/master/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
 
--   **upload.sh**: identifies new uploads, can be configured to run as a cron job on your desired interval. (Bash)
 -   **RACaddorg**: creates a new organization on the server (Bash)
 -   **RACcreateuser.c**: creates an administrative user (c program)
 -   **RACadd2grp**: adds a user to the group that represents the organization. (Bash)
