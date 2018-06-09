@@ -37,8 +37,8 @@
 //
 //
 
-const char *_LDAPSERVER = "10.10.1.236";
-const char *_LDAPSEARCHBASE = "ou=People,dc=ROCK,dc=org,dc=gke";
+const char *_LDAPSERVER = "ldap://ldap";
+const char *_LDAPSEARCHBASE = "ou=People,dc=archive,dc=org";
 const char _LDAPUSER[1024];
 const char *_LDAPSECRET = "/etc/ldap.secret";
 

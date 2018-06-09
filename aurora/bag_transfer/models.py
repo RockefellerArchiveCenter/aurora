@@ -15,6 +15,7 @@ from django.utils.translation import gettext as _
 from bag_transfer.lib import RAC_CMD
 from bag_transfer.lib.ldap_auth import LDAP_Manager
 
+
 class Organization(models.Model):
     is_active =     models.BooleanField(default=True)
     name =          models.CharField(max_length=60, unique=True)

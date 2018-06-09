@@ -18,7 +18,9 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+COPY ldap/ldap.* /etc/
 COPY scripts/RAC* /usr/local/bin/
+RUN gcc /aurora/scripts/RACcreateuser.c -o /aurora/scripts/RACcreateuser -lldap -llber -lresolv
 RUN chmod +x /usr/local/bin/RAC*
 
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
