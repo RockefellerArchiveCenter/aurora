@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group
 
-from bag_transfer.models import Organization, User
+from bag_transfer.models import Organization, User, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagManifestsRequired, TagFilesRequired
+from bag_transfer.rights.models import RightsStatement, RightsStatementCopyright, RightsStatementOther, RightsStatementRightsGranted
 from bag_transfer.lib.RAC_CMD import add_org
 from aurora import settings
 
@@ -46,6 +47,10 @@ print "Creating organizations"
 if len(orgs) == 0:
     Organization.objects.create(name="Test Organization")
     orgs = Organization.objects.all()
+    print "Creating BagIt Profile for {}".format(orgs[0])
+    print "Creating Rights Statements for {}".format(orgs[0])
+    # Copyright
+    # Other/Donor
 else:
     for org in orgs:
         org_ids.append(org.machine_name[3:])

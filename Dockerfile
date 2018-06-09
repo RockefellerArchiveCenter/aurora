@@ -18,25 +18,20 @@ RUN apt-get update \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
-
 COPY scripts/RAC* /usr/local/bin/
-
-RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
-
 RUN chmod +x /usr/local/bin/RAC*
 
+RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
+RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
+
 RUN mkdir -p /data/htdocs/aurora/
-
 COPY requirements.txt /data/htdocs/aurora/
-
 COPY test_bags/ /data/htdocs/aurora/test_bags
-
 COPY aurora/ /data/htdocs/aurora/aurora
 
 RUN pip install -r /data/htdocs/aurora/requirements.txt
 
-copy scripts/add_orgs_for_container.py /data/htdocs/aurora/
+COPY setup_objects.py /data/htdocs/aurora/
 
 WORKDIR /data/htdocs/aurora/aurora
 

@@ -14,7 +14,7 @@ python manage.py migrate
 
 # Create initial organizations and users
 echo "Setting up organizations and users"
-python manage.py shell < ../add_orgs_for_container.py
+python manage.py shell < ../setup_objects.py
 
 #Start server
 echo "Starting server"
