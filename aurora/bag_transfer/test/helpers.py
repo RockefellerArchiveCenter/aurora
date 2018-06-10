@@ -73,10 +73,15 @@ def create_test_groups(names=None):
     if names is None:
         names = ['appraisal_archivists', 'accessioning_archivists', 'managing_archivists']
     for name in names:
-        group = Group(name=name)
-        group.save()
-        groups.append(group)
-        print 'Test group {group} created'.format(group=group.name)
+        if not Group.objects.filter(name=name).exists():
+            group = Group(name=name)
+            group.save()
+            groups.append(group)
+            print 'Test group {group} created'.format(group=group.name)
+        else:
+            print 'Test group {group} already exists'.format(group=name)
+            group = Group.objects.get(name=name)
+            groups.append(group)
     return groups
 
 

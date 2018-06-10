@@ -52,8 +52,8 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
 
 class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
-    model =         Organization
-    fields =        ['is_active','name', 'acquisition_type']
+    model = Organization
+    fields = ['is_active','name', 'acquisition_type']
     success_message = "Organization Saved!"
 
     def get_context_data(self, **kwargs):
@@ -160,6 +160,7 @@ class BagItProfileManageView(View):
             'meta_page_title': 'BagIt Profile',
             })
 
+
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
     def render_to_response(self, context, **kwargs):
@@ -168,7 +169,7 @@ class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, Templa
         resp = {'success': 0}
 
         if 'action' in self.kwargs:
-            obj = get_object_or_404(BagItProfile,pk=context['profile_pk'])
+            obj = get_object_or_404(BagItProfile, pk=context['profile_pk'])
             if self.kwargs['action'] == 'delete':
                 obj.delete()
                 resp['success'] = 1

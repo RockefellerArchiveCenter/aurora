@@ -31,7 +31,10 @@ class RightsTestCase(TestCase):
             self.archives.append(archive)
         self.groups = helpers.create_test_groups(['managing_archivists'])
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
-        self.user.groups = self.groups
+        for group in self.groups:
+            self.user.groups.add(group)
+        self.user.is_staff = True
+        self.user.save()
 
     def test_rights(self):
         for record_type in self.record_types:

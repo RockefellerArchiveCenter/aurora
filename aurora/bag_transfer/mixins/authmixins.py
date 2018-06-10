@@ -19,7 +19,7 @@ class ArchivistMixin(LoggedInMixinDefaults, UserPassesTestMixin):
         return False
 
 
-class AppraisalArchivistMixin(ArchivistMixin,UserPassesTestMixin):
+class AppraisalArchivistMixin(ArchivistMixin, UserPassesTestMixin):
     def test_func(self, user):
         return user.has_privs('APPRAISER')
 

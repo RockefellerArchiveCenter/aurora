@@ -20,7 +20,7 @@ RUN apt-get update \
 
 COPY ldap/ldap.* /etc/
 COPY scripts/RAC* /usr/local/bin/
-RUN gcc /aurora/scripts/RACcreateuser.c -o /aurora/scripts/RACcreateuser -lldap -llber -lresolv
+RUN gcc /usr/local/bin/RACcreateuser.c -o /usr/local/bin/RACcreateuser -lldap -llber -lresolv
 RUN chmod +x /usr/local/bin/RAC*
 
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config

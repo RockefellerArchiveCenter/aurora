@@ -32,24 +32,30 @@ class UserOrgTestCase(TestCase):
             self.archives.append(archive)
 
     def test_users(self):
-        for user in (('donor', 'ra00001'), ('managing_archivists', 'va0425'), ('appraisal_archivists', 'va0426'), ('accessioning_archivists', 'va0427')):
-            group = helpers.create_test_groups([user[0]])
+        for user in (('donor', 'donor'), ('managing_archivists', 'manager'), ('appraisal_archivists', 'appraiser'), ('accessioning_archivists', 'accessioner')):
+            groups = helpers.create_test_groups([user[0]])
             user = helpers.create_test_user(username=user[1], org=random.choice(self.orgs))
-            user.groups = group
+            for group in groups:
+                user.groups.add(group)
+                if group.name in ['managing_archivists', 'appraisal_archivists', 'accessioning_archivists']:
+                    print user
+                    user.is_staff = True
+                    user.save()
 
-        # Group name, assertTrue methods, assertFalse methods
+        # Username, assertTrue methods, assertFalse methods
         user_list = (
             ('donor', [], ['is_archivist', 'can_appraise', 'is_manager'], ''),
-            ('managing_archivists', ['is_archivist', 'can_appraise', 'is_manager'], [], 'MANAGING'),
-            ('accessioning_archivists', ['is_archivist'], ['can_appraise', 'is_manager'], 'ACCESSIONER'),
-            ('appraisal_archivists', ['is_archivist', 'can_appraise'], ['is_manager'], 'APPRAISER'),
+            ('manager', ['is_archivist', 'can_appraise', 'is_manager'], [], 'MANAGING'),
+            ('accessioner', ['is_archivist'], ['can_appraise', 'is_manager'], 'ACCESSIONER'),
+            ('appraiser', ['is_archivist', 'can_appraise'], ['is_manager'], 'APPRAISER'),
         )
         for u in user_list:
-            user = User.objects.get(groups__name=u[0])
+            user = User.objects.get(username=u[0])
+            print user.__dict__
             for meth in u[1]:
-                self.assertTrue(getattr(user, meth)())
+                self.assertTrue(getattr(user, meth)(), "User {} is unable to perform function {}".format(user, meth))
             for meth in u[2]:
-                self.assertFalse(getattr(user, meth)())
+                self.assertFalse(getattr(user, meth)(), "User {} should not be able to perform function {}".format(user, meth))
             if len(u[3]) > 1:
                 self.assertTrue(user.has_privs(u[3]))
 
@@ -57,9 +63,12 @@ class UserOrgTestCase(TestCase):
         self.user_views()
 
     def test_orgs(self):
-        group = helpers.create_test_groups(['managing_archivists'])
+        groups = helpers.create_test_groups(['managing_archivists'])
         user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
-        user.groups = group
+        for group in groups:
+            user.groups.add(group)
+        user.is_staff = True
+        user.save()
         self.client.login(username=user.username, password=settings.TEST_USER['PASSWORD'])
 
         # Test Org views

@@ -30,7 +30,7 @@ PROJECT_ROOT_DIR = '/data/htdocs/aurora/'
 
 # Unit test configs
 TEST_BAGS_DIR = '/data/htdocs/aurora/test_bags/'
-TEST_USER = {'USERNAME': 'va0425', 'PASSWORD': 'ractest1'}
+TEST_USER = {'USERNAME': 'manager', 'PASSWORD': 'password'}
 
 # Transfer configs
 TRANSFER_FILESIZE_MAX = 2000

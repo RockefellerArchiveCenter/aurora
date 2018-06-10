@@ -29,7 +29,10 @@ class AppraisalTestCase(TestCase):
             self.archives.append(archive)
         self.groups = helpers.create_test_groups(['appraisal_archivists'])
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
-        self.user.groups = self.groups
+        for group in self.groups:
+            self.user.groups.add(group)
+        self.user.is_staff = True
+        self.user.save()
 
     def test_appraisal(self):
         for archive in self.archives:
