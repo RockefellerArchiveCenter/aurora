@@ -1,0 +1,123 @@
+#! /bin/bash
+#
+#  RACdelorg - Rockefeller Archive Center  Delete Organization
+#
+#  Delete a Linux group
+#
+#  1) Verify the group exists
+#  2) Delete the group from system.
+#
+#
+#  USAGE:
+#    RACdelorg <org>
+#
+#
+#  Logging:  Output and error messages are placed in the the system log.
+#                  tail -f /var/log/messages to view output in real time
+#
+#
+#
+# ---------------------- Return Codes -------------------------
+#             1 - General Fail - Operation not completed.
+#             2 - No input parameters, Must have at least at least two arguments to run
+#             3 - The user does not exits.
+#             4 - The Group does not exits.
+#             5 - The user is already part of a "org" group.  Only allowed in 1 Rockefeller Archive groupi
+#             6 - usermod failed, see system log for return code from usermod.
+#
+#  $Id: RACdeluser,v 1.00 8/02/2017 URDB dI$
+#
+#
+# Write a message to syslog and stderr, depending on the verboseness level
+# Arguments are LEVEL MESSAGE; LEVEL is either "err" or "info".
+log ()
+{
+
+  if [ $# -le 1 ]; then
+    echo "RACdelorg: Must have at least two arguments to log()" 1>&2
+    return 1
+  fi
+
+  FACILITY="$1"
+  shift
+  case "$FACILITY" in
+    err|info|debug) : ;;
+    *)  echo "RACdelorg: I do not recognize level '$FACILITY' " 1>&2 ;;
+  esac
+      logger "RACdelorg: $FACILITY:  $@"
+}
+
+
+
+#-------------------------------------------------MAIN---------------------------------------
+#
+#  Set some variabilities
+#
+log info "RACdelorg started at $(date)"
+#
+# set to 1 to turn on Debugging
+#
+
+if [ $# -lt 1 ]; then
+   log err "Error, RACdelorg requires one input arguments, terminating"
+   exit 2
+else
+   if [ $1 = "manual" ]; then
+      INTERACTIVE_MODE=1
+      log info "Running in Interactive Mode"
+   fi
+fi
+
+#
+#  -u  Treat unset variables as an error when substituting.
+#
+set -u
+
+#
+# Setup the variables
+#
+findit="This is for group: $1"
+
+#
+#  Delete the ORG infomation from /etc/ssh2/sshd_config
+#
+#    This works standalone,  fails when assign to varible.
+#grep -n "$findit" /etc/ssh2/sshd_config
+#
+b=$(grep -n "$findit" /etc/ssh2/sshd_config)
+#
+#  Exit if the ORG does not exist in /etc/ssh2/sshd_config
+#
+if [[ -z $b  ]]; then
+   log err "Error, RACdelorg No org found in /etc/ssh2/sshd_config, terminating"
+   exit 2
+fi
+#
+#  Calculated the start and end of the block to delete in /etc/ssh2/sshd_config and have sed delete it.
+#
+c=${b%%:*}
+d=$((c-2))
+e=$((c+6))
+sed -i $d','$e' d' /etc/ssh2/sshd_config
+
+
+
+#  Verify the Linux group exists.
+if [ -z "$(getent group $1 )" ]; then
+  log err "Group $1 does not exist, terminating."
+  exit 4
+fi
+log info "Group $1 found"
+
+findit="This is for group: $1"
+#
+# Remove the group from the system.
+#
+groupdel $1
+rc=$?; if [[ $rc != 0 ]]; then
+   log err "Failed to delete group $1, return code from userdel: $rc, terminating"
+   exit 6
+fi
+log info "Organization $1 deleted."
+
+exit 0
