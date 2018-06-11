@@ -12,8 +12,8 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
   - docker-compose up -d
-  - /lib/systemd/system/clamav-daemon start
-  - /lib/systemd/system/clamav-freshclam start
+  - service clamd start
+  - service freshclam start
   - ps -aux
   - sleep 20s
 install: true
