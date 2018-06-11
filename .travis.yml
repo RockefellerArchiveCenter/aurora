@@ -12,10 +12,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
   - docker-compose up -d
-  - ls /etc/
-  - ls /usr/local/bin
-  - find clamd.conf
-  - find clamav
+  - find / clamd.conf
   - sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
   - sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
   - /etc/init.d/clamav-daemon start
