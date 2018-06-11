@@ -45,8 +45,10 @@ RUN mkdir /var/run/clamav && \
 RUN mkdir -p /data/htdocs/aurora/
 COPY requirements.txt /data/htdocs/aurora/
 COPY test_bags/ /data/htdocs/aurora/test_bags
+COPY sample_bags/ /data/htdocs/aurora/sample_bags
 COPY aurora/ /data/htdocs/aurora/aurora
 COPY setup_objects.py /data/htdocs/aurora/
+COPY import_sample_data.sh /data/htdocs/aurora/
 
 # Install Python modules
 RUN pip install -r /data/htdocs/aurora/requirements.txt

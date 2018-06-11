@@ -7,14 +7,25 @@ The name of the application is a reference both to the natural light display oft
 
 ## Installation
 
-### Quickstart
-1. Install [Docker](https://www.docker.com/community-edition)
-2. Clone this repository
+### Quick Start
+If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
+
+      git clone https://github.com/RockefellerArchiveCenter/aurora.git
+      cd aurora
+      docker-compose up
+
+Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
+
+### Detailed Instructions
+1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
+2. Download or clone this repository
         $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
-3. Build and run Aurora
+3. Build and run Aurora.
         $ cd aurora
         $ docker-compose up
-4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`
+  The initial build may take some time, so be patient!
+
+4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
 ### User accounts
 
@@ -29,6 +40,14 @@ By default, Aurora comes with five user accounts:
 |manager|password|Managing Archivist|
 
 See below for permissions associated with each user role.
+
+
+### Sample Data
+If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
+
+Open up a new terminal window and navigate to the root of the application, then run
+
+        $ docker-compose exec web sh ../import_sample_data.sh
 
 
 ## Transferring digital records

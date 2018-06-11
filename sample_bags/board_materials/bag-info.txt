@@ -1,0 +1,13 @@
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json
+Bagging-Date: 2017-12-11T20:22:48.542586
+Date-End: 2010-06-30
+Date-Start: 2008-07-01
+External-Identifier: records-2017-12-11T20:22:48.542586
+Internal-Sender-Description: Board materials from the foundation's board meetings.
+Language: eng
+Payload-Oxum: 7723143.6
+Record-Creators: Office of Important Affairs
+Record-Type: board materials
+Source-Organization: Test Organization
+Title: Board Books

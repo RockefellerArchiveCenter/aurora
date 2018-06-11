@@ -1,0 +1,5 @@
+9705c6398426e57b113ca3152fc03753  data/Important Document.docx
+b261276b5db34ee905a2b1f98cbe6618  data/hinted vs unhinted.txt
+6ac18e876125b7d84a9f8e959b43bfeb  data/install-mac.txt
+9a559708f214c357a6dbd568ed6d2b48  data/install-win.txt
+87290540b91697d73adc589b1fca1f1e  data/metadata.json

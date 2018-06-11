@@ -154,7 +154,7 @@ AUTH_LDAP_USER_SEARCH =     LDAPSearch(CF.LDAP_SEARCH_DN, ldap.SCOPE_SUBTREE, CF
 
 # Django Cron
 CRON_CLASSES = [
-    "transfers.lib.DiscoverTransfers",
+    "bag_transfer.lib.cron.DiscoverTransfers",
 ]
 
 

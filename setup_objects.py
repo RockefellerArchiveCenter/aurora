@@ -95,12 +95,10 @@ if len(orgs) == 0:
             repeatable=False
         )
     source_organization = BagItProfileBagInfo.objects.get(field='source_organization')
-    for name in ['Ford Foundation', 'Rockefeller Foundation',
-                 'Rockefeller Brothers Fund', 'Commonwealth Fund']:
-        BagItProfileBagInfoValues.objects.create(
-            bagit_profile_baginfo=source_organization,
-            name=name
-        )
+    BagItProfileBagInfoValues.objects.create(
+        bagit_profile_baginfo=source_organization,
+        name='Test Organization'
+    )
     record_type = BagItProfileBagInfo.objects.get(field='record_type')
     for name in ['administrative records', 'board materials', 'grant records',
                  'communications and publications', 'annual reports']:

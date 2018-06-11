@@ -1,0 +1,15 @@
+Bag-Count: 2 of 2
+Bag-Group-Identifier: 19820514
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json
+Bagging-Date: 2017-12-11T20:15:40.727574
+Date-End: 1989-06-17
+Date-Start: 1982-05-14
+External-Identifier: records-2017-12-11T20:15:40.727574
+Internal-Sender-Description: Administrative records for the Office of Important Affairs
+Language: eng
+Payload-Oxum: 41838.5
+Record-Creators: Office of Important Affairs
+Record-Type: administrative records
+Source-Organization: Test Organization
+Title: OIA Administrative records
