@@ -38,7 +38,6 @@ class UserOrgTestCase(TestCase):
             for group in groups:
                 user.groups.add(group)
                 if group.name in ['managing_archivists', 'appraisal_archivists', 'accessioning_archivists']:
-                    print user
                     user.is_staff = True
                     user.save()
 
@@ -51,7 +50,6 @@ class UserOrgTestCase(TestCase):
         )
         for u in user_list:
             user = User.objects.get(username=u[0])
-            print user.__dict__
             for meth in u[1]:
                 self.assertTrue(getattr(user, meth)(), "User {} is unable to perform function {}".format(user, meth))
             for meth in u[2]:

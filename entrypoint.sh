@@ -2,6 +2,12 @@
 
 /code/wait-for-it.sh db:5432 --
 
+sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf && \
+sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
+
+/etc/init.d/clamav-daemon start
+/etc/init.d/clamav-freshclam start
+
 # Create config.py if it doesn't exist
 if [ ! -f aurora/config.py ]; then
     echo "Creating config file"
