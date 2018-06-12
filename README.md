@@ -1,5 +1,8 @@
 # Aurora
 
+[![Build Status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=master)](https://travis-ci.org/RockefellerArchiveCenter/aurora)
+![GitHub (pre-)release](https://img.shields.io/github/release/RockefellerArchiveCenter/aurora/all.svg)
+
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
 The name of the application is a reference both to the natural light display often seen in the northern hemisphere - sometimes referred to as _aurora borealis_ - as well as the Roman goddess of dawn.
