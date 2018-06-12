@@ -19,7 +19,7 @@ If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/comm
 
 Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
 
-### Detailed Instructions
+### Detailed Installation Instructions
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
         $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
@@ -51,6 +51,10 @@ If desired, you can import a set of sample bags (not all of which are valid) by 
 Open up a new terminal window and navigate to the root of the application, then run
 
         $ docker-compose exec web sh ../import_sample_data.sh
+
+
+### Data Persistence
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose -v`.
 
 
 ## Transferring digital records
