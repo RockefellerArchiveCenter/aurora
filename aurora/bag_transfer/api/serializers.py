@@ -7,6 +7,20 @@ from bag_transfer.models import *
 from bag_transfer.rights.models import *
 
 
+class ExternalIdentifierSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = AbstractExternalIdentifier
+        fields = ('identifier', 'source', 'created', 'last_modified',)
+
+
+class RecordCreatorsSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = RecordCreators
+        fields = ('name', 'type',)
+
+
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
     note = serializers.StringRelatedField(source='rights_granted_note')
 
@@ -18,6 +32,8 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
 class RightsStatementSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):
         basis_key = obj.rights_basis.lower()
+        if basis_key == 'other':
+            basis_key = 'other_rights'
         rights_granted = RightsStatementRightsGrantedSerializer(
             RightsStatementRightsGranted.objects.filter(rights_statement=obj), many=True)
 
@@ -67,14 +83,14 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     type = serializers.SerializerMethodField()
     summary = serializers.CharField(source='code.code_desc')
     object = serializers.HyperlinkedRelatedField(source='archive',
-                                                 queryset='archive',
-                                                 view_name='archives-detail')
+                                                 view_name='archives-detail',
+                                                 read_only=True)
     result = BAGLogResultSerializer(source='code.next_action')
     endTime = serializers.StringRelatedField(source='created_time')
 
     class Meta:
         model = BAGLog
-        fields = ('url', 'type', 'summary', 'object', 'result', 'endTime',)
+        fields = ('url', 'type', 'summary', 'object', 'result', 'endTime')
 
     def get_type(self, obj):
         if obj.code.code_type in ['BE', 'GE']:
@@ -85,8 +101,8 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
 
 class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
     source_organization = serializers.StringRelatedField()
-    language = serializers.StringRelatedField(many=True)
-    record_creators = serializers.StringRelatedField(many=True)
+    language = serializers.StringRelatedField(many=True, read_only=True)
+    record_creators = RecordCreatorsSerializer(many=True)
 
     class Meta:
         model = BagInfoMetadata
@@ -99,18 +115,54 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer()
-    notifications = BAGLogSerializer(many=True)
+    events = BAGLogSerializer(many=True)
     rights_statements = RightsStatementSerializer(many=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
     identifier = serializers.StringRelatedField(source='machine_file_identifier')
+    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
+    parents = ExternalIdentifierSerializer(source='parent_identifier', many=True)
+    collections = ExternalIdentifierSerializer(source='collection_identifier', many=True)
 
     class Meta:
         model = Archives
-        fields = ('url', 'identifier', 'organization', 'bag_it_name', 'process_status',
-                  'file_size', 'file_type', 'appraisal_note',
-                  'additional_error_info', 'metadata', 'rights_statements', 'notifications',
+        fields = ('url', 'identifier', 'external_identifiers', 'organization',
+                  'bag_it_name', 'process_status', 'file_size', 'file_type',
+                  'appraisal_note', 'additional_error_info', 'metadata',
+                  'rights_statements', 'parents', 'collections', 'events',
                   'created_time', 'modified_time')
+
+    def update(self, instance, validated_data):
+        instance.process_status = validated_data.get('process_status', instance.process_status)
+        instance.save()
+
+        IDENTIFIERS = (
+         ('parent_identifier', ParentExternalIdentifier),
+         ('collection_identifier', CollectionExternalIdentifier),
+         ('external_identifier', ArchiveExternalIdentifier),
+        )
+
+        for t in IDENTIFIERS:
+            for item in validated_data.get(t[0], getattr(instance, t[0])):
+                if t[1].objects.filter(source=item['source'], archive=instance).exists():
+                    identifier = t[1].objects.filter(source=item['source'], archive=instance)[0]
+                    identifier.identifier = item['identifier']
+                    identifier.save()
+                else:
+                    identifier = t[1].objects.create(
+                        identifier=item['identifier'],
+                        source=item['source'],
+                        archive=instance)
+
+        return instance
+
+
+class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
+    identifier = serializers.StringRelatedField(source='machine_file_identifier')
+
+    class Meta:
+        model = Archives
+        fields = ('url', 'identifier', 'created_time', 'modified_time')
 
 
 class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
@@ -162,19 +214,49 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         }
 
 
+class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = BagItProfile
+        fields = ("url", "external_descripton", "version", "applies_to_organization")
+
+
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
-    transfers = serializers.HyperlinkedIdentityField(view_name='organization-transfers')
-    events = serializers.HyperlinkedIdentityField(view_name='organization-events')
     bagit_profiles = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-bagit-profiles')
     rights_statements = serializers.HyperlinkedIdentityField(read_only=True, view_name='organization-rights-statements')
 
     class Meta:
         model = Organization
         fields = ('url', 'id', 'is_active', 'name', 'machine_name',
-                  'acquisition_type', 'bagit_profiles', 'rights_statements', 'transfers', 'events')
+                  'acquisition_type', 'bagit_profiles', 'rights_statements')
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = User
         fields = ('url', 'username', 'email', 'is_staff', 'is_active', 'date_joined', 'organization')
+
+
+class AccessionSerializer(serializers.HyperlinkedModelSerializer):
+    creators = RecordCreatorsSerializer(many=True)
+    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
+    transfers = ArchivesListSerializer(source='accession_transfers', many=True)
+    organization = serializers.StringRelatedField()
+    rights_statements = RightsStatementSerializer(many=True)
+    language = serializers.StringRelatedField()
+
+    class Meta:
+        model = Accession
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        instance.process_status = validated_data.get('process_status', instance.process_status)
+        instance.save()
+        return instance
+
+
+class AccessionListSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Accession
+        fields = ('url', 'title', 'accession_number', 'created', 'last_modified')

@@ -13,6 +13,7 @@ def get_user_jwt(request):
     try:
         user_jwt = JSONWebTokenAuthentication().authenticate(Request(request))
         if user_jwt is not None:
+            request.csrf_processing_done = True
             return user_jwt[0]
     except:
         pass

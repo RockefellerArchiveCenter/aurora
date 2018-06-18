@@ -25,15 +25,10 @@
             <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
           </a>
         </li>
-        <li>
-          <a href="{% url 'api-root' %}">
-            <i class="fa fa-plug"></i> <span>Browseable API</span>
-          </a>
-        </li>
         {% endif %}
 
         {% if request.user.is_staff %}
-        <li class="header">Admin Pages</li>
+        <li class="header">Administration</li>
         <li>
           <a href="{% url 'orgs-list' %}">
             <i class="fa fa-building-o"></i> <span>Organizations</span>
@@ -45,6 +40,17 @@
           </a>
         </li>
         {% endif %}
+        <li class="header">Developer Resources</li>
+        <li>
+          <a href="{% url 'api-root' %}">
+            <i class="fa fa-plug"></i> <span>Browseable API</span>
+          </a>
+        </li>
+        <li>
+          <a href="{% url 'schema-json' ".json" %}">
+            <i class="fa fa-object-group"></i> <span>OpenAPI Schema</span>
+          </a>
+        </li>
       </li>
 
     </ul>

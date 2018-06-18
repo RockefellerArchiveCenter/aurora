@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from rest_framework import viewsets, generics
+from rest_framework import viewsets, generics, mixins
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
 from bag_transfer.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
-from bag_transfer.api.serializers import OrganizationSerializer, ArchivesSerializer, BAGLogSerializer, BagInfoMetadataSerializer, BagItProfileSerializer, UserSerializer, RightsStatementSerializer
+from bag_transfer.accession.models import Accession
+from bag_transfer.api.serializers import *
 from bag_transfer.rights.models import RightsStatement
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for organizations"""
-    model = Organization
-    queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
+
+    def get_queryset(self):
+        queryset = Organization.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(id=self.request.user.organization.id)
+        return queryset
 
     @detail_route()
     def bagit_profiles(self, request, *args, **kwargs):
@@ -32,27 +37,6 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
     @detail_route()
-    def transfers(self, request, *args, **kwargs):
-        org = self.get_object()
-        transfers = Archives.objects.filter(organization=org).order_by('-created_time')
-        page = self.paginate_queryset(transfers)
-        if page is not None:
-            serializer = ArchivesSerializer(page, context={'request': request}, many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response(serializer.data)
-
-    @detail_route()
-    def events(self, request, *args, **kwargs):
-        org = self.get_object()
-        archives = Archives.objects.filter(organization=org)
-        notifications = BAGLog.objects.filter(archive__in=archives).order_by('-created_time')
-        page = self.paginate_queryset(notifications)
-        if page is not None:
-            serializer = BAGLogSerializer(page, context={'request': request}, many=True)
-            return self.get_paginated_response(serializer.data)
-        return Response(serializer.data)
-
-    @detail_route()
     def rights_statements(self, request, *args, **kwargs):
         org = self.get_object()
         rights_statements = RightsStatement.objects.filter(archive__isnull=True, organization=org)
@@ -62,29 +46,86 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 
 class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
-    model = BagItProfile
-    queryset = BagItProfile.objects.all()
-    serializer_class = BagItProfileSerializer
+
+    def get_queryset(self):
+        queryset = BagItProfile.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(applies_to_organization=self.request.user.organization)
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return BagItProfileListSerializer
+        if self.action == 'retrieve':
+            return BagItProfileSerializer
+        return BagItProfileSerializer
 
 
-class ArchivesViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+class ArchivesViewSet(OrgReadViewMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     """Endpoint for transfers"""
-    queryset = Archives.objects.all()
-    serializer_class = ArchivesSerializer
+
+    def dispatch(self, *args, **kwargs):
+        return super(ArchivesViewSet, self).dispatch(*args, **kwargs)
+
+    def get_queryset(self):
+        queryset = queryset = Archives.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(organization=self.request.user.organization)
+        process_status = self.request.GET.get('process_status', "")
+        if process_status != "":
+            queryset = queryset.filter(process_status=int(process_status))
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ArchivesListSerializer
+        if self.action == 'retrieve':
+            return ArchivesSerializer
+        return ArchivesSerializer
 
 
-class BAGLogViewSet(ArchivistMixin, viewsets.ReadOnlyModelViewSet):
+class BAGLogViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     """Endpoint for events"""
-    queryset = BAGLog.objects.all()
     serializer_class = BAGLogSerializer
+
+    def get_queryset(self):
+        queryset = BAGLog.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(archive__organization=self.request.user.organization)
+        return queryset
 
 
 class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        queryset = User.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(organization=self.request.user.organization)
+        return queryset
 
     @list_route()
     def current(self, request, *args, **kwargs):
         user = User.objects.get(id=request.user.pk)
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
+
+
+class AccessionViewSet(OrgReadViewMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
+    """Endpoint for Accessions"""
+
+    def get_queryset(self):
+        queryset = Accession.objects.all()
+        if not self.request.user.is_archivist():
+            queryset = queryset.filter(organization=self.request.user.organization)
+        process_status = self.request.GET.get('process_status', "")
+        if process_status != "":
+            queryset = queryset.filter(process_status=int(process_status))
+        return queryset
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return AccessionListSerializer
+        if self.action == 'retrieve':
+            return AccessionSerializer
+        return AccessionSerializer

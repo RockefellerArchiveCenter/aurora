@@ -35,42 +35,17 @@
     <div class="box-body">
       {% include 'accession/form_fields.html' with field=form.title %}
       <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
           {% include 'accession/form_fields.html' with field=form.start_date%}
-        </div>
-        <div class="col-md-6">
           {% include 'accession/form_fields.html' with field=form.end_date%}
         </div>
-      </div>
-      <!-- Leaving this unimplemented for now because we'll need to build out ArchivesSpace integration first -->
-      <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-8">
           <div class="form-group">
-            <label>Identified Creators</label>
-            <div class="help-block">Agent records for these creators were found in ArchivesSpace</div>
-            <h4>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
-              <span class="label label-primary">Identified creator <span class="fa fa-times"></span></span>
-            </h4>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="form-group">
-            <label>Unidentified Creators</label>
-            <div class="help-block">Agent records for the creators listed below will be created in ArchivesSpace</div>
-            <div class="row">
-              <div class="col-md-8">
-                <input type="text" class="form-control" value="" />
-              </div>
-              <div class="col-md-4">
-                <select class="form-control">
-                    <option>person</option>
-                    <option>corporate body</option>
-                    <option>family</option>
-                  </select>
-              </div>
-            </div>
+            <label>Creators</label>
+              {{ creators_formset.management_form }}
+              {% for creator in creators_formset %}
+                {% include 'accession/creators.html' %}
+              {% endfor %}
           </div>
         </div>
       </div>

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_cron',
     'rest_framework',
+    'drf_yasg',
     'bag_transfer',
 ]
 
@@ -55,7 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'bag_transfer.middleware.AuthenticationMiddlewareJWT'
+    'bag_transfer.middleware.AuthenticationMiddlewareJWT',
 ]
 
 ROOT_URLCONF = 'aurora.urls'
@@ -172,3 +173,8 @@ EMAIL_OVERRIDE_USERS = CF.EMAIL_OVERRIDE_USERS
 # Unit Test configs
 TEST_BAGS_DIR = CF.TEST_BAGS_DIR
 TEST_USER = CF.TEST_USER
+
+# Microservice integrations
+
+AQUARIUS = CF.AQUARIUS
+ALTAIR = CF.ALTAIR
