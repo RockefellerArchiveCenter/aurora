@@ -632,7 +632,7 @@ class BagInfoMetadata(models.Model):
     date_start =                    models.DateTimeField()
     date_end =                      models.DateTimeField()
     record_creators =               models.ManyToManyField(RecordCreators, blank=True)
-    record_type =                   models.CharField(max_length=30)
+    record_type =                   models.CharField(max_length=256)
     language =                      models.ManyToManyField(LanguageCode, blank=True)
     bagging_date =                  models.DateTimeField()
     bag_count =                     models.CharField(max_length=10)
