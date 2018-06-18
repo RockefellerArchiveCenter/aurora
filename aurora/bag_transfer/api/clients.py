@@ -1,6 +1,8 @@
+from datetime import datetime
 from electronbonder.client import ElectronBond
 import json
 from os.path import join
+import random
 from uuid import uuid4
 
 from aurora import settings
@@ -68,5 +70,5 @@ class AltairClient(object):
     def get_next_accession_number(self):
         resp = self.client.get('next-accession-number')
         if resp.status_code != 200:
-            return False
+            return '{}.{}'.format(datetime.now().year, random.randint(0, 999))
         return resp.json()['display_string']
