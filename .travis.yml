@@ -11,7 +11,7 @@ before_install:
   - chmod +x docker-compose
   - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
-  - docker-compose up -d
+  - docker-compose up
   - sleep 40s
 install: true
 script:
