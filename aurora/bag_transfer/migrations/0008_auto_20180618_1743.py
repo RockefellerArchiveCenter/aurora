@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bag_transfer', '0003_auto_20180502_1321'),
+        ('bag_transfer', '0007_accession_process_status'),
     ]
 
     operations = [
