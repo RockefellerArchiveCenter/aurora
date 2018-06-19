@@ -45,7 +45,7 @@ DEFAULT_USERS = [
 
 print "Creating organizations"
 if len(orgs) == 0:
-    Organization.objects.create(name="Test Organization")
+    Organization.objects.create(name="Test Organization", acquisition_type="donation")
     orgs = Organization.objects.all()
 
     print "Creating BagIt Profile for {}".format(orgs[0])
