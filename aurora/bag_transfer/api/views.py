@@ -47,11 +47,7 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
 
-    def get_queryset(self):
-        queryset = BagItProfile.objects.all()
-        if not self.request.user.is_archivist():
-            queryset = queryset.filter(applies_to_organization=self.request.user.organization)
-        return queryset
+    queryset = BagItProfile.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'list':

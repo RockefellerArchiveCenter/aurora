@@ -168,14 +168,22 @@ class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
 class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
     def to_representation(self, obj):
         field_name = '-'.join([s[0].upper() + s[1:] for s in obj.field.split('_')])
-        values = NameArraySerializer(BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=obj), many=True).data
-        return {
-            field_name: {
-                'required': obj.required,
-                'repeatable': obj.repeatable,
-                'values': values,
+        if len(BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=obj)) > 0:
+            values = NameArraySerializer(BagItProfileBagInfoValues.objects.filter(bagit_profile_baginfo=obj), many=True).data
+            return {
+                field_name: {
+                    'required': obj.required,
+                    'repeatable': obj.repeatable,
+                    'values': values,
+                }
             }
-        }
+        else:
+            return {
+                field_name: {
+                    'required': obj.required,
+                    'repeatable': obj.repeatable,
+                }
+            }
 
 
 class NameArraySerializer(serializers.BaseSerializer):
