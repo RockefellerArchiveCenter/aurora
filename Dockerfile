@@ -1,5 +1,7 @@
 FROM python:2.7
 
+ENV PYTHONUNBUFFERED 1
+
 RUN apt-get update \
   && echo 'slapd/root_password password password' | debconf-set-selections \
   && echo 'slapd/root_password_again password password' | debconf-set-selections \

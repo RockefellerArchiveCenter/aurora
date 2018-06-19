@@ -115,9 +115,8 @@ class BagTestCase(TransactionTestCase):
                     resp = self.client.get(reverse(view))
                     self.assertEqual(resp.status_code, 200)
 
-                for view in ['organization-detail', 'organization-events', 'organization-transfers']:
-                    resp = self.client.get(reverse(view, kwargs={'pk': random.choice(Organization.objects.all()).pk}))
-                    self.assertEqual(resp.status_code, 200)
+                resp = self.client.get(reverse('organization-detail', kwargs={'pk': random.choice(Organization.objects.all()).pk}))
+                self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(reverse('archives-detail', kwargs={'pk': random.choice(Archives.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)

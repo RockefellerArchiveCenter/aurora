@@ -388,17 +388,30 @@ def create_test_record_creators(count=1):
         record_creators.append(record_creator)
     return record_creators
 
-accession_data = {
-    'use_restrictions': random_string(100),
-    'access_restrictions': random_string(100),
-    'resource': 'http://example.org',
-    'description': random_string(150),
-    'end_date': random_date(1990),
-    'extent_size': '17275340',
-    'acquisition_type': random.choice(['donation', 'deposit', 'gift']),
-    'title': random_string(255),
-    'accession_number': '2018.184',
-    'start_date': random_date(1960),
-    'extent_files': '14',
-    'appraisal_note': random_string(150)
-}
+
+def get_accession_data(creator=None):
+    creator = creator if creator else random.choice(RecordCreators.objects.all())
+    accession_data = {
+        'use_restrictions': random_string(100),
+        'access_restrictions': random_string(100),
+        'resource': 'http://example.org',
+        'description': random_string(150),
+        'end_date': random_date(1990),
+        'extent_size': '17275340',
+        'acquisition_type': random.choice(['donation', 'deposit', 'gift']),
+        'title': random_string(255),
+        'accession_number': '2018.184',
+        'start_date': random_date(1960),
+        'extent_files': '14',
+        'appraisal_note': random_string(150),
+        'language': random.choice(LanguageCode.objects.all()).id,
+        'creators': [creator.id],
+        'form-0-id': creator.id,
+        'form-MIN_NUM_FORMS': 0,
+        'form-0-name': creator.name,
+        'form-TOTAL_FORMS': 1,
+        'form-INITIAL_FORMS': 1,
+        'form-MAX_NUM_FORMS': 1000,
+        'form-0-type': 'organization',
+    }
+    return accession_data

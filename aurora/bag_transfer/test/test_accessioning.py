@@ -13,6 +13,7 @@ from django.urls import reverse
 
 from bag_transfer.test import helpers
 from bag_transfer.models import Archives, RecordCreators
+from bag_transfer.accession.forms import CreatorsFormSet
 from bag_transfer.lib.bag_checker import bagChecker
 
 
@@ -65,8 +66,7 @@ class AccessioningTestCase(TestCase):
         self.assertEqual(record_response.status_code, 200)
 
     def post_views(self, id_list):
-        accession_data = helpers.accession_data
-        accession_data['creators'] = [creator.id for creator in RecordCreators.objects.all()]
+        accession_data = helpers.get_accession_data(creator=random.choice(RecordCreators.objects.all()))
         new_request = self.client.post(
             urljoin(reverse('accession-record'), '?transfers={}'.format(id_list)), accession_data)
         self.assertEqual(
