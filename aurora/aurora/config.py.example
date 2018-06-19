@@ -62,14 +62,13 @@ EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
 
 # Microservice integrations
-
 AQUARIUS = {
   'username': 'admin',
-  'password': 'adminpass'
-  'baseurl': 'http://example.org'
+  'password': 'adminpass',
+  'baseurl': 'http://example.org',
 }
 ALTAIR = {
   'username': 'admin',
-  'password': 'adminpass'
-  'baseurl': 'http://example.org'
+  'password': 'adminpass',
+  'baseurl': 'http://example.org',
 }
