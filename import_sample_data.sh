@@ -4,6 +4,5 @@
 # Copies files to data upload directory and then runs cron
 
 cp -r ../sample_bags/* /data/org1/upload/
-useradd admin
 chown -R admin /data/org1/upload/
 python manage.py runcrons

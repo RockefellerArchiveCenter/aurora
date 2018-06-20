@@ -8,7 +8,7 @@ def add_org(org_name):
 
     output = None
     try:
-        output = check_output(command, shell=True,stderr=STDOUT)
+        output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
@@ -31,7 +31,7 @@ def add_user(machine_user_id):
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
-        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output)
+        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
         # error codes not isolated..
         if 'Account created' in e.output:
             pass
