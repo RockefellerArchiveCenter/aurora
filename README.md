@@ -50,7 +50,7 @@ If desired, you can import a set of sample bags (not all of which are valid) by 
 
 Open up a new terminal window and navigate to the root of the application, then run
 
-        $ docker-compose exec web sh ../import_sample_data.sh
+        $ docker-compose exec web import_sample_data
 
 
 ### Data Persistence

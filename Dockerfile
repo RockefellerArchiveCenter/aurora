@@ -26,8 +26,9 @@ RUN apt-get update \
 # Copy and make Aurora scripts
 COPY ldap/ldap.* /etc/
 COPY scripts/RAC* /usr/local/bin/
+COPY import_sample_data.sh /usr/local/bin/import_sample_data
 RUN gcc /usr/local/bin/RACcreateuser.c -o /usr/local/bin/RACcreateuser -lldap -llber -lresolv
-RUN chmod +x /usr/local/bin/RAC*
+RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
 
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
 RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
@@ -50,7 +51,6 @@ COPY test_bags/ /data/htdocs/aurora/test_bags
 COPY sample_bags/ /data/htdocs/aurora/sample_bags
 COPY aurora/ /data/htdocs/aurora/aurora
 COPY setup_objects.py /data/htdocs/aurora/
-COPY import_sample_data.sh /data/htdocs/aurora/
 
 # Install Python modules
 RUN pip install -r /data/htdocs/aurora/requirements.txt
