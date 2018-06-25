@@ -54,7 +54,7 @@ Open up a new terminal window and navigate to the root of the application, then 
 
 
 ### Data Persistence
-The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose -v`.
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
 
 
 ## Transferring digital records
