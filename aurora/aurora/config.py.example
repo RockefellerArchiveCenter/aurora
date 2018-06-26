@@ -17,7 +17,7 @@ DEFAULT_DB = {
       'PORT': 3306,
 }
 
-ALLOWED_HOSTS = ['localhost',]
+ALLOWED_HOSTS = ['localhost', '192.168.99.100']
 
 BASE_URL = 'http://localhost/'
 
