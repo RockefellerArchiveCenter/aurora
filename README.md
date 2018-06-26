@@ -37,7 +37,9 @@ To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
 
         $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
         
-Note that when using Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
+When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory. 
+
+Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
 
         $ docker-machine ip default
 
