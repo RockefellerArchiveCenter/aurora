@@ -31,7 +31,7 @@ Once the build and startup process has completed, log into Aurora at `http://loc
 4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
 #### Installation Notes for Windows Users
-Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support Docker for Windows.
+Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
 
 To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
 
