@@ -30,6 +30,17 @@ Once the build and startup process has completed, log into Aurora at `http://loc
 
 4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
+#### Installation Notes for Windows Users
+Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support Docker for Windows.
+
+To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
+
+        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
+        
+Note that when using Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
+
+        $ docker-machine ip default
+
 ### User accounts
 
 By default, Aurora comes with five user accounts:
