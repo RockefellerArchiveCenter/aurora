@@ -16,7 +16,7 @@ TEST_ORG_COUNT = 3
 # tuple of tuples
 # (str that test bag starts with, ecode, test on bag checker, test on transfer routine)
 bags_ref = (
-    ('invalid<filename', 'BFNM', False, True),
+    # ('invalid<filename', 'BFNM', False, True),
 
     ('valid_bag', ''),
 
