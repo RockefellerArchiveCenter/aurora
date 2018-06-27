@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.http import Http404
-
+from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, DetailView, TemplateView
 from django.shortcuts import render, redirect, render_to_response, get_object_or_404
 
@@ -132,6 +132,7 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
         formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
         if formset.is_valid():
             formset.save()
+            messages.success(request, 'Rights Statement for {} saved.'.format(rights_statement.organization.name))
             return redirect('rights-detail', self.kwargs.get('pk'))
         else:
             return render(request, self.template_name, {

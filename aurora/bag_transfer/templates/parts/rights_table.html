@@ -14,7 +14,7 @@
         <td>{% for t in statement.applies_to_type.all %}{{t}}{% if not forloop.last %}<br />{%endif%}{% endfor %}</td>
         <td>{{statement.rights_basis}}</td>
         <td>{{statement.get_table_data.notes}}</td>
-        <td class="text-right">
+        <td class="text-right col-md-4">
           <a href="{% url 'rights-detail' statement.pk %}" class="btn btn-primary btn-sm">View</a>
           {% if request.user.is_superuser %}
             <a href="{% url 'rights-update' statement.pk %}" class="btn btn-warning btn-sm">Edit</a>

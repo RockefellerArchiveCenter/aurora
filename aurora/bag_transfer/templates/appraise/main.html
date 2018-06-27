@@ -138,7 +138,6 @@ var appraise_table = '';
     });
 
     $("#appraise_table tbody").on("click", ".appraisal-accept, .appraisal-reject", function(e){
-      console.log('click')
       e.preventDefault();
       var upload_row = $(this).closest('.upload-row');
       var upload_id = upload_row.attr('rel');
@@ -157,9 +156,14 @@ var appraise_table = '';
         if (resp.success){
           // remove row
           appraise_table.row( upload_row ).remove().draw();
-
+          decision = 'rejected'
+          if (appraisal_decision == 1) {
+            displayMessage('success', 'Transfer accepted.');
+          } else {
+            displayMessage('danger', 'Transfer rejected.');
+          }
         } else {
-          alert('Something went wrong.. Please try again..');
+          displayMessage('danger', 'Something went wrong. Please try again.');
         }
       });
 
@@ -167,7 +171,7 @@ var appraise_table = '';
 
   })
 
-var activateModal = function(uid,label,bag_name,appraisal_note){
+function activateModal(uid,label,bag_name,appraisal_note) {
   // setups up and opens modal
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);
@@ -176,7 +180,7 @@ var activateModal = function(uid,label,bag_name,appraisal_note){
   amodal.modal('show');
 }
 
-var resolveRowCallback = function(uid){
+function resolveRowCallback(uid) {
   $('.appraisal-note').each(function(){
     if ($(this).attr('rel') == uid){
 
@@ -187,6 +191,21 @@ var resolveRowCallback = function(uid){
   });
 }
 
+function displayMessage(type, message) {
+  $('#messages').empty()
+  $('#messages').append(
+    '<div class="row">\
+    	<div class="col-md-12">\
+        <div class="alert alert-'+type+' alert-dismissible">\
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+            <i class="icon fa fa-check"></i>'+message+'\
+        </div>\
+      </div>\
+    </div>').fadeIn(300)
+    setTimeout(function(){
+			$('.alert-dismissible').fadeOut(1300);
+		}, 2000);
+}
 
 </script>
 {% endblock %}

@@ -147,6 +147,7 @@ class BagItProfileManageView(View):
             bagit_profile.version = bagit_profile.version + Decimal(1)
             bagit_profile.bagit_profile_identifier = request.build_absolute_uri(reverse('bagitprofile-detail', kwargs={'pk': bagit_profile.id, 'format': 'json'}))
             bagit_profile.save()
+            messages.success(request, 'BagIt Profile for {} saved'.format(bagit_profile.applies_to_organization.name))
             return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
         return render(request, self.template_name, {
             'form': form,
