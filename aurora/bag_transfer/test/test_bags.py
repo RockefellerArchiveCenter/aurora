@@ -22,7 +22,10 @@ class BagTestCase(TransactionTestCase):
         self.baglogcodes = helpers.create_test_baglogcodes()
         self.groups = helpers.create_test_groups(['managing_archivists'])
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
-        self.user.groups = self.groups
+        for group in self.groups:
+            self.user.groups.add(group)
+        self.user.is_staff = True
+        self.user.save()
         self.client = Client()
 
     def test_bags(self):
@@ -112,9 +115,8 @@ class BagTestCase(TransactionTestCase):
                     resp = self.client.get(reverse(view))
                     self.assertEqual(resp.status_code, 200)
 
-                for view in ['organization-detail', 'organization-events', 'organization-transfers']:
-                    resp = self.client.get(reverse(view, kwargs={'pk': random.choice(Organization.objects.all()).pk}))
-                    self.assertEqual(resp.status_code, 200)
+                resp = self.client.get(reverse('organization-detail', kwargs={'pk': random.choice(Organization.objects.all()).pk}))
+                self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(reverse('archives-detail', kwargs={'pk': random.choice(Archives.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)

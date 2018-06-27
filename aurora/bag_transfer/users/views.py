@@ -24,29 +24,33 @@ class SplashView(AnonymousRequiredMixin, TemplateView):
         return redirect('login')
 
 
-class UsersListView(ArchivistMixin, ListView):
+class UsersListView(ArchivistMixin, SuccessMessageMixin, ListView):
     template_name = 'users/list.html'
     model = User
 
-    def get_context_data(self, **kwargs):
-        context = super(UsersListView, self).get_context_data(**kwargs)
-
-        context['meta_page_title'] = 'Users'
-
+    def get(self, request, *args, **kwargs):
         refresh_ldap = User.refresh_ldap_accounts()
         if refresh_ldap:
             messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
 
-        context['users_list'] = [{'org' : {}, 'users' : []}]
-        context['users_list'][0]['org'] = {'pass':'pass'}
-        context['users_list'][0]['users'] = User.objects.all().order_by('username')
+        users_list = [{'org': {}, 'users': []}]
+        users_list[0]['org'] = {'pass': 'pass'}
+        users_list[0]['users'] = User.objects.all().order_by('username')
 
-        context['org_users_list'] = [{'org' : {}, 'users' : []}]
-        context['org_users_list'] = Organization.users_by_org()
+        org_users_list = [{'org': {}, 'users': []}]
+        org_users_list = Organization.users_by_org()
 
-        context['next_unassigned_user'] = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
+        next_unassigned_user = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
 
-        return context
+        if not next_unassigned_user:
+            messages.info(request, "No unassigned users available. Additional users must be created in LDAP first.")
+
+        return render(request, self.template_name, {
+            'meta_page_title': 'Users',
+            'users_list': users_list,
+            'org_users_list': org_users_list,
+            'next_unassigned_user': next_unassigned_user
+            })
 
 
 class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
@@ -65,6 +69,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
 class UsersDetailView(OrgReadViewMixin, DetailView):
     template_name = 'users/detail.html'
     model = User
+
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.username
@@ -102,7 +107,7 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     success_message = "New password saved."
     form_class = UserPasswordChangeForm
 
-    def get_context_data(self,**kwargs):
+    def get_context_data(self, **kwargs):
         context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Change Password'
         return context
@@ -118,6 +123,7 @@ class UserPasswordResetForm(PasswordResetForm):
                   error_messages={
                     'required': 'Please enter your email'})
 
+
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
     template_name = 'users/password_reset.html'
     form_class = UserPasswordResetForm
@@ -127,6 +133,7 @@ class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
         context['meta_page_title'] = 'Reset Password'
         return context
 
+
 class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
     template_name = 'users/password_reset_done.html'
 
@@ -134,6 +141,7 @@ class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
         context = super(PasswordResetDoneView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Password Reset Link Sent'
         return context
+
 
 class UserPasswordResetConfirmForm(SetPasswordForm):
     new_password1 = forms.CharField(required=True, label='New Password',
@@ -147,6 +155,7 @@ class UserPasswordResetConfirmForm(SetPasswordForm):
                   error_messages={
                     'required': 'Please confirm your new password'})
 
+
 class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
     form_class = UserPasswordResetConfirmForm
@@ -155,6 +164,7 @@ class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmV
         context = super(PasswordResetConfirmView, self).get_context_data(**kwargs)
         context['meta_page_title'] = 'Change Password'
         return context
+
 
 class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):
     template_name = 'users/password_reset_complete.html'

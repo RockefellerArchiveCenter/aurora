@@ -1,52 +1,52 @@
-#! /bin/bash 
-#  
+#! /bin/bash
+#
 #  RACaddorg - Rockefeller Archive Center  Add Organization script
 #
-#  Create a new organization for sftp users accessing the system on port 12060.   
+#  Create a new organization for sftp users accessing the system on port 12060.
 #
-#  1) Create the "Group" orgx 
-#  2) Create the Directories for the new org 
+#  1) Create the "Group" orgx
+#  2) Create the Directories for the new org
 #          /data/orgx
 #          /data/orgx/upload
-#  3) Set ownership and permissions for new directories 
+#  3) Set ownership and permissions for new directories
 #  4) Update /etc/ssh2/sshd_config with new org and chown directory
 #
 #
-#  Logging:  Output and error messages are placed in the the system log. 
+#  Logging:  Output and error messages are placed in the the system log.
 #                  tail -f /var/log/messages to view output in real time
 #
 #
-#  To run in DEBUG mode, set debug=1  
-#         
+#  To run in DEBUG mode, set debug=1
+#
 #
 # ---------------------- Return Codes -------------------------
 #             1 - General Fail - Operation not completed.
 #             2 - No input parameters, Must have at least at least one arguments to run
-#             3 - The group already exits. 
+#             3 - The group already exits.
 #             4 - Unable to create Directory
 #             8 - Directory or Object exists
 #
 
-# 
+#
 #  $Id: RACaddorg,v 1.00 8/02/2017 URDB dI$
 #
-# Modified by DKB - 8/4/2017 Check to make sure the group exists before creating the directory. 
+# Modified by DKB - 8/4/2017 Check to make sure the group exists before creating the directory.
 #
 #
-# Todo:  Need support to pass in the orgname and return values. 
- 
+# Todo:  Need support to pass in the orgname and return values.
+
 #  To force this to run, set FORCE_RUN to 1 or delete $CFG and rerun
- 
+
 # Write a message to syslog and stderr, depending on the verboseness level
 # Arguments are LEVEL MESSAGE; LEVEL is either "err" or "info".
 log ()
 {
-  
+
   if [ $# -le 1 ]; then
     echo "RACaddorg: Must have at least two arguments to log()" 1>&2
     return 1
   fi
- 
+
   FACILITY="$1"
   shift
   case "$FACILITY" in
@@ -56,7 +56,7 @@ log ()
       logger "RACaddorg: $FACILITY:  $@"
 }
 
- 
+
 
 #-------------------------------------------------MAIN---------------------------------------
 #
@@ -98,18 +98,18 @@ org='org'
 count='0'
 for entry in `ls $search_dir`; do
     if echo "$entry" | grep -q "$org"; then
-       if [ ! $debug == '0' ] ; then echo "Existing org: $entry"; fi 
-       newcount=$(echo $entry | cut -d'g' -f 2)     
+       if [ ! $debug == '0' ] ; then echo "Existing org: $entry"; fi
+       newcount=$(echo $entry | cut -d'g' -f 2)
        if [ $(($newcount)) -gt $(($count)) ];  then           #Convert to integer and compair
             count=$newcount
-       fi 
+       fi
     fi
 done
 
 nextorg='org'$((count+1))
 
 #
-# Before we do anything,  lets make sure the group $nextorg does not exit. 
+# Before we do anything,  lets make sure the group $nextorg does not exit.
 #
 if grep -a $nextorg /etc/group; then
    log err  "Unable to create organization, group $nextorg exists"
@@ -127,8 +127,8 @@ if [ $INTERACTIVE_MODE == '1' ]; then
    echo "Next available org is:  $nextorg "
    read -p "Create new Organization [y/n]? " -n 1 -r
    if [[ ! $REPLY =~ ^[Yy]$ ]]
-   then 
-       echo "Nothing to do, Exiting"   
+   then
+       echo "Nothing to do, Exiting"
        exit 1  #nothing to do - get out.
    fi
    echo
@@ -137,7 +137,7 @@ if [ $INTERACTIVE_MODE == '1' ]; then
    echo
 else
    orgname=$@
-fi  
+fi
 
 #
 #   Create the group for the new org
@@ -155,44 +155,46 @@ log info "Group: $nextorg created for $orgname."
 #Create the directory for the organization and a upload directory within.
 newdir='/data/'$nextorg
 uploaddir=$newdir'/upload'
+processingdir=$newdir'/processing'
 if [ ! -d $newdir ]; then
    if mkdir -p  "$newdir" ; then
       log info "Directory $newdir created."
    else
       log err "Unable to create directory $newdir, exiting"
       exit 4
-   fi 
-else
-   log err  "Directory $newdir exists, exiting"
-   exit 8  
-fi
-
-if [ ! -d $uploaddir ]; then
-   if mkdir -p  "$uploaddir" ; then
-      log info "Directory $uploaddir created."
-   else
-      log err "Unable to create directory $uploaddir, exiting"
-      exit 4
    fi
 else
-   log err "Directory $upload exists, exiting"
+   log err  "Directory $newdir exists, exiting"
    exit 8
 fi
 
-chown root:$nextorg $uploaddir
-if [ $? -ne 0 ]; then
-   log err "Unable to  chmod Directory $uploaddir, termining."
-   exit 8
-fi
+for dir in $uploaddir $processingdir; do
+  if [ ! -d $dir ]; then
+     if mkdir -p  "$dir" ; then
+        log info "Directory $dir created."
+     else
+        log err "Unable to create directory $dir, exiting"
+        exit 4
+     fi
+  else
+     log err "Directory $dir exists, exiting"
+     exit 8
+  fi
 
-chmod 770 $uploaddir
-if [ $? -ne 0 ]; then
-   log err  "Unable to  chown Directory $uploaddir, termining."
-   exit 8
-fi
+  chown root:$nextorg $dir
+  if [ $? -ne 0 ]; then
+     log err "Unable to  chmod Directory $dir, termining."
+     exit 8
+  fi
 
+  chmod 770 $dir
+  if [ $? -ne 0 ]; then
+     log err  "Unable to  chown Directory $dir, termining."
+     exit 8
+  fi
+done
 
-log info "Directory $newdir and $uploaddir have been created."
+log info "Directory $newdir, $uploaddir and $processingdir have been created."
 
 ####################################################################################
 README=$newdir'/README'
@@ -205,7 +207,7 @@ if [ ! -e $README ] ; then
    echo "ORGANIZATION GROUP: $nextorg"                    >> "$README"
    echo " "                                               >> "$README"
    echo "This directory is write protected."              >> "$README"
-   echo "New files should be uploaded to $newdir/upload"  >> "$README" 
+   echo "New files should be uploaded to $newdir/upload"  >> "$README"
 fi
 
 #
@@ -213,32 +215,32 @@ fi
 #
 sshdfile='/etc/ssh2/sshd_config'
 if [  -e $sshdfile ] ; then
-   echo     
+   echo
    echo "  "                                                                       >> "$sshdfile"
    echo "# This section was created with the addorg script. Please DO NOT ERASE"   >> "$sshdfile"
    echo "# The addorg script is located in /usr/local/bin/addorg."                 >> "$sshdfile"
-   echo "# This is for group: $nextorg, $orgname. "                                >> "$sshdfile" 
+   echo "# This is for group: $nextorg, $orgname. "                                >> "$sshdfile"
    echo                                                                            >> "$sshdfile"
    echo "Match group $nextorg"                                                     >> "$sshdfile"
-   echo "      ChrootDirectory  $newdir"                                           >> "$sshdfile" 
-   echo "      X11Forwarding no "                                                  >> "$sshdfile"           
+   echo "      ChrootDirectory  $newdir"                                           >> "$sshdfile"
+   echo "      X11Forwarding no "                                                  >> "$sshdfile"
    echo "      AllowTcpForwarding no "                                             >> "$sshdfile"
    echo "      ForceCommand internal-sftp "                                        >> "$sshdfile"
    echo                                                                            >> "$sshdfile"
    echo                                                                            >> "$sshdfile"
 else
-   log err "File $sshdfile does not exist, contact system support. Terminating." 
+   log err "File $sshdfile does not exist, contact system support. Terminating."
 fi
-log info "Updated the sshd config file with new organization: $nextorg" 
+log info "Updated the sshd config file with new organization: $nextorg"
 
 #
 # Print Summary
 #
 #
-log info "System updates complete for new organization: $nextorg, $orgname, using directory $uploaddir."  
+log info "System updates complete for new organization: $nextorg, $orgname, using directory $uploaddir."
 systemctl restart sshd2.service
 
 log info "Operations Complete"
-echo "org="$nextorg 
+echo "org="$nextorg
 exit 0
 ##########################################################################################################################

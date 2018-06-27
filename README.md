@@ -1,5 +1,8 @@
 # Aurora
 
+[![Build Status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=master)](https://travis-ci.org/RockefellerArchiveCenter/aurora)
+![GitHub (pre-)release](https://img.shields.io/github/release/RockefellerArchiveCenter/aurora/all.svg)
+
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
 The name of the application is a reference both to the natural light display often seen in the northern hemisphere - sometimes referred to as _aurora borealis_ - as well as the Roman goddess of dawn.
@@ -7,17 +10,69 @@ The name of the application is a reference both to the natural light display oft
 
 ## Installation
 
-1.  Install requirements in `requirements.txt` by running `pip install -r requirements.txt`.
-2.  Rename `aurora/config.py.example` to `aurora/config.py` and update settings as necessary.
-3.  Run `python aurora/manage.py migrate`.
-4.  For a local development server run `python aurora/manage.py runserver`.
+### Quick Start
+If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
 
-Application functionality currently assumes a SLES server and a specific LDAP configuration. Future development will include improving the portability of the application through containerization.
+      git clone https://github.com/RockefellerArchiveCenter/aurora.git
+      cd aurora
+      docker-compose up
+
+Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
+
+### Detailed Installation Instructions
+1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
+2. Download or clone this repository
+        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
+3. Build and run Aurora.
+        $ cd aurora
+        $ docker-compose up
+  The initial build may take some time, so be patient!
+
+4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
+
+#### Installation Notes for Windows Users
+Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
+
+To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
+
+        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
+        
+When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory. 
+
+Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
+
+        $ docker-machine ip default
+
+### User accounts
+
+By default, Aurora comes with five user accounts:
+
+|Username|Password|User Role|
+|---|---|---|
+|admin|password|System Administrator|
+|donor|password|Read Only User|
+|appraiser|password|Appraisal Archivist|
+|accessioner|password|Accessioning Archivist|
+|manager|password|Managing Archivist|
+
+See below for permissions associated with each user role.
+
+
+### Sample Data
+If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
+
+Open up a new terminal window and navigate to the root of the application, then run
+
+        $ docker-compose exec web import_sample_data
+
+
+### Data Persistence
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
 
 
 ## Transferring digital records
 
-Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing three subdirectories: `uploads`, `processing` and `logs`. Any new files or directories in the `uploads` subdirectory are submitted Aurora's queue for processing.
+Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing two subdirectories: `uploads` and `processing`. Any new files or directories in the `uploads` subdirectory are added to Aurora's processing queue.
 
 At a high level, transfers are processed as follows:
 - Transfers are checked to ensure they have a valid filename, in other words that the top-level directory (for unserialized bags) or filename (for serialized bags) does not contain illegal characters.
@@ -54,13 +109,13 @@ Organizations can be created or deleted by archivists with the necessary permiss
 
 ## User Management
 
-Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign groups to them.
+Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign them to roles.
 
-### User groups and permissions
+### User roles and permissions
 
-Aurora implements the following user groups and associated permissions:
+Aurora implements the following user roles and associated permissions:
 
-#### All Users
+#### Read Only User
 
 All users have a few basic permissions:
 
@@ -86,20 +141,20 @@ In addition to the permissions for **All Users**, users who are archivists have 
 *  View appraisal queue
 *  View accessioning queue
 
-##### Appraisal Archivists
+##### Appraisal Archivist
 
 In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
 
 *  Accept or reject transfers
 *  Add appraisal notes to transfers
 
-##### Accessioning Archivists
+##### Accessioning Archivist
 
 In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
 
 *  Create accession records
 
-##### Managing Archivists
+##### Managing Archivist
 
 In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
 
@@ -145,7 +200,6 @@ Your token will be returned in the response. You can then use the token in reque
 
 Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/aurora/blob/master/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
 
--   **upload.sh**: identifies new uploads, can be configured to run as a cron job on your desired interval. (Bash)
 -   **RACaddorg**: creates a new organization on the server (Bash)
 -   **RACcreateuser.c**: creates an administrative user (c program)
 -   **RACadd2grp**: adds a user to the group that represents the organization. (Bash)

@@ -1,0 +1,113 @@
+#! /bin/bash
+#
+#  RACdelfromorg - Rockefeller Archive Center  Delete User from Organization
+#
+#  Remove a user from a Linux group
+#
+#  1) Verify the group exists
+#  2) Verify the users exits
+#  3) Remove the user from the group.
+#
+#
+#  USAGE:
+#    RACdelfromorg <user> <org>
+#
+#
+#  Logging:  Output and error messages are placed in the the system log.
+#                  tail -f /var/log/messages to view output in real time
+#
+#
+#
+# ---------------------- Return Codes -------------------------
+#             1 - General Fail - Operation not completed.
+#             2 - No input parameters, Must have at least at least two arguments to run
+#             3 - The user does not exits.
+#             4 - The Group does not exits.
+#             5 - The User does not exist in the Grop (org)
+#             6 - usermod failed, see system log for return code from usermod.
+#
+#  $Id: RACdeluser,v 1.00 8/02/2017 URDB dI$
+#
+#
+# Write a message to syslog and stderr, depending on the verboseness level
+# Arguments are LEVEL MESSAGE; LEVEL is either "err" or "info".
+log ()
+{
+
+  if [ $# -le 1 ]; then
+    echo "RACdelfromorg: Must have at least two arguments to log()" 1>&2
+    return 1
+  fi
+
+  FACILITY="$1"
+  shift
+  case "$FACILITY" in
+    err|info|debug) : ;;
+    *)  echo "RACdelfromorg: I do not recognize level '$FACILITY' " 1>&2 ;;
+  esac
+      logger "RACdelfromorg: $FACILITY:  $@"
+}
+
+
+
+#-------------------------------------------------MAIN---------------------------------------
+#
+#  Set some variabilities
+#
+log info "RACdelfromorg started at $(date)"
+#
+# set to 1 to turn on Debugging
+#
+
+if [ $# -lt 2 ]; then
+   log err "Error, RACdelfromorg requires two input arguments, terminating"
+   exit 2
+else
+   if [ $1 = "manual" ]; then
+      INTERACTIVE_MODE=1
+      log info "Running in Interactive Mode"
+   fi
+fi
+
+#
+#  -u  Treat unset variables as an error when substituting.
+#
+set -u
+
+
+#  Verify the user exists.
+if [ -z "$(getent passwd $1 )" ]; then
+  log err "User $1 does not exist, terminiting."
+  exit 3
+fi
+log info "User $1 found"
+
+#  Verify the group exists.
+if [ -z "$(getent group $2 )" ]; then
+  log err "Group $2 does not exist, terminiting."
+  exit 4
+fi
+log info "Group $2 found"
+
+
+#Verify the user exists in the Group
+if [ -z "$(groups $1 | grep $2)" ]; then
+   log err  "User $1 does not exist in Group(org) $2 ."
+   exit 5
+fi
+
+log info "User $1 exists in Group(org) $2."
+
+#
+# Remove the user from the group.
+#
+gpasswd -d $1 $2
+
+rc=$?; if [[ $rc != 0 ]]; then
+   log err "Failed to delete user $1 from group(org) $2, return code from userdel: $rc, terminating"
+   exit 6
+fi
+log info "User $1 removed from Group(org) $2 ."
+
+exit 0
+##########################################################################################################################

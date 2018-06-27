@@ -141,9 +141,12 @@
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
 					updateElementIndex(this, prefix, i);
 					if ($(forms.get(i)).find('.nested-form').length) {
-						$(forms.get(i)).find('.nested-form').find('#id_nested_' +prefix + '-TOTAL_FORMS').val($(forms.get(i)).children('.nested-form').length)
+						nestedForm = $(forms.get(i)).find('.nested-form')
+						selector = $(nestedForm).children().attr('id')
+						nestedPrefix = selector.substring(selector.indexOf('_')+1, selector.lastIndexOf('-'))
+						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).length)
 						$(forms.get(i)).find('[name^=nested_]').each(function() {
-							updateElementIndex(this, 'nested_'+prefix, i);
+							updateElementIndex(this, prefix, i);
 						});
 					}
 			});
@@ -153,14 +156,13 @@
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     var row = $(btn).prev('.dynamic-form').clone(true).get(0);
-		$(row).find('input').val('');
+		$(row).find("input[type!='hidden']").val(''); // THIS ONE
     $(row).insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
 			var nestedPrefix = 'nested_'+prefix
 			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
-			$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val(1);
 		}
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {

@@ -4,11 +4,11 @@ import grp, pwd
 
 
 def add_org(org_name):
-    command = 'sudo /usr/local/bin/RACaddorg {}'.format(org_name)
+    command = 'sudo sh /usr/local/bin/RACaddorg {}'.format(org_name)
 
     output = None
     try:
-        output = check_output(command, shell=True,stderr=STDOUT)
+        output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
@@ -31,7 +31,7 @@ def add_user(machine_user_id):
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
-        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode,e.output)
+        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
         # error codes not isolated..
         if 'Account created' in e.output:
             pass
@@ -63,7 +63,7 @@ def delete_system_group(organization_machine_name):
     if not organization_machine_name.startswith('org'):
         return False
     has_ERR = False
-    command = 'sudo /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
+    command = 'sudo sh /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
     output = None
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
@@ -79,7 +79,7 @@ def del_from_org(machine_user_id):
 
     for group in ugroups:
 
-        command = 'sudo /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id, group)
+        command = 'sudo sh /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
 
         output = None
         try:
