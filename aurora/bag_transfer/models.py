@@ -18,8 +18,8 @@ from bag_transfer.lib.ldap_auth import LDAP_Manager
 
 class AbstractExternalIdentifier(models.Model):
     identifier = models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now=True)
-    last_modified = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
     SOURCE_CHOICES = (
         ('archivesspace', 'ArchivesSpace'),
         ('aurora', 'Aurora'),
@@ -33,8 +33,8 @@ class Organization(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=60, unique=True)
     machine_name = models.CharField(max_length=30, unique=True, default="orgXXX will be created here")
-    created_time = models.DateTimeField(auto_now=True)
-    modified_time = models.DateTimeField(auto_now_add=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
     ACQUISITION_TYPE_CHOICES = (
         ('donation', 'Donation'),
         ('deposit', 'Deposit'),
@@ -628,9 +628,9 @@ class BAGLogCodes(models.Model):
 
 class BAGLog(models.Model):
     code = models.ForeignKey(BAGLogCodes)
-    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='events')
+    archive = models.ForeignKey(Archives, blank=True, null=True, related_name='events')
     log_info = models.CharField(max_length=255, null=True, blank=True)
-    created_time = models.DateTimeField(auto_now=True)
+    created_time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         val = "-- : {}".format(self.code.code_desc)
