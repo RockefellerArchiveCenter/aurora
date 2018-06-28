@@ -39,7 +39,7 @@
                   Reject
                 </a>
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
-                    {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
+                    {% if upload.appraisal_note %}Edit{% else %}Add{% endif %} Note
                 </a>
                 {% endif %}
               </td>
@@ -53,10 +53,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-appraisal-note">
-  {% include 'appraise/edit_note.html' %}
-</div>
+{% endblock %}
 
+{% block modals %}
+  <div class="modal fade" id="modal-appraisal-note">
+    {% include 'appraise/edit_note.html' %}
+  </div>
 {% endblock %}
 
 {% block extra_js %}
