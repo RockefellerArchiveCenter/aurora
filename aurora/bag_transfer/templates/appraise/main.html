@@ -159,13 +159,14 @@ var appraise_table = '';
           // remove row
           appraise_table.row( upload_row ).remove().draw();
           decision = 'rejected'
+          name = $(upload_row).children('td').first().text()
           if (appraisal_decision == 1) {
-            displayMessage('success', 'Transfer accepted.');
+            displayMessage('success', 'Transfer <b>'+name+'</b> accepted.');
           } else {
-            displayMessage('danger', 'Transfer rejected.');
+            displayMessage('danger', 'Transfer <b>'+name+'</b> rejected.');
           }
         } else {
-          displayMessage('danger', 'Something went wrong. Please try again.');
+          displayMessage('danger', 'Something went wrong! Please try again.');
         }
       });
 
@@ -204,9 +205,6 @@ function displayMessage(type, message) {
         </div>\
       </div>\
     </div>').fadeIn(300)
-    setTimeout(function(){
-			$('.alert-dismissible').fadeOut(1300);
-		}, 2000);
 }
 
 </script>
