@@ -24,6 +24,10 @@ class BagItProfileForm(forms.ModelForm):
             'external_descripton': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
         }
+        help_texts = {
+            'external_descripton': 'A short description of this BagIt Profile.',
+            'serialization': 'Specify whether serialization of bags is required, forbidden, or optional.',
+        }
 
 
 class BagItProfileBagInfoForm(forms.ModelForm):

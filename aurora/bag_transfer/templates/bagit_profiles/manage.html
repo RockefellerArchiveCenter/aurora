@@ -14,8 +14,11 @@
 
 					{{form.management_form}}
 					{{form.non_form_errors}}
-
-					{% include 'rights/form_fields.html' %}
+					<div class="row">
+						<div class="col-md-6">
+						{% include 'rights/form_fields.html' %}
+					</div>
+					</div>
 					<div class="row">
 						<div class="col-md-12">
 							<label for="id_{{manifests_formset.prefix}}-0-name">Manifests Required</label>
@@ -24,6 +27,7 @@
 							{% for form in manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Select a required algorithm for manifest files. If no value is selected any algorithm is valid.</p>
 						</div>
 					</div>
 
@@ -35,6 +39,7 @@
 							{% for form in serialization_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">If serialization of bags is allowed, add all serialization formats accepted. If no values are selected, the bag serialization format will not be checked.</p>
 						</div>
 					</div>
 
@@ -46,6 +51,7 @@
 							{% for form in version_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Add all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked.</p>
 						</div>
 					</div>
 
@@ -57,6 +63,7 @@
 							{% for form in tag_manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Add all tag manifest algorithms accepted. If no values are selected, the tag format algorithm will not be checked.</p>
 						</div>
 					</div>
 
@@ -68,6 +75,7 @@
 							{% for form in tag_files_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">List required tag files, if any.</p>
 						</div>
 					</div>
 
@@ -135,7 +143,8 @@
 		}
 	}
 	function renumberForms(prefix) {
-		forms = $('.'+prefix)
+		forms = $('[class^='+prefix+']')
+		console.log(forms)
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
 			updateElementIndex(forms.get(i), prefix, i)
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
@@ -155,18 +164,26 @@
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-    var row = $(btn).prev('.dynamic-form').clone(true).get(0);
-		$(row).find("input[type!='hidden']").val(''); // THIS ONE
-    $(row).insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
+		if ($(btn).closest('.dynamic-form').length) {
+			var appendAfter = $(btn).closest('.dynamic-form')
+		} else {
+			var appendAfter = $(btn).prev('.dynamic-form')
+		}
+		var row = $(appendAfter).clone(true).get(0);
+		$(row).find("input[type!='hidden']").val('');
+    $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
 			var nestedPrefix = 'nested_'+prefix
 			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
 		}
+		if ($(btn).attr('data-target') != 'bag_info') {
+				$(btn).hide()
+		}
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
-			$(btn).attr("disabled", "disabled");
+			$(row).find('.add-row').attr("disabled", "disabled");
 		}
   }
   function deleteForm(btn, prefix) {
@@ -176,8 +193,11 @@
     var forms = $('.'+prefix);
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
 		renumberForms(prefix);
-		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
+		if (parseInt($('.dynamic-form.'+prefix+':not(:hidden)').length) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
+		}
+		if ($('.dynamic-form.'+prefix+':not(:hidden)').length == 1) {
+			$('.add-row[data-target='+prefix+']').show()
 		}
   }
   $(document).ready(function() {
