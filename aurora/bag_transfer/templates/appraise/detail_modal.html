@@ -15,6 +15,24 @@
           	{% include 'parts/metadata_box.html' with object=upload %}
           {% endif %}
 
+          {% if upload.manifest %}
+          <div class="row">
+          	<div class="col-md-12">
+          		<div class="box box-primary collapsed-box">
+          			<div class="box-header with-border">
+          				<h3 class="box-title">Manifest</h3>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                  </div>
+          			</div>
+          			<div class="box-body">
+          				<pre>{{ upload.manifest|linebreaks }}</pre>
+          			</div>
+          		</div>
+          	</div>
+          </div>
+          {% endif %}
+
           <div class="row">
           	<div class="col-md-12">
           		<div class="box box-info collapsed-box">

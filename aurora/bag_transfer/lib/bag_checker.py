@@ -1,6 +1,7 @@
 import bagit
 import bagit_profile
 import iso8601
+import glob
 import json
 from os.path import isfile, join
 from pycountry import languages
@@ -53,6 +54,10 @@ class bagChecker():
             self.bag_exception = e
             return False
         else:
+            # save manifest
+            for filename in glob.glob('{}/manifest-*.txt'.format(self.archive_path)):
+                with open(filename, 'r') as manifest_file:
+                    self.archiveObj.manifest = manifest_file.read()
             self._retrieve_bag_info_key_val() # run now to prevent multiple calls below
             return True
 

@@ -277,7 +277,6 @@ class User(AbstractUser):
                         new_accounts += 1
         return new_accounts
 
-
     @staticmethod
     def is_user_active(u,org):
         user = {}
@@ -344,17 +343,17 @@ class Archives(models.Model):
     organization = models.ForeignKey(Organization, related_name="transfers")
     user_uploaded = models.ForeignKey(User, null=True)
     machine_file_path = models.CharField(max_length=100)
-    machine_file_size = models.CharField(max_length= 30)
+    machine_file_size = models.CharField(max_length=30)
     machine_file_upload_time = models.DateTimeField()
-    machine_file_identifier = models.CharField(max_length=255,unique=True)
-    machine_file_type = models.CharField(max_length=5,choices=machine_file_types)
+    machine_file_identifier = models.CharField(max_length=255, unique=True)
+    machine_file_type = models.CharField(max_length=5, choices=machine_file_types)
     bag_it_name = models.CharField(max_length=60)
     bag_it_valid = models.BooleanField(default=False)
     appraisal_note = models.TextField(blank=True, null=True)
-
-    additional_error_info = models.CharField(max_length=255,null=True,blank=True)
-    process_status = models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
-    created_time = models.DateTimeField(auto_now_add=True) # process time
+    manifest = models.TextField(blank=True, null=True)
+    additional_error_info = models.CharField(max_length=255, null=True, blank=True)
+    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=20)
+    created_time = models.DateTimeField(auto_now_add=True)  # process time
     modified_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
