@@ -25,12 +25,12 @@
 					<tbody>
 					{% for upload in uploads %}
 						<tr class="upload-row" rel="{{ upload.pk }}">
-              <td><a href="{% url 'transfer-detail' upload.pk %}" class="bag-name">{{ upload.bag_or_failed_name }}</a></td>
+              <td><span class="bag-name">{{ upload.bag_or_failed_name }}</span></td>
               <td>{{ upload.get_bag_data.source_organization }}</td>
 							<td>{% for r in upload.get_bag_data.record_creators %}{{r}}<br />{% endfor %}</td>
 							<td>{{ upload.get_bag_data.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time|date:"M j, Y h:i A" }}</td>
-							<td>
+							<td class="text-right col-xs-3">
                 {% if request.user.can_appraise or request.user.is_superuser %}
                 <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
                   Accept
@@ -42,6 +42,9 @@
                     {% if upload.appraisal_note %}Edit{% else %}Add{% endif %} Note
                 </a>
                 {% endif %}
+                <a type="button" class="btn btn-xs btn-info" data-toggle="modal" data-target="#modal-details-{{upload.pk}}" aria-expanded="false" aria-controls="details-{{upload.pk}}">
+                    Details
+                </a>
               </td>
 						</tr>
 					{% endfor %}
@@ -56,9 +59,10 @@
 {% endblock %}
 
 {% block modals %}
-  <div class="modal fade" id="modal-appraisal-note">
-    {% include 'appraise/edit_note.html' %}
-  </div>
+  {% include 'appraise/edit_note.html' %}
+  {% for upload in uploads %}
+    {% include 'appraise/detail_modal.html' %}
+  {% endfor %}
 {% endblock %}
 
 {% block extra_js %}
