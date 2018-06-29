@@ -136,7 +136,28 @@ var appraise_table = '';
       $.get(url,data,function(resp){
         if (resp.success){
           amodal.modal('hide');
-          resolveRowCallback(data.upload_id);
+          resolveRowCallback(data.upload_id, 'add');
+        }
+      });
+
+      return false;
+    });
+
+    $('#delete-note').on('click', function(e){
+      e.preventDefault();
+      var frm = $('#appraisal-note-form')
+      var data = {
+        'upload_id': frm.find('.upload_id').val(),
+        'appraisal_note': frm.find('.appraisal_note').val(),
+        'req_form' : 'appraise',
+        'req_type' : 'delete'
+      }
+
+      //AJAX submit
+      $.get(url,data,function(resp){
+        if (resp.success){
+          amodal.modal('hide');
+          resolveRowCallback(data.upload_id, 'delete');
         }
       });
 
@@ -184,16 +205,28 @@ function activateModal(uid,label,bag_name,appraisal_note) {
   amodal.find('.add-or-edit-label').text(label);
   amodal.find('.bag-name').text(bag_name);
   amodal.find('.appraisal_note').val(appraisal_note);
+  if (appraisal_note && appraisal_note.length) {
+    amodal.find('#delete-note').show()
+  } else {
+    amodal.find('#delete-note').hide()
+  }
   amodal.modal('show');
 }
 
-function resolveRowCallback(uid) {
+function resolveRowCallback(uid, action) {
   $('.appraisal-note').each(function(){
-    if ($(this).attr('rel') == uid){
-
-      $(this).text('Edit Note');
-      $(this).removeClass('btn-default');
-      $(this).addClass('btn-info').addClass('edit-note');
+    if (action == 'add') {
+      if ($(this).attr('rel') == uid){
+        $(this).text('Edit Note');
+        $(this).removeClass('btn-default');
+        $(this).addClass('btn-info').addClass('edit-note');
+      }
+    } else {
+      if ($(this).attr('rel') == uid){
+        $(this).text('Add Note');
+        $(this).removeClass('btn-info');
+        $(this).addClass('btn-default').removeClass('edit-note');
+      }
     }
   });
 }

@@ -31,11 +31,10 @@ class AppraiseView(ArchivistMixin, View):
                             else:
                                 if request.GET['req_type'] == 'edit':
                                     rdata['appraisal_note'] = upload.appraisal_note
-                                    rdata['success'] = 1
                                 elif request.GET['req_type'] == 'submit':
                                     upload.appraisal_note = request.GET['appraisal_note']
-                                    upload.save()
-                                    rdata['success'] = 1
+                                elif request.GET['req_type'] == 'delete':
+                                    upload.appraisal_note = None
                                 elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
                                     appraisal_decision = 0
                                     try:
@@ -50,8 +49,8 @@ class AppraiseView(ArchivistMixin, View):
             return self.render_to_json_response(rdata)
 
         return render(request, self.template_name, {
-            'meta_page_title' : 'Appraisal Queue',
-            'uploads' : Archives.objects.filter(process_status=40).order_by('created_time')
+            'meta_page_title': 'Appraisal Queue',
+            'uploads': Archives.objects.filter(process_status=40).order_by('created_time')
         })
 
     def render_to_json_response(self, context, **response_kwargs):
