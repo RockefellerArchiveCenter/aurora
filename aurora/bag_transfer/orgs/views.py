@@ -132,7 +132,7 @@ class BagItProfileManageView(View):
                 if formset.is_valid():
                     formset.save()
                 else:
-                    print formset.errors
+                    messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
                     return render(request, self.template_name, {
                         'organization': bagit_profile.applies_to_organization,
                         'form': bagit_profile,

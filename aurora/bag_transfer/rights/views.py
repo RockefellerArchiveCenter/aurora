@@ -68,7 +68,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                 rights_statement.organization = organization
                 rights_statement.save()
             else:
-                messages.error(request, "There was a problem with your submission. Please correct the error below and try again.")
+                messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
                 return render(request, self.template_name, {
                     'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
@@ -87,7 +87,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             formset.save()
             return redirect('rights-grants', rights_statement.pk)
         else:
-            messages.error(request, "There was a problem with your submission. Please correct the error below and try again.")
+            messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
             organization = rights_statement.organization
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
