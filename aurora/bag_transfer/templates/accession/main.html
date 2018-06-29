@@ -33,7 +33,7 @@
       					{% endfor %}
               </td>
               <td>{{group.list.0.get_bag_data.record_type}}</td>
-              <td><a href="{% url 'accession-record' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}}</span></a></td>
+              <td><a href="{% url 'accession-record' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a></td>
             </tr>
             {% endfor %}
           </tbody>
