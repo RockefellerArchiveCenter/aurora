@@ -74,11 +74,11 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.username
         context['uploads'] = []
-        archives = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).order_by('-created_time')[:5]
+        archives = Archives.objects.filter(process_status__gte=20, user_uploaded = context['object']).order_by('-created_time')[:5]
         for archive in archives:
             archive.bag_info_data = archive.get_bag_data()
             context['uploads'].append(archive)
-        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization = context['object'].organization).count()
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, user_uploaded = context['object']).count()
         return context
 
 
