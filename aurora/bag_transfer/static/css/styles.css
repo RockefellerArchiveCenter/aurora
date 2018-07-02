@@ -113,3 +113,11 @@
 .navbar-nav {
     margin-right: 40px;
 }
+
+.legend-color {
+	height: 1em;
+	width: 1em;
+	float: left;
+	margin-right: .5em;
+	margin-top: .2em;
+}

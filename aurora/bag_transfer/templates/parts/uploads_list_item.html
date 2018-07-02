@@ -7,7 +7,7 @@
     <span class="username">
       <a href="{% url 'transfers:detail' pk=upload.pk %}">
           {{ upload.bag_or_failed_name }}
-        </a>
+      </a>
       <span class="text-muted pull-right">{{ upload.created_time }}</span>
     </span>
   {% if upload.user_uploaded %}
