@@ -85,7 +85,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
 
         if formset.is_valid():
             formset.save()
-            return redirect('rights-grants', rights_statement.pk)
+            return redirect('rights:grants', rights_statement.pk)
         else:
             messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
             organization = rights_statement.organization
@@ -135,7 +135,7 @@ class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
         if formset.is_valid():
             formset.save()
             messages.success(request, 'Rights Statement for {} saved.'.format(rights_statement.organization.name))
-            return redirect('rights-detail', self.kwargs.get('pk'))
+            return redirect('rights:detail', self.kwargs.get('pk'))
         else:
             messages.error(request, "There was a problem with your submission. Please correct the error below and try again.")
             return render(request, self.template_name, {

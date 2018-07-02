@@ -79,33 +79,33 @@ class UserOrgTestCase(TestCase):
         user = User.objects.get(groups__name='managing_archivists')
         self.client.login(username=user.username, password=settings.TEST_USER['PASSWORD'])
 
-        for view in ['users-detail', 'users-add', 'users-edit']:
+        for view in ['users:detail', 'users:add', 'users:edit']:
             response = self.client.get(reverse(view, kwargs={'pk': random.choice(User.objects.all()).pk}))
             self.assertEqual(response.status_code, 200)
 
         user_data = setup.user_data
         user_data['organization'] = random.choice(self.orgs)
-        response = self.client.post(reverse('users-add', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
+        response = self.client.post(reverse('users:add', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
         self.assertTrue(response.status_code, 200)
 
         # make user inactive
         user_data['active'] = False
-        response = self.client.post(reverse('users-edit', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
+        response = self.client.post(reverse('users:edit', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
         self.assertTrue(response.status_code, 200)
 
     def org_views(self):
-        response = self.client.get(reverse('orgs-list'))
+        response = self.client.get(reverse('orgs:list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), org_count)
-        for view in ['orgs-detail', 'orgs-edit']:
+        for view in ['orgs:detail', 'orgs:edit']:
             response = self.client.get(reverse(view, kwargs={'pk': random.choice(self.orgs).pk}))
             self.assertEqual(response.status_code, 200)
 
         org_data = setup.org_data
-        response = self.client.post(reverse('orgs-add'), org_data)
+        response = self.client.post(reverse('orgs:add'), org_data)
         self.assertTrue(response.status_code, 200)
 
         # make org inactive
         org_data['active'] = False
-        response = self.client.post(reverse('orgs-edit', kwargs={'pk': random.choice(self.orgs).pk}), org_data)
+        response = self.client.post(reverse('orgs:edit', kwargs={'pk': random.choice(self.orgs).pk}), org_data)
         self.assertTrue(response.status_code, 200)

@@ -5,7 +5,7 @@
 
   <div class="comment-text">
     <span class="username">
-      <a href="{% url 'transfer-detail' pk=upload.pk %}">
+      <a href="{% url 'transfers:detail' pk=upload.pk %}">
           {{ upload.bag_or_failed_name }}
         </a>
       <span class="text-muted pull-right">{{ upload.created_time }}</span>
@@ -14,7 +14,7 @@
 
     Transfer by
     {% if request.user.is_staff %}
-      <a href="{% url 'users-detail' pk=upload.user_uploaded.pk %}">
+      <a href="{% url 'users:detail' pk=upload.user_uploaded.pk %}">
         {{ upload.user_uploaded.username }}
       </a>
     {% else %}
@@ -30,6 +30,6 @@
       Transfer Failed
     {% endif %}
   {% endif %}
-  
+
   </div>
 </div>

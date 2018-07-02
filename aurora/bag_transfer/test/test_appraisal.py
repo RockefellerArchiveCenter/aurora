@@ -41,14 +41,14 @@ class AppraisalTestCase(TestCase):
 
         # Test GET views
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
-        response = self.client.get(reverse('appraise-main'))
+        response = self.client.get(reverse('appraise:list'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['uploads']), len(self.archives))
 
         # Accept/Reject archives
         accept_archive = random.choice(Archives.objects.filter(process_status=40))
         accept_request = self.client.get(
-            reverse('appraise-main'),
+            reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'decision', 'upload_id': accept_archive.pk, 'appraisal_decision': 1},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(accept_request.status_code, 200)
@@ -56,7 +56,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(resp['success'], 1)
         reject_archive = random.choice(Archives.objects.filter(process_status=40))
         reject_request = self.client.get(
-            reverse('appraise-main'),
+            reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'decision', 'upload_id': reject_archive.pk, 'appraisal_decision': 0},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         resp = ast.literal_eval(reject_request.content)
@@ -65,7 +65,7 @@ class AppraisalTestCase(TestCase):
         # Submit and Edit appraisal note
         note_archive = random.choice(Archives.objects.filter(process_status=40))
         submit_note_request = self.client.get(
-            reverse('appraise-main'),
+            reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'submit', 'upload_id': note_archive.pk, 'appraisal_note': 'Test appraisal note'},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         resp = ast.literal_eval(submit_note_request.content)
@@ -73,7 +73,7 @@ class AppraisalTestCase(TestCase):
         updated_archive = Archives.objects.get(pk=note_archive.pk)
         self.assertEqual(updated_archive.appraisal_note, 'Test appraisal note')
         edit_note_request = self.client.get(
-            reverse('appraise-main'),
+            reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'edit', 'upload_id': note_archive.pk},
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         resp = ast.literal_eval(edit_note_request.content)
@@ -81,7 +81,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(resp['appraisal_note'], 'Test appraisal note')
 
         # Make sure appraised archives are no longer in this view
-        response = self.client.get(reverse('appraise-main'))
+        response = self.client.get(reverse('appraise:list'))
         self.assertEqual(len(response.context['uploads']), len(self.archives)-2)
 
     def tearDown(self):

@@ -31,7 +31,7 @@
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
-                    <a href="{% url 'orgs-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit organization</b></a>
+                    <a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit organization</b></a>
                 {% endif %}
 
             </div>

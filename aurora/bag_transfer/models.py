@@ -125,7 +125,7 @@ class Organization(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('orgs-edit', kwargs={'pk': self.pk})
+        return reverse('orgs:edit', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ['name']
@@ -294,7 +294,7 @@ class User(AbstractUser):
         return user
 
     def get_absolute_url(self):
-        return reverse('users-detail', kwargs={'pk': self.pk})
+        return reverse('users:detail', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ['username']

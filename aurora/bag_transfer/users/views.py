@@ -63,7 +63,7 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
         return (OrgUserUpdateForm)
 
     def get_success_url(self):
-        return reverse('users-detail', kwargs={'pk': self.object.pk})
+        return reverse('users:detail', kwargs={'pk': self.object.pk})
 
 
 class UsersDetailView(OrgReadViewMixin, DetailView):
@@ -98,7 +98,7 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        return reverse('users-detail', kwargs={'pk': self.object.pk})
+        return reverse('users:detail', kwargs={'pk': self.object.pk})
 
 
 class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
@@ -113,7 +113,7 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
         return context
 
     def get_success_url(self):
-        return reverse('users-detail', kwargs={'pk': self.request.user.pk})
+        return reverse('users:detail', kwargs={'pk': self.request.user.pk})
 
 
 class UserPasswordResetForm(PasswordResetForm):

@@ -10,18 +10,18 @@
           </a>
         </li>
         <li>
-          <a href="{% url 'transfers' %}">
+          <a href="{% url 'transfers:list' %}">
             <i class="fa fa-exchange"></i> <span>Transfers</span>
           </a>
         </li>
         {% if request.user.is_staff %}
         <li>
-          <a href="{% url 'appraise-main' %}">
+          <a href="{% url 'appraise:list' %}">
             <i class="fa fa-check-square-o"></i> <span>Appraise</span>
           </a>
         </li>
         <li>
-          <a href="{% url 'accession-main' %}">
+          <a href="{% url 'accession:list' %}">
             <i class="fa fa-pencil-square-o"></i> <span>Accession</span>
           </a>
         </li>
@@ -30,12 +30,12 @@
         {% if request.user.is_staff %}
         <li class="header">Administration</li>
         <li>
-          <a href="{% url 'orgs-list' %}">
+          <a href="{% url 'orgs:list' %}">
             <i class="fa fa-building-o"></i> <span>Organizations</span>
           </a>
         </li>
         <li>
-          <a href="{% url 'users-list' %}">
+          <a href="{% url 'users:list' %}">
             <i class="fa fa-users"></i> <span>Users</span>
           </a>
         </li>

@@ -95,11 +95,11 @@ class RightsTestCase(TestCase):
 
     def get_requests(self):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
-        for view in ['rights-update', 'rights-grants', 'rights-detail']:
+        for view in ['rights:edit', 'rights:grants', 'rights:detail']:
             rights_statement = random.choice(RightsStatement.objects.all())
             response = self.client.get(reverse(view, kwargs={'pk': rights_statement.pk}))
             self.assertEqual(response.status_code, 200)
-        add_response = self.client.get(reverse('rights-add'), {'org': self.orgs[0].pk})
+        add_response = self.client.get(reverse('rights:add'), {'org': self.orgs[0].pk})
         self.assertEqual(add_response.status_code, 200)
 
         resp = self.client.get(reverse('organization-rights-statements', kwargs={'pk': self.orgs[0].pk}))
@@ -111,7 +111,7 @@ class RightsTestCase(TestCase):
         new_basis_data = random.choice(setup.basis_data)
         previous_length = len(RightsStatement.objects.all())
         new_request = self.client.post(
-            urljoin(reverse('rights-add'), '?org={}'.format(post_organization.pk)), new_basis_data)
+            urljoin(reverse('rights:add'), '?org={}'.format(post_organization.pk)), new_basis_data)
         self.assertEqual(
             new_request.status_code, 302, "Request was not redirected")
         self.assertEqual(
@@ -134,7 +134,7 @@ class RightsTestCase(TestCase):
         basis_objects = getattr(rights_statement, basis_set).all()
         updated_basis_data[basis_set+'-0-id'] = basis_objects[0].pk
         update_request = self.client.post(
-            reverse('rights-update', kwargs={'pk': rights_statement.pk}),
+            reverse('rights:edit', kwargs={'pk': rights_statement.pk}),
             updated_basis_data)
         self.assertEqual(
             update_request.status_code, 302, "Request was not redirected")
@@ -144,20 +144,20 @@ class RightsTestCase(TestCase):
 
         # RightsStatementRightsGranted
         grant_request = self.client.post(
-            reverse('rights-grants', kwargs={'pk': rights_statement.pk}), setup.grant_data)
+            reverse('rights:grants', kwargs={'pk': rights_statement.pk}), setup.grant_data)
         self.assertEqual(
             grant_request.status_code, 302, "Request was not redirected")
 
     def ajax_requests(self):
         rights_statement = RightsStatement.objects.last()
         delete_request = self.client.get(
-            reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}),
+            reverse('rights:api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}),
             {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(delete_request.status_code, 200)
         resp = ast.literal_eval(delete_request.content)
         self.assertEqual(resp['success'], 1)
         non_ajax_request = self.client.get(
-            reverse('rights-api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
+            reverse('rights:api', kwargs={'pk': rights_statement.pk, 'action': 'delete'}))
         self.assertEqual(non_ajax_request.status_code, 404)
 
     def tearDown(self):

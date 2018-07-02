@@ -67,15 +67,15 @@
               <!-- Menu Footer-->
               <li class="user-footer">
                 <div class="pull-left">
-                  <a href="{% url 'users-detail' pk=request.user.id %}" class="btn btn-default btn-flat">Profile</a>
+                  <a href="{% url 'users:detail' pk=request.user.id %}" class="btn btn-default btn-flat">Profile</a>
                 </div>
                 <div class="pull-left">
-                  <a href="{% url 'password-change' %}" class="btn btn-default btn-flat">Change Password</a>
+                  <a href="{% url 'users:password-change' %}" class="btn btn-default btn-flat">Change Password</a>
                 </div>
                 {% if request.user.is_staff %}
                   <br />
                 <div class="pull-left">
-                  <a href="{% url 'orgs-list' %}" class="btn btn-default btn-flat">Admin</a>
+                  <a href="{% url 'orgs:list' %}" class="btn btn-default btn-flat">Admin</a>
                 </div>
                 {% endif %}
                  <!--  <br />
