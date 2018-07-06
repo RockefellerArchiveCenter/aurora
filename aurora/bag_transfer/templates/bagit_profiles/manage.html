@@ -144,7 +144,6 @@
 	}
 	function renumberForms(prefix) {
 		forms = $('[class^='+prefix+']')
-		console.log(forms)
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
 			updateElementIndex(forms.get(i), prefix, i)
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
