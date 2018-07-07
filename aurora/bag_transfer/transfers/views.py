@@ -129,7 +129,7 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
     model = Organization
 
     def get(self, request, *args, **kwargs):
-        data = [('Bag Name','Status','Size','Upload Time','Errors')]
+        data = [('Bag Name', 'Status', 'Organization', 'Size', 'Upload Time', 'Errors')]
         if self.request.user.is_archivist:
             transfers = Archives.objects.filter(process_status__gte=20).order_by('-created_time')
         else:
