@@ -241,7 +241,10 @@ function displayMessage(type, message) {
             <i class="icon fa fa-check"></i>'+message+'\
         </div>\
       </div>\
-    </div>').fadeIn(300)
+    </div>').fadeIn(300);
+    setTimeout(function(){
+			$('#messages').fadeOut(1300);
+		}, 8000);
 }
 
 </script>
