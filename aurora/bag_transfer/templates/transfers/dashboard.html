@@ -107,8 +107,12 @@
         </div>
         <div class="box-body">
           {% if org.record_types_by_year %}
-            <canvas id="{{k}}YearRecordTypesPieChart"></canvas>
-            <div id="{{k}}YearRecordTypesPieChartLegend"></div>
+            <div class="col-xs-6">
+              <canvas id="{{k}}YearRecordTypesPieChart"></canvas>
+            </div>
+            <div class="col-xs-6">
+              <div id="{{k}}YearRecordTypesPieChartLegend"></div>
+            </div>
           {% else %}
           <p>There is no record type data available.</p>
           {% endif %}
