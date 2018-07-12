@@ -743,26 +743,26 @@ class TagFilesRequired(models.Model):
 class BagItProfileBagInfo(models.Model):
     bagit_profile = models.ForeignKey(BagItProfile)
     FIELD_CHOICES = (
-        ('source_organization', 'Source-Organization'),
-        ('organization_address', 'Organization-Address'),
+        ('bag_count', 'Bag-Count'),
+        ('bag_group_identifier', 'Bag-Group-Identifier'),
+        ('bag_size', 'Bag-Size'),
+        ('bagging_date', 'Bagging-Date'),
+        ('contact_email', 'Contact-Email'),
         ('contact_name', 'Contact-Name'),
         ('contact_phone', 'Contact-Phone'),
-        ('contact_email', 'Contact-Email'),
+        ('date_end', 'Date-End'),
+        ('date_start', 'Date-Start'),
         ('external_descripton', 'External-Description'),
         ('external_identifier', 'External-Identifier'),
         ('internal_sender_description', 'Internal-Sender-Description'),
         ('internal_sender_identifier', 'Internal-Sender-Identifier'),
-        ('title', 'Title'),
-        ('date_start', 'Date-Start'),
-        ('date_end', 'Date-End'),
+        ('language', 'Language'),
+        ('organization_address', 'Organization-Address'),
+        ('payload_oxum', 'Payload-Oxum'),
         ('record_creators', 'Record-Creators'),
         ('record_type', 'Record-Type'),
-        ('language', 'Language'),
-        ('bagging_date', 'Bagging-Date'),
-        ('bag_group_identifier', 'Bag-Group-Identifier'),
-        ('bag_count', 'Bag-Count'),
-        ('bag_size', 'Bag-Size'),
-        ('payload_oxum', 'Payload-Oxum'),
+        ('source_organization', 'Source-Organization'),
+        ('title', 'Title'),
     )
     field = models.CharField(choices=FIELD_CHOICES, max_length=100)
     required = models.NullBooleanField(default=False, null=True)
