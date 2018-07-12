@@ -60,6 +60,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         applies_to_type = request.POST.getlist('applies_to_type')
 
         if not self.kwargs.get('pk'):
+            messages.success(request, "Rights Basis saved! Please add one or more grants or restrictions associated with this rights basis.")
             organization = Organization.objects.get(pk=self.request.GET.get('org'))
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices)
@@ -74,6 +75,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
                     'organization': organization, 'basis_form': form})
         else:
+            messages.success(request, "Rights Basis updated! Add or edit grants or restrictions associated with this rights basis below.")
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
 
         rights_statement.applies_to_type.clear()
