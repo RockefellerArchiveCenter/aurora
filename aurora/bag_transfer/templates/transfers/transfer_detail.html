@@ -15,6 +15,21 @@
 	{% include 'parts/metadata_box.html' %}
 {% endif %}
 
+{% if user.is_archivist and object.appraisal_note %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h3 class="box-title">Appraisal Note</h3>
+			</div>
+			<div class="box-body">
+				<p>{{ object.appraisal_note }}</p>
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
 {% if object.manifest %}
 <div class="row">
 	<div class="col-md-12">
@@ -24,21 +39,6 @@
 			</div>
 			<div class="box-body">
 				<pre>{{ object.manifest|linebreaks }}</pre>
-			</div>
-		</div>
-	</div>
-</div>
-{% endif %}
-
-{% if user.is_archivist and object.appraisal_note %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-info">
-			<div class="box-header with-border">
-				<h3 class="box-title">Appraisal Information</h3>
-			</div>
-			<div class="box-body">
-				<p>{{ object.appraisal_note }}</p>
 			</div>
 		</div>
 	</div>
@@ -80,7 +80,7 @@
 
 <div class="row">
 	<div class="col-md-12">
-		<div class="box box-info">
+		<div class="box box-primary">
 			<div class="box-header with-border">
 				<h3 class="box-title">Log</h3>
 			</div>
@@ -109,7 +109,7 @@
 {% if object.rights_statements %}
 <div class="row">
 	<div class="col-md-12">
-		<div class="box box-info">
+		<div class="box box-primary">
 			<div class="box-header with-border">
 				<h3 class="box-title">Rights Statements</h3>
 			</div>
