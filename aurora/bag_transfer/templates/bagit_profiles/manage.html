@@ -133,6 +133,7 @@
 		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
+		if (el.className) el.className = el.className.replace(id_regex, replacement);
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
 	}
 	function updateBagInfoDeleteButtons(){
@@ -153,7 +154,7 @@
 						selector = $(nestedForm).children().attr('id')
 						nestedPrefix = selector.substring(selector.indexOf('_')+1, selector.lastIndexOf('-'))
 						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).length)
-						$(forms.get(i)).find('[name^=nested_]').each(function() {
+						$(forms.get(i)).find('[data-target^=nested_], input[name^=nested_], div[id^=nested_]').each(function() {
 							updateElementIndex(this, prefix, i);
 						});
 					}
@@ -164,17 +165,18 @@
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 		if ($(btn).closest('.dynamic-form').length) {
-			var appendAfter = $(btn).closest('.dynamic-form')
+			var appendAfter = $(btn).closest('.dynamic-form:visible')
 		} else {
-			var appendAfter = $(btn).prev('.dynamic-form')
+			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
 		}
 		var row = $(appendAfter).clone(true).get(0);
 		$(row).find("input[type!='hidden']").val('');
+		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
     $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
-			var nestedPrefix = 'nested_'+prefix
 			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
+			$(nestedForm).find('div.dynamic-form').find('.add-row').show();
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
 		}
 		if ($(btn).attr('data-target') != 'bag_info') {
@@ -195,9 +197,7 @@
 		if (parseInt($('.dynamic-form.'+prefix+':not(:hidden)').length) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
 		}
-		if ($('.dynamic-form.'+prefix+':not(:hidden)').length == 1) {
-			$('.add-row[data-target='+prefix+']').show()
-		}
+		$('.dynamic-form.'+prefix+':visible').last().find('.add-row[data-target='+prefix+']').show()
   }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()
