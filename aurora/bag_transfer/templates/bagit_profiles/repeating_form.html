@@ -8,7 +8,7 @@
     <div class="col-xs-4">
       <a href="javascript:void(0)" class="delete-row btn btn-sm btn-danger{% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
       {% if forloop.last %}
-      <a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
+      <a href="javascript:void(0)" class="add-row btn btn-sm btn-primary" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
       {% endif %}
     </div>
   </div>
