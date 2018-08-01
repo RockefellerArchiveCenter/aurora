@@ -82,13 +82,13 @@
 }
 
 .sidebar-menu {
-	font-size: 1.6rem;
+	font-size: 1.5rem;
 }
 
 .skin-blue .sidebar-menu>li.header {
     color: #b8c7ce;
     background: #1a2226;
-		font-size:1.4rem;
+		font-size:1.3rem;
 }
 
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header {
@@ -152,7 +152,7 @@ div.dataTables_wrapper div.dataTables_filter {
 }
 
 div.dataTables_wrapper div.dataTables_filter label {
-    font-size: 2rem;
+    font-size: 1.5rem;
     margin-bottom: 0;
 }
 
