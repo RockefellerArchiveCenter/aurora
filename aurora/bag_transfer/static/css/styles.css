@@ -20,6 +20,10 @@
 	margin-top: 10px;
 }
 
+.box-comments {
+    background: #ffffff;
+}
+
 .box-comment-icon {
 	width: 30px;
 	height: 30px;
@@ -73,6 +77,20 @@
 	position: relative;
 }
 
+.skin-blue .sidebar a {
+    color: #d5e1e6;
+}
+
+.sidebar-menu {
+	font-size: 1.6rem;
+}
+
+.skin-blue .sidebar-menu>li.header {
+    color: #b8c7ce;
+    background: #1a2226;
+		font-size:1.4rem;
+}
+
 .navbar-nav > .user-menu > .dropdown-menu > li.user-header {
 	height: auto;
 	background-color: #5ea6d1;
@@ -115,7 +133,29 @@
     margin-right: 40px;
 }
 
-.modal-body {
+/* Scroll within modal */
+#appraisal-note-form .modal-body {
     overflow: scroll;
     max-height: 600px;
+}
+
+/* Increases contrast of table striping */
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.06);
+}
+
+div.dataTables_wrapper div.dataTables_filter {
+    background: rgba(0, 0, 0, .12);
+    padding: 1rem;
+    border-radius: 3px;
+		float: right;
+}
+
+div.dataTables_wrapper div.dataTables_filter label {
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+div.dataTables_wrapper div.dataTables_filter input {
+    width: 30rem;
 }
