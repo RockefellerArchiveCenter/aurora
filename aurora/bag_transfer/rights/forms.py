@@ -10,7 +10,7 @@ from bag_transfer.models import Organization
 class RightsForm(forms.ModelForm):
     class Meta:
         model = RightsStatement
-        fields = ('applies_to_type', 'rights_basis',)
+        fields = ('applies_to_type', 'rights_basis', 'organization')
         labels = {
             'rights_basis': 'Rights Basis',
             'applies_to_type': 'Applies to Record Type(s)'
@@ -21,10 +21,12 @@ class RightsForm(forms.ModelForm):
         widgets = {
             'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
             'applies_to_type': forms.widgets.CheckboxSelectMultiple(attrs={'class': 'list-unstyled'}),
+            'organization': forms.widgets.HiddenInput()
         }
 
     def __init__(self, *args, **kwargs):
         applies_to_type_choices = kwargs.pop('applies_to_type_choices', None)
+        organization = kwargs.pop('organization', None)
         super(RightsForm, self).__init__(*args, **kwargs)
 
         if applies_to_type_choices:
@@ -35,6 +37,9 @@ class RightsForm(forms.ModelForm):
         else:
             self.fields['applies_to_type'].choices = []
             self.fields['applies_to_type'].widget.choices = []
+
+        if organization:
+            self.initial['organization'] = organization
 
 
 class RightsGrantedForm(forms.ModelForm):

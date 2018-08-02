@@ -15,7 +15,6 @@ from bag_transfer.models import Archives, Organization, User, BagItProfile
 from bag_transfer.orgs.form import *
 from bag_transfer.mixins.authmixins import *
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.rights.models import RightsStatement
 
 
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):

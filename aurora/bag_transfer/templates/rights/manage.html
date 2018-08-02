@@ -47,8 +47,7 @@
                 {% include 'rights/form_fields.html' with form=form %}
               {% endfor %}
             </div>
-            {% if granted_formset %}
-            <p>{% include 'rights/rights_basis_info.html' with object=rights_statement %}</p>
+            <div class="rights_granted_or_restricted">
             <h3>Rights Granted or Restricted</h3>
               {{ granted_formset.non_form_errors }}
               {{ granted_formset.management_form }}
@@ -66,8 +65,8 @@
         	    {% endfor %}
               <div>
       	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
-      	       </div>
-            {% endif %}
+    	       </div>
+            </div>
           </div>
           <div class="box-footer">
             <button type="submit" class="btn btn-primary">Save</button>

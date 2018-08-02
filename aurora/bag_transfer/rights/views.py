@@ -44,58 +44,55 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             formset_data = self.get_formset(rights_statement.rights_basis)
             formset = formset_data['class'](instance=rights_statement)
-            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
+            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement, organization=organization)
+            granted_formset = RightsGrantedFormSet(instance=rights_statement)
             return render(request, self.template_name, {
-                'organization': organization, formset_data['key']: formset, 'basis_form': basis_form})
+                'organization': organization, formset_data['key']: formset,
+                'basis_form': basis_form, 'granted_formset': granted_formset})
         else:
             organization = Organization.objects.get(pk=self.request.GET.get('org'))
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
-            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices)
+            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, organization=organization)
             return render(request, self.template_name, {
                 'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                 'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
-                'organization': organization, 'basis_form': basis_form})
+                'organization': organization, 'basis_form': basis_form,
+                'granted_formset': RightsGrantedFormSet()})
 
     def post(self, request, *args, **kwargs):
+        print self.__dict__
         applies_to_type = request.POST.getlist('applies_to_type')
 
         if not self.kwargs.get('pk'):
-            messages.success(request, "Rights Basis saved! Please add one or more grants or restrictions associated with this rights basis.")
             organization = Organization.objects.get(pk=self.request.GET.get('org'))
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices)
-            if form.is_valid():
-                rights_statement = form.save(commit=False)
-                rights_statement.organization = organization
-                rights_statement.save()
-            else:
-                messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
+            if not form.is_valid():
                 return render(request, self.template_name, {
                     'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
                     'organization': organization, 'basis_form': form})
+            rights_statement = form.save()
         else:
-            messages.success(request, "Rights Basis updated! Add or edit grants or restrictions associated with this rights basis below.")
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
+            organization = rights_statement.organization
+            applies_to_type_choices = self.get_applies_to_type_choices(organization)
 
         rights_statement.applies_to_type.clear()
         for record_type in applies_to_type:
             rights_statement.applies_to_type.add(record_type)
 
         formset_data = self.get_formset(rights_statement.rights_basis)
-        formset = formset_data['class'](request.POST, instance=rights_statement)
+        basis_formset = formset_data['class'](request.POST, instance=rights_statement)
 
-        if formset.is_valid():
-            formset.save()
-            return redirect('rights:grants', rights_statement.pk)
-        else:
-            messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
-            organization = rights_statement.organization
-            applies_to_type_choices = self.get_applies_to_type_choices(organization)
+        if not basis_formset.is_valid():
             basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
             return render(request, self.template_name, {
-                'organization': organization, formset_data['key']: formset,
-                'basis_form': basis_form})
+                'organization': organization, formset_data['key']: basis_formset,
+                'basis_form': basis_form, 'rights_statement': rights_statement})
+
+        basis_formset.save()
+        return redirect('orgs:detail', organization.pk)
 
 
 class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
