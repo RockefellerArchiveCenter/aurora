@@ -60,10 +60,10 @@ class RightsGrantedForm(forms.ModelForm):
             }
         help_texts = {
             'act': "The action the preservation repository is allowed to take; eg. replicate, migrate, modify, use, disseminate, delete.",
-            'start_date': "The beginning date of the rights or restrictions Use 'Start Date Period' for dates which should be calculated based on dates of each transfer..",
-            'end_date': "The ending date of the rights or restrictions. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'start_date_period': "The number of years after the start date when this grant or restriction begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'end_date_period': "The number of years after the end date when this grant or restriction no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'start_date': "The beginning date of the rights or restrictions Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'end_date': "The ending date of the rights or restrictions. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'start_date_period': "The number of years after the start date when this grant or restriction begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'end_date_period': "The number of years after the end date when this grant or restriction no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'end_date_open': "Select if this grant or restriction applies in perpetuity.",
             'rights_granted_note': "A prose description of the action or restriction."
             }
@@ -72,8 +72,8 @@ class RightsGrantedForm(forms.ModelForm):
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
             'start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
+            'end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
             'rights_granted_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
@@ -101,10 +101,10 @@ class RightsCopyrightForm(forms.ModelForm):
             'copyright_status': "A coded designation of the copyright status of the object at the time the rights statement is recorded. Available options: Copyrighted, Public Domain, Unknown.",
             'copyright_jurisdiction': "The country whose copyright laws apply. Use values from ISO 3166.",
             'copyright_status_determination_date': "The date that the copyright status recorded in 'copyright status' was determined.",
-            'copyright_applicable_start_date': "The date when this copyright begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'copyright_applicable_end_date': "The date when this copyright no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'copyright_start_date_period': "The number of years after the start date when copyright begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'copyright_end_date_period': "The number of years after the end date when copyright no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'copyright_applicable_start_date': "The date when this copyright begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'copyright_applicable_end_date': "The date when this copyright no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'copyright_start_date_period': "The number of years after the start date when copyright begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'copyright_end_date_period': "The number of years after the end date when copyright no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'copyright_end_date_open': "Select if this copyright applies in perpetuity.",
             'copyright_note': "A prose description of the copyright."
             }
@@ -143,10 +143,10 @@ class RightsStatuteForm(forms.ModelForm):
             'statute_jurisdiction': "The country or other political body enacting the statute.",
             'statute_citation': "An identifying designation for the statute.",
             'statute_determination_date': "The date that the determination was made that the statue authorized the permission(s) noted.",
-            'statute_applicable_start_date': "The date when the statute begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'statute_applicable_end_date': "The date when the statute ceasees to apply. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'statute_start_date_period': "The number of years after the start date when the statute begins to apply. Will be used to calculate date ranges based on dates for each transfer",
-            'statute_end_date_period': "The number of years after the end date when the statute no longer applies. Will be used to calculate date ranges based on dates for each transfer",
+            # 'statute_applicable_start_date': "The date when the statute begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'statute_applicable_end_date': "The date when the statute ceasees to apply. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'statute_start_date_period': "The number of years after the start date when the statute begins to apply. Will be used to calculate date ranges based on dates for each transfer",
+            # 'statute_end_date_period': "The number of years after the end date when the statute no longer applies. Will be used to calculate date ranges based on dates for each transfer",
             'statute_end_date_open': "Select if this statute applies in perpetuity.",
             'statute_note': "A prose description of the statute."
             }
@@ -181,10 +181,10 @@ class RightsOtherRightsForm(forms.ModelForm):
             }
         help_texts = {
             'other_rights_basis': "The designation of the basis for the rights or permission described in the rights statement identifier.",
-            'other_rights_applicable_start_date': "The date when the rights begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'other_rights_applicable_end_date': "The date when the rights no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'other_rights_start_date_period': "The number of years after the start date when these rights begin to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'other_rights_end_date_period': "The number of years after the end date when these rights no longer apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'other_rights_applicable_start_date': "The date when the rights begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'other_rights_applicable_end_date': "The date when the rights no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'other_rights_start_date_period': "The number of years after the start date when these rights begin to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'other_rights_end_date_period': "The number of years after the end date when these rights no longer apply. Will be used to calculate date ranges based on dates for each transfer.",
             'other_rights_end_date_open': "Select if these rights apply in perpetuity.",
             'other_rights_note': "A prose description of the rights."
             }
@@ -217,10 +217,10 @@ class RightsLicenseForm(forms.ModelForm):
         }
         help_texts = {
             'license_terms': "Text describing the license or agreement by which permission was granted.",
-            'license_applicable_start_date': "The date when the license begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'license_applicable_end_date': "The end date when the license no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'license_start_date_period': "The number of years after the start date when the license begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'license_end_date_period': "The number of years after the end date when this license no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'license_applicable_start_date': "The date when the license begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'license_applicable_end_date': "The end date when the license no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'license_start_date_period': "The number of years after the start date when the license begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'license_end_date_period': "The number of years after the end date when this license no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'license_end_date_open': "Select if this license applies in perpetuity.",
             'license_note': "A prose description of the license."}
         widgets = {
