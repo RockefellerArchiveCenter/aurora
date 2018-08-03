@@ -211,7 +211,7 @@
               {{ granted_formset.non_form_errors }}
               {{ granted_formset.management_form }}
               {% for form in granted_formset %}
-                <div id="{{ form.prefix }}-row" class="dynamic-form act" style="display:none;">
+                <div id="{{ form.prefix }}-row" class="dynamic-form act">
                   <div id='granted_formset' class="well">
                     <div class="row{% if forloop.first %} hidden{% endif %}">
                       <div class="col-xs-12">
@@ -337,6 +337,9 @@
   }
 
   $(document).ready(function() {
+    if ($('.dynamic-form.act').length == 1) {
+      $('.dynamic-form.act').first().hide()
+    }
     // active formset changer
     $('#id_rights_basis').change(revealSelectedBasis);
     revealSelectedBasis();

@@ -60,7 +60,6 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                 'granted_formset': RightsGrantedFormSet()})
 
     def post(self, request, *args, **kwargs):
-        print self.__dict__
         applies_to_type = request.POST.getlist('applies_to_type')
 
         if not self.kwargs.get('pk'):
@@ -72,7 +71,18 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                     'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
                     'organization': organization, 'basis_form': form})
-            rights_statement = form.save()
+            if RightsStatement.objects.filter(
+                    organization=form.cleaned_data['organization'],
+                    rights_basis=form.cleaned_data['rights_basis'],
+                    applies_to_type__in=form.cleaned_data['applies_to_type'],
+                    ).exists():
+                rights_statement = RightsStatement.objects.filter(
+                        organization=form.cleaned_data['organization'],
+                        rights_basis=form.cleaned_data['rights_basis'],
+                        applies_to_type__in=form.cleaned_data['applies_to_type'],
+                        )[0]
+            else:
+                rights_statement = form.save()
         else:
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
             organization = rights_statement.organization
@@ -84,14 +94,21 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
 
         formset_data = self.get_formset(rights_statement.rights_basis)
         basis_formset = formset_data['class'](request.POST, instance=rights_statement)
+        rights_granted_formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
 
-        if not basis_formset.is_valid():
-            basis_form = RightsForm(applies_to_type_choices=applies_to_type_choices, instance=rights_statement)
-            return render(request, self.template_name, {
-                'organization': organization, formset_data['key']: basis_formset,
-                'basis_form': basis_form, 'rights_statement': rights_statement})
-
-        basis_formset.save()
+        for formset in [basis_formset, rights_granted_formset]:
+            if not formset.is_valid():
+                print formset
+                print formset.errors
+                basis_form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
+                return render(request, self.template_name, {
+                    'copyright_form': CopyrightFormSet(request.POST, instance=rights_statement),
+                    'license_form': LicenseFormSet(request.POST, instance=rights_statement),
+                    'statute_form': StatuteFormSet(request.POST, instance=rights_statement),
+                    'other_form': OtherFormSet(request.POST, instance=rights_statement),
+                    'organization': organization, 'basis_form': basis_form,
+                    'granted_formset': rights_granted_formset})
+            formset.save()
         return redirect('orgs:detail', organization.pk)
 
 
