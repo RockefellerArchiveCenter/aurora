@@ -95,14 +95,12 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         formset_data = self.get_formset(rights_statement.rights_basis)
         basis_formset = formset_data['class'](request.POST, instance=rights_statement)
         rights_granted_formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
-        print formset_data
 
         for formset in [basis_formset, rights_granted_formset]:
             if not formset.is_valid():
-                print formset.errors
                 form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
                 return render(request, self.template_name, {
-                    formset_data['key']: basis_formset,
+                    formset_data['key']: formset_data['class'](request.POST),
                     'organization': organization, 'basis_form': form,
                     'granted_formset': rights_granted_formset})
             formset.save()

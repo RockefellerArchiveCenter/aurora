@@ -213,7 +213,7 @@
               {% for form in granted_formset %}
                 <div id="{{ form.prefix }}-row" class="dynamic-form act">
                   <div id='granted_formset' class="well">
-                    <div class="row{% if forloop.first %} hidden{% endif %}">
+                    <div class="row">
                       <div class="col-xs-12">
                         <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
                       </div>
@@ -338,7 +338,8 @@
 
   $(document).ready(function() {
     // Show/hide granted formset
-    if ($('input#rightsstatementrightsgranted_set-INITIAL_FORMS').val == 0 && !$('.dynamic-form.act').find('.has-error').length) {
+    console.log($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value)
+    if ($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.has-error').length) {
       $('.dynamic-form.act').first().hide()
     }
     // active formset changer

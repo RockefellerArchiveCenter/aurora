@@ -1,7 +1,7 @@
 from django import forms
 
 from django.utils.translation import ugettext, ugettext_lazy as _
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, formset_factory
 
 from bag_transfer.rights.models import *
 from bag_transfer.models import Organization
@@ -77,7 +77,13 @@ class RightsGrantedForm(forms.ModelForm):
             'rights_granted_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
-class RightsCopyrightForm(forms.ModelForm):
+class RightsBasisForm(forms.ModelForm):
+    # overrides has_changed to force validation on formsets
+    def has_changed(self):
+        return True
+
+
+class RightsCopyrightForm(RightsBasisForm):
     class Meta:
         model = RightsStatementCopyright
         fields = (
@@ -119,7 +125,7 @@ class RightsCopyrightForm(forms.ModelForm):
             'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
-class RightsStatuteForm(forms.ModelForm):
+class RightsStatuteForm(RightsBasisForm):
     class Meta:
         model = RightsStatementStatute
         fields = (
@@ -161,7 +167,7 @@ class RightsStatuteForm(forms.ModelForm):
             'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}) }
 
 
-class RightsOtherRightsForm(forms.ModelForm):
+class RightsOtherRightsForm(RightsBasisForm):
     class Meta:
         model = RightsStatementOther
         fields = (
@@ -198,7 +204,7 @@ class RightsOtherRightsForm(forms.ModelForm):
             }
 
 
-class RightsLicenseForm(forms.ModelForm):
+class RightsLicenseForm(RightsBasisForm):
     class Meta:
         model = RightsStatementLicense
         fields = (
@@ -231,6 +237,7 @@ class RightsLicenseForm(forms.ModelForm):
             'license_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
+
 # create inline formsets for child elements
 CopyrightFormSet = inlineformset_factory(
     RightsStatement,
@@ -238,7 +245,7 @@ CopyrightFormSet = inlineformset_factory(
     extra=1,
     max_num=1,
     can_delete=False,
-    form=RightsCopyrightForm
+    form=RightsCopyrightForm,
 )
 
 StatuteFormSet = inlineformset_factory(
