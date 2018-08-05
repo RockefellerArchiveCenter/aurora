@@ -337,7 +337,8 @@
   }
 
   $(document).ready(function() {
-    if ($('.dynamic-form.act').length == 1) {
+    // Show/hide granted formset
+    if ($('input#rightsstatementrightsgranted_set-INITIAL_FORMS').val == 0 && !$('.dynamic-form.act').find('.has-error').length) {
       $('.dynamic-form.act').first().hide()
     }
     // active formset changer

@@ -95,18 +95,15 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         formset_data = self.get_formset(rights_statement.rights_basis)
         basis_formset = formset_data['class'](request.POST, instance=rights_statement)
         rights_granted_formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
+        print formset_data
 
         for formset in [basis_formset, rights_granted_formset]:
             if not formset.is_valid():
-                print formset
                 print formset.errors
-                basis_form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
+                form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
                 return render(request, self.template_name, {
-                    'copyright_form': CopyrightFormSet(request.POST, instance=rights_statement),
-                    'license_form': LicenseFormSet(request.POST, instance=rights_statement),
-                    'statute_form': StatuteFormSet(request.POST, instance=rights_statement),
-                    'other_form': OtherFormSet(request.POST, instance=rights_statement),
-                    'organization': organization, 'basis_form': basis_form,
+                    formset_data['key']: basis_formset,
+                    'organization': organization, 'basis_form': form,
                     'granted_formset': rights_granted_formset})
             formset.save()
         return redirect('orgs:detail', organization.pk)
@@ -126,36 +123,6 @@ class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView
                 resp['success'] = 1
 
         return self.render_to_json_response(resp, **kwargs)
-
-
-class RightsGrantsManageView(ManagingArchivistMixin, CreateView):
-    template_name = 'rights/manage.html'
-    model = RightsStatement
-    form_class = RightsForm
-
-    def get(self, request, *args, **kwargs):
-        if self.kwargs.get('pk'):
-            instance = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
-        granted_formset = RightsGrantedFormSet(instance=instance)
-        rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
-        rights_basis_info = rights_statement.get_rights_info_object
-        organization = rights_statement.organization
-        return render(request, self.template_name, {
-            'organization': organization, 'granted_formset': granted_formset,
-            'rights_basis_info': rights_basis_info, 'rights_statement': rights_statement})
-
-    def post(self, request, *args, **kwargs):
-        rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
-        organization = rights_statement.organization
-        formset = RightsGrantedFormSet(request.POST, instance=rights_statement)
-        if formset.is_valid():
-            formset.save()
-            messages.success(request, 'Rights Statement for {} saved.'.format(rights_statement.organization.name))
-            return redirect('rights:detail', self.kwargs.get('pk'))
-        else:
-            messages.error(request, "There was a problem with your submission. Please correct the error below and try again.")
-            return render(request, self.template_name, {
-                'organization': organization, 'granted_formset': formset})
 
 
 class RightsDetailView(OrgReadViewMixin, DetailView):
