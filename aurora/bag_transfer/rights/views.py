@@ -65,8 +65,9 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         if not self.kwargs.get('pk'):
             organization = Organization.objects.get(pk=self.request.GET.get('org'))
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
-            form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices)
+            form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
             if not form.is_valid():
+                messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
                 return render(request, self.template_name, {
                     'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
@@ -98,12 +99,14 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
 
         for formset in [rights_granted_formset, basis_formset]:
             if not formset.is_valid():
+                messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
                 form = RightsForm(request.POST, applies_to_type_choices=applies_to_type_choices, organization=organization)
                 return render(request, self.template_name, {
                     formset_data['key']: formset_data['class'](request.POST),
                     'organization': organization, 'basis_form': form,
                     'granted_formset': rights_granted_formset})
             formset.save()
+        messages.success(request, "Rights statement saved!")
         return redirect('orgs:detail', organization.pk)
 
 
