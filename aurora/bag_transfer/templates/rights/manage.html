@@ -338,7 +338,6 @@
 
   $(document).ready(function() {
     // Show/hide granted formset
-    console.log($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value)
     if ($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.has-error').length) {
       $('.dynamic-form.act').first().hide()
     }
