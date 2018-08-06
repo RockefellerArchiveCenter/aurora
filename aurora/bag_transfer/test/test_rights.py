@@ -95,7 +95,7 @@ class RightsTestCase(TestCase):
 
     def get_requests(self):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
-        for view in ['rights:edit', 'rights:grants', 'rights:detail']:
+        for view in ['rights:edit', 'rights:detail']:
             rights_statement = random.choice(RightsStatement.objects.all())
             response = self.client.get(reverse(view, kwargs={'pk': rights_statement.pk}))
             self.assertEqual(response.status_code, 200)
@@ -109,14 +109,16 @@ class RightsTestCase(TestCase):
         # Creating new RightsStatements
         post_organization = random.choice(self.orgs)
         new_basis_data = random.choice(setup.basis_data)
+        new_basis_data['organization'] = post_organization.pk
+        new_basis_data.update(setup.grant_data)
         previous_length = len(RightsStatement.objects.all())
         new_request = self.client.post(
             urljoin(reverse('rights:add'), '?org={}'.format(post_organization.pk)), new_basis_data)
         self.assertEqual(
-            new_request.status_code, 302, "Request was not redirected")
+            new_request.status_code, 302, "Request was not successful")
         self.assertEqual(
             len(RightsStatement.objects.all()), previous_length+1,
-            "Another rights statement was mistakenly created")
+            "{} Rights Statements were created, correct number is 1".format(len(RightsStatement.objects.all())-previous_length))
         self.assertEqual(
             RightsStatement.objects.last().rights_basis, new_basis_data['rights_basis'],
             "Rights bases do not match")
@@ -141,12 +143,6 @@ class RightsTestCase(TestCase):
         self.assertEqual(
             len(RightsStatement.objects.all()), previous_length+1,
             "Another rights statement was mistakenly created")
-
-        # RightsStatementRightsGranted
-        grant_request = self.client.post(
-            reverse('rights:grants', kwargs={'pk': rights_statement.pk}), setup.grant_data)
-        self.assertEqual(
-            grant_request.status_code, 302, "Request was not redirected")
 
     def ajax_requests(self):
         rights_statement = RightsStatement.objects.last()

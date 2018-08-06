@@ -1,7 +1,7 @@
 from django import forms
 
 from django.utils.translation import ugettext, ugettext_lazy as _
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, formset_factory
 
 from bag_transfer.rights.models import *
 from bag_transfer.models import Organization
@@ -10,7 +10,7 @@ from bag_transfer.models import Organization
 class RightsForm(forms.ModelForm):
     class Meta:
         model = RightsStatement
-        fields = ('applies_to_type', 'rights_basis',)
+        fields = ('applies_to_type', 'rights_basis', 'organization')
         labels = {
             'rights_basis': 'Rights Basis',
             'applies_to_type': 'Applies to Record Type(s)'
@@ -21,10 +21,12 @@ class RightsForm(forms.ModelForm):
         widgets = {
             'rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
             'applies_to_type': forms.widgets.CheckboxSelectMultiple(attrs={'class': 'list-unstyled'}),
+            'organization': forms.widgets.HiddenInput()
         }
 
     def __init__(self, *args, **kwargs):
         applies_to_type_choices = kwargs.pop('applies_to_type_choices', None)
+        organization = kwargs.pop('organization', None)
         super(RightsForm, self).__init__(*args, **kwargs)
 
         if applies_to_type_choices:
@@ -35,6 +37,9 @@ class RightsForm(forms.ModelForm):
         else:
             self.fields['applies_to_type'].choices = []
             self.fields['applies_to_type'].widget.choices = []
+
+        if organization:
+            self.initial['organization'] = organization
 
 
 class RightsGrantedForm(forms.ModelForm):
@@ -55,10 +60,10 @@ class RightsGrantedForm(forms.ModelForm):
             }
         help_texts = {
             'act': "The action the preservation repository is allowed to take; eg. replicate, migrate, modify, use, disseminate, delete.",
-            'start_date': "The beginning date of the rights or restrictions Use 'Start Date Period' for dates which should be calculated based on dates of each transfer..",
-            'end_date': "The ending date of the rights or restrictions. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'start_date_period': "The number of years after the start date when this grant or restriction begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'end_date_period': "The number of years after the end date when this grant or restriction no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'start_date': "The beginning date of the rights or restrictions Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'end_date': "The ending date of the rights or restrictions. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'start_date_period': "The number of years after the start date when this grant or restriction begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'end_date_period': "The number of years after the end date when this grant or restriction no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'end_date_open': "Select if this grant or restriction applies in perpetuity.",
             'rights_granted_note': "A prose description of the action or restriction."
             }
@@ -67,12 +72,18 @@ class RightsGrantedForm(forms.ModelForm):
             'restriction': forms.widgets.Select(attrs={'class': 'form-control'}),
             'start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
+            'end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
             'rights_granted_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
-class RightsCopyrightForm(forms.ModelForm):
+class RightsBasisForm(forms.ModelForm):
+    # overrides has_changed to force validation on formsets
+    def has_changed(self):
+        return True
+
+
+class RightsCopyrightForm(RightsBasisForm):
     class Meta:
         model = RightsStatementCopyright
         fields = (
@@ -96,10 +107,10 @@ class RightsCopyrightForm(forms.ModelForm):
             'copyright_status': "A coded designation of the copyright status of the object at the time the rights statement is recorded. Available options: Copyrighted, Public Domain, Unknown.",
             'copyright_jurisdiction': "The country whose copyright laws apply. Use values from ISO 3166.",
             'copyright_status_determination_date': "The date that the copyright status recorded in 'copyright status' was determined.",
-            'copyright_applicable_start_date': "The date when this copyright begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'copyright_applicable_end_date': "The date when this copyright no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'copyright_start_date_period': "The number of years after the start date when copyright begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'copyright_end_date_period': "The number of years after the end date when copyright no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'copyright_applicable_start_date': "The date when this copyright begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'copyright_applicable_end_date': "The date when this copyright no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'copyright_start_date_period': "The number of years after the start date when copyright begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'copyright_end_date_period': "The number of years after the end date when copyright no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'copyright_end_date_open': "Select if this copyright applies in perpetuity.",
             'copyright_note': "A prose description of the copyright."
             }
@@ -114,7 +125,7 @@ class RightsCopyrightForm(forms.ModelForm):
             'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
-class RightsStatuteForm(forms.ModelForm):
+class RightsStatuteForm(RightsBasisForm):
     class Meta:
         model = RightsStatementStatute
         fields = (
@@ -138,10 +149,10 @@ class RightsStatuteForm(forms.ModelForm):
             'statute_jurisdiction': "The country or other political body enacting the statute.",
             'statute_citation': "An identifying designation for the statute.",
             'statute_determination_date': "The date that the determination was made that the statue authorized the permission(s) noted.",
-            'statute_applicable_start_date': "The date when the statute begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'statute_applicable_end_date': "The date when the statute ceasees to apply. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'statute_start_date_period': "The number of years after the start date when the statute begins to apply. Will be used to calculate date ranges based on dates for each transfer",
-            'statute_end_date_period': "The number of years after the end date when the statute no longer applies. Will be used to calculate date ranges based on dates for each transfer",
+            # 'statute_applicable_start_date': "The date when the statute begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'statute_applicable_end_date': "The date when the statute ceasees to apply. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'statute_start_date_period': "The number of years after the start date when the statute begins to apply. Will be used to calculate date ranges based on dates for each transfer",
+            # 'statute_end_date_period': "The number of years after the end date when the statute no longer applies. Will be used to calculate date ranges based on dates for each transfer",
             'statute_end_date_open': "Select if this statute applies in perpetuity.",
             'statute_note': "A prose description of the statute."
             }
@@ -156,7 +167,7 @@ class RightsStatuteForm(forms.ModelForm):
             'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}) }
 
 
-class RightsOtherRightsForm(forms.ModelForm):
+class RightsOtherRightsForm(RightsBasisForm):
     class Meta:
         model = RightsStatementOther
         fields = (
@@ -176,10 +187,10 @@ class RightsOtherRightsForm(forms.ModelForm):
             }
         help_texts = {
             'other_rights_basis': "The designation of the basis for the rights or permission described in the rights statement identifier.",
-            'other_rights_applicable_start_date': "The date when the rights begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'other_rights_applicable_end_date': "The date when the rights no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'other_rights_start_date_period': "The number of years after the start date when these rights begin to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'other_rights_end_date_period': "The number of years after the end date when these rights no longer apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'other_rights_applicable_start_date': "The date when the rights begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'other_rights_applicable_end_date': "The date when the rights no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'other_rights_start_date_period': "The number of years after the start date when these rights begin to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'other_rights_end_date_period': "The number of years after the end date when these rights no longer apply. Will be used to calculate date ranges based on dates for each transfer.",
             'other_rights_end_date_open': "Select if these rights apply in perpetuity.",
             'other_rights_note': "A prose description of the rights."
             }
@@ -193,7 +204,7 @@ class RightsOtherRightsForm(forms.ModelForm):
             }
 
 
-class RightsLicenseForm(forms.ModelForm):
+class RightsLicenseForm(RightsBasisForm):
     class Meta:
         model = RightsStatementLicense
         fields = (
@@ -212,10 +223,10 @@ class RightsLicenseForm(forms.ModelForm):
         }
         help_texts = {
             'license_terms': "Text describing the license or agreement by which permission was granted.",
-            'license_applicable_start_date': "The date when the license begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
-            'license_applicable_end_date': "The end date when the license no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
-            'license_start_date_period': "The number of years after the start date when the license begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
-            'license_end_date_period': "The number of years after the end date when this license no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'license_applicable_start_date': "The date when the license begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'license_applicable_end_date': "The end date when the license no longer applies. Use 'End Date Period' for dates which should be calculated based on dates of each transfer.",
+            # 'license_start_date_period': "The number of years after the start date when the license begins to apply. Will be used to calculate date ranges based on dates for each transfer.",
+            # 'license_end_date_period': "The number of years after the end date when this license no longer applies. Will be used to calculate date ranges based on dates for each transfer.",
             'license_end_date_open': "Select if this license applies in perpetuity.",
             'license_note': "A prose description of the license."}
         widgets = {
@@ -226,6 +237,7 @@ class RightsLicenseForm(forms.ModelForm):
             'license_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
+
 # create inline formsets for child elements
 CopyrightFormSet = inlineformset_factory(
     RightsStatement,
@@ -233,7 +245,7 @@ CopyrightFormSet = inlineformset_factory(
     extra=1,
     max_num=1,
     can_delete=False,
-    form=RightsCopyrightForm
+    form=RightsCopyrightForm,
 )
 
 StatuteFormSet = inlineformset_factory(

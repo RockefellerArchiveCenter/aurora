@@ -14,9 +14,12 @@
 
 					{{form.management_form}}
 					{{form.non_form_errors}}
+					{% for hidden in form.hidden_fields %}
+						{{ hidden }}
+					{% endfor %}
 					<div class="row">
 						<div class="col-md-6">
-						{% include 'rights/form_fields.html' %}
+						{% include 'bagit_profiles/baginfo_form_fields.html' %}
 					</div>
 					</div>
 					<div class="row">
@@ -88,19 +91,24 @@
 					    {{ hidden }}
 						{% endfor %}
 						<div class="row">
-							<div class="col-xs-6">
+							<div class="col-xs-5">
 								{% include 'bagit_profiles/baginfo_form_fields.html' %}
 							</div>
-							<div class="col-xs-6">
+							<div class="col-xs-7">
 								{% if form.nested %}
 								<div class="nested-form">
 									{{ form.nested.management_form }}
 									{{ form.nested.non_form_errors }}
 									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first and forloop.last %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
 									<label>Values</label>
-									{% for form in form.nested.forms %}
-						        {% include 'bagit_profiles/repeating_form.html' %}
-					        {% endfor %}
+									<div class="show-values-inputs">
+										<a href="javascript:void(0)" class="btn btn-primary btn-sm add-values">Add Controlled Values</a>
+									</div>
+									<div class="values-inputs" style="display:none;">
+										{% for form in form.nested.forms %}
+							        {% include 'bagit_profiles/repeating_form.html' %}
+						        {% endfor %}
+									</div>
 								</div>
 								{% endif %}
 							</div>
@@ -219,6 +227,20 @@
 	    deleteForm(this, $(this).attr('data-target'));
 			updateBagInfoDeleteButtons();
     })
+		$('.bag_info .nested-form').each(function(){
+			console.log(this)
+			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0) {
+				$(this).children('div.show-values-inputs').hide()
+				$(this).children('div.values-inputs').show()
+			} else {
+				$(this).children('div.show-values-inputs').show()
+				$(this).children('div.values-inputs').hide()
+			}
+		})
+		$('.add-values').on('click', function() {
+			$(this).parent('div.show-values-inputs').hide();
+			$(this).parent().next('div.values-inputs').show()
+		})
   });
 </script>
 {% endblock %}
