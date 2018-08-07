@@ -53,8 +53,8 @@ class RightsGrantedForm(forms.ModelForm):
             'restriction': 'Restriction(s)',
             'start_date': 'Start Date',
             'end_date': 'End Date',
-            'start_date_period': 'Start Date Period',
-            'end_date_period': 'End Date Period',
+            'start_date_period': 'Years Before Start Date',
+            'end_date_period': 'Years After End Date',
             'end_date_open': 'Open end date?',
             'rights_granted_note': 'Note'
             }
@@ -98,13 +98,13 @@ class RightsCopyrightForm(RightsBasisForm):
             'copyright_status_determination_date': 'Copyright Status Determination Date',
             'copyright_applicable_start_date': 'Start Date',
             'copyright_applicable_end_date': 'End Date',
-            'copyright_start_date_period': 'Start Date Period',
-            'copyright_end_date_period': 'End Date Period',
+            'copyright_start_date_period': 'Years Before Start Date',
+            'copyright_end_date_period': 'Years After End Date',
             'copyright_end_date_open': 'Open end date?',
             'copyright_note': 'Note'
             }
         help_texts = {
-            'copyright_status': "A coded designation of the copyright status of the object at the time the rights statement is recorded. Available options: Copyrighted, Public Domain, Unknown.",
+            'copyright_status': "A coded designation of the copyright status of the object at the time the rights statement is recorded.",
             'copyright_jurisdiction': "The country whose copyright laws apply. Use values from ISO 3166.",
             'copyright_status_determination_date': "The date that the copyright status recorded in 'copyright status' was determined.",
             # 'copyright_applicable_start_date': "The date when this copyright begins to apply. Use 'Start Date Period' for dates which should be calculated based on dates of each transfer.",
@@ -120,8 +120,8 @@ class RightsCopyrightForm(RightsBasisForm):
             'copyright_status_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'copyright_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'copyright_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'copyright_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
-            'copyright_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control', }),
+            'copyright_start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control', }),
+            'copyright_end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control', }),
             'copyright_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
@@ -140,8 +140,8 @@ class RightsStatuteForm(RightsBasisForm):
             'statute_determination_date': 'Statute Determination Date',
             'statute_applicable_start_date': 'Start Date',
             'statute_applicable_end_date': 'End Date',
-            'statute_start_date_period': 'Start Date Period',
-            'statute_end_date_period': 'End Date Period',
+            'statute_start_date_period': 'Years Before Start Date',
+            'statute_end_date_period': 'Years After End Date',
             'statute_end_date_open': 'Open end date?',
             'statute_note': 'Note'
             }
@@ -162,8 +162,8 @@ class RightsStatuteForm(RightsBasisForm):
             'statute_determination_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'statute_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'statute_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'statute_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'statute_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'statute_start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
+            'statute_end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
             'statute_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}) }
 
 
@@ -180,8 +180,8 @@ class RightsOtherRightsForm(RightsBasisForm):
             'other_rights_basis': 'Other Rights Basis',
             'other_rights_applicable_start_date': 'Start Date',
             'other_rights_applicable_end_date': 'End Date',
-            'other_rights_start_date_period': 'Start Date Period',
-            'other_rights_end_date_period': 'End Date Period',
+            'other_rights_start_date_period': 'Years Before Start Date',
+            'other_rights_end_date_period': 'Years After End Date',
             'other_rights_end_date_open': 'Open end date?',
             'other_rights_note': 'Note'
             }
@@ -198,8 +198,8 @@ class RightsOtherRightsForm(RightsBasisForm):
             'other_rights_basis': forms.widgets.Select(attrs={'class': 'form-control'}),
             'other_rights_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'other_rights_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'other_rights_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'other_rights_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'other_rights_start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
+            'other_rights_end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
             'other_rights_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3})
             }
 
@@ -216,8 +216,8 @@ class RightsLicenseForm(RightsBasisForm):
             'license_terms': 'Licence Terms',
             'license_applicable_start_date': 'Start Date',
             'license_applicable_end_date': 'End Date',
-            'license_start_date': 'Start Date Period',
-            'license_end_date': 'End Date Period',
+            'license_start_date_period': 'Years Before Start Date',
+            'license_end_date_period': 'Years After End Date',
             'license_end_date_open': 'Open end date?',
             'license_note': 'Note',
         }
@@ -233,8 +233,8 @@ class RightsLicenseForm(RightsBasisForm):
             'license_terms': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'license_applicable_start_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
             'license_applicable_end_date': forms.widgets.DateInput(attrs={'class': 'form-control', 'type':'date'}),
-            'license_start_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
-            'license_end_date_period': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'license_start_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
+            'license_end_date_period': forms.widgets.NumberInput(attrs={'class': 'form-control'}),
             'license_note': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}), }
 
 
