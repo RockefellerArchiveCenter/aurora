@@ -99,7 +99,7 @@
 								<div class="nested-form">
 									{{ form.nested.management_form }}
 									{{ form.nested.non_form_errors }}
-									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first and forloop.last %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
+									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
 									<label>Values</label>
 									<div class="show-values-inputs">
 										<a href="javascript:void(0)" class="btn btn-primary btn-sm add-values">Add Controlled Values</a>
@@ -144,13 +144,6 @@
 		if (el.className) el.className = el.className.replace(id_regex, replacement);
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
 	}
-	function updateBagInfoDeleteButtons(){
-		if ($('.bag_info').length > 1) {
-			$('.bag_info:first').find('.delete-row:first').removeClass('hidden')
-		} else {
-			$('.bag_info:first').find('.delete-row:first').addClass('hidden')
-		}
-	}
 	function renumberForms(prefix) {
 		forms = $('[class^='+prefix+']')
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
@@ -188,7 +181,7 @@
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
 		}
 		if ($(btn).attr('data-target') != 'bag_info') {
-				$(btn).hide()
+			$(btn).hide()
 		}
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
@@ -207,6 +200,20 @@
 		}
 		$('.dynamic-form.'+prefix+':visible').last().find('.add-row[data-target='+prefix+']').show()
   }
+	function isFormEmpty(form) {
+    var empty = true
+		if ($(form).find('.has-error').length) {
+			return false
+		}
+    $(form).find(':input[type!="hidden"][type!="checkbox"]').each(function(){
+      if ($(this).val()) {
+        $(this).find('.delete-row').removeClass("hidden")
+          empty = false
+          return false
+      }
+    })
+    return empty
+  }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()
 		$('input[name$=-TOTAL_FORMS]').each(function(){
@@ -217,18 +224,33 @@
 				$('.add-row[data-target='+formPrefix+']').removeAttr("disabled");
 			}
 		});
+		$('.dynamic-form').each(function(){
+			if (isFormEmpty(this)) {
+				$(this).find('.delete-row').addClass("hidden")
+			};
+		})
     $('.add-row').on('click', function() {
 			if (!($(this).attr('disabled'))) {
 				addForm(this, $(this).attr('data-target'));
-				updateBagInfoDeleteButtons();
 			}
     });
     $('.delete-row').on('click', function() {
 	    deleteForm(this, $(this).attr('data-target'));
-			updateBagInfoDeleteButtons();
     })
+		$('.dynamic-form').on('change', function(e){
+			if ($(e.target).attr("type") == "text") {
+				addForm($(this).find('.add-row'), $(this).find('.add-row').attr('data-target'));
+				$(this).next('.dynamic-form').find('.delete-row').addClass('hidden')
+			}
+			if (isFormEmpty(this)) {
+				$(this).find('.delete-row').addClass("hidden")
+			} else {
+				$(this).find('.delete-row').removeClass("hidden")
+			};
+			return false
+
+		});
 		$('.bag_info .nested-form').each(function(){
-			console.log(this)
 			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0) {
 				$(this).children('div.show-values-inputs').hide()
 				$(this).children('div.values-inputs').show()
