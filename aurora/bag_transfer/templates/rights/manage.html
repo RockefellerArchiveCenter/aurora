@@ -19,13 +19,16 @@
             {% for field in basis_form.visible_fields %}
               {% include 'rights/form_fields.html' with field=field %}
             {% endfor %}
-            {% for field in basis_form.hidden_fields %}
-              {{field}}
+            {% for hidden in basis_form.hidden_fields %}
+              {{hidden}}
             {% endfor %}
             <div id="copyright_formset">
               {{ copyright_form.management_form }}
               {{ copyright_form.non_form_errors }}
               {% for form in copyright_form %}
+                {% for hidden in form.hidden_fields %}
+                  {{hidden}}
+                {% endfor %}
                 <div class="row">
                   <div class="col-xs-4">
                     {% include 'rights/form_fields.html' with field=form.copyright_status %}
@@ -69,14 +72,14 @@
                 {% include 'rights/form_fields.html' with field=form.copyright_end_date_open %}
                 {% include 'rights/form_fields.html' with field=form.copyright_note %}
               {% endfor %}
-              {% for field in form.hidden_fields %}
-                {{ field }}
-              {% endfor %}
             </div>
             <div id='license_formset'>
               {{ license_form.management_form }}
               {{ license_form.non_form_errors }}
               {% for form in license_form %}
+                {% for hidden in form.hidden_fields %}
+                  {{hidden}}
+                {% endfor %}
                 {% include 'rights/form_fields.html' with field=form.license_terms %}
                 <div class="row">
                   <div class="col-xs-12">
@@ -110,14 +113,14 @@
                 {% include 'rights/form_fields.html' with field=form.license_end_date_open %}
                 {% include 'rights/form_fields.html' with field=form.license_note %}
               {% endfor %}
-              {% for field in form.hidden_fields %}
-                {{ field }}
-              {% endfor %}
             </div>
             <div id='statute_formset'>
               {{ statute_form.management_form }}
               {{ statute_form.non_form_errors }}
               {% for form in statute_form %}
+                {% for hidden in form.hidden_fields %}
+                  {{hidden}}
+                {% endfor %}
                 <div class="row">
                   <div class="col-xs-4">
                     {% include 'rights/form_fields.html' with field=form.statute_jurisdiction %}
@@ -161,14 +164,14 @@
                 {% include 'rights/form_fields.html' with field=form.statute_end_date_open %}
                 {% include 'rights/form_fields.html' with field=form.statute_note %}
               {% endfor %}
-              {% for field in form.hidden_fields %}
-                {{ field }}
-              {% endfor %}
             </div>
             <div id='other_formset'>
               {{ other_form.management_form }}
               {{ other_form.non_form_errors }}
               {% for form in other_form %}
+                {% for hidden in form.hidden_fields %}
+                  {{hidden}}
+                {% endfor %}
                 {% include 'rights/form_fields.html' with field=form.other_rights_basis %}
                 <div class="row">
                   <div class="col-xs-12">
@@ -202,15 +205,15 @@
                 {% include 'rights/form_fields.html' with field=form.other_rights_end_date_open %}
                 {% include 'rights/form_fields.html' with field=form.other_rights_note %}
               {% endfor %}
-              {% for field in form.hidden_fields %}
-                {{ field }}
-              {% endfor %}
             </div>
             <div class="rights_granted_or_restricted">
             <h3>Rights Granted or Restricted</h3>
               {{ granted_formset.non_form_errors }}
               {{ granted_formset.management_form }}
               {% for form in granted_formset %}
+                {% for hidden in form.hidden_fields %}
+                  {{hidden}}
+                {% endfor %}
                 <div id="{{ form.prefix }}-row" class="dynamic-form act">
                   <div id='granted_formset' class="well">
                     <div class="row">
@@ -257,9 +260,6 @@
                     </div>
                     {% include 'rights/form_fields.html' with field=form.end_date_open %}
                     {% include 'rights/form_fields.html' with field=form.rights_granted_note %}
-                    {% for field in form.hidden_fields %}
-                      {{ field }}
-                    {% endfor %}
                 </div>
               </div>
         	    {% endfor %}
