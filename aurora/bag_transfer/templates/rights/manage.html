@@ -218,7 +218,7 @@
                   <div id='granted_formset' class="well">
                     <div class="row">
                       <div class="col-xs-12">
-                        <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
+                        <a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right hidden"><i class="fa fa-times"></i> Delete Rights Granted or Restricted</a>
                       </div>
                     </div>
                     <div class="row">
@@ -336,6 +336,21 @@
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
   }
 
+  function isFormEmpty(form) {
+    var empty = true
+		if ($(form).find('.has-error').length) {
+			return false
+		}
+    $(form).find(':input[type!="hidden"][type!="checkbox"]').each(function(){
+      if ($(this).val()) {
+        $(this).find('.delete-row').removeClass("hidden")
+          empty = false
+          return false
+      }
+    })
+    return empty
+  }
+
   $(document).ready(function() {
     // Show/hide granted formset
     if ($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.has-error').length) {
@@ -344,6 +359,12 @@
     // active formset changer
     $('#id_rights_basis').change(revealSelectedBasis);
     revealSelectedBasis();
+    $('.dynamic-form').each(function(){
+			if (!isFormEmpty(this)) {
+        console.log(this)
+				$(this).find('.delete-row').removeClass("hidden")
+			};
+		})
 
     $('.add-row').click(function() {
       if ($('.dynamic-form.act').length == 1 && $('.dynamic-form.act').first().is(':hidden')) {
@@ -354,7 +375,15 @@
     });
     $('.delete-row').click(function() {
 	    deleteForm(this, 'rightsstatementrightsgranted_set');
-    })
+    });
+    $('.dynamic-form').on('change', function(e){
+			if (isFormEmpty(this)) {
+				$(this).find('.delete-row').addClass("hidden")
+			} else {
+				$(this).find('.delete-row').removeClass("hidden")
+			};
+			return false
+		});
 
   });
 </script>

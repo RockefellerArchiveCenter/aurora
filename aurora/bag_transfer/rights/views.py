@@ -72,26 +72,11 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                     'copyright_form': CopyrightFormSet(), 'license_form': LicenseFormSet(),
                     'statute_form': StatuteFormSet(), 'other_form': OtherFormSet(),
                     'organization': organization, 'basis_form': form})
-            if RightsStatement.objects.filter(
-                    organization=form.cleaned_data['organization'],
-                    rights_basis=form.cleaned_data['rights_basis'],
-                    applies_to_type__in=form.cleaned_data['applies_to_type'],
-                    ).exists():
-                rights_statement = RightsStatement.objects.filter(
-                        organization=form.cleaned_data['organization'],
-                        rights_basis=form.cleaned_data['rights_basis'],
-                        applies_to_type__in=form.cleaned_data['applies_to_type'],
-                        )[0]
-            else:
-                rights_statement = form.save()
+            rights_statement = form.save(commit=False)
         else:
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get('pk'))
             organization = rights_statement.organization
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
-
-        rights_statement.applies_to_type.clear()
-        for record_type in applies_to_type:
-            rights_statement.applies_to_type.add(record_type)
 
         formset_data = self.get_formset(rights_statement.rights_basis)
         basis_formset = formset_data['class'](request.POST, instance=rights_statement)
@@ -105,7 +90,16 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                     formset_data['key']: formset_data['class'](request.POST),
                     'organization': organization, 'basis_form': form,
                     'granted_formset': rights_granted_formset})
+
+        rights_statement.save()
+        rights_statement.applies_to_type.clear()
+        for record_type in applies_to_type:
+            rights_statement.applies_to_type.add(record_type)
+        rights_statement.save()
+
+        for formset in [rights_granted_formset, basis_formset]:
             formset.save()
+
         messages.success(request, "Rights statement saved!")
         return redirect('orgs:detail', organization.pk)
 
