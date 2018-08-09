@@ -245,7 +245,11 @@
 			if (isFormEmpty(this)) {
 				$(this).find('.delete-row').addClass("hidden")
 			} else {
-				$(this).find('.delete-row').removeClass("hidden")
+				if ($(this).attr('id').startsWith('nested')) {
+					$(this).find('.delete-row').removeClass("hidden")
+				} else {
+					$(this).find('.delete-row:not([data-target^="nested"])').removeClass("hidden")
+				}
 			};
 			return false
 		});
