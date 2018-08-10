@@ -126,7 +126,10 @@ class BaseBagInfoFormset(forms.BaseInlineFormSet):
         for form in self.forms:
             if hasattr(form, 'nested'):
                 if not self._should_delete_form(form):
-                    form.nested.save(commit=commit)
+                    try:
+                        form.nested.save(commit=commit)
+                    except:
+                        result = False
         return result
 
 BagItProfileBagInfoFormset = forms.inlineformset_factory(

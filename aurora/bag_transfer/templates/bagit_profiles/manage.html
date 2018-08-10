@@ -253,8 +253,8 @@
 			};
 			return false
 		});
-		$('.bag_info .nested-form').each(function(){
-			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0) {
+		$('[class^="bag_info"] .nested-form').each(function(){
+			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0 || $(this).children('[name$=TOTAL_FORMS]')[0].value > 1) {
 				$(this).children('div.show-values-inputs').hide()
 				$(this).children('div.values-inputs').show()
 			} else {
