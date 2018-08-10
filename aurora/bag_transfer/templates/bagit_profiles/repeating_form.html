@@ -1,15 +1,13 @@
-<div id="{{ form.prefix }}-row" class="dynamic-form {{form.prefix|slice:'-2'}}">
+<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} dynamic-form">
   <div class="row">
     <div class="col-xs-6">
       {%for field in form%}
       {{field}}
       {%endfor%}
     </div>
-    <div class="col-xs-6">
-      <a href="javascript:void(0)" class="delete-row btn btn-sm btn-danger{% if forloop.first %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
+    <div class="col-xs-4">
+      <a href="javascript:void(0)" class="delete-row btn btn-sm btn-danger" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>
+      <a {% if not forloop.last %}style="display:none;"{% endif %} href="javascript:void(0)" class="add-row btn btn-sm btn-primary" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
     </div>
   </div>
 </div>
-{% if forloop.last %}
-<a href="javascript:void(0)" class="add-row btn btn-sm btn-default mar-top10" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-plus"></i> Add</a>
-{% endif %}

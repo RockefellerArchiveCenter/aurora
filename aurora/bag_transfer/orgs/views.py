@@ -15,7 +15,6 @@ from bag_transfer.models import Archives, Organization, User, BagItProfile
 from bag_transfer.orgs.form import *
 from bag_transfer.mixins.authmixins import *
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.rights.models import RightsStatement
 
 
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
@@ -31,7 +30,7 @@ class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, Create
         return context
 
     def get_success_url(self):
-        return reverse('orgs-detail', kwargs={'pk': self.object.pk})
+        return reverse('orgs:detail', kwargs={'pk': self.object.pk})
 
 
 class OrganizationDetailView(OrgReadViewMixin, DetailView):
@@ -42,7 +41,7 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
         context['uploads'] = []
-        archives = Archives.objects.filter(process_status__gte=20, organization=context['object']).order_by('-created_time')[:15]
+        archives = Archives.objects.filter(process_status__gte=20, organization=context['object']).order_by('-created_time')[:8]
         for archive in archives:
             archive.bag_info_data = archive.get_bag_data()
             context['uploads'].append(archive)
@@ -53,7 +52,7 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
 class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'orgs/update.html'
     model = Organization
-    fields = ['is_active','name', 'acquisition_type']
+    fields = ['is_active', 'name', 'acquisition_type']
     success_message = "Organization Saved!"
 
     def get_context_data(self, **kwargs):
@@ -63,7 +62,7 @@ class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateVi
         return context
 
     def get_success_url(self):
-        return reverse('orgs-detail', kwargs={'pk': self.object.pk})
+        return reverse('orgs:detail', kwargs={'pk': self.object.pk})
 
 
 class OrganizationListView(ArchivistMixin, ListView):
@@ -116,11 +115,31 @@ class BagItProfileManageView(View):
 
     def post(self, request, *args, **kwargs):
         instance = None
+        organization = Organization.objects.get(pk=self.kwargs.get('pk'))
         if self.kwargs.get('profile_pk'):
             instance = get_object_or_404(BagItProfile, pk=self.kwargs.get('profile_pk'))
         form = BagItProfileForm(request.POST, instance=instance)
         if form.is_valid():
-            bagit_profile = form.save()
+            if BagItProfile.objects.filter(
+                    applies_to_organization=form.cleaned_data['applies_to_organization'],
+                    contact_email=form.cleaned_data['contact_email'],
+                    source_organization=form.cleaned_data['source_organization'],
+                    version=form.cleaned_data['version'],
+                    bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
+                    external_descripton=form.cleaned_data['external_descripton'],
+                    serialization=form.cleaned_data['serialization'],
+                    ).exists():
+                bagit_profile = BagItProfile.objects.filter(
+                        applies_to_organization=form.cleaned_data['applies_to_organization'],
+                        contact_email=form.cleaned_data['contact_email'],
+                        source_organization=form.cleaned_data['source_organization'],
+                        version=form.cleaned_data['version'],
+                        bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
+                        external_descripton=form.cleaned_data['external_descripton'],
+                        serialization=form.cleaned_data['serialization'],
+                        )[0]
+            else:
+                bagit_profile = form.save()
             bag_info_formset = BagItProfileBagInfoFormset(request.POST, instance=bagit_profile, prefix='bag_info')
             manifests_formset = ManifestsRequiredFormset(request.POST, instance=bagit_profile, prefix='manifests')
             serialization_formset = AcceptSerializationFormset(request.POST, instance=bagit_profile, prefix='serialization')
@@ -129,28 +148,31 @@ class BagItProfileManageView(View):
             tag_files_formset = TagFilesRequiredFormset(request.POST, instance=bagit_profile, prefix='tag_files')
             forms_to_save = [bag_info_formset, manifests_formset, serialization_formset, version_formset, tag_manifests_formset, tag_files_formset]
             for formset in forms_to_save:
-                if formset.is_valid():
-                    formset.save()
-                else:
-                    print formset.errors
+                if not formset.is_valid():
+                    messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
                     return render(request, self.template_name, {
                         'organization': bagit_profile.applies_to_organization,
-                        'form': bagit_profile,
+                        'form': form,
                         'bag_info_formset': bag_info_formset,
                         'manifests_formset': manifests_formset,
                         'serialization_formset': serialization_formset,
                         'version_formset': version_formset,
-                        'tag_manifests_formset': tag_files_formset,
+                        'tag_manifests_formset': tag_manifests_formset,
                         'tag_files_formset': tag_files_formset,
                         'meta_page_title': 'BagIt Profile',
                         })
+            for formset in forms_to_save:
+                formset.save()
             bagit_profile.version = bagit_profile.version + Decimal(1)
             bagit_profile.bagit_profile_identifier = request.build_absolute_uri(reverse('bagitprofile-detail', kwargs={'pk': bagit_profile.id, 'format': 'json'}))
             bagit_profile.save()
-            return redirect('orgs-detail', bagit_profile.applies_to_organization.pk)
+            messages.success(request, 'BagIt Profile for {} saved'.format(bagit_profile.applies_to_organization.name))
+            return redirect('orgs:detail', bagit_profile.applies_to_organization.pk)
+        print form.errors
+        messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
         return render(request, self.template_name, {
-            'form': form,
-            'organization': form.applies_to_organization,
+            'form': BagItProfileForm(request.POST, instance=instance),
+            'organization': organization,
             'bag_info_formset': BagItProfileBagInfoFormset(request.POST, prefix='bag_info'),
             'manifests_formset': ManifestsRequiredFormset(request.POST, prefix='manifests'),
             'serialization_formset': AcceptSerializationFormset(request.POST, prefix='serialization'),

@@ -7,6 +7,8 @@ Aurora is a Django web application that can receive, virus check and validate tr
 
 The name of the application is a reference both to the natural light display often seen in the northern hemisphere - sometimes referred to as _aurora borealis_ - as well as the Roman goddess of dawn.
 
+Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/). Project updates are available on [Bits & Bytes](http://blog.rockarch.org/), the RAC's blog.
+
 
 ## Installation
 
@@ -36,8 +38,8 @@ Install the correct version of Docker based on the Windows platform being used. 
 To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
 
         $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
-        
-When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory. 
+
+When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory.
 
 Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
 

@@ -1,0 +1,27 @@
+{% load util %}
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="box box-primary">
+      <div class="box-header with-border">
+        <h3 class="box-title">Metadata</h3>
+      </div>
+      <div class="box-body">
+        <dl class="dl-horizontal">
+          {% for k,v in object.get_bag_data.items %}
+            <dt>{{k}}</dt>
+            <dd>
+              {% if v|get_type == 'list' %}
+                {% for i in v %}
+                  {{ i }}<br/>
+                {% endfor %}
+              {% else %}
+                {{v}}
+              {% endif %}
+            </dd>
+          {% endfor %}
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>

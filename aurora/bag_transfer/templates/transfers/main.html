@@ -122,15 +122,23 @@
         segmentShowStroke    : true,
         segmentStrokeColor   : '#fff',
         segmentStrokeWidth   : 2,
-        percentageInnerCutout: 50, // This is 0 for Pie charts
+        percentageInnerCutout: 0, // This is 0 for Pie charts
         animationSteps       : 100,
         animationEasing      : 'easeOutBounce',
         animateRotate        : true,
         animateScale         : false,
-        responsive           : true,
+        responsive           : false,
         maintainAspectRatio  : true,
+        legendTemplate       :
+          '<ul class="chart-legend">' +
+          {% for record_type in org.record_types_by_year %}
+            '<li><i class="fa fa-circle-o" style="color: {{record_type.color}}"></i> {{record_type.label}}</li>' +
+          {% endfor %}
+          '</ul>'
       }
-      var chart = yearPieChart.Doughnut({{k}}YearPieData, pieOptions)
+      var chart = yearPieChart.Doughnut({{k}}YearPieData, pieOptions);
+      var legend = chart.generateLegend();
+      $('#{{k}}YearRecordTypesPieChartLegend').append(legend);
     }
 
     {% endfor %}

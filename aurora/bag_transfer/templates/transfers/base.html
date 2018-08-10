@@ -25,12 +25,12 @@
           {% endcomment %}
         </section>
 
-        
+
         <!-- Main content -->
         <section class="content">
 
-        {% include 'transfers/messages.html' %}
-        
+          <div id="messages">{% include 'transfers/messages.html' %}</div>
+
         {% block content %}{% endblock %}
         </section>
       </div>
@@ -38,9 +38,7 @@
       <!-- Main Footer -->
       {% include 'transfers/footer.html' %}
 
-      
-      {% include 'transfers/sidebar.html' %}
-
+      <!-- Modals -->
       {% block modals %}{% endblock %}
 
       <!-- REQUIRED JS SCRIPTS -->

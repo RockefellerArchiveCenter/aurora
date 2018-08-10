@@ -2,7 +2,6 @@
   <table class="table table-striped rights-statement-table">
     <thead>
       <tr>
-        <th>Record Type</th>
         <th>Basis</th>
         <th>Rights Notes</th>
         <th></th>
@@ -11,7 +10,6 @@
     <tbody>
       {% for statement in org.rights_statements %}
       <tr rel="{{ statement.pk }}">
-        <td>{% for t in statement.applies_to_type.all %}{{t}}{% if not forloop.last %}<br />{%endif%}{% endfor %}</td>
         <td>{{statement.rights_basis}}</td>
         <td>{{statement.get_table_data.notes}}</td>
         <td class="text-right col-md-4">

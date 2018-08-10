@@ -3,7 +3,7 @@
 	<table role="table" class="table table-bordered">
 		<tbody>
 			{% for u in users %}
-			<tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users-detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}>
+			<tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users:detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}>
 				<td>
 					{{ u.username }}
 				</td>

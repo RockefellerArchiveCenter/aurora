@@ -18,8 +18,8 @@ from bag_transfer.lib.ldap_auth import LDAP_Manager
 
 class AbstractExternalIdentifier(models.Model):
     identifier = models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now=True)
-    last_modified = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_modified = models.DateTimeField(auto_now=True)
     SOURCE_CHOICES = (
         ('archivesspace', 'ArchivesSpace'),
         ('aurora', 'Aurora'),
@@ -33,8 +33,8 @@ class Organization(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=60, unique=True)
     machine_name = models.CharField(max_length=30, unique=True, default="orgXXX will be created here")
-    created_time = models.DateTimeField(auto_now=True)
-    modified_time = models.DateTimeField(auto_now_add=True)
+    created_time = models.DateTimeField(auto_now_add=True)
+    modified_time = models.DateTimeField(auto_now=True)
     ACQUISITION_TYPE_CHOICES = (
         ('donation', 'Donation'),
         ('deposit', 'Deposit'),
@@ -125,7 +125,7 @@ class Organization(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('orgs-edit', kwargs={'pk': self.pk})
+        return reverse('orgs:edit', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ['name']
@@ -277,7 +277,6 @@ class User(AbstractUser):
                         new_accounts += 1
         return new_accounts
 
-
     @staticmethod
     def is_user_active(u,org):
         user = {}
@@ -295,7 +294,7 @@ class User(AbstractUser):
         return user
 
     def get_absolute_url(self):
-        return reverse('users-detail', kwargs={'pk': self.pk})
+        return reverse('users:detail', kwargs={'pk': self.pk})
 
     class Meta:
         ordering = ['username']
@@ -344,17 +343,17 @@ class Archives(models.Model):
     organization = models.ForeignKey(Organization, related_name="transfers")
     user_uploaded = models.ForeignKey(User, null=True)
     machine_file_path = models.CharField(max_length=100)
-    machine_file_size = models.CharField(max_length= 30)
+    machine_file_size = models.CharField(max_length=30)
     machine_file_upload_time = models.DateTimeField()
-    machine_file_identifier = models.CharField(max_length=255,unique=True)
-    machine_file_type = models.CharField(max_length=5,choices=machine_file_types)
+    machine_file_identifier = models.CharField(max_length=255, unique=True)
+    machine_file_type = models.CharField(max_length=5, choices=machine_file_types)
     bag_it_name = models.CharField(max_length=60)
     bag_it_valid = models.BooleanField(default=False)
     appraisal_note = models.TextField(blank=True, null=True)
-
-    additional_error_info = models.CharField(max_length=255,null=True,blank=True)
-    process_status = models.PositiveSmallIntegerField(choices=processing_statuses,default=20)
-    created_time = models.DateTimeField(auto_now_add=True) # process time
+    manifest = models.TextField(blank=True, null=True)
+    additional_error_info = models.CharField(max_length=255, null=True, blank=True)
+    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=20)
+    created_time = models.DateTimeField(auto_now_add=True)  # process time
     modified_time = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -628,9 +627,9 @@ class BAGLogCodes(models.Model):
 
 class BAGLog(models.Model):
     code = models.ForeignKey(BAGLogCodes)
-    archive = models.ForeignKey(Archives, blank=True,null=True, related_name='events')
+    archive = models.ForeignKey(Archives, blank=True, null=True, related_name='events')
     log_info = models.CharField(max_length=255, null=True, blank=True)
-    created_time = models.DateTimeField(auto_now=True)
+    created_time = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         val = "-- : {}".format(self.code.code_desc)
@@ -744,26 +743,26 @@ class TagFilesRequired(models.Model):
 class BagItProfileBagInfo(models.Model):
     bagit_profile = models.ForeignKey(BagItProfile)
     FIELD_CHOICES = (
-        ('source_organization', 'Source-Organization'),
-        ('organization_address', 'Organization-Address'),
+        ('bag_count', 'Bag-Count'),
+        ('bag_group_identifier', 'Bag-Group-Identifier'),
+        ('bag_size', 'Bag-Size'),
+        ('bagging_date', 'Bagging-Date'),
+        ('contact_email', 'Contact-Email'),
         ('contact_name', 'Contact-Name'),
         ('contact_phone', 'Contact-Phone'),
-        ('contact_email', 'Contact-Email'),
+        ('date_end', 'Date-End'),
+        ('date_start', 'Date-Start'),
         ('external_descripton', 'External-Description'),
         ('external_identifier', 'External-Identifier'),
         ('internal_sender_description', 'Internal-Sender-Description'),
         ('internal_sender_identifier', 'Internal-Sender-Identifier'),
-        ('title', 'Title'),
-        ('date_start', 'Date-Start'),
-        ('date_end', 'Date-End'),
+        ('language', 'Language'),
+        ('organization_address', 'Organization-Address'),
+        ('payload_oxum', 'Payload-Oxum'),
         ('record_creators', 'Record-Creators'),
         ('record_type', 'Record-Type'),
-        ('language', 'Language'),
-        ('bagging_date', 'Bagging-Date'),
-        ('bag_group_identifier', 'Bag-Group-Identifier'),
-        ('bag_count', 'Bag-Count'),
-        ('bag_size', 'Bag-Size'),
-        ('payload_oxum', 'Payload-Oxum'),
+        ('source_organization', 'Source-Organization'),
+        ('title', 'Title'),
     )
     field = models.CharField(choices=FIELD_CHOICES, max_length=100)
     required = models.NullBooleanField(default=False, null=True)

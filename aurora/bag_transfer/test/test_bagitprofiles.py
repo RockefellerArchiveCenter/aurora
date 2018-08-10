@@ -73,9 +73,9 @@ class BagItProfileTestCase(TestCase):
         profile = random.choice(self.bagitprofiles)
         org = profile.applies_to_organization
 
-        response = self.client.get(reverse('bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
+        response = self.client.get(reverse('orgs:bagit-profiles-add', kwargs={'pk': self.orgs[0].pk}))
         self.assertEqual(response.status_code, 200)
-        response = self.client.get(reverse('bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
+        response = self.client.get(reverse('orgs:bagit-profiles-edit', kwargs={'pk': org.pk, 'profile_pk': profile.pk}))
         self.assertEqual(response.status_code, 200)
 
         response = self.client.get(reverse('organization-bagit-profiles', kwargs={'pk': org.pk}))
@@ -88,7 +88,7 @@ class BagItProfileTestCase(TestCase):
         # Creating new BagItProfile
         organization = random.choice(self.orgs)
         new_request = self.client.post(
-            reverse('bagit-profiles-add', kwargs={'pk': organization.pk}), {
+            reverse('orgs:bagit-profiles-add', kwargs={'pk': organization.pk}), {
                 'contact_email': 'archive@rockarch.org',
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
@@ -132,7 +132,7 @@ class BagItProfileTestCase(TestCase):
         # Updating BagItProfile
         profile = BagItProfile.objects.last()
         update_request = self.client.post(
-            reverse('bagit-profiles-edit', kwargs={'pk': organization.pk, 'profile_pk': profile.pk}), {
+            reverse('orgs:bagit-profiles-edit', kwargs={'pk': organization.pk, 'profile_pk': profile.pk}), {
                 'contact_email': 'archive@rockarch.org',
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
@@ -193,13 +193,13 @@ class BagItProfileTestCase(TestCase):
 
         # Delete bagit profile
         delete_request = self.client.get(
-            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}),
+            reverse('orgs:bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}),
             {}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         self.assertEqual(delete_request.status_code, 200)
         resp = ast.literal_eval(delete_request.content)
         self.assertEqual(resp['success'], 1)
         non_ajax_request = self.client.get(
-            reverse('bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}))
+            reverse('orgs:bagit-profiles-api', kwargs={'pk': organization.pk, 'profile_pk': profile.pk, 'action': 'delete'}))
         self.assertEqual(non_ajax_request.status_code, 404)
 
     def tearDown(self):

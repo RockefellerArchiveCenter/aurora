@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}{{form.accession_number.value}} <small>{{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
+{% block h1_title %}Create Accession {{form.accession_number.value}} <small>{{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
 
 {% block content %}
 
@@ -35,17 +35,26 @@
     <div class="box-body">
       {% include 'accession/form_fields.html' with field=form.title %}
       <div class="row">
-        <div class="col-md-4">
-          {% include 'accession/form_fields.html' with field=form.start_date%}
-          {% include 'accession/form_fields.html' with field=form.end_date%}
+        <div class="col-md-5">
+          <div class="well">
+            <div class="row">
+              <div class="col-md-6">
+                {% include 'accession/form_fields.html' with field=form.start_date%}
+              </div>
+              <div class="col-md-6">
+                {% include 'accession/form_fields.html' with field=form.end_date%}
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="col-md-8">
-          <div class="form-group">
-            <label>Creators</label>
-              {{ creators_formset.management_form }}
-              {% for creator in creators_formset %}
-                {% include 'accession/creators.html' %}
-              {% endfor %}
+        <div class="col-md-7">
+          <div class="well">
+            <div class="form-group">
+                {{ creators_formset.management_form }}
+                {% for creator in creators_formset %}
+                  {% include 'accession/creators.html' %}
+                {% endfor %}
+            </div>
           </div>
         </div>
       </div>
@@ -97,7 +106,7 @@
   </div>
 
   <button type="submit" class="btn btn-primary">Submit</button>
-  <a href="{% url 'accession-main' %}" class="btn btn-danger">Cancel</a>
+  <a href="{% url 'accession:list' %}" class="btn btn-danger">Cancel</a>
 
 </form>
 

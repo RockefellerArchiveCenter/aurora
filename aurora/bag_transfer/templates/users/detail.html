@@ -19,7 +19,7 @@
 
                 {% if object.organization %}
                 <p class="text-muted text-center">
-                    <a href="{% url 'orgs-detail' object.organization.pk %}">{{ object.organization.name }}</a>
+                    <a href="{% url 'orgs:detail' object.organization.pk %}">{{ object.organization.name }}</a>
                 </p>
                 {% endif %}
 
@@ -34,10 +34,10 @@
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
-                    <a href="{% url 'users-edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
+                    <a href="{% url 'users:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit user</b></a>
                 {% endif %}
                 {% if request.user.pk == object.pk %}
-                    <a href="{% url 'password-change' %}" class="btn btn-default btn-block">change password</a>
+                    <a href="{% url 'users:password-change' %}" class="btn btn-default btn-block">change password</a>
                 {% endif %}
 
             </div>
@@ -77,10 +77,10 @@
     <div class="col-md-9">
       <div class="box box-primary">
           <div class="box-header with-border">
-              <h3 class="box-title">Recent Uploads</h3>
+              <h3 class="box-title">Recent Transfers</h3>
           </div>
           <div class="box-body">
-            {% include 'parts/transfer_table.html' with org=object.organization %}
+            {% include 'parts/recent_transfer_table.html' with org=object.organization %}
           </div>
         </div>
     </div>

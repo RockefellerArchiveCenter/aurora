@@ -14,8 +14,14 @@
 
 					{{form.management_form}}
 					{{form.non_form_errors}}
-
-					{% include 'rights/form_fields.html' %}
+					{% for hidden in form.hidden_fields %}
+						{{ hidden }}
+					{% endfor %}
+					<div class="row">
+						<div class="col-md-6">
+						{% include 'bagit_profiles/baginfo_form_fields.html' %}
+					</div>
+					</div>
 					<div class="row">
 						<div class="col-md-12">
 							<label for="id_{{manifests_formset.prefix}}-0-name">Manifests Required</label>
@@ -24,6 +30,7 @@
 							{% for form in manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Select a required algorithm for manifest files. If no value is selected any algorithm is valid.</p>
 						</div>
 					</div>
 
@@ -35,6 +42,7 @@
 							{% for form in serialization_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">If serialization of bags is allowed, add all serialization formats accepted. If no values are selected, the bag serialization format will not be checked.</p>
 						</div>
 					</div>
 
@@ -46,6 +54,7 @@
 							{% for form in version_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Add all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked.</p>
 						</div>
 					</div>
 
@@ -57,6 +66,7 @@
 							{% for form in tag_manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">Add all tag manifest algorithms accepted. If no values are selected, the tag format algorithm will not be checked.</p>
 						</div>
 					</div>
 
@@ -68,6 +78,7 @@
 							{% for form in tag_files_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
+							<p class="help-block">List required tag files, if any.</p>
 						</div>
 					</div>
 
@@ -80,19 +91,24 @@
 					    {{ hidden }}
 						{% endfor %}
 						<div class="row">
-							<div class="col-xs-6">
+							<div class="col-xs-5">
 								{% include 'bagit_profiles/baginfo_form_fields.html' %}
 							</div>
-							<div class="col-xs-6">
+							<div class="col-xs-7">
 								{% if form.nested %}
 								<div class="nested-form">
 									{{ form.nested.management_form }}
 									{{ form.nested.non_form_errors }}
-									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right {% if forloop.first and forloop.last %} hidden{% endif %}" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
+									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
 									<label>Values</label>
-									{% for form in form.nested.forms %}
-						        {% include 'bagit_profiles/repeating_form.html' %}
-					        {% endfor %}
+									<div class="show-values-inputs">
+										<a href="javascript:void(0)" class="btn btn-primary btn-sm add-values">Add Controlled Values</a>
+									</div>
+									<div class="values-inputs" style="display:none;">
+										{% for form in form.nested.forms %}
+							        {% include 'bagit_profiles/repeating_form.html' %}
+						        {% endfor %}
+									</div>
 								</div>
 								{% endif %}
 							</div>
@@ -105,7 +121,7 @@
 				<div class="row mar-top20">
 					<div class="col-md-12">
 						<button type="submit" class="btn btn-primary">Submit</button>
-						<a href="{% url 'orgs-detail' organization.pk %}" class="btn btn-danger">Cancel</a>
+						<a href="{% url 'orgs:detail' organization.pk %}" class="btn btn-danger">Cancel</a>
 					</div>
 				</div>
 
@@ -125,17 +141,11 @@
 		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
+		if (el.className) el.className = el.className.replace(id_regex, replacement);
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
 	}
-	function updateBagInfoDeleteButtons(){
-		if ($('.bag_info').length > 1) {
-			$('.bag_info:first').find('.delete-row:first').removeClass('hidden')
-		} else {
-			$('.bag_info:first').find('.delete-row:first').addClass('hidden')
-		}
-	}
 	function renumberForms(prefix) {
-		forms = $('.'+prefix)
+		forms = $('[class^='+prefix+']')
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
 			updateElementIndex(forms.get(i), prefix, i)
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
@@ -145,7 +155,7 @@
 						selector = $(nestedForm).children().attr('id')
 						nestedPrefix = selector.substring(selector.indexOf('_')+1, selector.lastIndexOf('-'))
 						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).length)
-						$(forms.get(i)).find('[name^=nested_]').each(function() {
+						$(forms.get(i)).find('[data-target^=nested_], input[name^=nested_], div[id^=nested_]').each(function() {
 							updateElementIndex(this, prefix, i);
 						});
 					}
@@ -155,18 +165,27 @@
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
-    var row = $(btn).prev('.dynamic-form').clone(true).get(0);
-		$(row).find("input[type!='hidden']").val(''); // THIS ONE
-    $(row).insertAfter($(btn).prev('.dynamic-form')).find('.hidden').removeClass('hidden');
+		if ($(btn).closest('.dynamic-form').length) {
+			var appendAfter = $(btn).closest('.dynamic-form:visible')
+		} else {
+			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
+		}
+		var row = $(appendAfter).clone(true).get(0);
+		$(row).find("input[type!='hidden']").val('');
+		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
+    $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
-			var nestedPrefix = 'nested_'+prefix
 			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
+			$(nestedForm).find('div.dynamic-form').find('.add-row').show();
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
+		}
+		if ($(btn).attr('data-target') != 'bag_info') {
+			$(btn).hide()
 		}
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
-			$(btn).attr("disabled", "disabled");
+			$(row).find('.add-row').attr("disabled", "disabled");
 		}
   }
   function deleteForm(btn, prefix) {
@@ -176,9 +195,24 @@
     var forms = $('.'+prefix);
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
 		renumberForms(prefix);
-		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
+		if (parseInt($('.dynamic-form.'+prefix+':not(:hidden)').length) < parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
 		}
+		$('.dynamic-form.'+prefix+':visible').last().find('.add-row[data-target='+prefix+']').show()
+  }
+	function isFormEmpty(form) {
+    var empty = true
+		if ($(form).find('.has-error').length) {
+			return false
+		}
+    $(form).find(':input[type!="hidden"][type!="checkbox"]').each(function(){
+      if ($(this).val()) {
+        $(this).find('.delete-row').removeClass("hidden")
+          empty = false
+          return false
+      }
+    })
+    return empty
   }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()
@@ -190,16 +224,48 @@
 				$('.add-row[data-target='+formPrefix+']').removeAttr("disabled");
 			}
 		});
+		$('.dynamic-form').each(function(){
+			if (isFormEmpty(this)) {
+				$(this).find('.delete-row').addClass("hidden")
+			};
+		})
     $('.add-row').on('click', function() {
 			if (!($(this).attr('disabled'))) {
 				addForm(this, $(this).attr('data-target'));
-				updateBagInfoDeleteButtons();
 			}
     });
     $('.delete-row').on('click', function() {
 	    deleteForm(this, $(this).attr('data-target'));
-			updateBagInfoDeleteButtons();
     })
+		$('.dynamic-form').on('change', function(e){
+			if ($(e.target).attr("type") == "text") {
+				addForm($(this).find('.add-row'), $(this).find('.add-row').attr('data-target'));
+				$(this).next('.dynamic-form').find('.delete-row').addClass('hidden')
+			}
+			if (isFormEmpty(this)) {
+				$(this).find('.delete-row').addClass("hidden")
+			} else {
+				if ($(this).attr('id').startsWith('nested')) {
+					$(this).find('.delete-row').removeClass("hidden")
+				} else {
+					$(this).find('.delete-row:not([data-target^="nested"])').removeClass("hidden")
+				}
+			};
+			return false
+		});
+		$('[class^="bag_info"] .nested-form').each(function(){
+			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0 || $(this).children('[name$=TOTAL_FORMS]')[0].value > 1) {
+				$(this).children('div.show-values-inputs').hide()
+				$(this).children('div.values-inputs').show()
+			} else {
+				$(this).children('div.show-values-inputs').show()
+				$(this).children('div.values-inputs').hide()
+			}
+		})
+		$('.add-values').on('click', function() {
+			$(this).parent('div.show-values-inputs').hide();
+			$(this).parent().next('div.values-inputs').show()
+		})
   });
 </script>
 {% endblock %}

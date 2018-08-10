@@ -1,0 +1,89 @@
+<div class="modal fade" id="modal-details-{{upload.pk}}">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form id="appraisal-note-form" method='get' class="form" role="form" action='.' >
+        <input type="hidden" name="upload_id" class="upload_id" />
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+          <h4 class="modal-title">
+            Details for {{upload.bag_or_failed_name}}
+          </h4>
+        </div>
+        <div class="modal-body">
+          {% if upload.get_bag_data %}
+          	{% include 'parts/metadata_box.html' with object=upload %}
+          {% endif %}
+
+          {% if upload.manifest %}
+          <div class="row">
+          	<div class="col-md-12">
+          		<div class="box box-primary collapsed-box">
+          			<div class="box-header with-border">
+          				<h3 class="box-title">Manifest</h3>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                  </div>
+          			</div>
+          			<div class="box-body">
+          				<pre>{{ upload.manifest|linebreaks }}</pre>
+          			</div>
+          		</div>
+          	</div>
+          </div>
+          {% endif %}
+
+          <div class="row">
+          	<div class="col-md-12">
+          		<div class="box box-primary collapsed-box">
+          			<div class="box-header with-border">
+          				<h3 class="box-title">Log</h3>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                  </div>
+          			</div>
+          			<div class="box-body">
+          				<table class="table table-striped dataTable">
+          					<thead>
+          						<tr>
+          							<th>Date/Time</th>
+          							<th>Message</th>
+          						</tr>
+          					</thead>
+          					<tbody>
+          						{% for tlog in upload.get_transfer_logs %}
+          						<tr>
+          							<td>{{ tlog.created_time }}</td>
+          							<td>{{ tlog.code.code_desc }}</td>
+          						</tr>
+          						{% endfor %}
+          					</tbody>
+          				</table>
+          			</div>
+          		</div>
+          	</div>
+          </div>
+
+          {% if upload.rights_statements %}
+          <div class="row">
+          	<div class="col-md-12">
+          		<div class="box box-primary collapsed-box">
+          			<div class="box-header with-border">
+          				<h3 class="box-title">Rights Statements</h3>
+                  <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-plus"></i></button>
+                  </div>
+          			</div>
+          			<div class="box-body no-padding">
+          				{% include 'parts/transfer_rights_table.html' with org=upload %}
+          			</div>
+          		</div>
+          	</div>
+          </div>
+          {% endif %}
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

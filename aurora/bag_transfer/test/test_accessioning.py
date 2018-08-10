@@ -53,7 +53,7 @@ class AccessioningTestCase(TestCase):
 
     def get_views(self, id_list):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
-        list_response = self.client.get(reverse('accession-main'))
+        list_response = self.client.get(reverse('accession:list'))
         self.assertEqual(list_response.status_code, 200)
 
         # These are all the same transfer so there should only be one transfer group
@@ -62,13 +62,13 @@ class AccessioningTestCase(TestCase):
             self.assertEqual(upload.transfer_group, transfer_group)
         self.assertEqual(len(list_response.context['uploads']), len(self.archives))
 
-        record_response = self.client.get(reverse('accession-record'), {'transfers': id_list})
+        record_response = self.client.get(reverse('accession:detail'), {'transfers': id_list})
         self.assertEqual(record_response.status_code, 200)
 
     def post_views(self, id_list):
         accession_data = helpers.get_accession_data(creator=random.choice(RecordCreators.objects.all()))
         new_request = self.client.post(
-            urljoin(reverse('accession-record'), '?transfers={}'.format(id_list)), accession_data)
+            urljoin(reverse('accession:detail'), '?transfers={}'.format(id_list)), accession_data)
         self.assertEqual(
             new_request.status_code, 302, "Request was not redirected")
 

@@ -25,12 +25,12 @@
 					<tbody>
 					{% for upload in uploads %}
 						<tr class="upload-row" rel="{{ upload.pk }}">
-              <td><a href="{% url 'transfer-detail' upload.pk %}" class="bag-name">{{ upload.bag_or_failed_name }}</a></td>
+              <td><span class="bag-name">{{ upload.bag_or_failed_name }}</span></td>
               <td>{{ upload.get_bag_data.source_organization }}</td>
 							<td>{% for r in upload.get_bag_data.record_creators %}{{r}}<br />{% endfor %}</td>
 							<td>{{ upload.get_bag_data.record_type }}</td>
 							<td>{{ upload.machine_file_upload_time|date:"M j, Y h:i A" }}</td>
-							<td>
+							<td class="text-right col-xs-3">
                 {% if request.user.can_appraise or request.user.is_superuser %}
                 <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
                   Accept
@@ -39,9 +39,12 @@
                   Reject
                 </a>
                 <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
-                    {% if upload.appraisal_note%}Edit{% else %}Add{% endif %} Note
+                    {% if upload.appraisal_note %}Edit{% else %}Add{% endif %} Note
                 </a>
                 {% endif %}
+                <a type="button" class="btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-details-{{upload.pk}}" aria-expanded="false" aria-controls="details-{{upload.pk}}">
+                    Details
+                </a>
               </td>
 						</tr>
 					{% endfor %}
@@ -53,16 +56,19 @@
   </div>
 </div>
 
-<div class="modal fade" id="modal-appraisal-note">
-  {% include 'appraise/edit_note.html' %}
-</div>
+{% endblock %}
 
+{% block modals %}
+  {% include 'appraise/edit_note.html' %}
+  {% for upload in uploads %}
+    {% include 'appraise/detail_modal.html' %}
+  {% endfor %}
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
 var amodal = $("#modal-appraisal-note");
-var url = '{% url 'appraise-main' %}';
+var url = '{% url 'appraise:list' %}';
 var appraise_table = '';
 
   $(function () {
@@ -130,7 +136,28 @@ var appraise_table = '';
       $.get(url,data,function(resp){
         if (resp.success){
           amodal.modal('hide');
-          resolveRowCallback(data.upload_id);
+          resolveRowCallback(data.upload_id, 'add');
+        }
+      });
+
+      return false;
+    });
+
+    $('#delete-note').on('click', function(e){
+      e.preventDefault();
+      var frm = $('#appraisal-note-form')
+      var data = {
+        'upload_id': frm.find('.upload_id').val(),
+        'appraisal_note': frm.find('.appraisal_note').val(),
+        'req_form' : 'appraise',
+        'req_type' : 'delete'
+      }
+
+      //AJAX submit
+      $.get(url,data,function(resp){
+        if (resp.success){
+          amodal.modal('hide');
+          resolveRowCallback(data.upload_id, 'delete');
         }
       });
 
@@ -138,7 +165,6 @@ var appraise_table = '';
     });
 
     $("#appraise_table tbody").on("click", ".appraisal-accept, .appraisal-reject", function(e){
-      console.log('click')
       e.preventDefault();
       var upload_row = $(this).closest('.upload-row');
       var upload_id = upload_row.attr('rel');
@@ -157,9 +183,15 @@ var appraise_table = '';
         if (resp.success){
           // remove row
           appraise_table.row( upload_row ).remove().draw();
-
+          decision = 'rejected'
+          name = $(upload_row).children('td').first().text()
+          if (appraisal_decision == 1) {
+            displayMessage('success', 'Transfer <b>'+name+'</b> accepted.');
+          } else {
+            displayMessage('danger', 'Transfer <b>'+name+'</b> rejected.');
+          }
         } else {
-          alert('Something went wrong.. Please try again..');
+          displayMessage('danger', 'Something went wrong! Please try again.');
         }
       });
 
@@ -167,26 +199,53 @@ var appraise_table = '';
 
   })
 
-var activateModal = function(uid,label,bag_name,appraisal_note){
+function activateModal(uid,label,bag_name,appraisal_note) {
   // setups up and opens modal
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);
   amodal.find('.bag-name').text(bag_name);
   amodal.find('.appraisal_note').val(appraisal_note);
+  if (appraisal_note && appraisal_note.length) {
+    amodal.find('#delete-note').show()
+  } else {
+    amodal.find('#delete-note').hide()
+  }
   amodal.modal('show');
 }
 
-var resolveRowCallback = function(uid){
+function resolveRowCallback(uid, action) {
   $('.appraisal-note').each(function(){
-    if ($(this).attr('rel') == uid){
-
-      $(this).text('Edit Note');
-      $(this).removeClass('btn-default');
-      $(this).addClass('btn-info').addClass('edit-note');
+    if (action == 'add') {
+      if ($(this).attr('rel') == uid){
+        $(this).text('Edit Note');
+        $(this).removeClass('btn-default');
+        $(this).addClass('btn-info').addClass('edit-note');
+      }
+    } else {
+      if ($(this).attr('rel') == uid){
+        $(this).text('Add Note');
+        $(this).removeClass('btn-info');
+        $(this).addClass('btn-default').removeClass('edit-note');
+      }
     }
   });
 }
 
+function displayMessage(type, message) {
+  $('#messages').empty()
+  $('#messages').append(
+    '<div class="row">\
+    	<div class="col-md-12">\
+        <div class="alert alert-'+type+' alert-dismissible">\
+          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+            <i class="icon fa fa-check"></i>'+message+'\
+        </div>\
+      </div>\
+    </div>').fadeIn(300);
+    setTimeout(function(){
+			$('#messages').fadeOut(1300);
+		}, 8000);
+}
 
 </script>
 {% endblock %}
