@@ -12,6 +12,9 @@ from bag_transfer.accession.models import Accession
 # Following models schema from
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
 class RecordType(models.Model):
+    class Meta:
+        ordering = ['name']
+
     name = models.CharField(max_length=100)
 
     def __unicode__(self): return self.name
