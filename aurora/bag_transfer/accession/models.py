@@ -9,7 +9,7 @@ from bag_transfer.models import Organization, RecordCreators, AbstractExternalId
 
 class Accession(models.Model):
     title = models.CharField(max_length=256)
-    accession_number = models.CharField(max_length=10)
+    accession_number = models.CharField(max_length=10, null=True, blank=True)
     accession_date = models.DateTimeField(auto_now_add=True)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
