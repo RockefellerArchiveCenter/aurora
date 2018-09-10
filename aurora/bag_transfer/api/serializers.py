@@ -23,6 +23,16 @@ class RecordCreatorsSerializer(serializers.ModelSerializer):
 
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
     note = serializers.StringRelatedField(source='rights_granted_note')
+    end_date = serializers.SerializerMethodField()
+
+    def get_end_date(self, obj):
+        end_date = obj.end_date
+        if not end_date:
+            if obj.end_date_open:
+                end_date = "OPEN"
+            else:
+                end_date = ''
+        return end_date
 
     class Meta:
         model = RightsStatementRightsGranted
@@ -61,10 +71,16 @@ class RightsStatementSerializer(serializers.BaseSerializer):
             basis_dict = {
                 'other_rights_basis': getattr(basis_obj, 'other_rights_basis', ''),
             }
+        end_date = getattr(basis_obj, '{}_applicable_end_date'.format(basis_key))
+        if not end_date:
+            if '{}_end_date_open'.format(basis_key):
+                end_date = "OPEN"
+            else:
+                end_date = ''
         common_dict = {
             'rights_basis': obj.rights_basis,
             'start_date': getattr(basis_obj, '{}_applicable_start_date'.format(basis_key), ''),
-            'end_date': getattr(basis_obj, '{}_applicable_end_date'.format(basis_key), ''),
+            'end_date': end_date,
             'note': getattr(basis_obj, '{}_note'.format(basis_key), ''),
             'rights_granted': rights_granted.data,
         }
