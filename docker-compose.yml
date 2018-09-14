@@ -21,6 +21,7 @@ services:
     volumes:
       - .:/code
       - ./aurora/:/data/htdocs/aurora/aurora/
+      - storage:/data1
     ports:
       - "8000:8000"
     depends_on:
@@ -30,3 +31,4 @@ services:
 volumes:
   auroradb:
   auroraldap:
+  storage:
