@@ -171,7 +171,7 @@
 			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
 		}
 		var row = $(appendAfter).clone(true).get(0);
-		$(row).find("input[type!='hidden']").val('');
+		$(row).find("input:not([type='hidden'], [type='checkbox'])").val('');
 		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
 		$(row).find('.values-inputs').hide()
 		$(row).find('.show-values-inputs').show()
