@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import datetime
 from dateutil.relativedelta import relativedelta
+from uuid import uuid4
 
 from django.apps import apps
 from django.conf import settings
@@ -366,10 +367,12 @@ class Archives(models.Model):
         return self.rightsstatement_set.all()
 
     @staticmethod
-    def gen_identifier(fname, org, date, time):
-        """returns an identifier if doesn't exists already, Else False"""
-        iden = "{}{}{}{}".format(fname,org,date,time)
-        return (False if Archives.objects.filter(machine_file_identifier=iden) else iden)
+    def gen_identifier():
+        """returns a unique identifier"""
+        iden = str(uuid4())
+        if Archives.objects.filter(machine_file_identifier=iden).exists():
+            self.gen_identifier()
+        return iden
 
     @classmethod
     def initial_save(cls, org, user, file_path, file_size, file_modtime, identifier, file_type, bag_it_name):

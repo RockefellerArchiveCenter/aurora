@@ -1,6 +1,4 @@
 import os
-from os import stat, remove, listdir, walk
-from os.path import isdir, getmtime, getsize, splitext, isfile
 import re
 import datetime
 import tarfile
@@ -13,7 +11,6 @@ import pwd
 from django.conf import settings
 from aurora import config
 from bag_transfer.models import BAGLog, Organization
-
 
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.lib.virus_scanner import VirusScan
@@ -45,9 +42,9 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                 break
             live_dir = to_check[0]
 
-            for path in listdir(live_dir):
+            for path in os.listdir(live_dir):
                 fullpath = "{}/{}".format(live_dir,path)
-                if isdir(fullpath):
+                if os.path.isdir(fullpath):
                     dirpaths.append(fullpath)
 
                     if fullpath not in checked_dirs:
@@ -60,12 +57,11 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
         # check all dirs -- can narrow to /data since payload requirement or not
         if dirpaths:
             for dire in dirpaths:
-
-                d = listdir(dire)
+                d = os.listdir(dire)
                 if d:
                     for contents in d:
                         fullpath = "{}/{}".format(dire,contents)
-                        if isfile(fullpath):
+                        if os.path.isfile(fullpath):
                             files.append(fullpath)
 
             #print to console
@@ -76,35 +72,35 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                 print '\n'
 
     else:
-        for f1 in listdir(dirpath):
-            if isfile(f1):
+        for f1 in os.listdir(dirpath):
+            if os.path.isfile(f1):
                 files.append(f1)
 
     return files
 
 def file_owner(file_path):
-    return pwd.getpwuid(stat(file_path).st_uid).pw_name
+    return pwd.getpwuid(os.stat(file_path).st_uid).pw_name
 
 def file_modified_time(file_path):
-    return datetime.datetime.fromtimestamp(getmtime(file_path))
+    return datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
 
 def get_dir_size(start_path):
     """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
     total_size = 0
-    for dirpath, dirnames, filenames in walk(start_path):
+    for dirpath, dirnames, filenames in os.walk(start_path):
         for f in filenames:
             fp = os.path.join(dirpath, f)
-            total_size += getsize(fp)
+            total_size += os.path.getsize(fp)
         for d in dirnames:
             dp = os.path.join(dirpath,d)
-            total_size += getsize(dp)
+            total_size += os.path.getsize(dp)
     return ((total_size / 1000) if total_size else False)
 
-def splitext_(path):
+def splitext_(file_path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
-    if len(path.split('.')) > 2:
-        return path.split('.')[0],'.'.join(path.split('.')[-2:])
-    return splitext(path)
+    if len(file_path.split('.')) > 2:
+        return file_path.split('.')[0],'.'.join(file_path.split('.')[-2:])
+    return os.path.splitext(file_path)
 
 def zip_has_top_level_only(file_path):
     items = []
@@ -135,19 +131,19 @@ def tar_has_top_level_only(file_path):
             return False
     return top_dir
 
-def anon_extract_all(path, tmp_dir):
+def anon_extract_all(file_path, tmp_dir):
     """determine which path type, return extraction results"""
     # is it a dir
-    if isdir(path):
-        return dir_extract_all(path,tmp_dir)
+    if os.path.isdir(file_path):
+        return dir_extract_all(file_path, tmp_dir)
     else:
         # is it a tar
-        if path.endswith('tar.gz') or path.endswith('.tar'):
-            return tar_extract_all(path, tmp_dir)
+        if file_path.endswith('tar.gz') or file_path.endswith('.tar'):
+            return tar_extract_all(file_path, tmp_dir)
 
         # is it a zip
-        if path.endswith('.zip'):
-            return zip_extract_all(path, tmp_dir)
+        if file_path.endswith('.zip'):
+            return zip_extract_all(file_path, tmp_dir)
 
     return False
 
@@ -187,14 +183,14 @@ def dir_extract_all(file_path,tmp_dir):
         print e
     return extracted
 
-def get_fields_from_file(fpath):
+def get_fields_from_file(file_path):
     fields = {}
     try:
         patterns = [
             '(?P<key>[\w\-]+)',
             '(?P<val>.+)'
         ]
-        with open(fpath,'rb') as f:
+        with open(file_path, 'rb') as f:
             for line in f.readlines():
                 line = line.strip('\n')
 
@@ -213,27 +209,34 @@ def get_fields_from_file(fpath):
 
     return fields
 
-def remove_file_or_dir(path):
-    print '@@@-- deleting file/dir ------ {}'.format(path)
-    if isfile(path):
+def remove_file_or_dir(file_path):
+    print '@@@-- deleting file/dir ------ {}'.format(file_path)
+    if os.path.isfile(file_path):
         try:
-            remove(path)
+            os.remove(file_path)
         except Exception as e:
             print e
             return False
-
-    elif isdir(path):
-
+    elif os.path.isdir(file_path):
         try:
-            rmtree(path)
+            rmtree(file_path)
         except Exception as e:
             print e
             return False
     return True
 
-def is_dir_or_file(path):
-    if isdir(path): return True
-    if isfile(path): return True
+def move_file_or_dir(src, dest):
+    print "moving {} to {}".format(src, dest)
+    try:
+        move(src, dest)
+        return True
+    except Exception as e:
+        print e
+        return False
+
+def is_dir_or_file(file_path):
+    if os.path.isdir(file_path): return True
+    if os.path.isfile(file_path): return True
     return False
 
 def all_paths_exist(list_of_paths):
@@ -247,14 +250,14 @@ def get_file_contents(f):
 
     data = ''
     try:
-        with open(f,'r') as open_file:
+        with open(f, 'r') as open_file:
             data = open_file.read()
     except Exception as e:
         print e
     finally:
         return data
 
-def chown_path_to_root(path):
-    if is_dir_or_file(path):
+def chown_path_to_root(file_path):
+    if is_dir_or_file(file_path):
         root_uid = pwd.getpwnam('root').pw_uid
-        os.chown(path,root_uid,root_uid)
+        os.chown(file_path, root_uid, root_uid)

@@ -31,9 +31,7 @@ class DiscoverTransfers(CronJobBase):
                 email = Mailer()
 
                 # Create a unique HASH
-                machine_file_identifier = Archives().gen_identifier(
-                    upload_list['file_name'],upload_list['org'],upload_list['date'],upload_list['time']
-                )
+                machine_file_identifier = Archives().gen_identifier()
                 if not machine_file_identifier:
                     print 'shouldnt overwrite file, need to make sure this file doesnt get discovered again'
                     continue
@@ -83,20 +81,22 @@ class DiscoverTransfers(CronJobBase):
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
+                        # Move bag to storage
+                        # Should bags be stored in org directories for security purposes?
+                        transferRoutine.move_file_or_dir(new_arc.machine_file_path, '{}{}'.format(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
+                        new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier)
                     else:
                         new_arc.process_status = 30
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
+                        # Delete bag
+                        FH.remove_file_or_dir(new_arc.machine_file_path)
 
                 new_arc.save()
 
-
-                ## CLEAN UP
-                # TMP DIR
+                # Delete tmp files
                 FH.remove_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name))
-                ## ORIG PATH
-                FH.remove_file_or_dir(new_arc.machine_file_path)
 
         print '############################'
         print 'CRON END'
