@@ -229,7 +229,6 @@ def move_file_or_dir(src, dest):
     print "moving {} to {}".format(src, dest)
     try:
         move(src, dest)
-        return True
     except Exception as e:
         print e
         return False

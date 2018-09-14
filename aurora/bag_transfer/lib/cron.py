@@ -83,14 +83,14 @@ class DiscoverTransfers(CronJobBase):
                         email.send()
                         # Move bag to storage
                         # Should bags be stored in org directories for security purposes?
-                        transferRoutine.move_file_or_dir(new_arc.machine_file_path, '{}{}'.format(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
-                        new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier)
+                        FH.move_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name), '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier))
+                        new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier)
                     else:
                         new_arc.process_status = 30
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
-                        # Delete bag
+                        # Delete file
                         FH.remove_file_or_dir(new_arc.machine_file_path)
 
                 new_arc.save()
