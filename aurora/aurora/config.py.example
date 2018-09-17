@@ -26,6 +26,7 @@ TIME_ZONE = 'America/New_York'
 # Directory configs
 ORG_ROOT_DIR = '/data/'
 STORAGE_ROOT_DIR = '/data1/'
+DELIVERY_QUEUE_ROOT_DIR = '/delivery/'
 STATIC_ROOT = '/data/htdocs/aurora/aurora/static/'
 PROJECT_ROOT_DIR = '/data/htdocs/aurora/'
 
