@@ -113,8 +113,8 @@ class DeliverTransfers(CronJobBase):
 
     def do(self):
         Pter.cron_open(self.code)
-        for transfer in listdir(settings.DELIVERY_DIR):
-            rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_DIR, transfer),
+        for transfer in listdir(settings.DELIVERY_QUEUE_DIR):
+            rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
                                                                              settings.DELIVERY['user'],
                                                                              settings.DELIVERY['host'],
                                                                              settings.DELIVERY['dir'])

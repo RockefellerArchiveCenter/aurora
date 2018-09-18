@@ -26,7 +26,7 @@ TIME_ZONE = 'America/New_York'
 # Directory configs
 ORG_ROOT_DIR = '/data/'
 STORAGE_ROOT_DIR = '/data1/'
-DELIVERY_DIR = '/delivery/'
+DELIVERY_QUEUE_DIR = '/delivery/'
 DELIVERY = {
     'user': 'root',
     'host': 'http://ursa_major',

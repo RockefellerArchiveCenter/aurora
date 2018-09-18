@@ -22,7 +22,7 @@ services:
       - .:/code
       - ./aurora/:/data/htdocs/aurora/aurora/
       - storage:/data1
-      - delivery:/delivery
+      - ~/.aurora/delivery/:/delivery
     ports:
       - "8000:8000"
     depends_on:
