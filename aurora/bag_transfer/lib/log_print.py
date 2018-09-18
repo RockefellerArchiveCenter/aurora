@@ -1,6 +1,6 @@
 import datetime
 
-long_wrapper_str = '############################'
+long_wrapper_str = '##########################################'
 medium_wrapper_str = '###############'
 
 
@@ -37,8 +37,12 @@ def flines(lst, start=False,end=False,tab=2,pref='',line_after=False):
     plines(lst,tab=tab,pref=pref,line_after=line_after)
 
 
-def cron_open():
-    plines(['CRON STARTING', datetime.datetime.now()], 1)
+def cron_open(cron_code):
+    plines(['{} cron start'.format(cron_code).upper(), datetime.datetime.now()], 1)
+
+
+def cron_close(cron_code):
+    plines(['{} cron end'.format(cron_code).upper(), datetime.datetime.now()], 1)
 
 
 def spacer():

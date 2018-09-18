@@ -133,7 +133,8 @@ STATIC_URL = '/static/'
 STATIC_ROOT = CF.STATIC_ROOT
 ORG_ROOT_DIR = CF.ORG_ROOT_DIR
 STORAGE_ROOT_DIR = CF.STORAGE_ROOT_DIR
-DELIVERY_QUEUE_ROOT_DIR = CF.DELIVERY_QUEUE_ROOT_DIR
+DELIVERY_DIR = CF.DELIVERY_DIR
+DELIVERY = CF.DELIVERY
 
 
 # Transfer settings
@@ -158,6 +159,7 @@ AUTH_LDAP_USER_SEARCH =     LDAPSearch(CF.LDAP_SEARCH_DN, ldap.SCOPE_SUBTREE, CF
 # Django Cron
 CRON_CLASSES = [
     "bag_transfer.lib.cron.DiscoverTransfers",
+    "bag_transfer.lib.cron.DeliverTransfers",
 ]
 
 

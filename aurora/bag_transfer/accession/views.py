@@ -43,8 +43,8 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
     form_class = AccessionForm
 
     def package_transfer(self, transfer, request):
-        tar_dir = join(settings.DELIVERY_QUEUE_ROOT_DIR, transfer.machine_file_identifier)
-        tarfilepath = "{}package_{}.tar.gz".format(settings.DELIVERY_QUEUE_ROOT_DIR, transfer.machine_file_identifier)
+        tar_dir = join(settings.DELIVERY_DIR, transfer.machine_file_identifier)
+        tarfilepath = "{}package_{}.tar.gz".format(settings.DELIVERY_DIR, transfer.machine_file_identifier)
         if not isdir(tar_dir):
             makedirs(tar_dir)
         # add metadata file to package
@@ -56,7 +56,7 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             bagtar.add(transfer.machine_file_path, arcname=basename(transfer.machine_file_identifier))
             bagtar.close()
         # zip up the package
-        with tarfile.open(join(settings.DELIVERY_QUEUE_ROOT_DIR, '{}.tar.gz'.format(transfer.machine_file_identifier)), "w:gz") as tar:
+        with tarfile.open(join(settings.DELIVERY_DIR, '{}.tar.gz'.format(transfer.machine_file_identifier)), "w:gz") as tar:
             tar.add(tar_dir, arcname=basename(tar_dir))
             tar.close()
         rmtree(tar_dir)
