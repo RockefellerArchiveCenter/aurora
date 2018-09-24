@@ -17,21 +17,15 @@ DEFAULT_DB = {
       'PORT': 3306,
 }
 
-ALLOWED_HOSTS = ['localhost', '192.168.99.100']
+ALLOWED_HOSTS = ['localhost', 'testserver']
 
 BASE_URL = 'http://localhost/'
 
 TIME_ZONE = 'America/New_York'
 
 # Directory configs
-ORG_ROOT_DIR = '/data/'
 STORAGE_ROOT_DIR = '/data1/'
 DELIVERY_QUEUE_DIR = '/delivery/'
-DELIVERY = {
-    'user': 'root',
-    'host': 'http://ursa_major',
-    'dir': '/storage/'
-}
 STATIC_ROOT = '/data/htdocs/aurora/aurora/static/'
 PROJECT_ROOT_DIR = '/data/htdocs/aurora/'
 
@@ -48,11 +42,11 @@ UPLOAD_LOG_FILE = '/data/uploads_to_process'
 # LDAP configs
 LDAP_OPTIONS_X_TLS_REQUIRE_CERT = False
 LDAP_OPTIONS_REFERRALS = False
-AUTH_LDAP_SERVER_URI =      "ldap://ldap"
-AUTH_LDAP_BIND_DN =         "cn=admin,ou=People,dc=archive,dc=org"
-AUTH_LDAP_BIND_PASSWORD =   "password"
-LDAP_SEARCH_DN =                        "ou=People,dc=archive,dc=org"
-LDAP_SEARCH_REGEX =                     "(uid=%(user)s)"
+AUTH_LDAP_SERVER_URI = "ldap://ldap"
+AUTH_LDAP_BIND_DN = "cn=admin,ou=People,dc=archive,dc=org"
+AUTH_LDAP_BIND_PASSWORD = "password"
+LDAP_SEARCH_DN = "ou=People,dc=archive,dc=org"
+LDAP_SEARCH_REGEX = "(uid=%(user)s)"
 AUTH_LDAP_ALWAYS_UPDATE_USER = False
 LDAP_OBJECT_CLASSES = ["inetOrgPerson","person", "posixAccount", "top"]
 LDAP_GID_NUMBER = ["100"]
@@ -69,13 +63,14 @@ EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
 
 # Microservice integrations
-AQUARIUS = {
-  'username': 'admin',
-  'password': 'adminpass',
-  'baseurl': 'http://example.org',
+DELIVERY = {
+    'user': 'root',
+    'host': 'http://ursa_major',
+    'dir': '/storage/'
 }
-ALTAIR = {
-  'username': 'admin',
-  'password': 'adminpass',
-  'baseurl': 'http://example.org',
-}
+CALLBACKS = [
+  {
+    'method': 'POST',
+    'uri': 'http://ursa_major/'
+  }
+]

@@ -59,7 +59,7 @@ class Organization(models.Model):
         return User.objects.filter(organization=self, is_active=False)
 
     def org_root_dir(self):
-        return "%s%s".format(settings.ORG_ROOT_DIR, self.machine_name)
+        return "%s%s".format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
 
     def save(self, *args, **kwargs):
 
