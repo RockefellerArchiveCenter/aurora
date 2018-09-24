@@ -125,6 +125,7 @@ class RightsStatement(models.Model):
 
         return merged_statements
 
+
 class RightsStatementCopyright(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     PREMIS_COPYRIGHT_STATUSES = (
@@ -142,6 +143,7 @@ class RightsStatementCopyright(models.Model):
     copyright_end_date_open = models.BooleanField(default=False)
     copyright_note = models.TextField()
 
+
 class RightsStatementLicense(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
     license_terms = models.TextField(blank=True, null=True)
@@ -151,6 +153,7 @@ class RightsStatementLicense(models.Model):
     license_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     license_end_date_open = models.BooleanField(default=False)
     license_note = models.TextField()
+
 
 class RightsStatementRightsGranted(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
@@ -169,7 +172,7 @@ class RightsStatementRightsGranted(models.Model):
     start_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     end_date_open = models.BooleanField(default=False)
-    rights_granted_note = models.TextField()
+    rights_granted_note = models.TextField(blank=True, null=True)
     RESTRICTION_CHOICES = (
         ('allow', 'Allow'),
         ('disallow', 'Disallow'),
@@ -179,6 +182,7 @@ class RightsStatementRightsGranted(models.Model):
 
     def __unicode__(self):
         return '{}: {}'.format(self.act, self.restriction)
+
 
 class RightsStatementStatute(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
@@ -191,6 +195,7 @@ class RightsStatementStatute(models.Model):
     statute_end_date_period = models.PositiveSmallIntegerField(blank=True, null=True)
     statute_end_date_open = models.BooleanField(default=False)
     statute_note = models.TextField()
+
 
 class RightsStatementOther(models.Model):
     rights_statement = models.ForeignKey(RightsStatement)
