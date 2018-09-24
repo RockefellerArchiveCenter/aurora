@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 from os import makedirs
 from os.path import basename, isdir, join
+import requests
 from shutil import rmtree
 import tarfile
 
@@ -61,6 +62,15 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             tar.close()
         rmtree(tar_dir)
 
+    def execute_callbacks(self, accession, request):
+        serialized = AccessionSerializer(accession, context={'request': request})
+        data = json.dumps(serialized.data, default=str)
+        for callback in settings.CALLBACKS:
+            try:
+                response = getattr(requests, callback['method'].lower())(callback['uri'], data=data)
+            except requests.exceptions.ConnectionError:
+                messages.error(request, "{} to {} failed because of a connection error.".format(callback['method'], callback['uri']))
+                continue
 
     def post(self, request, *args, **kwargs):
         form = self.form_class(request.POST)
@@ -86,6 +96,8 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
                 accession.save()
                 for transfer in transfers_list:
                     self.package_transfer(transfer, request)
+                if settings.CALLBACKS:
+                    self.execute_callbacks(accession, request)
                 messages.success(request, ' Accession created successfully!')
                 return redirect('accession:list')
         messages.error(request, "There was a problem with your submission. Please correct the error(s) below and try again.")
