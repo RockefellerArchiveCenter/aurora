@@ -53,7 +53,7 @@ COPY aurora/ /data/htdocs/aurora/aurora
 COPY setup_objects.py /data/htdocs/aurora/
 
 # Install Python modules
-RUN pip install -r /data/htdocs/aurora/requirements.txt
+RUN pip install --upgrade pip && pip install -r /data/htdocs/aurora/requirements.txt
 
 EXPOSE 8000 3310
 
