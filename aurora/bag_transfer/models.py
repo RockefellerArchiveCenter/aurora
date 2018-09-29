@@ -770,5 +770,5 @@ class BagItProfileBagInfo(models.Model):
 
 
 class BagItProfileBagInfoValues(models.Model):
-    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo, related_name="values")
+    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
     name = models.CharField(max_length=256)

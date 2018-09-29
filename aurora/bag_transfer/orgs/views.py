@@ -187,6 +187,9 @@ class BagItProfileDetailView(ArchivistMixin, DetailView):
     template_name = 'bagit_profiles/detail.html'
     model = BagItProfile
 
+    def get_object(self):
+        return BagItProfile.objects.get(id=self.kwargs['profile_pk'])
+
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 

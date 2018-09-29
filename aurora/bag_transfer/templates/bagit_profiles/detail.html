@@ -79,10 +79,10 @@
                 {% if b.repeatable %}<span class="label label-success">Repeatable{% else %}<span class="label label-warning">Non-Repeatable{% endif %}</span>
               </div>
               <div class="col-md-6">
-                {% if b.values.all %}
+                {% if b.bagitprofilebaginfovalues_set.all %}
                   <h5>Allowed Values</h5>
                   <ul class="list-unstyled">
-                    {% for value in b.values.all %}
+                    {% for value in b.bagitprofilebaginfovalues_set.all %}
                       <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
                     {% endfor %}
                   </ul>
