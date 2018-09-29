@@ -723,7 +723,7 @@ class AcceptBagItVersion(models.Model):
         ('0.97', '0.97'),
     )
     name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="accept_bagit_version")
 
 
 class TagManifestsRequired(models.Model):
@@ -732,16 +732,16 @@ class TagManifestsRequired(models.Model):
         ('md5', 'md5')
     )
     name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="tag_manifests_required")
 
 
 class TagFilesRequired(models.Model):
     name = models.CharField(max_length=256)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="tag_files_required")
 
 
 class BagItProfileBagInfo(models.Model):
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="bag_info")
     FIELD_CHOICES = (
         ('bag_count', 'Bag-Count'),
         ('bag_group_identifier', 'Bag-Group-Identifier'),
@@ -770,5 +770,5 @@ class BagItProfileBagInfo(models.Model):
 
 
 class BagItProfileBagInfoValues(models.Model):
-    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
+    bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo, related_name="values")
     name = models.CharField(max_length=256)

@@ -183,6 +183,11 @@ class BagItProfileManageView(View):
             })
 
 
+class BagItProfileDetailView(ArchivistMixin, DetailView):
+    template_name = 'bagit_profiles/detail.html'
+    model = BagItProfile
+
+
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
 
     def render_to_response(self, context, **kwargs):
