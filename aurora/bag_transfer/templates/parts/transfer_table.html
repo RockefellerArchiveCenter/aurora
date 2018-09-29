@@ -5,7 +5,8 @@
 	<table id="{{ table_id }}" class="table table-striped dataTable">
 		<thead>
 			<tr>
-				<th>Bag Name</th>
+				<th>Name</th>
+				<th>Dates</th>
 				<th>Status</th>
 				{% if request.user.is_archivist %}
 				<th>Organization</th>
@@ -21,7 +22,8 @@
 		<tbody>
 		{% for upload in uploads %}
 			<tr onclick="window.open('{% url 'transfers:detail' upload.pk %}','_self')" class="pointer-row">
-				<td>{{ upload.bag_or_failed_name }} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
+				<td>{% if upload.get_bag_data.title %}{{upload.get_bag_data.title}}{% else %}{{ upload.bag_or_failed_name }}{% endif %} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
+				<td>{{upload.get_bag_data.date_start|date:"M d, Y"}}{% if upload.get_bag_data.date_end %}-{{upload.get_bag_data.date_end|date:"M d, Y"}}{% endif %}</td>
 				<td><span class="label label-{% include 'parts/status_class.html' with status=upload.process_status %}">{{ upload.get_process_status_display }}</span></td>
 				{% if request.user.is_archivist %}
 				<td>{{upload.organization}}</td>
