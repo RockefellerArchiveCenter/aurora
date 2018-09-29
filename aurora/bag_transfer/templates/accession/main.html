@@ -52,6 +52,7 @@
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#accession_table').DataTable({
+      'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,

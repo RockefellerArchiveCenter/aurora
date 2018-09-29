@@ -79,6 +79,8 @@ var appraise_table = '';
   .on('xhr.dt', function (e, settings, json) {
     bindButtons();
   }).DataTable({
+      'order'       : [[4, 'desc']],
+      'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
