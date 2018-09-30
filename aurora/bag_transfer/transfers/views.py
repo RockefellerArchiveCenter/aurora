@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, division
+from django_datatables_view.base_datatable_view import BaseDatatableView
 import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.views.generic import TemplateView, View, DetailView
-from django.db.models import Sum
+from django.db.models import CharField, Sum, Value as V
+from django.db.models.functions import Concat
 from django.shortcuts import render
+from django.utils.html import escape
 
 from bag_transfer.models import Archives, Organization, User, BagInfoMetadata
 from bag_transfer.rights.models import RightsStatement
@@ -110,17 +113,9 @@ class TransfersView(LoggedInMixinDefaults, View):
             organization = Organization.objects.all()
         else:
             organization = Organization.objects.filter(id=self.request.user.organization.pk)
-        org_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization).order_by('-created_time')
-        for archive in org_archives:
-            archive.bag_info_data = archive.get_bag_data()
-        user_archives = Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).order_by('-created_time')
-        for archive in user_archives:
-            archive.bag_info_data = archive.get_bag_data()
         return render(request, self.template_name, {
             'meta_page_title': 'Transfers',
-            'org_uploads': org_archives,
             'org_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization).count(),
-            'user_uploads': user_archives,
             'user_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).count(),
         })
 
@@ -147,6 +142,84 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 transfer.machine_file_upload_time,
                 errors))
         return self.render_to_csv(data)
+
+
+class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
+    model = Archives
+    columns = ['title', 'metadata__date_start', 'process_status', 'organization__name', 'metadata__record_creators__name', 'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
+    order_columns = ['title', 'metadata__date_start', 'process_status', 'organization__name', 'metadata__record_creators__name', 'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
+    max_display_length = 500
+
+    def file_size(self, num):
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if abs(num) < 1024.0:
+                return "%3.1f %s" % (num, unit)
+            num /= 1024.0
+
+    def process_status_display(self, status):
+        for s in Archives.processing_statuses:
+            if s[0] == status:
+                return s[1]
+
+    def process_status_tag(self, status):
+        label_class = 'default'
+        if status in [10, 20]:
+            label_class = 'info'
+        elif status in [30, 60]:
+            label_class = 'danger'
+        elif status in [40, 70, 90]:
+            label_class = 'success'
+        return "<span class='label label-{}'>{}</span>".format(label_class, self.process_status_display(status))
+
+    def get_initial_queryset(self):
+        if self.request.user.is_archivist():
+            organization = Organization.objects.all()
+        else:
+            organization = Organization.objects.filter(id=self.request.user.organization.pk)
+        if self.request.GET.get('q', None) == 'user':
+            return Archives.objects.filter(
+                process_status__gte=20,
+                organization__in=organization,
+                user_uploaded=self.request.user
+                ).annotate(title=Concat('metadata__title', 'bag_it_name'))
+        return Archives.objects.filter(
+            process_status__gte=20,
+            organization__in=organization
+            ).annotate(title=Concat('metadata__title', 'bag_it_name'))
+
+    def prepare_results(self, qs):
+        json_data = []
+        for transfer in qs:
+            dates = ''
+            creators = ''
+            bag_info_data = transfer.get_bag_data()
+            if bag_info_data:
+                dates = "{} - {}".format(bag_info_data.get('date_start').strftime('%b %e, %Y'), bag_info_data.get('date_end').strftime('%b %e, %Y'))
+                creators = ('<br/>').join(bag_info_data.get('record_creators'))
+            if self.request.user.is_archivist():
+                json_data.append([
+                    bag_info_data.get('title', transfer.bag_or_failed_name()),
+                    dates,
+                    self.process_status_tag(transfer.process_status),
+                    transfer.organization.name,
+                    creators,
+                    bag_info_data.get('record_type'),
+                    self.file_size(int(transfer.machine_file_size)),
+                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    "/app/transfers/{}".format(transfer.pk)
+                ])
+            else:
+                json_data.append([
+                    bag_info_data.get('title', transfer.bag_or_failed_name()),  # escape HTML for security reasons
+                    dates,
+                    self.process_status_tag(transfer.process_status),
+                    creators,
+                    bag_info_data.get('record_type'),
+                    self.file_size(int(transfer.machine_file_size)),
+                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    "/app/transfers/{}".format(transfer.pk)
+                ])
+        return json_data
 
 
 class TransferDetailView(OrgReadViewMixin, DetailView):
