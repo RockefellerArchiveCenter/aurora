@@ -126,7 +126,7 @@ class BagItProfileManageView(View):
                     source_organization=form.cleaned_data['source_organization'],
                     version=form.cleaned_data['version'],
                     bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
-                    external_descripton=form.cleaned_data['external_descripton'],
+                    external_description=form.cleaned_data['external_description'],
                     serialization=form.cleaned_data['serialization'],
                     ).exists():
                 bagit_profile = BagItProfile.objects.filter(
@@ -135,7 +135,7 @@ class BagItProfileManageView(View):
                         source_organization=form.cleaned_data['source_organization'],
                         version=form.cleaned_data['version'],
                         bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
-                        external_descripton=form.cleaned_data['external_descripton'],
+                        external_description=form.cleaned_data['external_description'],
                         serialization=form.cleaned_data['serialization'],
                         )[0]
             else:

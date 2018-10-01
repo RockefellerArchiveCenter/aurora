@@ -11,7 +11,7 @@ class BagItProfileForm(forms.ModelForm):
         model = BagItProfile
         exclude = []
         labels = {
-            'external_descripton': 'Description',
+            'external_description': 'Description',
             'allow_fetch': 'Allow Fetch.txt?',
             'serialization': 'Serialization allowed?'
         }
@@ -21,11 +21,11 @@ class BagItProfileForm(forms.ModelForm):
             'source_organization': forms.widgets.HiddenInput(),
             'version': forms.widgets.HiddenInput(),
             'bagit_profile_identifier': forms.widgets.HiddenInput(),
-            'external_descripton': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'external_description': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
         }
         help_texts = {
-            'external_descripton': 'A short description of this BagIt Profile.',
+            'external_description': 'A short description of this BagIt Profile.',
             'serialization': 'Specify whether serialization of bags is required, forbidden, or optional.',
         }
 

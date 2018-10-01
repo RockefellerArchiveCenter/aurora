@@ -17,14 +17,14 @@
         <dl class="dl-horizontal">
           {% if object.external_description %}
             <dt>Description</dt>
-            <dd>{{object.external_description}} <span class="badge">Version {{object.version}}</span></dd>
+            <dd>{{object.external_description}}</dd>
           {% endif %}
           <dt>Creator</dt>
           <dd>{{object.source_organization}}</dd>
           <dt>Contact Email</dt>
           <dd>{{object.contact_email}}</dd>
           <dt>BagIt Profile Identifier</dt>
-          <dd>{{object.bagit_profile_identifier}}</dd>
+          <dd>{{object.bagit_profile_identifier}} <span class="badge">Version {{object.version}}</span></dd>
         </dl>
       </div>
     </div>

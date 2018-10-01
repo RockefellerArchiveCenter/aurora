@@ -222,7 +222,7 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         return {
             'BagIt-Profile-Info': {
                 "Version": obj.version,
-                "External-Description": obj.external_descripton,
+                "External-Description": obj.external_description,
                 "Contact-Email": obj.contact_email,
                 "BagIt-Profile-Identifier": obj.bagit_profile_identifier,
                 "Source-Organization": obj.source_organization.name
@@ -242,7 +242,7 @@ class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BagItProfile
-        fields = ("url", "external_descripton", "version", "applies_to_organization")
+        fields = ("url", "external_description", "version", "applies_to_organization")
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):

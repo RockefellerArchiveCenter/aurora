@@ -685,7 +685,7 @@ class BagInfoMetadata(models.Model):
 class BagItProfile(models.Model):
     applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
     source_organization = models.ForeignKey(Organization, related_name='source_organization')
-    external_descripton = models.TextField(blank=True)
+    external_description = models.TextField(blank=True)
     version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
     bagit_profile_identifier = models.URLField(blank=True)
     contact_email = models.EmailField()
@@ -752,7 +752,7 @@ class BagItProfileBagInfo(models.Model):
         ('contact_phone', 'Contact-Phone'),
         ('date_end', 'Date-End'),
         ('date_start', 'Date-Start'),
-        ('external_descripton', 'External-Description'),
+        ('external_description', 'External-Description'),
         ('external_identifier', 'External-Identifier'),
         ('internal_sender_description', 'Internal-Sender-Description'),
         ('internal_sender_identifier', 'Internal-Sender-Identifier'),
