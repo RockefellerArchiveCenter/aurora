@@ -150,6 +150,8 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     order_columns = ['title', 'metadata__date_start', 'process_status', 'organization__name', 'metadata__record_creators__name', 'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
     max_display_length = 500
 
+    def get_filter_method(self): return self.FILTER_ICONTAINS
+
     def file_size(self, num):
         for unit in ['B', 'KB', 'MB', 'GB']:
             if abs(num) < 1024.0:
