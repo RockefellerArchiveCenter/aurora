@@ -5,7 +5,7 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 from django.views.generic import TemplateView, View, DetailView
-from django.db.models import CharField, Sum, Value as V
+from django.db.models import Sum
 from django.db.models.functions import Concat
 from django.shortcuts import render
 from django.utils.html import escape

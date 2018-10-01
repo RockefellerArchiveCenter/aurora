@@ -1,13 +1,13 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}Appraisal Queue <small>{{uploads|length}} transfers</small>{% endblock %}
+{% block h1_title %}Appraisal Queue <small>{{uploads_count}} transfers</small>{% endblock %}
 
 {% block content %}
 <div class="row">
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-       {% if not uploads %}
+       {% if not uploads_count %}
 				<div>No transfers to appraise</div>
 			 {% else %}
 				<table id="appraise_table" class="table table-striped dataTable">
@@ -18,37 +18,9 @@
 							<th>Record Creators</th>
 							<th>Record Type</th>
 							<th>Transfer Date</th>
-							<th></th>
+              <th></th>
 						</tr>
 					</thead>
-
-					<tbody>
-					{% for upload in uploads %}
-						<tr class="upload-row" rel="{{ upload.pk }}">
-              <td><span class="bag-name">{{ upload.bag_or_failed_name }}</span></td>
-              <td>{{ upload.get_bag_data.source_organization }}</td>
-							<td>{% for r in upload.get_bag_data.record_creators %}{{r}}<br />{% endfor %}</td>
-							<td>{{ upload.get_bag_data.record_type }}</td>
-							<td>{{ upload.machine_file_upload_time|date:"M j, Y h:i A" }}</td>
-							<td class="text-right col-xs-3">
-                {% if request.user.can_appraise or request.user.is_superuser %}
-                <a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">
-                  Accept
-                </a>
-                <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">
-                  Reject
-                </a>
-                <a type="button" class="appraisal-note btn btn-xs btn-{% if upload.appraisal_note %}info edit-note{% else %}default{% endif %} " data-toggle="modal" data-target="#modal-appraisal-note" rel="{{ upload.pk }}">
-                    {% if upload.appraisal_note %}Edit{% else %}Add{% endif %} Note
-                </a>
-                {% endif %}
-                <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" aria-controls="details-{{upload.pk}}" rel="{{ upload.pk }}">
-                    Details
-                </a>
-              </td>
-						</tr>
-					{% endfor %}
-					</tbody>
 				</table>
 			{% endif %}
       </div>
@@ -72,28 +44,30 @@ var appraise_table = '';
 
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    appraise_table = $('#appraise_table').on('preXhr.dt', function (e, settings, json) {
-    unbindButtons();
-  })
-  .on('xhr.dt', function (e, settings, json) {
-    bindButtons();
-  }).DataTable({
-      'order'       : [[4, 'desc']],
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      'pageLength'  : 25
-    })
+    $('#appraise_table').DataTable({
+        'createdRow': function(row, data, dataIndex) {
+            $(row).attr('data-transfer-id', data[6]);
+            $(row).attr('data-transfer-name', data[0]);
+        },
+        'order'       : [[4, 'desc']],
+        'stateSave'   : true,
+        'paging'      : true,
+        'lengthChange': false,
+        'searching'   : true,
+        'ordering'    : true,
+        'info'        : true,
+        'autoWidth'   : true,
+        'pageLength'  : 25,
+        'processing': true,
+        'serverSide': true,
+        'ajax': '{% url "appraise:datatable" %}'
+      })
 
     $("#appraise_table tbody").on("click", ".appraisal-note", function(e) {
         e.preventDefault();
 
-        var bag_name = $(this).parent().parent().find('.bag-name').text();
-        var upload_id = $(this).attr('rel');
+        var bag_name = $(this).closest('tr').attr('data-transfer-name');
+        var upload_id = $(this).closest('tr').attr('data-transfer-id');
 
         if (!$(this).hasClass('edit-note')){
           activateModal(upload_id, 'Add', bag_name);
@@ -110,7 +84,7 @@ var appraise_table = '';
           if (resp.success){
             activateModal(upload_id, 'Edit', bag_name, resp.appraisal_note);
           } else {
-            alert('Something went wrong.. Please try again..');
+            alert('Something went wrong! Please try again.');
           }
         });
 
@@ -120,8 +94,8 @@ var appraise_table = '';
     $("#appraise_table tbody").on("click", ".transfer-detail", function(e) {
         e.preventDefault();
 
-        var bag_name = $(this).parent().parent().find('.bag-name').text();
-        var upload_id = $(this).attr('rel');
+        var bag_name = $(this).closest('tr').attr('data-transfer-name');
+        var upload_id = $(this).closest('tr').attr('data-transfer-id');
 
         var data = {
           'req_form' : 'detail',
@@ -195,9 +169,10 @@ var appraise_table = '';
 
     $("#appraise_table tbody").on("click", ".appraisal-accept, .appraisal-reject", function(e){
       e.preventDefault();
-      var upload_row = $(this).closest('.upload-row');
-      var upload_id = upload_row.attr('rel');
+      var upload_row = $(this).closest('tr');
+      var upload_id = upload_row.attr('data-transfer-id');
       var appraisal_decision = 0; // reject
+
       if ($(this).hasClass('appraisal-accept')){
         appraisal_decision = 1; //accept
       }
@@ -211,7 +186,7 @@ var appraise_table = '';
       $.get(url, data, function(resp){
         if (resp.success){
           // remove row
-          appraise_table.row( upload_row ).remove().draw();
+          $( upload_row ).remove();
           decision = 'rejected'
           name = $(upload_row).children('td').first().text()
           if (appraisal_decision == 1) {
