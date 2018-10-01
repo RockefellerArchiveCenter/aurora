@@ -8,6 +8,7 @@ from django.views import View
 from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render, redirect
 
+from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.models import Archives, BAGLog
 from bag_transfer.mixins.authmixins import ArchivistMixin
 
@@ -50,6 +51,8 @@ class AppraiseView(ArchivistMixin, View):
                                         print e
                                     upload.process_status = (70 if appraisal_decision else 60)
                                     BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+                                    if not appraisal_decision:
+                                        remove_file_or_dir(upload.machine_file_path)
                                 upload.save()
                                 print upload
                                 rdata['success'] = 1

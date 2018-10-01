@@ -160,12 +160,7 @@ def create_test_user(username=None, org=None):
 
 # Creates Archive objects by running bags through TransferRoutine
 def create_test_archive(transfer, org):
-    machine_file_identifier = Archives().gen_identifier(
-        transfer['file_name'],
-        transfer['org'],
-        transfer['date'],
-        transfer['time']
-    )
+    machine_file_identifier = Archives().gen_identifier()
     archive = Archives.initial_save(
         org,
         None,

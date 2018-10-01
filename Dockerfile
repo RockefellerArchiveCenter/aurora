@@ -20,6 +20,7 @@ RUN apt-get update \
     ssh \
     vim \
     wget \
+    rsync \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 

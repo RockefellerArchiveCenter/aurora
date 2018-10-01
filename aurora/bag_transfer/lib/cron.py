@@ -1,7 +1,11 @@
 import datetime
+from os import listdir
+from os.path import join
+import subprocess
 
 from django_cron import CronJobBase, Schedule
 
+from aurora import settings
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import *
 from bag_transfer.lib.bag_checker import bagChecker
@@ -17,7 +21,7 @@ class DiscoverTransfers(CronJobBase):
     code = 'transfers.discover_transfers'
 
     def do(self):
-        Pter.cron_open()
+        Pter.cron_open(self.code)
         BAGLog.log_it('CSTR')
 
         transferRoutine = TransferRoutine(1)
@@ -31,9 +35,7 @@ class DiscoverTransfers(CronJobBase):
                 email = Mailer()
 
                 # Create a unique HASH
-                machine_file_identifier = Archives().gen_identifier(
-                    upload_list['file_name'],upload_list['org'],upload_list['date'],upload_list['time']
-                )
+                machine_file_identifier = Archives().gen_identifier()
                 if not machine_file_identifier:
                     print 'shouldnt overwrite file, need to make sure this file doesnt get discovered again'
                     continue
@@ -83,24 +85,52 @@ class DiscoverTransfers(CronJobBase):
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
+                        # Move bag to storage
+                        # Should bags be stored in org directories for security purposes?
+                        FH.move_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name), '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier))
+                        new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier)
                     else:
                         new_arc.process_status = 30
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
+                        # Delete file
+                        FH.remove_file_or_dir(new_arc.machine_file_path)
 
                 new_arc.save()
 
-
-                ## CLEAN UP
-                # TMP DIR
+                # Delete tmp files
                 FH.remove_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name))
-                ## ORIG PATH
-                FH.remove_file_or_dir(new_arc.machine_file_path)
 
-        print '############################'
-        print 'CRON END'
-        print datetime.datetime.now()
-        print '############################'
-        print '\n\n\n'
-        BAGLog.log_it('CEND')
+        Pter.cron_close(self.code)
+
+
+class DeliverTransfers(CronJobBase):
+    RUN_EVERY_MINS = 1
+
+    schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
+    code = 'transfers.deliver_transfers'
+
+    def do(self):
+        Pter.cron_open(self.code)
+        for transfer in listdir(settings.DELIVERY_QUEUE_DIR):
+            rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
+                                                                             settings.DELIVERY['user'],
+                                                                             settings.DELIVERY['host'],
+                                                                             settings.DELIVERY['dir'])
+            print(rsynccmd)
+            rsyncproc = subprocess.Popen(rsynccmd,
+                                         shell=True,
+                                         stdin=subprocess.PIPE,
+                                         stdout=subprocess.PIPE,)
+            while True:
+                next_line = rsyncproc.stdout.readline().decode("utf-8")
+                if not next_line:
+                    break
+                print(next_line)
+
+            ecode = rsyncproc.wait()
+            if ecode != 0:
+                continue
+
+        Pter.cron_close(self.code)
