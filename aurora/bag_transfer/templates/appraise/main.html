@@ -42,7 +42,7 @@
                     {% if upload.appraisal_note %}Edit{% else %}Add{% endif %} Note
                 </a>
                 {% endif %}
-                <a type="button" class="btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-details-{{upload.pk}}" aria-expanded="false" aria-controls="details-{{upload.pk}}">
+                <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" aria-controls="details-{{upload.pk}}" rel="{{ upload.pk }}">
                     Details
                 </a>
               </td>
@@ -60,14 +60,13 @@
 
 {% block modals %}
   {% include 'appraise/edit_note.html' %}
-  {% for upload in uploads %}
-    {% include 'appraise/detail_modal.html' %}
-  {% endfor %}
+  {% include 'appraise/detail_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
 var amodal = $("#modal-appraisal-note");
+var dmodal = $("#modal-detail");
 var url = '{% url 'appraise:list' %}';
 var appraise_table = '';
 
@@ -109,7 +108,35 @@ var appraise_table = '';
 
         $.get(url,data, function(resp){
           if (resp.success){
-            activateModal(upload_id,'Edit',bag_name,resp.appraisal_note);
+            activateModal(upload_id, 'Edit', bag_name, resp.appraisal_note);
+          } else {
+            alert('Something went wrong.. Please try again..');
+          }
+        });
+
+        return false;
+    });
+
+    $("#appraise_table tbody").on("click", ".transfer-detail", function(e) {
+        e.preventDefault();
+
+        var bag_name = $(this).parent().parent().find('.bag-name').text();
+        var upload_id = $(this).attr('rel');
+
+        var data = {
+          'req_form' : 'detail',
+          'upload_id': upload_id
+        };
+
+        $.get(url, data, function(resp){
+          if (resp.success){
+            dmodal.find('.bag-name').text(bag_name);
+            transfer_url = '{% url "transfers:detail" pk=1 %}';
+            transfer_url = transfer_url.replace('1', upload_id);
+            $.get(transfer_url, function(resp){
+              dmodal.find('.content').replaceWith($(resp).find('section.content'))
+              dmodal.modal('show');
+            })
           } else {
             alert('Something went wrong.. Please try again..');
           }
@@ -201,7 +228,7 @@ var appraise_table = '';
 
   })
 
-function activateModal(uid,label,bag_name,appraisal_note) {
+function activateModal(uid, label, bag_name, appraisal_note) {
   // setups up and opens modal
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);

@@ -21,30 +21,36 @@ class AppraiseView(ArchivistMixin, View):
 
             if request.user.has_privs('APPRAISER'):
 
+                if 'upload_id' in request.GET:
+                    try:
+                        upload = Archives.objects.get(pk=request.GET['upload_id'])
+                    except Archives.DoesNotExist as e:
+                        rdata['emess'] = e
+                        return self.render_to_json_response(rdata)
+
                 if 'req_form' in request.GET:
-                    if request.GET['req_form'] == 'appraise':
-                        if 'req_type' in request.GET and 'upload_id' in request.GET:
-                            try:
-                                upload = Archives.objects.get(pk=request.GET['upload_id'])
-                            except Archives.DoesNotExist as e:
-                                rdata['emess'] = e
-                            else:
-                                if request.GET['req_type'] == 'edit':
-                                    rdata['appraisal_note'] = upload.appraisal_note
-                                elif request.GET['req_type'] == 'submit':
-                                    upload.appraisal_note = request.GET['appraisal_note']
-                                elif request.GET['req_type'] == 'delete':
-                                    upload.appraisal_note = None
-                                elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
-                                    appraisal_decision = 0
-                                    try:
-                                        appraisal_decision = int(request.GET['appraisal_decision'])
-                                    except Exception as e:
-                                        print e
-                                    upload.process_status = (70 if appraisal_decision else 60)
-                                    BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
-                                upload.save()
-                                rdata['success'] = 1
+                    if request.GET['req_form'] == 'detail':
+                        rdata['object'] = upload.id
+                        rdata['success'] = 1
+
+                    elif request.GET['req_form'] == 'appraise':
+                        if 'req_type' in request.GET:
+                            if request.GET['req_type'] == 'edit':
+                                rdata['appraisal_note'] = upload.appraisal_note
+                            elif request.GET['req_type'] == 'submit':
+                                upload.appraisal_note = request.GET['appraisal_note']
+                            elif request.GET['req_type'] == 'delete':
+                                upload.appraisal_note = None
+                            elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                                appraisal_decision = 0
+                                try:
+                                    appraisal_decision = int(request.GET['appraisal_decision'])
+                                except Exception as e:
+                                    print e
+                                upload.process_status = (70 if appraisal_decision else 60)
+                                BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+                            upload.save()
+                            rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 
