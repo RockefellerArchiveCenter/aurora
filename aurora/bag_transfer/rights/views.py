@@ -35,7 +35,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         for v in values:
             record_type = RecordType.objects.get_or_create(name=v.name)[0]
             applies_to_type_choices.append((record_type.pk, record_type.name))
-        return applies_to_type_choices
+        return sorted(applies_to_type_choices, key=lambda tup: tup[1])
 
     def get(self, request, *args, **kwargs):
         if self.kwargs.get('pk'):

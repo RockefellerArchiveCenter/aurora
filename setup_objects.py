@@ -53,7 +53,7 @@ if len(orgs) == 0:
     profile = BagItProfile.objects.create(
         applies_to_organization=orgs[0],
         source_organization=orgs[0],
-        external_descripton="Test BagIt Profile",
+        external_description="Test BagIt Profile",
         contact_email="archive@example.org",
     )
     AcceptSerialization.objects.create(

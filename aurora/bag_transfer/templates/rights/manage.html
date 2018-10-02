@@ -53,7 +53,7 @@
                         {% include 'rights/form_fields.html' with field=form.copyright_end_date_period %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields for start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
+                        <p class="help-text">Use these fields for basis start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
                       </div>
                     </div>
                     <div class="col-xs-6">
@@ -64,7 +64,7 @@
                         {% include 'rights/form_fields.html' with field=form.copyright_applicable_end_date %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields when permissions or restrictions have hardcoded start and end date, for example the date a donor agreement was signed. These fields are seldom used for copyright.</p>
+                        <p class="help-text">Use these fields if this basis has hardcoded start and end dates, for example the date a donor agreement was signed. These fields are seldom used for copyright.</p>
                       </div>
                     </div>
                   </div>
@@ -94,8 +94,7 @@
                         {% include 'rights/form_fields.html' with field=form.license_start_date_period %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields for start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
-                      </div>
+                        <p class="help-text">Use these fields for basis start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>                      </div>
                     </div>
                     <div class="col-xs-6">
                       <div class="col-xs-6">
@@ -105,7 +104,7 @@
                         {% include 'rights/form_fields.html' with field=form.license_applicable_end_date %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields when permissions or restrictions have hardcoded start and end date, for example the date a donor agreement was signed.</p>
+                        <p class="help-text">Use these fields if this basis has hardcoded start and end dates, for example the date a donor agreement was signed.</p>
                       </div>
                     </div>
                   </div>
@@ -145,7 +144,7 @@
                         {% include 'rights/form_fields.html' with field=form.statute_end_date_period %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields for start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
+                        <p class="help-text">Use these fields if this basis has hardcoded start and end dates, for example the date a donor agreement was signed.</p>
                       </div>
                     </div>
                     <div class="col-xs-6">
@@ -156,7 +155,7 @@
                         {% include 'rights/form_fields.html' with field=form.statute_applicable_end_date %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields when permissions or restrictions have hardcoded start and end date, for example the date a donor agreement was signed.</p>
+                        <p class="help-text">Use these fields if this basis has hardcoded start and end dates, for example the date a donor agreement was signed.</p>
                       </div>
                     </div>
                   </div>
@@ -186,7 +185,7 @@
                         {% include 'rights/form_fields.html' with field=form.other_rights_end_date_period %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields for start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
+                        <p class="help-text">Use these fields for basis start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
                       </div>
                     </div>
                     <div class="col-xs-6">
@@ -197,7 +196,7 @@
                         {% include 'rights/form_fields.html' with field=form.other_rights_applicable_end_date %}
                       </div>
                       <div class="col-xs-12">
-                        <p class="help-text">Use these fields when permissions or restrictions have hardcoded start and end date, for example the date a donor agreement was signed.</p>
+                        <p class="help-text">Use these fields if this basis has hardcoded start and end dates, for example the date a donor agreement was signed.</p>
                       </div>
                     </div>
                   </div>
@@ -264,7 +263,7 @@
               </div>
         	    {% endfor %}
               <div>
-      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-default"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
+      	        <a href="javascript:void(0)" class="add-row btn btn-sm btn-primary"><i class="fa fa-plus"></i> Add Rights Granted or Restricted</a>
     	       </div>
             </div>
           </div>

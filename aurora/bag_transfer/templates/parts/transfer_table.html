@@ -1,11 +1,11 @@
-
-{% if not uploads %}
-	<div>No uploads</div>
- {% else %}
+{% if not uploads_count %}
+	<div>No transfers</div>
+{% else %}
 	<table id="{{ table_id }}" class="table table-striped dataTable">
 		<thead>
 			<tr>
-				<th>Bag Name</th>
+				<th>Name</th>
+				<th>Dates</th>
 				<th>Status</th>
 				{% if request.user.is_archivist %}
 				<th>Organization</th>
@@ -14,36 +14,7 @@
 				<th>Record Type</th>
 				<th>Size</th>
 				<th>Upload Time</th>
-        <th>Error</th>
 			</tr>
 		</thead>
-
-		<tbody>
-		{% for upload in uploads %}
-			<tr onclick="window.open('{% url 'transfers:detail' upload.pk %}','_self')" class="pointer-row">
-				<td>{{ upload.bag_or_failed_name }} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
-				<td><span class="label label-{% include 'parts/status_class.html' with status=upload.process_status %}">{{ upload.get_process_status_display }}</span></td>
-				{% if request.user.is_archivist %}
-				<td>{{upload.organization}}</td>
-				{% endif %}
-				<td>
-					{% for c in upload.get_bag_data.record_creators %}
-						{{ c }} <br />
-					{% endfor %}
-				</td>
-				<td>{{ upload.get_bag_data.record_type }}</td>
-				<td>{{ upload.machine_file_size|filesizeformat}}</td>
-				<td>{{ upload.machine_file_upload_time|date:"M j, Y h:i A"}}</td>
-        <td>
-          {% for e in upload.get_error_codes %}
-            {{ e }}<br />
-          {% endfor %}
-
-        </td>
-			</tr>
-
-		{% endfor %}
-		</tbody>
 	</table>
-
 {% endif %}

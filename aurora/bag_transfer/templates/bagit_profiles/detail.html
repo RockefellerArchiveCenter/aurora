@@ -1,0 +1,98 @@
+{% extends 'transfers/base.html' %}
+{% load tz %}
+
+{% block h1_title %}
+  BagIt Profile <small>{{object.applies_to_organization}}</small>
+  <a href="{% url 'orgs:detail' pk=object.applies_to_organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-md-6">
+    <div class="box box-info">
+    	<div class="box-header with-border">
+    		<h3 class="box-title">Profile Information</h3>
+      </div>
+      <div class="box-body">
+        <dl class="dl-horizontal">
+          {% if object.external_description %}
+            <dt>Description</dt>
+            <dd>{{object.external_description}}</dd>
+          {% endif %}
+          <dt>Creator</dt>
+          <dd>{{object.source_organization}}</dd>
+          <dt>Contact Email</dt>
+          <dd>{{object.contact_email}}</dd>
+          <dt>BagIt Profile Identifier</dt>
+          <dd>{{object.bagit_profile_identifier}} <span class="badge">Version {{object.version}}</span></dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="box box-info">
+    	<div class="box-header with-border">
+    		<h3 class="box-title">Technical Information</h3>
+      </div>
+      <div class="box-body">
+        <dl class="dl-horizontal">
+          <dt>Allow fetch.txt Files?</dt>
+          <dd>{{object.allow_fetch|yesno:"Yes,No"}}</dd>
+          <dt>Serialization Allowed?</dt>
+          <dd>{{object.serialization}}</dd>
+          {% if object.manifests_required.all %}
+            <dt>Manifests Required</dt>
+            <dd>{% for s in object.manifests_required.all %}{{s.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if object.accept_serialization.all %}
+            <dt>Serializations Accepted</dt>
+            <dd>{% for s in object.accept_serialization.all %}{{s.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if object.bagit_versions_accepted.all %}
+            <dt>BagIt Versions Accepted</dt>
+            <dd>{% for v in object.bagit_versions_accepted.all %}{{v.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if object.tag_manifests_required.all %}
+            <dt>Tag Manifests Required</dt>
+            <dd>{% for v in object.tag_manifests_required.all %}{{v.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
+          {% if object.tag_files_required.all %}
+            <dt>Tag Files Required</dt>
+            <dd>{% for v in object.tag_files_required.all %}{{v.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
+        </dl>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="box box-info">
+    	<div class="box-header with-border">
+    		<h3 class="box-title">Metadata Elements</h3>
+      </div>
+      <div class="box-body">
+        {% for b in object.bag_info.all %}
+          <div class="well">
+            <div class="row">
+              <div class="col-md-6">
+              <h4>{{b.get_field_display}}</h4>
+                {% if b.required %}<span class="label label-warning">Required{% else %}<span class="label label-success">Optional{% endif %}</span>
+                {% if b.repeatable %}<span class="label label-success">Repeatable{% else %}<span class="label label-warning">Non-Repeatable{% endif %}</span>
+              </div>
+              <div class="col-md-6">
+                {% if b.bagitprofilebaginfovalues_set.all %}
+                  <h5>Allowed Values</h5>
+                  <ul class="list-unstyled">
+                    {% for value in b.bagitprofilebaginfovalues_set.all %}
+                      <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

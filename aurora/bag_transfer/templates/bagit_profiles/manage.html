@@ -116,7 +116,7 @@
 					</div>
 					{% endfor %}
 
-					<a href="javascript:void(0)" class="add-row btn btn-sm btn-default" data-target="bag_info"><i class="fa fa-plus"></i> Add Metadata Field</a>
+					<a href="javascript:void(0)" class="add-row btn btn-sm btn-primary" data-target="bag_info"><i class="fa fa-plus"></i> Add Metadata Field</a>
 
 				<div class="row mar-top20">
 					<div class="col-md-12">
@@ -154,7 +154,7 @@
 						nestedForm = $(forms.get(i)).find('.nested-form')
 						selector = $(nestedForm).children().attr('id')
 						nestedPrefix = selector.substring(selector.indexOf('_')+1, selector.lastIndexOf('-'))
-						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).length)
+						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).find('[class^=nested_bag_info]').length)
 						$(forms.get(i)).find('[data-target^=nested_], input[name^=nested_], div[id^=nested_]').each(function() {
 							updateElementIndex(this, prefix, i);
 						});
@@ -171,8 +171,10 @@
 			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
 		}
 		var row = $(appendAfter).clone(true).get(0);
-		$(row).find("input[type!='hidden']").val('');
+		$(row).find("input:not([type='hidden'], [type='checkbox'])").val('');
 		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
+		$(row).find('.values-inputs').hide()
+		$(row).find('.show-values-inputs').show()
     $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');

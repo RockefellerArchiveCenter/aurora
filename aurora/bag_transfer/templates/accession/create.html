@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}Create Accession <small>{{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
+{% block h1_title %}Create Accession<small> {{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}</small>{% endblock %}
 
 {% block content %}
 
@@ -101,7 +101,24 @@
       </div>
     </div>
     <div class="box-body">
-      {% include 'parts/transfer_table.html' with uploads=transfers %}
+      <table class="table table-striped">
+    		<thead>
+    			<tr>
+    				<th>Name</th>
+    				<th>Dates</th>
+    				<th>Size</th>
+    			</tr>
+    		</thead>
+        <tbody>
+          {% for t in transfers %}
+          <tr>
+            <td>{{t.bag_or_failed_name}}</td>
+            <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
+            <td>{{t.machine_file_size|filesizeformat}}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    	</table>
     </div>
   </div>
 

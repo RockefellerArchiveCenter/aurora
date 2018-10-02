@@ -126,7 +126,7 @@ class BagItProfileManageView(View):
                     source_organization=form.cleaned_data['source_organization'],
                     version=form.cleaned_data['version'],
                     bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
-                    external_descripton=form.cleaned_data['external_descripton'],
+                    external_description=form.cleaned_data['external_description'],
                     serialization=form.cleaned_data['serialization'],
                     ).exists():
                 bagit_profile = BagItProfile.objects.filter(
@@ -135,7 +135,7 @@ class BagItProfileManageView(View):
                         source_organization=form.cleaned_data['source_organization'],
                         version=form.cleaned_data['version'],
                         bagit_profile_identifier=form.cleaned_data['bagit_profile_identifier'],
-                        external_descripton=form.cleaned_data['external_descripton'],
+                        external_description=form.cleaned_data['external_description'],
                         serialization=form.cleaned_data['serialization'],
                         )[0]
             else:
@@ -181,6 +181,14 @@ class BagItProfileManageView(View):
             'tag_files_formset': TagFilesRequiredFormset(request.POST, prefix='tag_files'),
             'meta_page_title': 'BagIt Profile',
             })
+
+
+class BagItProfileDetailView(ArchivistMixin, DetailView):
+    template_name = 'bagit_profiles/detail.html'
+    model = BagItProfile
+
+    def get_object(self):
+        return BagItProfile.objects.get(id=self.kwargs['profile_pk'])
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):

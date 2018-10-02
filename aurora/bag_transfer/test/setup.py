@@ -51,7 +51,7 @@ BAGINFO_FIELD_CHOICES = (
     ('contact_name', 'Contact-Name'),
     ('contact_phone', 'Contact-Phone'),
     ('contact_email', 'Contact-Email'),
-    ('external_descripton', 'External-Description'),
+    ('external_description', 'External-Description'),
     ('external_identifier', 'External-Identifier'),
     ('internal_sender_description', 'Internal-Sender-Description'),
     ('internal_sender_identifier', 'Internal-Sender-Identifier'),

@@ -43,7 +43,7 @@ class AppraisalTestCase(TestCase):
         self.client.login(username=self.user.username, password=settings.TEST_USER['PASSWORD'])
         response = self.client.get(reverse('appraise:list'))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['uploads']), len(self.archives))
+        self.assertEqual(response.context['uploads_count'], len(self.archives))
 
         # Accept/Reject archives
         accept_archive = random.choice(Archives.objects.filter(process_status=40))
@@ -82,7 +82,7 @@ class AppraisalTestCase(TestCase):
 
         # Make sure appraised archives are no longer in this view
         response = self.client.get(reverse('appraise:list'))
-        self.assertEqual(len(response.context['uploads']), len(self.archives)-2)
+        self.assertEqual(response.context['uploads_count'], len(self.archives)-2)
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

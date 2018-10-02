@@ -688,7 +688,7 @@ class BagInfoMetadata(models.Model):
 class BagItProfile(models.Model):
     applies_to_organization = models.ForeignKey(Organization, related_name='applies_to_organization')
     source_organization = models.ForeignKey(Organization, related_name='source_organization')
-    external_descripton = models.TextField(blank=True)
+    external_description = models.TextField(blank=True)
     version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
     bagit_profile_identifier = models.URLField(blank=True)
     contact_email = models.EmailField()
@@ -726,7 +726,7 @@ class AcceptBagItVersion(models.Model):
         ('0.97', '0.97'),
     )
     name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="accept_bagit_version")
 
 
 class TagManifestsRequired(models.Model):
@@ -735,16 +735,16 @@ class TagManifestsRequired(models.Model):
         ('md5', 'md5')
     )
     name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="tag_manifests_required")
 
 
 class TagFilesRequired(models.Model):
     name = models.CharField(max_length=256)
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="tag_files_required")
 
 
 class BagItProfileBagInfo(models.Model):
-    bagit_profile = models.ForeignKey(BagItProfile)
+    bagit_profile = models.ForeignKey(BagItProfile, related_name="bag_info")
     FIELD_CHOICES = (
         ('bag_count', 'Bag-Count'),
         ('bag_group_identifier', 'Bag-Group-Identifier'),
@@ -755,7 +755,7 @@ class BagItProfileBagInfo(models.Model):
         ('contact_phone', 'Contact-Phone'),
         ('date_end', 'Date-End'),
         ('date_start', 'Date-Start'),
-        ('external_descripton', 'External-Description'),
+        ('external_description', 'External-Description'),
         ('external_identifier', 'External-Identifier'),
         ('internal_sender_description', 'Internal-Sender-Description'),
         ('internal_sender_identifier', 'Internal-Sender-Identifier'),

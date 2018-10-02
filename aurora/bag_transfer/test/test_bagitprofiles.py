@@ -93,7 +93,7 @@ class BagItProfileTestCase(TestCase):
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
                 'allow_fetch': random.choice([True, False]),
-                'external_descripton': helpers.random_string(100),
+                'external_description': helpers.random_string(100),
                 'serialization': random.choice(['forbidden', 'required', 'optional']),
                 'version': 0,
 
@@ -137,7 +137,7 @@ class BagItProfileTestCase(TestCase):
                 'source_organization': self.user.org.pk,
                 'applies_to_organization': organization.pk,
                 'allow_fetch': random.choice([True, False]),
-                'external_descripton': helpers.random_string(100),
+                'external_description': helpers.random_string(100),
                 'serialization': 'optional',
                 'version': 1,
 

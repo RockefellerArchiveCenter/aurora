@@ -16,20 +16,15 @@ Transfers
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active table-responsive" id="tab_org">
-
-					{% include 'parts/transfer_table.html' with uploads=org_uploads table_id='org_transfers' %}
-
+					{% include 'parts/transfer_table.html' with uploads_count=org_uploads_count table_id='org_transfers' %}
 				</div>
 				<div class="tab-pane table-responsive" id="tab_user">
-
-					{% include 'parts/transfer_table.html' with uploads=user_uploads table_id='user_transfers' %}
-
+					{% include 'parts/transfer_table.html' with uploads_count=user_uploads_count table_id='user_transfers' %}
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
@@ -37,30 +32,45 @@ Transfers
   $(document).ready(function() {
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#org_transfers').DataTable({
-			columnDefs  : [
-	       { type: 'file-size', targets: 5}
-	     ],
+			'createdRow': function(row, data, dataIndex) {
+					$(row).attr('data-url', data[{% if request.user.is_archivist %}8{% else %}7{% endif %}]);
+					$(row).addClass('pointer-row');
+  		},
+      'order'       : [[{% if request.user.is_archivist %}7{% else %}6{% endif %}, 'desc']],
+			'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
       'ordering'    : true,
       'info'        : true,
       'autoWidth'   : true,
-      'pageLength'  : 25
+      'pageLength'  : 25,
+			'processing': true,
+      'serverSide': true,
+      'ajax': '{% url "transfers:datatable" %}'
     })
 		$('#user_transfers').DataTable({
-			columnDefs  : [
-	       { type: 'file-size', targets: 5}
-	     ],
+			'createdRow': function(row, data, dataIndex) {
+				$(row).attr('data-url', data[{% if request.user.is_archivist %}8{% else %}7{% endif %}]);
+				$(row).addClass('pointer-row');
+  		},
+			'order'       : [[{% if request.user.is_archivist %}7{% else %}6{% endif %}, 'desc']],
+			'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
       'ordering'    : true,
       'info'        : true,
       'autoWidth'   : true,
-      'pageLength'  : 25
+      'pageLength'  : 25,
+			'processing': true,
+      'serverSide': true,
+      'ajax': '{% url "transfers:datatable" %}?q=user'
     })
 
+		$(document).on('click', '.pointer-row', function(){
+			window.open($(this).attr('data-url'), '_self')
+		})
   })
 </script>
 {% endblock %}

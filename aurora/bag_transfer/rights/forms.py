@@ -53,7 +53,7 @@ class RightsGrantedForm(forms.ModelForm):
             'restriction': 'Restriction(s)',
             'start_date': 'Start Date',
             'end_date': 'End Date',
-            'start_date_period': 'Years Before Start Date',
+            'start_date_period': 'Years After Start Date',
             'end_date_period': 'Years After End Date',
             'end_date_open': 'Open end date?',
             'rights_granted_note': 'Note'
@@ -98,7 +98,7 @@ class RightsCopyrightForm(RightsBasisForm):
             'copyright_status_determination_date': 'Copyright Status Determination Date',
             'copyright_applicable_start_date': 'Start Date',
             'copyright_applicable_end_date': 'End Date',
-            'copyright_start_date_period': 'Years Before Start Date',
+            'copyright_start_date_period': 'Years After Start Date',
             'copyright_end_date_period': 'Years After End Date',
             'copyright_end_date_open': 'Open end date?',
             'copyright_note': 'Note'
@@ -140,7 +140,7 @@ class RightsStatuteForm(RightsBasisForm):
             'statute_determination_date': 'Statute Determination Date',
             'statute_applicable_start_date': 'Start Date',
             'statute_applicable_end_date': 'End Date',
-            'statute_start_date_period': 'Years Before Start Date',
+            'statute_start_date_period': 'Years After Start Date',
             'statute_end_date_period': 'Years After End Date',
             'statute_end_date_open': 'Open end date?',
             'statute_note': 'Note'
@@ -180,7 +180,7 @@ class RightsOtherRightsForm(RightsBasisForm):
             'other_rights_basis': 'Other Rights Basis',
             'other_rights_applicable_start_date': 'Start Date',
             'other_rights_applicable_end_date': 'End Date',
-            'other_rights_start_date_period': 'Years Before Start Date',
+            'other_rights_start_date_period': 'Years After Start Date',
             'other_rights_end_date_period': 'Years After End Date',
             'other_rights_end_date_open': 'Open end date?',
             'other_rights_note': 'Note'
@@ -216,7 +216,7 @@ class RightsLicenseForm(RightsBasisForm):
             'license_terms': 'Licence Terms',
             'license_applicable_start_date': 'Start Date',
             'license_applicable_end_date': 'End Date',
-            'license_start_date_period': 'Years Before Start Date',
+            'license_start_date_period': 'Years After Start Date',
             'license_end_date_period': 'Years After End Date',
             'license_end_date_open': 'Open end date?',
             'license_note': 'Note',
