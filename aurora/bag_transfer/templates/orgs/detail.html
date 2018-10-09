@@ -16,22 +16,22 @@
 
                 <ul class="list-group list-group-unbordered">
 										<li class="list-group-item">
-											<b> Active?</b> <span class="pull-right">{% if object.is_active %}yes{% else %}no{% endif %}</span>
+											<label> Active?</label> <span class="pull-right">{% if object.is_active %}yes{% else %}no{% endif %}</span>
                     <li class="list-group-item">
-                      <b>Total Uploads</b> <span class="pull-right">{{ uploads_count }}</span>
+                      <label>Total Uploads</label> <span class="pull-right">{{ uploads_count }}</span>
                     </li>
 										<li class="list-group-item">
-                      <b>Users</b> <span class="pull-right">{{ object.org_users|length }}</span>
+                      <label>Users</label> <span class="pull-right">{{ object.org_users|length }}</span>
                     </li>
 										{% if object.acquisition_type %}
 										<li class="list-group-item">
-											<b>Acquisition Type</b> <span class="pull-right">{{object.get_acquisition_type_display}}</span>
+											<label>Acquisition Type</label> <span class="pull-right">{{object.get_acquisition_type_display}}</span>
 										</li>
 										{% endif %}
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
-                    <a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block"><b>edit organization</b></a>
+                    <a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit Organization</a>
                 {% endif %}
 
             </div>
