@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}{{organization}} <small>PREMIS Rights Statement</small>{% endblock %}
+{% block h1_title %}{% if basis_form.instance.organization %}Edit{% else %}Create{% endif %} Rights Statement <small>{{organization}}</small>{% endblock %}
 
 {% block content %}
 <div class="row">
