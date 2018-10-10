@@ -114,7 +114,22 @@
 				<h3 class="box-title">Rights Statements</h3>
 			</div>
 			<div class="box-body no-padding">
-				{% include 'parts/transfer_rights_table.html' with org=object %}
+				<table class="table table-striped">
+	        <thead>
+	          <tr>
+	            <th>Basis</th>
+	            <th>Rights Notes</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	          {% for statement in object.rights_statements %}
+	          <tr>
+	            <td>{{statement.rights_basis}}</td>
+	            <td>{{statement.get_table_data.notes}}</td>
+	          </tr>
+	          {% endfor %}
+	        </tbody>
+	      </table>
 			</div>
 		</div>
 	</div>
