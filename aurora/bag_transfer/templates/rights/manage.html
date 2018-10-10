@@ -9,7 +9,7 @@
 
     <div class="box box-primary">
       <div class="box-header with-border">
-        <h3>Rights Basis</h3>
+        <h2>Rights Basis</h2>
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
@@ -206,7 +206,7 @@
               {% endfor %}
             </div>
             <div class="rights_granted_or_restricted">
-            <h3>Rights Granted or Restricted</h3>
+            <h2>Rights Granted or Restricted</h2>
               {{ granted_formset.non_form_errors }}
               {{ granted_formset.management_form }}
               {% for form in granted_formset %}

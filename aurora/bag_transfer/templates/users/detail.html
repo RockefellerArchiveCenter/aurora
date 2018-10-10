@@ -10,12 +10,12 @@
         <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
             <div class="box-body box-profile">
 
-                <h3 class="profile-username text-center">
+                <h2 class="profile-username text-center">
                   {% if object.first_name %}{{object.first_name}} {{object.last_name}} <small>{{ object.username }}</small>
                   {% else %}
                   {{ object.username }}
                   {% endif %}
-                </h3>
+                </h2>
 
                 {% if object.organization %}
                 <p class="text-muted text-center">
@@ -45,7 +45,7 @@
 
         <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
             <div class="box-header with-border">
-                <h3 class="box-title">Details </h3>
+                <h2 class="box-title">Details </h2>
             </div>
             <div class="box-body">
                 <label><i class="fa fa-user margin-r-5"></i> Active?</label>
@@ -77,7 +77,7 @@
     <div class="col-md-9">
       <div class="box box-primary">
           <div class="box-header with-border">
-              <h3 class="box-title">Recent Transfers</h3>
+              <h2 class="box-title">Recent Transfers</h2>
           </div>
           <div class="box-body">
             {% include 'parts/recent_transfer_table.html' with org=object.organization %}

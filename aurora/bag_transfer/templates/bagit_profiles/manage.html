@@ -10,7 +10,7 @@
 				<form action="" method="post">
 					{% csrf_token %}
 
-					<h3>General Information</h3>
+					<h2>General Information</h2>
 
 					{{form.management_form}}
 					{{form.non_form_errors}}
@@ -82,7 +82,7 @@
 						</div>
 					</div>
 
-					<h3>Metadata</h3>
+					<h2>Metadata</h2>
 					{{ bag_info_formset.management_form }}
 					{{ bag_info_formset.non_form_errors }}
 					{% for form in bag_info_formset %}
