@@ -1,16 +1,17 @@
-<h6>{{ switch }}</h6>
+<label>{{ switch }}</label>
 {% if users %}
-	<table role="table" class="table table-bordered">
-		<tbody>
+	<ul class="list-unstyled">
 			{% for u in users %}
-			<tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users:detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}>
-				<td>
+			<!-- <tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users:detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}> -->
+				<li>
+					{% if request.user.is_staff or u == request.user %}<a href="{% url 'users:detail' u.pk %}">{% endif %}
 					{{ u.username }}
-				</td>
-			</tr>
+					{% if request.user.is_staff or u == request.user %}</a>{% endif %}
+				</li>
+			<!-- </tr> -->
 			{% endfor %}
-		</tbody>
-	</table>
+	</ul>
 {% else %}
 	<p>There are no {{ switch|lower }} users...</p>
 {% endif %}
+<hr/>
