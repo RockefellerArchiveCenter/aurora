@@ -108,7 +108,8 @@ var appraise_table = '';
             transfer_url = '{% url "transfers:detail" pk=1 %}';
             transfer_url = transfer_url.replace('1', upload_id);
             $.get(transfer_url, function(resp){
-              dmodal.find('.content').replaceWith($(resp).find('section.content'))
+              console.log(resp)
+              dmodal.find('.content').replaceWith($(resp).find('main.content'))
               dmodal.modal('show');
             })
           } else {
