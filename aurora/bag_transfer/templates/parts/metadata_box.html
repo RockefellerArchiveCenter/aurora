@@ -8,18 +8,19 @@
       </div>
       <div class="box-body">
         <dl class="dl-horizontal">
-          {% for k,v in object.get_bag_data.items %}
-            <dt>{{k}}</dt>
-            <dd>
-              {% if v|get_type == 'list' %}
-                {% for i in v %}
-                  {{ i }}<br/>
-                {% endfor %}
-              {% else %}
-                {{v}}
-              {% endif %}
-            </dd>
-          {% endfor %}
+          <dt>Title</dt><dd>{{object.get_bag_data.title}}</dd>
+          <dt>Internal-Sender-Description</dt><dd>{{object.get_bag_data.internal_sender_description}}</dd>
+          <dt>Record-Type</dt><dd>{{object.get_bag_data.record_type}}</dd>
+          <dt>Record-Creators</dt><dd>{% for c in object.get_bag_data.record_creators %}{{c}}<br/>{% endfor %}</dd>
+          <dt>Date-Start</dt><dd>{{object.get_bag_data.date_start}}</dd>
+          <dt>Date-End</dt><dd>{{object.get_bag_data.date_end}}</dd>
+          <dt>Source-Organization</dt><dd>{{object.get_bag_data.source_organization}}</dd>
+          <dt>Language</dt><dd>{% for l in object.get_bag_data.language %}{{l}}<br/>{% endfor %}</dd>
+          <hr/>
+          <dt>Bagging-Date</dt><dd>{{object.get_bag_data.bagging_date}}</dd>
+          <dt>External-Identifier</dt><dd>{{object.get_bag_data.external_identifier}}</dd>
+          <dt>Payload-Oxum</dt><dd>{{object.get_bag_data.payload_oxum}}</dd>
+          <dt>BagIt-Profile-Identifier</dt><dd>{{object.get_bag_data.bagit_profile_identifier}}</dd>
         </dl>
       </div>
     </div>

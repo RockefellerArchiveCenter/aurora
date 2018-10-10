@@ -159,3 +159,8 @@ div.dataTables_wrapper div.dataTables_filter label {
 div.dataTables_wrapper div.dataTables_filter input {
     width: 30rem;
 }
+
+@media (min-width: 768px) {
+	.dl-horizontal dt {width:180px}
+	.dl-horizontal dd {margin-left: 200px;}
+}
