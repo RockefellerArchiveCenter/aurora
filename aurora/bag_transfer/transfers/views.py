@@ -231,4 +231,6 @@ class TransferDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.bag_or_failed_name
+        metadata = self.object.get_bag_data()
+        context['metadata'] = sorted(metadata.iteritems())
         return context
