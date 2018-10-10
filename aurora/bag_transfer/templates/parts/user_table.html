@@ -2,13 +2,11 @@
 {% if users %}
 	<ul class="list-unstyled">
 			{% for u in users %}
-			<!-- <tr {% if request.user.is_staff or u == request.user %}onclick="window.open('{% url 'users:detail' u.pk %}' ,'_self');" class="pointer-row"{% endif %}> -->
 				<li>
 					{% if request.user.is_staff or u == request.user %}<a href="{% url 'users:detail' u.pk %}">{% endif %}
 					{{ u.username }}
 					{% if request.user.is_staff or u == request.user %}</a>{% endif %}
 				</li>
-			<!-- </tr> -->
 			{% endfor %}
 	</ul>
 {% else %}
