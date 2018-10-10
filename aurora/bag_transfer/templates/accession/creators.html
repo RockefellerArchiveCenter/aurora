@@ -1,7 +1,7 @@
 <div id="{{creator.prefix}}" class="row form-group">
   {% for hidden in creator.hidden_fields %}{{hidden}}{% endfor %}
   <div class="{% if creator.name.errors %}has-error {% endif %}col-sm-8">
-    <label>Creator Name *</label>
+    <label for="{{creator.name.id_for_label}}">Creator Name *</label>
     {{ creator.name }}
     {% if creator.name.errors %}
     {% for error in creator.name.errors %}
@@ -11,7 +11,7 @@
   </div>
 
   <div class="{% if creator.type.errors %}has-error {% endif %}col-sm-4">
-    <label>Creator Type *</label>
+    <label for="{{creator.type.id_for_label}}">Creator Type *</label>
     {{ creator.type }}
     {% if creator.type.errors %}
     {% for error in creator.type.errors %}
