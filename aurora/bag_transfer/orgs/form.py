@@ -22,7 +22,7 @@ class BagItProfileForm(forms.ModelForm):
             'version': forms.widgets.HiddenInput(),
             'bagit_profile_identifier': forms.widgets.HiddenInput(),
             'external_description': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'serialization': forms.widgets.Select(attrs={'class': 'form-control'}),
+            'serialization': forms.widgets.Select(attrs={'class': 'form-control', 'aria-labelledby': 'id_serialization-label'}),
         }
         help_texts = {
             'external_description': 'A short description of this BagIt Profile.',
@@ -50,42 +50,42 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
     class Meta:
         model = BagItProfileBagInfoValues
         fields = ('name',)
-        widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control multi-value'}),}
+        widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control multi-value', 'aria-labelledby': 'values-label'})}
 
 
 class ManifestsRequiredForm(forms.ModelForm):
     class Meta:
         model = ManifestsRequired
         fields = ('name',)
-        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
+        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value', 'aria-labelledby': 'manifests-label'})}
 
 
 class AcceptSerializationForm(forms.ModelForm):
     class Meta:
         model = AcceptSerialization
         fields = ('name',)
-        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
+        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value', 'aria-labelledby': 'serialization-label'})}
 
 
 class AcceptBagItVersionForm(forms.ModelForm):
     class Meta:
         model = AcceptBagItVersion
         fields = ('name',)
-        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
+        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value', 'aria-labelledby': 'version-label'})}
 
 
 class TagManifestsRequiredForm(forms.ModelForm):
     class Meta:
         model = TagManifestsRequired
         fields = ('name',)
-        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value'})}
+        widgets = {'name': forms.widgets.Select(attrs={'class': 'form-control multi-value', 'aria-labelledby': 'tag_manifests-label'})}
 
 
 class TagFilesRequiredForm(forms.ModelForm):
     class Meta:
         model = TagFilesRequired
         fields = ('name',)
-        widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control'})}
+        widgets = {'name': forms.widgets.TextInput(attrs={'class': 'form-control', 'aria-labelledby': 'tag_files-label'})}
 
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
     BagItProfileBagInfo,
