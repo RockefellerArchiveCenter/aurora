@@ -72,26 +72,26 @@
       <div class="box-body">
         {% for b in object.bag_info.all %}
           <div class="panel panel-default">
-            <div class="panel-heading">{{b.get_field_display}}</div>
-            <div class="panel-body">
-              <div class="row">
-                <div class="col-md-6">
-                  {% if b.required %}<span class="label label-warning">Required{% else %}<span class="label label-success">Optional{% endif %}</span>
-                  {% if b.repeatable %}<span class="label label-success">Repeatable{% else %}<span class="label label-warning">Non-Repeatable{% endif %}</span>
-                </div>
-                <div class="col-md-6">
-                  {% if b.bagitprofilebaginfovalues_set.all %}
-                    <label class="center-block">Allowed Values</label>
-                    <ul class="list-unstyled">
-                      {% for value in b.bagitprofilebaginfovalues_set.all %}
-                        <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
-                      {% endfor %}
-                    </ul>
-                  {% endif %}
-                </div>
+            <div class="panel-heading">
+              {{b.get_field_display}}
+              <div class="pull-right">
+                {% if b.required %}<span class="label label-warning">Required{% else %}<span class="label label-success">Optional{% endif %}</span>
+                {% if b.repeatable %}<span class="label label-success">Repeatable{% else %}<span class="label label-warning">Non-Repeatable{% endif %}</span>
               </div>
             </div>
+            <div class="panel-body">
+              <label class="center-block">Allowed Values</label>
+              {% if b.bagitprofilebaginfovalues_set.all %}
+                <ul class="list-unstyled">
+                  {% for value in b.bagitprofilebaginfovalues_set.all %}
+                    <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                All values are accepted.
+              {% endif %}
           </div>
+        </div>
         {% endfor %}
       </div>
     </div>
