@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 
 from django.db import models
-from bag_transfer.models import Organization, RecordCreators, AbstractExternalIdentifier, LanguageCode
+from bag_transfer.models import Organization, RecordCreators, LanguageCode
 
 
 class Accession(models.Model):
@@ -32,7 +32,3 @@ class Accession(models.Model):
         (30, 'Accession delivered to Archivematica')
     )
     process_status = models.PositiveSmallIntegerField(choices=PROCESS_STATUS_CHOICES, default=10, null=True, blank=True)
-
-
-class AccessionExternalIdentifier(AbstractExternalIdentifier):
-    accession = models.ForeignKey(Accession, on_delete=models.CASCADE, related_name='external_identifier')

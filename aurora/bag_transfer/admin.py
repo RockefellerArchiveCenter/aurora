@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.contrib import admin
 from bag_transfer.models import *
-from bag_transfer.accession.models import Accession, AccessionExternalIdentifier
+from bag_transfer.accession.models import Accession
 from bag_transfer.rights.models import *
 
 
@@ -94,24 +94,4 @@ class RecordType(admin.ModelAdmin):
 
 @admin.register(RecordCreators)
 class RecordCreators(admin.ModelAdmin):
-    pass
-
-
-@admin.register(AccessionExternalIdentifier)
-class AccessionExternalIdentifier(admin.ModelAdmin):
-    pass
-
-
-@admin.register(CollectionExternalIdentifier)
-class CollectionExternalIdentifier(admin.ModelAdmin):
-    pass
-
-
-@admin.register(ParentExternalIdentifier)
-class ParentExternalIdentifier(admin.ModelAdmin):
-    pass
-
-
-@admin.register(ArchiveExternalIdentifier)
-class ArchiveExternalIdentifier(admin.ModelAdmin):
     pass

@@ -17,19 +17,6 @@ from bag_transfer.lib import RAC_CMD
 from bag_transfer.lib.ldap_auth import LDAP_Manager
 
 
-class AbstractExternalIdentifier(models.Model):
-    identifier = models.CharField(max_length=200)
-    created = models.DateTimeField(auto_now_add=True)
-    last_modified = models.DateTimeField(auto_now=True)
-    SOURCE_CHOICES = (
-        ('archivesspace', 'ArchivesSpace'),
-        ('aurora', 'Aurora'),
-        ('archivematica', 'Archivematica'),
-        ('fedora', 'Fedora'),
-    )
-    source = models.CharField(max_length=100, choices=SOURCE_CHOICES)
-
-
 class Organization(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=60, unique=True)
@@ -583,18 +570,6 @@ class Archives(models.Model):
 
     class Meta:
         ordering = ['machine_file_upload_time']
-
-
-class ArchiveExternalIdentifier(AbstractExternalIdentifier):
-    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='external_identifier')
-
-
-class ParentExternalIdentifier(AbstractExternalIdentifier):
-    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='parent_identifier')
-
-
-class CollectionExternalIdentifier(AbstractExternalIdentifier):
-    archive = models.ForeignKey(Archives, on_delete=models.CASCADE, related_name='collection_identifier')
 
 
 class BAGLogCodes(models.Model):

@@ -7,13 +7,6 @@ from bag_transfer.models import *
 from bag_transfer.rights.models import *
 
 
-class ExternalIdentifierSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = AbstractExternalIdentifier
-        fields = ('identifier', 'source', 'created', 'last_modified',)
-
-
 class RecordCreatorsSerializer(serializers.ModelSerializer):
 
     class Meta:
@@ -122,11 +115,10 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = BagInfoMetadata
-        fields = ('source_organization', 'external_identifier',
-                  'title', 'record_creators', 'internal_sender_description',
-                  'date_start', 'date_end', 'record_type', 'language',
-                  'bag_count', 'bag_group_identifier', 'payload_oxum',
-                  'bagit_profile_identifier', 'bagging_date')
+        fields = ('source_organization', 'title', 'record_creators',
+                  'internal_sender_description', 'date_start', 'date_end',
+                  'record_type', 'language', 'bag_count', 'bag_group_identifier',
+                  'payload_oxum', 'bagit_profile_identifier', 'bagging_date')
 
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
@@ -136,41 +128,13 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
     identifier = serializers.StringRelatedField(source='machine_file_identifier')
-    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
-    parents = ExternalIdentifierSerializer(source='parent_identifier', many=True)
-    collections = ExternalIdentifierSerializer(source='collection_identifier', many=True)
 
     class Meta:
         model = Archives
-        fields = ('url', 'identifier', 'external_identifiers', 'organization',
-                  'bag_it_name', 'process_status', 'file_size', 'file_type',
-                  'appraisal_note', 'additional_error_info', 'metadata',
-                  'rights_statements', 'parents', 'collections', 'events',
-                  'created_time', 'modified_time')
-
-    def update(self, instance, validated_data):
-        instance.process_status = validated_data.get('process_status', instance.process_status)
-        instance.save()
-
-        IDENTIFIERS = (
-         ('parent_identifier', ParentExternalIdentifier),
-         ('collection_identifier', CollectionExternalIdentifier),
-         ('external_identifier', ArchiveExternalIdentifier),
-        )
-
-        for t in IDENTIFIERS:
-            for item in validated_data.get(t[0], getattr(instance, t[0])):
-                if t[1].objects.filter(source=item['source'], archive=instance).exists():
-                    identifier = t[1].objects.filter(source=item['source'], archive=instance)[0]
-                    identifier.identifier = item['identifier']
-                    identifier.save()
-                else:
-                    identifier = t[1].objects.create(
-                        identifier=item['identifier'],
-                        source=item['source'],
-                        archive=instance)
-
-        return instance
+        fields = ('url', 'identifier', 'organization', 'bag_it_name',
+                  'process_status', 'file_size', 'file_type', 'appraisal_note',
+                  'additional_error_info', 'metadata', 'rights_statements',
+                  'events', 'created_time', 'modified_time')
 
 
 class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
@@ -263,7 +227,6 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     creators = RecordCreatorsSerializer(many=True)
-    external_identifiers = ExternalIdentifierSerializer(source='external_identifier', many=True)
     transfers = ArchivesListSerializer(source='accession_transfers', many=True)
     organization = serializers.StringRelatedField()
     rights_statements = RightsStatementSerializer(many=True)
@@ -272,11 +235,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Accession
         fields = '__all__'
-
-    def update(self, instance, validated_data):
-        instance.process_status = validated_data.get('process_status', instance.process_status)
-        instance.save()
-        return instance
 
 
 class AccessionListSerializer(serializers.HyperlinkedModelSerializer):
