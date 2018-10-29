@@ -4,6 +4,10 @@
 	margin-bottom: 20px;
 }
 
+h5.description-text {
+    margin-top: 0;
+}
+
 .pointer-row {
 	cursor: pointer;
 }
