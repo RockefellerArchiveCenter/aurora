@@ -1,6 +1,6 @@
 <div class="box box-primary">
 	<div class="box-header with-border">
-		<h3 class="box-title">Rights Statements</h3>
+		<h2 class="box-title">Rights Statements</h2>
 		{% if request.user.is_superuser %}<a href="{% url 'rights:add' %}?org={{object.pk}}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Rights Statement</a>{% endif %}
 	</div>
 	<div class="box-body {% if object.rights_statements %}no-padding{% endif %}">

@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}{{organization}} <small>PREMIS Rights Statement</small>{% endblock %}
+{% block h1_title %}{% if basis_form.instance.organization %}Edit{% else %}Create{% endif %} Rights Statement <small>{{organization}}</small>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -9,7 +9,7 @@
 
     <div class="box box-primary">
       <div class="box-header with-border">
-        <h3>Rights Basis</h3>
+        <h2>Rights Basis</h2>
         <form role="form" action="" method="post">
           {% csrf_token %}
           <div class="box-body">
@@ -42,7 +42,7 @@
                 </div>
                 <div class="row">
                   <div class="col-xs-12">
-                    <h4>Dates</h4>
+                    <h3>Dates</h3>
                   </div>
                   <div class="row">
                     <div class="col-xs-6" style="border-right:1px solid #d2d6de;">
@@ -83,7 +83,7 @@
                 {% include 'rights/form_fields.html' with field=form.license_terms %}
                 <div class="row">
                   <div class="col-xs-12">
-                    <h4>Dates</h4>
+                    <h3>Dates</h3>
                   </div>
                   <div class="row">
                     <div class="col-xs-6" style="border-right:1px solid #d2d6de;">
@@ -133,7 +133,7 @@
                 </div>
                 <div class="row">
                   <div class="col-xs-12">
-                    <h4>Dates</h4>
+                    <h3>Dates</h3>
                   </div>
                   <div class="row">
                     <div class="col-xs-6" style="border-right:1px solid #d2d6de;">
@@ -174,7 +174,7 @@
                 {% include 'rights/form_fields.html' with field=form.other_rights_basis %}
                 <div class="row">
                   <div class="col-xs-12">
-                    <h4>Dates</h4>
+                    <h3>Dates</h3>
                   </div>
                   <div class="row">
                     <div class="col-xs-6" style="border-right:1px solid #d2d6de;">
@@ -206,7 +206,7 @@
               {% endfor %}
             </div>
             <div class="rights_granted_or_restricted">
-            <h3>Rights Granted or Restricted</h3>
+            <h2>Rights Granted or Restricted</h2>
               {{ granted_formset.non_form_errors }}
               {{ granted_formset.management_form }}
               {% for form in granted_formset %}
@@ -230,7 +230,7 @@
                     </div>
                     <div class="row">
                       <div class="col-xs-12">
-                        <h4>Dates</h4>
+                        <h3>Dates</h3>
                       </div>
                       <div class="row">
                         <div class="col-xs-6" style="border-right:1px solid #d2d6de;">

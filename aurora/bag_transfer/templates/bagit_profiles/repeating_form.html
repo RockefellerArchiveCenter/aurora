@@ -1,9 +1,9 @@
 <div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} dynamic-form">
   <div class="row">
     <div class="col-xs-6">
-      {%for field in form%}
+      {% for field in form %}
       {{field}}
-      {%endfor%}
+      {% endfor %}
     </div>
     <div class="col-xs-4">
       <a href="javascript:void(0)" class="delete-row btn btn-sm btn-danger" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete</a>

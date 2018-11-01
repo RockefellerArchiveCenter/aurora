@@ -11,7 +11,7 @@
   <div class="col-md-6">
     <div class="box box-info">
     	<div class="box-header with-border">
-    		<h3 class="box-title">Profile Information</h3>
+    		<h2 class="box-title">Profile Information</h2>
       </div>
       <div class="box-body">
         <dl class="dl-horizontal">
@@ -31,7 +31,7 @@
 
     <div class="box box-info">
     	<div class="box-header with-border">
-    		<h3 class="box-title">Technical Information</h3>
+    		<h2 class="box-title">Technical Information</h2>
       </div>
       <div class="box-body">
         <dl class="dl-horizontal">
@@ -67,29 +67,31 @@
   <div class="col-md-6">
     <div class="box box-info">
     	<div class="box-header with-border">
-    		<h3 class="box-title">Metadata Elements</h3>
+    		<h2 class="box-title">Metadata Elements</h2>
       </div>
       <div class="box-body">
         {% for b in object.bag_info.all %}
-          <div class="well">
-            <div class="row">
-              <div class="col-md-6">
-              <h4>{{b.get_field_display}}</h4>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              {{b.get_field_display}}
+              <div class="pull-right">
                 {% if b.required %}<span class="label label-warning">Required{% else %}<span class="label label-success">Optional{% endif %}</span>
                 {% if b.repeatable %}<span class="label label-success">Repeatable{% else %}<span class="label label-warning">Non-Repeatable{% endif %}</span>
               </div>
-              <div class="col-md-6">
-                {% if b.bagitprofilebaginfovalues_set.all %}
-                  <h5>Allowed Values</h5>
-                  <ul class="list-unstyled">
-                    {% for value in b.bagitprofilebaginfovalues_set.all %}
-                      <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
-                    {% endfor %}
-                  </ul>
-                {% endif %}
-              </div>
             </div>
+            <div class="panel-body">
+              <label class="center-block">Allowed Values</label>
+              {% if b.bagitprofilebaginfovalues_set.all %}
+                <ul class="list-unstyled">
+                  {% for value in b.bagitprofilebaginfovalues_set.all %}
+                    <li>{{value.name}}{% if not forloop.last %}<br/>{% endif %}</li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                All values are accepted.
+              {% endif %}
           </div>
+        </div>
         {% endfor %}
       </div>
     </div>

@@ -5,13 +5,13 @@ $(function () {
   	e.preventDefault();
     object_type = $(this).data('object')
   	last_active_rs = $(this).closest('tr').attr('rel');
-  	confirm_modal.find('.object-api-url').attr('href', $(this).attr('href'));
+  	confirm_modal.attr('data-api-url', $(this).attr('href'));
     confirm_modal.find('.modal-title').html('Delete ' + object_type.replace(/\-/g, ' ') + '?')
   	confirm_modal.modal('show');
   });
 
   $('.object-modal-delete-button').click(function(e){
-  	$.get(confirm_modal.find('.object-api-url').attr('href'),{},function(resp){
+  	$.get(confirm_modal.attr('data-api-url'),{},function(resp){
   		if(resp.success){
         var table = '.' + object_type + '-table'
   			var len_rows = $(table + ' tbody tr').length;

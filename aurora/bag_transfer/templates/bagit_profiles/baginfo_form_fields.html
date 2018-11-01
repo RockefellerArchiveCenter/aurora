@@ -1,7 +1,7 @@
 {% for field in form.visible_fields %}
 <div class="form-group {% if field.errors %}has-error{% endif %}">
   {% if field.label != "Delete" %}
-  <label for="{{field.id}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
+  <label id="{{field.id_for_label}}-label" for="{{field.id_for_label}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
   {% endif %}
   {{ field }}
   {% if field.help_text %}
