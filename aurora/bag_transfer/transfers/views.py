@@ -54,8 +54,8 @@ class MainView(LoggedInMixinDefaults, TemplateView):
             data['upload_count_by_year'] += upload_count
             upload_size = archives.aggregate(Sum('machine_file_size'))
             if upload_size['machine_file_size__sum']:
-                data['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000)
-                data['upload_size_by_year'] += upload_size['machine_file_size__sum']/1000000
+                data['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000000)
+                data['upload_size_by_year'] += upload_size['machine_file_size__sum']/1000000000
             else:
                 data['upload_size_by_month'].append(0)
             current += relativedelta(months=1)

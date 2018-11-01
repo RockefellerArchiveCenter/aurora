@@ -94,7 +94,7 @@ def get_dir_size(start_path):
         for d in dirnames:
             dp = os.path.join(dirpath,d)
             total_size += os.path.getsize(dp)
-    return ((total_size / 1000) if total_size else False)
+    return (total_size if total_size else False)
 
 def splitext_(file_path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
