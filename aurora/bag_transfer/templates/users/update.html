@@ -10,7 +10,6 @@
 
         <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
             <div class="box-header with-border">
-              <!-- <h3 class="box-title">Quick Example</h3> -->
             </div>
             <div class="box-body">
                 <form role="form" action="" method="post">
@@ -24,8 +23,8 @@
 
                     {% if request.user.is_manager or request.user.is_superuser %}
                     <div class="checkbox">
-                      <label>
-                        <input type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
+                      <label for="id_is_active">
+                        <input id="id_is_active" type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
                       </label>
                     </div>
 
@@ -52,8 +51,8 @@
 
                         {% if not object.is_staff %}
                         <div class="form-group">
-                            <label>Organization</label>
-                            <select class="form-control" name="organization" required>
+                            <label for="id_organization">Organization</label>
+                            <select id="id_organization" class="form-control" name="organization" required>
                                 {% for org in form.fields.organization.choices %}
                                 <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
                                 {% endfor %}
@@ -65,8 +64,8 @@
                             <label>Groups</label>
                             {% for group in form.fields.groups.choices %}
                             <div class="checkbox">
-                              <label>
-                                <input name="groups" type="checkbox" value="{{group.0}}" {% if object|has_group:group.1 %}checked="checked"{% endif %}>
+                              <label for="id_groups">
+                                <input id="id_groups" name="groups" type="checkbox" value="{{group.0}}" {% if object|has_group:group.1 %}checked="checked"{% endif %}>
                                 {{group.1}}
                               </label>
                             </div>

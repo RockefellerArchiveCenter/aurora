@@ -3,7 +3,7 @@
     <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title">Transfers</h3>
+          <h2 class="box-title">Transfers</h2>
         </div>
         <div class="box-body">
           <div class="row">
@@ -17,23 +17,23 @@
               <div class="pad box-pane-right bg-blue" style="min-height:250px">
 
                 <div class="description-block margin-bottom">
-                  <h5 class="description-header">{{org.uploads_count}}</h5>
-                  <span class="description-text">Transferred</span>
+                  <p class="description-header">{{org.uploads_count}}</p>
+                  <h5 class="description-text">Transferred</h5>
                 </div>
 
                 <div class="description-block margin-bottom">
-                  <h5 class="description-header">{{org.validated_count}}</h5>
-                  <span class="description-text">Validated</span>
+                  <p class="description-header">{{org.validated_count}}</p>
+                  <h5 class="description-text">Validated</h5>
                 </div>
 
                 <div class="description-block margin-bottom">
-                  <h5 class="description-header">{{org.accepted_count}}</h5>
-                  <span class="description-text">Accepted</span>
+                  <p class="description-header">{{org.accepted_count}}</p>
+                  <h5 class="description-text">Accepted</h5>
                 </div>
 
                 <div class="description-block">
-                  <h5 class="description-header">{{org.accessioned_count}}</h5>
-                  <span class="description-text">Accessioned</span>
+                  <p class="description-header">{{org.accessioned_count}}</p>
+                  <h5 class="description-text">Accessioned</h5>
                 </div>
               </div>
             </div>
@@ -45,30 +45,32 @@
             <div class="col-sm-3 col-xs-6">
               <div class="description-block border-right">
                 {% include 'transfers/trend_display.html' with trend=count_trend %}
-                <h5 class="description-header">{{ org.upload_count_by_month|last }}</h5>
-                <span class="description-text">Transfers in {% now "F" %}</span>
+                <p class="description-header">{{ org.upload_count_by_month|last }}</p>
+                <h5 class="description-text">Transfers in {% now "F" %}</h5>
               </div>
             </div>
 
             <div class="col-sm-3 col-xs-6">
               <div class="description-block border-right">
                 {% include 'transfers/trend_display.html' with trend=size_trend %}
-                <h5 class="description-header">{{ org.upload_size_by_month|last|floatformat:"2" }}</h5>
-                <span class="description-text">Gigabytes in {% now "F" %}</span>
+                <p class="description-header">{{ org.upload_size_by_month|last|floatformat:"2" }}</p>
+                <h5 class="description-text">Gigabytes in {% now "F" %}</h5>
               </div>
             </div>
 
             <div class="col-sm-3 col-xs-6">
               <div class="description-block border-right">
-                <h5 class="description-header">{{ org.upload_count_by_year }}</h5>
-                <span class="description-text">Transfers in last 12 months</span>
+                <span class="description-percentage">&nbsp;</span>
+                <p class="description-header">{{ org.upload_count_by_year }}</p>
+                <h5 class="description-text">Transfers in last 12 months</h5>
               </div>
             </div>
 
             <div class="col-sm-3 col-xs-6">
               <div class="description-block">
-                <h5 class="description-header">{{ org.upload_size_by_year|floatformat:"2" }}</h5>
-                <span class="description-text">Gigabytes in last 12 months</span>
+                <span class="description-percentage">&nbsp;</span>
+                <p class="description-header">{{ org.upload_size_by_year|floatformat:"2" }}</p>
+                <h5 class="description-text">Gigabytes in last 12 months</h5>
               </div>
             </div>
           </div>
@@ -83,7 +85,7 @@
 
       <div class="box box-primary">
         <div class="box-header">
-          <h3 class="box-title">Recent Transfers</h3>
+          <h2 class="box-title">Recent Transfers</h2>
         </div>
         <div class="box-body">
           {% if org.uploads %}
@@ -103,7 +105,7 @@
     <div class="col-md-6">
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title">Record types transferred during last 12 months</h3>
+          <h2 class="box-title">Record types transferred during last 12 months</h2>
         </div>
         <div class="box-body">
           {% if org.record_types_by_year %}
@@ -121,7 +123,7 @@
 
       <div class="box box-primary">
         <div class="box-header with-border">
-          <h3 class="box-title">Uploads by User</h3>
+          <h2 class="box-title">Uploads by User</h2>
         </div>
         <div class="box-body">
           {% for user in org.users %}

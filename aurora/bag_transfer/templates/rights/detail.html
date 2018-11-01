@@ -12,7 +12,7 @@
 
     <div class="box box-info">
     	<div class="box-header with-border">
-    		<h3 class="box-title">Applies to Record Type(s)</h3>
+    		<h2 class="box-title">Applies to Record Type(s)</h2>
       </div>
       <div class="box-body">
         {% for t in object.applies_to_type.all %}<span class="label label-default">{{t}}</span> {% endfor %}
@@ -27,7 +27,7 @@
         <i class="fa fa-info bg-blue"></i>
         <div class="timeline-item">
 
-          <h3 class="timeline-header">{{object.rights_basis}}</h3>
+          <h2 class="timeline-header">{{object.rights_basis}}</h2>
 
           <div class="timeline-body">
             {% include 'rights/rights_basis_info.html' %}

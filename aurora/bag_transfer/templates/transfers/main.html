@@ -5,7 +5,7 @@
 {% block h1_title %}
   Dashboard: <span id="orgName"></span>
   <div class="pull-right">
-    <select id="context-switcher">
+    <select id="context-switcher" aria-label="Select organizational context">
 
       {% for org in sorted_org_list %}
       <option value="{{org.0}}">{{org.1}}</option>

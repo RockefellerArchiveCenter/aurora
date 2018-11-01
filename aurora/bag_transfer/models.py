@@ -498,7 +498,7 @@ class Archives(models.Model):
         mtm_fields = ['record_creators', 'language']
         field_names = [field.name for field in BagInfoMetadata._meta.get_fields() if field.name not in excluded_fields]
         values = {}
-        for field_name in field_names:
+        for field_name in sorted(field_names):
             if field_name in mtm_fields:
                 strings = []
                 objects = getattr(bag_data, field_name, None)
