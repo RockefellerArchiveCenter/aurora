@@ -64,16 +64,16 @@ class bagChecker():
     def _is_rac_bag(self):
         """Assumes a valid bag/bag info; returns true if passes rac profile"""
 
-        if not 'BagIt_Profile_Identifier' in self.bag_info_data:
+        if 'BagIt_Profile_Identifier' not in self.bag_info_data:
             self.bag_exception = 'No BagIt Profile to validate against'
             return False
         else:
 
             try:
                 profile = bagit_profile.Profile(self.bag_info_data['BagIt_Profile_Identifier'])
-
-            except Exception as e:
-                self.bag_exception = e
+            except BaseException:
+                self.bag_exception = "Cannot retrieve BagIt Profile from URL {}".format(self.bag_info_data['BagIt_Profile_Identifier'])
+                return False
             else:
 
                 # RE IMPLEMENTING  validate() SINCE VALIDATION MESSAGES ARE PRINTED
@@ -83,7 +83,6 @@ class bagChecker():
                 try:
                     profile.validate_bag_info(self.bag)
                 except Exception as e:
-                    print e
                     self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
                     return False
                 try:
