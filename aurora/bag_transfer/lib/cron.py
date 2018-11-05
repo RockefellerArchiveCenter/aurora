@@ -88,6 +88,7 @@ class DiscoverTransfers(CronJobBase):
                         # Move bag to storage
                         # Should bags be stored in org directories for security purposes?
                         FH.move_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name), '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier))
+                        FH.remove_file_or_dir(new_arc.machine_file_path)
                         new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier)
                     else:
                         new_arc.process_status = 30
