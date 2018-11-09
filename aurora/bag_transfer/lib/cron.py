@@ -1,11 +1,14 @@
 import datetime
-from os import listdir
+from os import listdir, mkdir
 from os.path import join
+import requests
 import subprocess
 
+from django.urls import reverse
 from django_cron import CronJobBase, Schedule
 
 from aurora import settings
+from bag_transfer.api.serializers import ArchivesSerializer
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import *
 from bag_transfer.lib.bag_checker import bagChecker
@@ -114,7 +117,31 @@ class DeliverTransfers(CronJobBase):
 
     def do(self):
         Pter.cron_open(self.code)
-        for transfer in listdir(settings.DELIVERY_QUEUE_DIR):
+        for archive in Archives.objects.filter(process_status=75):
+            tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
+            FH.make_tarfile(
+                join(settings.STORAGE_ROOT_DIR, tar_filename),
+                join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
+
+            mkdir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            FH.move_file_or_dir(
+                join(settings.STORAGE_ROOT_DIR, tar_filename),
+                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
+
+            object = Archives.objects.get(machine_file_identifier=transfer)
+            object_json = requests.get(reverse('transfers:detail', pk=object.pk))
+            print object_json
+            with open(join(transfer, "{}.json".format(archive.machine_file_identifier)), 'w') as f:
+                f.write(object_json)
+
+            FH.make_tarfile(
+                join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)),
+                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            # move it?
             rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
                                                                              settings.DELIVERY['user'],
                                                                              settings.DELIVERY['host'],
@@ -133,5 +160,8 @@ class DeliverTransfers(CronJobBase):
             ecode = rsyncproc.wait()
             if ecode != 0:
                 continue
+
+            archive.process_status = 80
+            archive.save()
 
         Pter.cron_close(self.code)

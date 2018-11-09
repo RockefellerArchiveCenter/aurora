@@ -260,3 +260,7 @@ def chown_path_to_root(file_path):
     if is_dir_or_file(file_path):
         root_uid = pwd.getpwnam('root').pw_uid
         os.chown(file_path, root_uid, root_uid)
+
+def make_tarfile(output_filename, source_dir):
+    with tarfile.open(output_filename, 'w:gz') as tar:
+        tar.add(source_dir, arcname=os.path.basename(source_dir))
