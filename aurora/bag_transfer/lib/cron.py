@@ -1,10 +1,9 @@
 import datetime
+import json
 from os import listdir, mkdir
 from os.path import join
-import requests
 import subprocess
 
-from django.urls import reverse
 from django_cron import CronJobBase, Schedule
 
 from aurora import settings
@@ -129,11 +128,9 @@ class DeliverTransfers(CronJobBase):
                 join(settings.STORAGE_ROOT_DIR, tar_filename),
                 join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
 
-            object = Archives.objects.get(machine_file_identifier=transfer)
-            object_json = requests.get(reverse('transfers:detail', pk=object.pk))
-            print object_json
-            with open(join(transfer, "{}.json".format(archive.machine_file_identifier)), 'w') as f:
-                f.write(object_json)
+            archive_json = ArchivesSerializer(archive, context={'request': None}).data
+            with open(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, "{}.json".format(archive.machine_file_identifier)), 'wb') as f:
+                json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
 
             FH.make_tarfile(
                 join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)),
@@ -142,24 +139,24 @@ class DeliverTransfers(CronJobBase):
             FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
             # move it?
-            rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
-                                                                             settings.DELIVERY['user'],
-                                                                             settings.DELIVERY['host'],
-                                                                             settings.DELIVERY['dir'])
-            print(rsynccmd)
-            rsyncproc = subprocess.Popen(rsynccmd,
-                                         shell=True,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,)
-            while True:
-                next_line = rsyncproc.stdout.readline().decode("utf-8")
-                if not next_line:
-                    break
-                print(next_line)
-
-            ecode = rsyncproc.wait()
-            if ecode != 0:
-                continue
+            # rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
+            #                                                                  settings.DELIVERY['user'],
+            #                                                                  settings.DELIVERY['host'],
+            #                                                                  settings.DELIVERY['dir'])
+            # print(rsynccmd)
+            # rsyncproc = subprocess.Popen(rsynccmd,
+            #                              shell=True,
+            #                              stdin=subprocess.PIPE,
+            #                              stdout=subprocess.PIPE,)
+            # while True:
+            #     next_line = rsyncproc.stdout.readline().decode("utf-8")
+            #     if not next_line:
+            #         break
+            #     print(next_line)
+            #
+            # ecode = rsyncproc.wait()
+            # if ecode != 0:
+            #     continue
 
             archive.process_status = 80
             archive.save()
