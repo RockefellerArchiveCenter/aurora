@@ -14,21 +14,24 @@ Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an i
 
 ### Quick Start
 If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
-
-      git clone https://github.com/RockefellerArchiveCenter/aurora.git
-      cd aurora
-      docker-compose up
-
+```
+git clone https://github.com/RockefellerArchiveCenter/aurora.git
+cd aurora
+docker-compose up
+```
 Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
 
 ### Detailed Installation Instructions
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
-        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
-3. Build and run Aurora.
-        $ cd aurora
-        $ docker-compose up
-  The initial build may take some time, so be patient!
+```
+$ git clone https://github.com/RockefellerArchiveCenter/aurora.git
+```
+3. Build and run Aurora. The initial build may take some time, so be patient!
+```
+$ cd aurora
+$ docker-compose up
+```
 
 4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
@@ -36,15 +39,15 @@ Once the build and startup process has completed, log into Aurora at `http://loc
 Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
 
 To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
-
-        $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
-
+```
+$ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
+```
 When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory.
 
 Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
-
-        $ docker-machine ip default
-
+```
+$ docker-machine ip default
+```
 ### User accounts
 
 By default, Aurora comes with five user accounts:
