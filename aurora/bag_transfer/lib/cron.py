@@ -138,26 +138,6 @@ class DeliverTransfers(CronJobBase):
 
             FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
-            # move it?
-            # rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
-            #                                                                  settings.DELIVERY['user'],
-            #                                                                  settings.DELIVERY['host'],
-            #                                                                  settings.DELIVERY['dir'])
-            # print(rsynccmd)
-            # rsyncproc = subprocess.Popen(rsynccmd,
-            #                              shell=True,
-            #                              stdin=subprocess.PIPE,
-            #                              stdout=subprocess.PIPE,)
-            # while True:
-            #     next_line = rsyncproc.stdout.readline().decode("utf-8")
-            #     if not next_line:
-            #         break
-            #     print(next_line)
-            #
-            # ecode = rsyncproc.wait()
-            # if ecode != 0:
-            #     continue
-
             archive.process_status = 80
             archive.save()
 
