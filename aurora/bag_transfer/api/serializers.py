@@ -134,7 +134,8 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'identifier', 'organization', 'bag_it_name',
                   'process_status', 'file_size', 'file_type', 'appraisal_note',
                   'additional_error_info', 'metadata', 'rights_statements',
-                  'events', 'created_time', 'modified_time')
+                  'events', 'archivesspace_identifier', 'archivesspace_parent_identifier',
+                  'created_time', 'modified_time')
 
 
 class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):

@@ -69,8 +69,7 @@ class AccessioningTestCase(TestCase):
         accession_data = helpers.get_accession_data(creator=random.choice(RecordCreators.objects.all()))
         new_request = self.client.post(
             urljoin(reverse('accession:detail'), '?transfers={}'.format(id_list)), accession_data)
-        self.assertEqual(
-            new_request.status_code, 302, "Request was not redirected")
+        self.assertEqual(new_request.status_code, 302, "Request was not redirected")
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

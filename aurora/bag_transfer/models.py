@@ -341,6 +341,8 @@ class Archives(models.Model):
     manifest = models.TextField(blank=True, null=True)
     additional_error_info = models.CharField(max_length=255, null=True, blank=True)
     process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=20)
+    archivesspace_identifier = models.CharField(max_length=255, null=True, blank=True)
+    archivesspace_parent_identifier = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)  # process time
     modified_time = models.DateTimeField(auto_now=True)
 
