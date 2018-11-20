@@ -122,9 +122,9 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
-    metadata = BagInfoMetadataSerializer()
-    events = BAGLogSerializer(many=True)
-    rights_statements = RightsStatementSerializer(many=True)
+    metadata = BagInfoMetadataSerializer(read_only=True)
+    events = BAGLogSerializer(many=True, read_only=True)
+    rights_statements = RightsStatementSerializer(many=True, read_only=True)
     file_size = serializers.StringRelatedField(source='machine_file_size')
     file_type = serializers.StringRelatedField(source='machine_file_type')
     identifier = serializers.StringRelatedField(source='machine_file_identifier')
