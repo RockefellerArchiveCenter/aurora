@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
-from drf_yasg.utils import swagger_serializer_method
 
 from bag_transfer.models import *
 from bag_transfer.rights.models import *
