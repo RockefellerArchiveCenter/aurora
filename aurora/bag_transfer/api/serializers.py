@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from rest_framework import serializers
+from drf_yasg.utils import swagger_serializer_method
 
 from bag_transfer.models import *
 from bag_transfer.rights.models import *
@@ -21,10 +22,7 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
     def get_end_date(self, obj):
         end_date = obj.end_date
         if not end_date:
-            if obj.end_date_open:
-                end_date = "OPEN"
-            else:
-                end_date = ''
+            end_date = "OPEN" if obj.end_date_open else None
         return end_date
 
     class Meta:
@@ -32,53 +30,72 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
         fields = ('act', 'start_date', 'end_date', 'note', 'restriction')
 
 
-class RightsStatementSerializer(serializers.BaseSerializer):
-    def to_representation(self, obj):
-        basis_key = obj.rights_basis.lower()
-        if basis_key == 'other':
-            basis_key = 'other_rights'
-        rights_granted = RightsStatementRightsGrantedSerializer(
-            RightsStatementRightsGranted.objects.filter(rights_statement=obj), many=True)
+class RightsStatementSerializer(serializers.ModelSerializer):
+    rights_granted = RightsStatementRightsGrantedSerializer(source='rightsstatementrightsgranted_set', many=True)
+    rights_basis = serializers.StringRelatedField()
+    start_date = serializers.SerializerMethodField()
+    end_date = serializers.SerializerMethodField()
+    note = serializers.SerializerMethodField()
+    jurisdiction = serializers.SerializerMethodField()
+    determination_date = serializers.SerializerMethodField()
+    status = serializers.SerializerMethodField()
+    terms = serializers.SerializerMethodField()
+    citation = serializers.SerializerMethodField()
+    other_rights_basis = serializers.SerializerMethodField()
 
-        if obj.rights_basis == 'Copyright':
-            basis_obj = RightsStatementCopyright.objects.get(rights_statement=obj)
-            basis_dict = {
-                'jurisdiction': getattr(basis_obj, 'copyright_jurisdiction', ''),
-                'determination_date': getattr(basis_obj, 'copyright_status_determination_date', ''),
-                'status': getattr(basis_obj, 'copyright_status', ''),
-            }
-        elif obj.rights_basis == 'License':
-            basis_obj = RightsStatementLicense.objects.get(rights_statement=obj)
-            basis_dict = {
-                'terms': getattr(basis_obj, 'license_terms', ''),
-            }
-        if obj.rights_basis == 'Statute':
-            basis_obj = RightsStatementStatute.objects.get(rights_statement=obj)
-            basis_dict = {
-                'jurisdiction': getattr(basis_obj, 'statute_jurisdiction', ''),
-                'determination_date': getattr(basis_obj, 'statute_status_determination_date', ''),
-                'citation': getattr(basis_obj, 'statute_citation', ''),
-            }
-        if obj.rights_basis == 'Other':
-            basis_obj = RightsStatementOther.objects.get(rights_statement=obj)
-            basis_dict = {
-                'other_rights_basis': getattr(basis_obj, 'other_rights_basis', ''),
-            }
-        end_date = getattr(basis_obj, '{}_applicable_end_date'.format(basis_key))
+    class Meta:
+        model = RightsStatement
+        fields = ('rights_basis', 'determination_date', 'jurisdiction',
+                  'start_date', 'end_date', 'note', 'status', 'terms',
+                  'citation', 'other_rights_basis', 'rights_granted')
+
+    def get_basis_obj(self, obj):
+        if obj.rights_basis == "Copyright":
+            return RightsStatementCopyright.objects.get(rights_statement=obj)
+        elif obj.rights_basis == "License":
+            return RightsStatementLicense.objects.get(rights_statement=obj)
+        elif obj.rights_basis == "Statute":
+            return RightsStatementStatute.objects.get(rights_statement=obj)
+        elif obj.rights_basis == "Other":
+            return RightsStatementOther.objects.get(rights_statement=obj)
+
+    def get_basis_key(self, obj):
+        return 'other_rights' if (obj.rights_basis.lower() == 'other') else obj.rights_basis.lower()
+
+    def get_start_date(self, obj):
+        return getattr(self.get_basis_obj(obj), '{}_applicable_start_date'.format(self.get_basis_key(obj)))
+
+    def get_end_date(self, obj):
+        end_date = getattr(self.get_basis_obj(obj), '{}_applicable_end_date'.format(self.get_basis_key(obj)))
         if not end_date:
-            if '{}_end_date_open'.format(basis_key):
-                end_date = "OPEN"
-            else:
-                end_date = ''
-        common_dict = {
-            'rights_basis': obj.rights_basis,
-            'start_date': getattr(basis_obj, '{}_applicable_start_date'.format(basis_key), ''),
-            'end_date': end_date,
-            'note': getattr(basis_obj, '{}_note'.format(basis_key), ''),
-            'rights_granted': rights_granted.data,
-        }
-        common_dict.update(basis_dict)
-        return common_dict
+            end_date = "OPEN" if '{}_end_date_open'.format(self.get_basis_key(obj)) else None
+        return end_date
+
+    def get_note(self, obj):
+        return getattr(self.get_basis_obj(obj), '{}_note'.format(self.get_basis_key(obj)))
+
+    def get_jurisdiction(self, obj):
+        return getattr(self.get_basis_obj(obj), '{}_jurisdiction'.format(self.get_basis_key(obj))) if (obj.rights_basis in ['Copyright', 'Statute']) else None
+
+    def get_determination_date(self, obj):
+        if obj.rights_basis == 'Copyright':
+            return getattr(self.get_basis_obj(obj), 'copyright_status_determination_date')
+        elif obj.rights_basis == 'Statute':
+            return getattr(self.get_basis_obj(obj), 'statute_determination_date')
+        else:
+            return None
+
+    def get_status(self, obj):
+        return getattr(self.get_basis_obj(obj), 'copyright_status') if (obj.rights_basis == 'Copyright') else None
+
+    def get_terms(self, obj):
+        return getattr(self.get_basis_obj(obj), 'license_terms') if (obj.rights_basis == 'License') else None
+
+    def get_citation(self, obj):
+        return getattr(self.get_basis_obj(obj), 'statute_citation') if (obj.rights_basis == 'Statute') else None
+
+    def get_other_rights_basis(self, obj):
+        return getattr(self.get_basis_obj(obj), 'other_rights_basis') if (obj.rights_basis == 'Other') else None
 
 
 class BAGLogResultSerializer(serializers.Serializer):
