@@ -1,5 +1,6 @@
 {% extends 'transfers/base.html' %}
 {% load tz %}
+{% load static %}
 
 {% block h1_title %}
 Transfers
@@ -68,13 +69,7 @@ Transfers
       'serverSide': true,
       'ajax': '{% url "transfers:datatable" %}?q=user'
     })
-
-		$(document).on('keypress', '.pointer-row', function(e){
-			var key = e.which || e.keyCode || 0;
-	    if (key === 13) {
-	      window.open($(this).attr('data-url'), '_self')
-	    }
-		})
   })
 </script>
+<script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
 {% endblock %}

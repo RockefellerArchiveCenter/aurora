@@ -1,4 +1,4 @@
-<label>{{ switch }}</label>
+<span class="list-label">{{ switch }}</span>
 {% if users %}
 	<ul class="list-unstyled">
 			{% for u in users %}
@@ -10,6 +10,6 @@
 			{% endfor %}
 	</ul>
 {% else %}
-	<p>There are no {{ switch|lower }} users...</p>
+	<p>There are no {{ switch|lower }} users for this organization.</p>
 {% endif %}
 <hr/>
