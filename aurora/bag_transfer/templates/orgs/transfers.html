@@ -35,6 +35,7 @@ Transfers
 			'createdRow': function(row, data, dataIndex) {
 					$(row).attr('data-url', data[{% if request.user.is_archivist %}8{% else %}7{% endif %}]);
 					$(row).addClass('pointer-row');
+					$(row).attr('tabindex', 0)
   		},
       'order'       : [[{% if request.user.is_archivist %}7{% else %}6{% endif %}, 'desc']],
 			'stateSave'   : true,
@@ -68,8 +69,11 @@ Transfers
       'ajax': '{% url "transfers:datatable" %}?q=user'
     })
 
-		$(document).on('click', '.pointer-row', function(){
-			window.open($(this).attr('data-url'), '_self')
+		$(document).on('keypress', '.pointer-row', function(e){
+			var key = e.which || e.keyCode || 0;
+	    if (key === 13) {
+	      window.open($(this).attr('data-url'), '_self')
+	    }
 		})
   })
 </script>
