@@ -4,7 +4,7 @@
   </div>
 
   <div class="comment-text">
-    <a href="{% url 'transfers:detail' pk=upload.pk %}">
+    <a class="upload-title" href="{% url 'transfers:detail' pk=upload.pk %}">
         {{ upload.bag_or_failed_name }}
     </a>
     <span class="pull-right">{{ upload.created_time }}</span>

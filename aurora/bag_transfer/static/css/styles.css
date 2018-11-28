@@ -66,6 +66,10 @@ h5.description-text {
 	color: #dd4b39;
 }
 
+.upload-title {
+	font-weight: 600;
+}
+
 .login-page {
 	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
 	background-size: cover;
