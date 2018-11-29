@@ -9,7 +9,7 @@
     </a>
     <span class="pull-right">{{ upload.created_time }}</span>
   {% if upload.user_uploaded %}
-
+    <p>
     Transfer by
     {% if request.user.is_staff %}
       <a href="{% url 'users:detail' pk=upload.user_uploaded.pk %}">
@@ -18,9 +18,8 @@
     {% else %}
       <span>{{ upload.user_uploaded.username }}</span>
     {% endif %}
-
     {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
-
+    </p>
   {% else %}
   <p>
     {% if upload.bag_it_valid %}
