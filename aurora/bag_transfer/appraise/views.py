@@ -81,8 +81,8 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def appraise_buttons(self):
         return '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                 <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
-                <a type="button" class="appraisal-note btn btn-xs btn-info edit-note" data-toggle="modal" data-target="#modal-appraisal-note">Note</a>\
-                <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false">Details</a>'
+                <a type="button" class="appraisal-note btn btn-xs btn-info edit-note" data-toggle="modal" data-target="#modal-appraisal-note" href="#">Note</a>\
+                <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
 
     def get_initial_queryset(self):
         return Archives.objects.filter(process_status=40)

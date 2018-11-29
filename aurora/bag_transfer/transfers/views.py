@@ -164,14 +164,12 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 return s[1]
 
     def process_status_tag(self, status):
-        label_class = 'default'
+        label_class = 'green'
         if status in [10, 20]:
-            label_class = 'info'
+            label_class = 'yellow'
         elif status in [30, 60]:
-            label_class = 'danger'
-        elif status in [40, 70, 90]:
-            label_class = 'success'
-        return "<span class='label label-{}'>{}</span>".format(label_class, self.process_status_display(status))
+            label_class = 'red'
+        return "{} <div class='progress progress-xs'><div class='progress-bar progress-bar-{}' style='width: {}%' aria-label='{}% complete'></div></div>".format(self.process_status_display(status), label_class, status, status)
 
     def get_initial_queryset(self):
         if self.request.user.is_archivist():

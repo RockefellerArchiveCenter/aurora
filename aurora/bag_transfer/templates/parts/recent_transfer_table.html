@@ -14,7 +14,7 @@
 
 		<tbody>
 		{% for upload in uploads %}
-			<tr onclick="window.open('{% url 'transfers:detail' upload.pk %}','_self')" class="pointer-row">
+			<tr tabindex="0" data-url="{% url 'transfers:detail' upload.pk %}" class="pointer-row">
 				<td>{{ upload.bag_or_failed_name }} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
 				<td>
 					{% for c in upload.get_bag_data.record_creators %}

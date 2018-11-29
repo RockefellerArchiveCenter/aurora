@@ -5,6 +5,7 @@ from rest_framework import viewsets, generics, mixins
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 
+from bag_transfer.lib.cleanup import CleanupRoutine
 from bag_transfer.models import Organization, Archives, BAGLog, BagInfoMetadata, BagItProfile, ManifestsRequired, User
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
 from bag_transfer.accession.models import Accession
@@ -78,6 +79,14 @@ class ArchivesViewSet(OrgReadViewMixin, mixins.ListModelMixin, mixins.RetrieveMo
         if self.action == 'retrieve':
             return ArchivesSerializer
         return ArchivesSerializer
+
+    def update(self, request, pk=None, *args, **kwargs):
+        try:
+            identifier = request.data.get('identifier')
+            CleanupRoutine(identifier).run()
+            return super(ArchivesViewSet, self).update(request, *args, **kwargs)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
 
 
 class BAGLogViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):

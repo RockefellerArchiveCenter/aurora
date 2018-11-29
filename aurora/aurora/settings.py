@@ -84,6 +84,10 @@ WSGI_APPLICATION = 'aurora.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 50,
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
 }
 
 # Database
@@ -178,5 +182,4 @@ TEST_USER = CF.TEST_USER
 
 
 # Post-accession callbacks
-DELIVERY = CF.DELIVERY
-CALLBACKS = CF.CALLBACKS
+DELIVERY_URL = CF.DELIVERY_URL

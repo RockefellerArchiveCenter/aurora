@@ -16,16 +16,16 @@
 
                 <ul class="list-group list-group-unbordered">
 										<li class="list-group-item">
-											<label> Active?</label> <span class="pull-right">{% if object.is_active %}yes{% else %}no{% endif %}</span>
+											<span class="list-label">Active?</span> <span class="pull-right">{% if object.is_active %}yes{% else %}no{% endif %}</span>
                     <li class="list-group-item">
-                      <label>Total Uploads</label> <span class="pull-right">{{ uploads_count }}</span>
+                      <span class="list-label">Total Uploads</span> <span class="pull-right">{{ uploads_count }}</span>
                     </li>
 										<li class="list-group-item">
-                      <label>Users</label> <span class="pull-right">{{ object.org_users|length }}</span>
+                      <span class="list-label">Users</span> <span class="pull-right">{{ object.org_users|length }}</span>
                     </li>
 										{% if object.acquisition_type %}
 										<li class="list-group-item">
-											<label>Acquisition Type</label> <span class="pull-right">{{object.get_acquisition_type_display}}</span>
+											<span class="list-label">Acquisition Type</span> <span class="pull-right">{{object.get_acquisition_type_display}}</span>
 										</li>
 										{% endif %}
                 </ul>
@@ -39,7 +39,7 @@
 
 				<div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
 						<div class="box-header with-border">
-								<h2 class="box-title">Users </h2>
+								<h2 class="box-title">Users</h2>
 						</div>
 						<div class="box-body">
 							{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
@@ -72,4 +72,5 @@
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'js/delete_object_js.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
 {% endblock %}

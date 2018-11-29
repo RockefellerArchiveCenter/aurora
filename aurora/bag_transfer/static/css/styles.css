@@ -1,5 +1,22 @@
 @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
+a:focus, .dropdown-toggle:focus {
+	outline: auto;
+}
+
+a {
+    color: #0073b7;
+}
+
+.h1 .small, .h1 small, .h2 .small, .h2 small,
+.h3 .small, .h3 small, .h4 .small, .h4 small,
+.h5 .small, .h5 small, .h6 .small, .h6 small,
+h1 .small, h1 small, h2 .small, h2 small,
+h3 .small, h3 small, h4 .small, h4 small,
+h5 .small, h5 small, h6 .small, h6 small {
+	color: #555;
+}
+
 .top-button-blk {
 	margin-bottom: 20px;
 }
@@ -13,7 +30,7 @@ h5.description-text {
 }
 
 .pointer-row:hover {
-	background-color: #00c0ef !important;
+	background-color: #ccc !important;
 }
 
 .mar-top20 {
@@ -38,11 +55,19 @@ h5.description-text {
 	margin-left: 50px;
 }
 
+.box-comments .comment-text p {
+	margin-bottom: 0;
+}
+
 .green-bag {
 	color: #00a65a;
 }
 .red-bag {
 	color: #dd4b39;
+}
+
+.upload-title {
+	font-weight: 600;
 }
 
 .login-page {
@@ -129,6 +154,7 @@ h5.description-text {
     color: white;
     line-height: 32px;
     font-size: 16px;
+		font-weight: 400;
     padding-left: 10px;
     padding-right: 10px;
 }
@@ -162,6 +188,10 @@ div.dataTables_wrapper div.dataTables_filter label {
 
 div.dataTables_wrapper div.dataTables_filter input {
     width: 30rem;
+}
+
+.list-label {
+	font-weight: 600;
 }
 
 @media (min-width: 768px) {

@@ -1,11 +1,13 @@
 import datetime
-from os import listdir
+import json
+from os import listdir, mkdir
 from os.path import join
 import subprocess
 
 from django_cron import CronJobBase, Schedule
 
 from aurora import settings
+from bag_transfer.api.serializers import ArchivesSerializer
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import *
 from bag_transfer.lib.bag_checker import bagChecker
@@ -114,24 +116,29 @@ class DeliverTransfers(CronJobBase):
 
     def do(self):
         Pter.cron_open(self.code)
-        for transfer in listdir(settings.DELIVERY_QUEUE_DIR):
-            rsynccmd = "rsync -avh --remove-source-files {} {}@{}:{}".format(join(settings.DELIVERY_QUEUE_DIR, transfer),
-                                                                             settings.DELIVERY['user'],
-                                                                             settings.DELIVERY['host'],
-                                                                             settings.DELIVERY['dir'])
-            print(rsynccmd)
-            rsyncproc = subprocess.Popen(rsynccmd,
-                                         shell=True,
-                                         stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE,)
-            while True:
-                next_line = rsyncproc.stdout.readline().decode("utf-8")
-                if not next_line:
-                    break
-                print(next_line)
+        for archive in Archives.objects.filter(process_status=75):
+            tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
+            FH.make_tarfile(
+                join(settings.STORAGE_ROOT_DIR, tar_filename),
+                join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
 
-            ecode = rsyncproc.wait()
-            if ecode != 0:
-                continue
+            mkdir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            FH.move_file_or_dir(
+                join(settings.STORAGE_ROOT_DIR, tar_filename),
+                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
+
+            archive_json = ArchivesSerializer(archive, context={'request': None}).data
+            with open(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, "{}.json".format(archive.machine_file_identifier)), 'wb') as f:
+                json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
+
+            FH.make_tarfile(
+                join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)),
+                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+
+            archive.process_status = 80
+            archive.save()
 
         Pter.cron_close(self.code)

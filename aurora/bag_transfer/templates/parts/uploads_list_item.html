@@ -4,12 +4,10 @@
   </div>
 
   <div class="comment-text">
-    <span class="username">
-      <a href="{% url 'transfers:detail' pk=upload.pk %}">
-          {{ upload.bag_or_failed_name }}
-      </a>
-      <span class="text-muted pull-right">{{ upload.created_time }}</span>
-    </span>
+    <a class="upload-title" href="{% url 'transfers:detail' pk=upload.pk %}">
+        {{ upload.bag_or_failed_name }}
+    </a>
+    <span class="pull-right">{{ upload.created_time }}</span>
   {% if upload.user_uploaded %}
 
     Transfer by
@@ -24,11 +22,13 @@
     {% if upload.bag_it_valid %}passed{% else %}failed{% endif %} validation
 
   {% else %}
+  <p>
     {% if upload.bag_it_valid %}
       Transfer successful
     {% else %}
       Transfer Failed
     {% endif %}
+  </p>
   {% endif %}
 
   </div>
