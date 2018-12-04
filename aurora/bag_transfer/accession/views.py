@@ -5,6 +5,7 @@ import json
 import requests
 
 from django.views.generic import ListView, View
+from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
@@ -190,3 +191,28 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'transfers': transfers_list,
             'rights_statements': rights_statements,
             })
+
+
+class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView):
+    model = Accession
+    columns = ['title', 'created', 'extent_files', 'extent_size']
+    order_columns = ['title', 'created', 'extent_files', 'extent_size']
+    max_display_length = 500
+
+    def get_filter_method(self): return self.FILTER_ICONTAINS
+
+    def button(self, accession):
+        button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' if (accession.process_status < Accession.DELIVERED) else ''
+        return button
+
+    def prepare_results(self, qs):
+        json_data = []
+        for accession in qs:
+            json_data.append([
+                accession.title,
+                accession.created.strftime('%b %e, %Y %I:%M:%S %p'),
+                "{} files ({})".format(accession.extent_files, accession.extent_size),
+                self.button(accession),
+                accession.pk
+            ])
+        return json_data
