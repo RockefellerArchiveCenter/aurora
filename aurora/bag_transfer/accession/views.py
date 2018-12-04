@@ -23,7 +23,7 @@ from bag_transfer.rights.models import RightsStatement
 
 class AccessionView(AccessioningArchivistMixin, ListView):
     template_name = "accession/main.html"
-    model = Archives
+    model = Accession
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():

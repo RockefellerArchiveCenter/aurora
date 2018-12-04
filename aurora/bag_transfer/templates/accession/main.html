@@ -49,33 +49,33 @@
           {% if not accessions %}
         <div>No saved accessions</div>
           {% else %}
-        <table id="saved_accession_table" class="table table-striped dataTable">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>Date Created</th>
-              <th>Extent</th>
-              <th></th>
-            </tr>
-          </thead>
+          <table id="saved_accession_table" class="table table-striped dataTable">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date Created</th>
+                <th>Extent</th>
+                <th></th>
+              </tr>
+            </thead>
 
-          <tbody>
-            {% for accession in accessions %}
-            <tr data-accession-id="{{accession.pk}}">
-              <td>{{accession.title}}</td>
-              <td>{{accession.accession_date}}</td>
-              <td>{{accession.extent_files}} files ({{accession.extent_size|filesizeformat}})</td>
-              <td>
-                {% if accession.process_status < 85 and deliver %}
-                <a href="#" class="btn btn-primary pull-right deliver">
-                  Deliver
-                </a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            <tbody>
+              {% for accession in accessions %}
+              <tr data-accession-id="{{accession.pk}}">
+                <td>{{accession.title}}</td>
+                <td>{{accession.accession_date}}</td>
+                <td>{{accession.extent_files}} files ({{accession.extent_size|filesizeformat}})</td>
+                <td>
+                  {% if accession.process_status < accession.DELIVERED and deliver %}
+                  <a href="#" class="btn btn-primary pull-right deliver">
+                    Deliver Accession
+                  </a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
         {% endif %}
 				</div>
 			</div>
@@ -89,7 +89,17 @@
 <script type="text/javascript">
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    $('.dataTable').DataTable({
+    $('#saved_accession_table').DataTable({
+      'stateSave'   : true,
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25
+    })
+    $('#pending_accession_table').DataTable({
       'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
@@ -105,18 +115,14 @@
     e.preventDefault();
     url = '{% url 'accession:list' %}';
 
-    var data = {
-      'accession_id': $(this).closest('tr').attr('data-accession-id'),
-    }
+    var data = {'accession_id': $(this).closest('tr').attr('data-accession-id')}
+    var button = $(this)
+
 
     $.get(url, data, function(resp){
-      console.log(resp)
       if (resp.success){
-        // remove row
-        $(this).remove();
-        if (appraisal_decision == 1) {
-          displayMessage('success', 'Accession delivered.');
-        }
+        button.remove();
+        displayMessage('success', 'Accession delivered.');
       } else {
         displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.');
       }
