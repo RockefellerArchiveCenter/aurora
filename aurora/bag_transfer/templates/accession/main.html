@@ -8,12 +8,17 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <div class="box box-default">
-      <div class="box-body">
+    <div class="nav-tabs-custom">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions ({{ uploads|length }})</a></li>
+				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions|length }})</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active table-responsive" id="pending">
           {% if not uploads %}
         <div>No pending accessions</div>
           {% else %}
-        <table id="accession_table" class="table table-striped dataTable">
+        <table id="pending_accession_table" class="table table-striped dataTable">
           <thead>
             <tr>
               <th>Organization</th>
@@ -39,9 +44,42 @@
           </tbody>
         </table>
         {% endif %}
+				</div>
+				<div class="tab-pane table-responsive" id="saved">
+          {% if not accessions %}
+        <div>No saved accessions</div>
+          {% else %}
+        <table id="saved_accession_table" class="table table-striped dataTable">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Date Created</th>
+              <th>Extent</th>
+              <th></th>
+            </tr>
+          </thead>
 
-      </div>
-    </div>
+          <tbody>
+            {% for accession in accessions %}
+            <tr data-accession-id="{{accession.pk}}">
+              <td>{{accession.title}}</td>
+              <td>{{accession.accession_date}}</td>
+              <td>{{accession.extent_files}} files ({{accession.extent_size|filesizeformat}})</td>
+              <td>
+                {% if accession.process_status < 85 and deliver %}
+                <a href="#" class="btn btn-primary pull-right deliver">
+                  Deliver
+                </a>
+                {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+				</div>
+			</div>
+		</div>
   </div>
 </div>
 
@@ -51,7 +89,7 @@
 <script type="text/javascript">
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    $('#accession_table').DataTable({
+    $('.dataTable').DataTable({
       'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
@@ -62,5 +100,44 @@
       'pageLength'  : 25
     })
   })
+
+  $("#saved_accession_table tbody").on("click", ".deliver", function(e){
+    e.preventDefault();
+    url = '{% url 'accession:list' %}';
+
+    var data = {
+      'accession_id': $(this).closest('tr').attr('data-accession-id'),
+    }
+
+    $.get(url, data, function(resp){
+      console.log(resp)
+      if (resp.success){
+        // remove row
+        $(this).remove();
+        if (appraisal_decision == 1) {
+          displayMessage('success', 'Accession delivered.');
+        }
+      } else {
+        displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.');
+      }
+    });
+
+  });
+
+  function displayMessage(type, message) {
+    $('#messages').empty()
+    $('#messages').append(
+      '<div class="row">\
+      	<div class="col-md-12">\
+          <div class="alert alert-'+type+' alert-dismissible">\
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+              <i class="icon fa fa-check"></i>'+message+'\
+          </div>\
+        </div>\
+      </div>').fadeIn(300);
+      setTimeout(function(){
+  			$('#messages').fadeOut(1300);
+  		}, 8000);
+  }
 </script>
 {% endblock %}

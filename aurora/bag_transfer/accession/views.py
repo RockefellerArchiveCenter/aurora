@@ -8,6 +8,7 @@ from django.views.generic import ListView, View
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from aurora import settings
@@ -24,16 +25,46 @@ class AccessionView(AccessioningArchivistMixin, ListView):
     template_name = "accession/main.html"
     model = Archives
 
-    def get_context_data(self, **kwargs):
-        context = super(AccessionView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Accessioning Queue'
-        context['uploads'] = Archives.objects.filter(
-            process_status=Archives.ACCEPTED).annotate(
-                transfer_group=Concat('organization', 'metadata__record_type',
-                                      GroupConcat('metadata__record_creators'),
-                                      'metadata__bag_group_identifier',
-                                      output_field=CharField())).order_by('transfer_group')
-        return context
+    def get(self, request, *args, **kwargs):
+        if request.is_ajax():
+            return self.handle_ajax_request(request)
+        return render(request, self.template_name, {
+            'uploads': Archives.objects.filter(
+                process_status=Archives.ACCEPTED).annotate(
+                    transfer_group=Concat('organization', 'metadata__record_type',
+                                          GroupConcat('metadata__record_creators'),
+                                          'metadata__bag_group_identifier',
+                                          output_field=CharField())).order_by('transfer_group'),
+            'accessions': Accession.objects.all(),
+            'meta_page_title': 'Accessioning Queue',
+            'deliver': True if settings.DELIVERY_URL else False,
+            })
+
+    def handle_ajax_request(self, request):
+        rdata = {}
+        rdata['success'] = 0
+        if request.user.has_privs('ACCESSIONER'):
+            if 'accession_id' in request.GET:
+                try:
+                    accession = Accession.objects.get(pk=request.GET['accession_id'])
+                    accession_data = AccessionSerializer(accession, context={'request': request})
+                    requests.post(
+                        settings.DELIVERY_URL,
+                        data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
+                        headers={'Content-Type': 'application/json'}
+                    )
+                    accession.process_status = Accession.DELIVERED
+                    accession.save()
+                    rdata['success'] = 1
+                except Exception as e:
+                    print(e)
+                    rdata['error'] = str(e)
+        return self.render_to_json_response(rdata)
+
+    def render_to_json_response(self, context, **response_kwargs):
+        data = json.dumps(context)
+        response_kwargs['content_type'] = 'application/json'
+        return HttpResponse(data, **response_kwargs)
 
 
 class AccessionRecordView(AccessioningArchivistMixin, View):
@@ -159,4 +190,3 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             'transfers': transfers_list,
             'rights_statements': rights_statements,
             })
-                                                                                                                                                                                                                                                                                                                                
