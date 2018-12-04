@@ -49,7 +49,7 @@ class AppraiseView(ArchivistMixin, View):
                                         appraisal_decision = int(request.GET['appraisal_decision'])
                                     except Exception as e:
                                         print e
-                                    upload.process_status = (70 if appraisal_decision else 60)
+                                    upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
                                     BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                     if not appraisal_decision:
                                         remove_file_or_dir(upload.machine_file_path)
@@ -61,7 +61,7 @@ class AppraiseView(ArchivistMixin, View):
 
         return render(request, self.template_name, {
             'meta_page_title': 'Appraisal Queue',
-            'uploads_count': len(Archives.objects.filter(process_status=40).order_by('created_time'))
+            'uploads_count': len(Archives.objects.filter(process_status=Archives.VALIDATED).order_by('created_time'))
         })
 
     def render_to_json_response(self, context, **response_kwargs):
@@ -85,7 +85,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
 
     def get_initial_queryset(self):
-        return Archives.objects.filter(process_status=40)
+        return Archives.objects.filter(process_status=Archives.VALIDATED)
 
     def prepare_results(self, qs):
         json_data = []

@@ -38,7 +38,7 @@ class AccessioningTestCase(TestCase):
     def test_accessioning(self):
         transfer_ids = []
         for archive in self.archives:
-            archive.process_status = 70
+            archive.process_status = Archives.ACCEPTED
             archive.save()
             transfer_ids.append(str(archive.id))
         id_list = ','.join(transfer_ids)

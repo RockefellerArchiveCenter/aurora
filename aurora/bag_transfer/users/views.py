@@ -40,10 +40,15 @@ class UsersListView(ArchivistMixin, SuccessMessageMixin, ListView):
         org_users_list = [{'org': {}, 'users': []}]
         org_users_list = Organization.users_by_org()
 
-        next_unassigned_user = User.objects.filter(from_ldap=True,is_new_account=True,organization=None).order_by('username').first()
+        next_unassigned_user = User.objects.filter(
+            from_ldap=True,
+            is_new_account=True,
+            organization=None).order_by('username').first()
 
         if not next_unassigned_user:
-            messages.info(request, "No unassigned users available. Additional users must be created in LDAP first.")
+            messages.info(
+                request,
+                "No unassigned users available. Additional users must be created in LDAP first.")
 
         return render(request, self.template_name, {
             'meta_page_title': 'Users',
@@ -74,11 +79,15 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.username
         context['uploads'] = []
-        archives = Archives.objects.filter(process_status__gte=20, user_uploaded = context['object']).order_by('-created_time')[:9]
+        archives = Archives.objects.filter(
+            process_status__gte=Archives.TRANSFER_COMPLETED,
+            user_uploaded=context['object']).order_by('-created_time')[:9]
         for archive in archives:
             archive.bag_info_data = archive.get_bag_data()
             context['uploads'].append(archive)
-        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, user_uploaded = context['object']).count()
+        context['uploads_count'] = Archives.objects.filter(
+            process_status__gte=Archives.TRANSFER_COMPLETED,
+            user_uploaded=context['object']).count()
         return context
 
 

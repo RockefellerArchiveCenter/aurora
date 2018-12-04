@@ -36,7 +36,7 @@ class AppraisalTestCase(TestCase):
 
     def test_appraisal(self):
         for archive in self.archives:
-            archive.process_status = 40
+            archive.process_status = Archives.VALIDATED
             archive.save()
 
         # Test GET views
@@ -46,7 +46,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(response.context['uploads_count'], len(self.archives))
 
         # Accept/Reject archives
-        accept_archive = random.choice(Archives.objects.filter(process_status=40))
+        accept_archive = random.choice(Archives.objects.filter(process_status=Archives.VALIDATED))
         accept_request = self.client.get(
             reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'decision', 'upload_id': accept_archive.pk, 'appraisal_decision': 1},
@@ -54,7 +54,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(accept_request.status_code, 200)
         resp = ast.literal_eval(accept_request.content)
         self.assertEqual(resp['success'], 1)
-        reject_archive = random.choice(Archives.objects.filter(process_status=40))
+        reject_archive = random.choice(Archives.objects.filter(process_status=Archives.VALIDATED))
         reject_request = self.client.get(
             reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'decision', 'upload_id': reject_archive.pk, 'appraisal_decision': 0},
@@ -63,7 +63,7 @@ class AppraisalTestCase(TestCase):
         self.assertEqual(resp['success'], 1)
 
         # Submit and Edit appraisal note
-        note_archive = random.choice(Archives.objects.filter(process_status=40))
+        note_archive = random.choice(Archives.objects.filter(process_status=Archives.VALIDATED))
         submit_note_request = self.client.get(
             reverse('appraise:list'),
             {'req_form': 'appraise', 'req_type': 'submit', 'upload_id': note_archive.pk, 'appraisal_note': 'Test appraisal note'},

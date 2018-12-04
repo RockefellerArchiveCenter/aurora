@@ -72,7 +72,7 @@ class DiscoverTransfers(CronJobBase):
 
                 if upload_list['auto_fail']:
                     new_arc.setup_save(upload_list)
-                    new_arc.process_status = 30
+                    new_arc.process_status = Archives.INVALID
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
                     email.setup_message('TRANS_FAIL_VAL',new_arc)
                     email.send()
@@ -82,7 +82,7 @@ class DiscoverTransfers(CronJobBase):
                     ## NOW FOR BAG CHECK
                     bag = bagChecker(new_arc)
                     if bag.bag_passed_all():
-                        new_arc.process_status = 40
+                        new_arc.process_status = Archives.VALIDATED
                         new_arc.bag_it_valid = True
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
@@ -93,7 +93,7 @@ class DiscoverTransfers(CronJobBase):
                         FH.remove_file_or_dir(new_arc.machine_file_path)
                         new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier)
                     else:
-                        new_arc.process_status = 30
+                        new_arc.process_status = Archives.INVALID
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
@@ -116,7 +116,7 @@ class DeliverTransfers(CronJobBase):
 
     def do(self):
         Pter.cron_open(self.code)
-        for archive in Archives.objects.filter(process_status=75):
+        for archive in Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED):
             tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
             FH.make_tarfile(
                 join(settings.STORAGE_ROOT_DIR, tar_filename),
@@ -138,7 +138,7 @@ class DeliverTransfers(CronJobBase):
 
             FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
-            archive.process_status = 80
+            archive.process_status = Archives.DELIVERED
             archive.save()
 
         Pter.cron_close(self.code)

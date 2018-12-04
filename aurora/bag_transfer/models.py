@@ -228,7 +228,7 @@ class User(AbstractUser):
         super(User,self).save(*args,**kwargs)
 
     def total_uploads(self):
-        return Archives.objects.filter(process_status__gte=20, user_uploaded=self).count()
+        return Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED, user_uploaded=self).count()
 
     @staticmethod
     def refresh_ldap_accounts():
@@ -314,17 +314,25 @@ class Archives(models.Model):
         ('TAR', 'tar'),
         ('OTHER', 'OTHER')
     )
+    TRANSFER_STARTED = 10
+    TRANSFER_COMPLETED = 20
+    INVALID = 30
+    VALIDATED = 40
+    REJECTED = 60
+    ACCEPTED = 70
+    ACCESSIONING_STARTED = 80
+    DELIVERED = 85
+    ACCESSIONING_COMPLETE = 90
     processing_statuses = (
-        (10, 'Transfer Started'),
-        (20, 'Transfer Completed'),
-        (30, 'Invalid'),
-        (40, 'Validated'),
-        (60, 'Rejected'),
-        (70, 'Accepted'),
-        (75, 'Accessioning Started'),
-        (80, 'Archivematica Processing Started'),
-        (85, 'Archivematica Processing Complete'),
-        (90, 'Accession Complete')
+        (TRANSFER_STARTED, 'Transfer Started'),
+        (TRANSFER_COMPLETED, 'Transfer Completed'),
+        (INVALID, 'Invalid'),
+        (VALIDATED, 'Validated'),
+        (REJECTED, 'Rejected'),
+        (ACCEPTED, 'Accepted'),
+        (ACCESSIONING_STARTED, 'Accessioning Started'),
+        (DELIVERED, 'In Accession Queue'),
+        (ACCESSIONING_COMPLETE, 'Accession Complete')
     )
 
     accession = models.ForeignKey('Accession', related_name="accession_transfers", null=True, blank=True)
@@ -340,7 +348,7 @@ class Archives(models.Model):
     appraisal_note = models.TextField(blank=True, null=True)
     manifest = models.TextField(blank=True, null=True)
     additional_error_info = models.CharField(max_length=255, null=True, blank=True)
-    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=20)
+    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=TRANSFER_COMPLETED)
     archivesspace_identifier = models.CharField(max_length=255, null=True, blank=True)
     archivesspace_parent_identifier = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)  # process time
@@ -374,7 +382,7 @@ class Archives(models.Model):
             machine_file_identifier=identifier,
             machine_file_type=file_type,
             bag_it_name=bag_it_name,
-            process_status=20
+            process_status=cls.TRANSFER_COMPLETED
         )
         archive.save()
         return archive
