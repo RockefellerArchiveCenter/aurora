@@ -17,6 +17,7 @@ from bag_transfer.accession.models import Accession
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.serializers import AccessionSerializer
+from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
 from bag_transfer.rights.models import RightsStatement
@@ -123,74 +124,98 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             })
 
     def get(self, request, *args, **kwargs):
-        id_list = map(int, request.GET.get('transfers').split(','))
-        transfers_list = Archives.objects.filter(pk__in=id_list)
-        rights_statements = RightsStatement.objects.filter(
-            archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
-        # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
-        organization = transfers_list[0].organization
-        notes = {'appraisal': []}
-        dates = {'start': [], 'end': []}
-        creators_list = []
-        descriptions_list = []
-        languages_list = []
-        extent_files = 0
-        extent_size = 0
-        for transfer in transfers_list:
-            bag_data = transfer.get_bag_data()
-            extent_size = extent_size + int(bag_data.get('payload_oxum', '0.0').split('.')[0])
-            extent_files = extent_files + int(bag_data.get('payload_oxum', '0.0').split('.')[1])
-            dates['start'].append(bag_data.get('date_start', ''))
-            dates['end'].append(bag_data.get('date_end', ''))
-            notes['appraisal'].append(bag_data.get('appraisal_note', ''))
-            descriptions_list.append(bag_data.get('internal_sender_description', ''))
-            for language in bag_data.get('language', []):
-                languages_list.append(language)
-            creators_list += transfer.get_records_creators()
-        for statement in rights_statements:
-            rights_info = statement.get_rights_info_object()
-            rights_granted = statement.get_rights_granted_objects()
-            if not statement.rights_basis.lower() in notes:
-                notes[statement.rights_basis.lower()] = []
-            notes[statement.rights_basis.lower()].append(next(value for key, value in rights_info.__dict__.iteritems() if '_note' in key.lower()))
-            for grant in rights_granted:
-                notes[statement.rights_basis.lower()].append(grant.rights_granted_note)
-        record_creators = list(set(creators_list))
-        languages_list = list(set(languages_list))
-        language = LanguageCode.objects.get_or_create(code='und')[0]
-        if len(languages_list) == 1:
-            LanguageCode.objects.get_or_create(code=languages_list[0])[0]
-        if len(languages_list) > 1:
-            language = LanguageCode.objects.get_or_create(code='mul')[0]
-        title = '{} {}'.format(organization, bag_data.get('record_type', ''))
-        if len(record_creators) > 0:
-            title = '{}, {} {}'.format(
-                organization, ', '.join([creator.name for creator in record_creators]),
-                bag_data.get('record_type', ''))
-        form = AccessionForm(initial={
-            'title': title,
-            'start_date': sorted(dates.get('start', []))[0],
-            'end_date': sorted(dates.get('end', []))[-1],
-            'description': ' '.join(set(descriptions_list)),
-            'extent_files': extent_files,
-            'extent_size': extent_size,
-            'access_restrictions': ' '.join(set(notes.get('other', [])+notes.get('license', [])+notes.get('statute', []))),
-            'use_restrictions': ' '.join(set(notes.get('copyright', []))),
-            'acquisition_type': organization.acquisition_type,
-            'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
-            'organization': organization,
-            'language': language,
-            'creators': record_creators,
-            })
-        creators_formset = CreatorsFormSet(
-            queryset=RecordCreators.objects.filter(name__in=record_creators))
-        return render(request, self.template_name, {
-            'form': form,
-            'creators_formset': creators_formset,
-            'meta_page_title': 'Create Accession Record',
-            'transfers': transfers_list,
-            'rights_statements': rights_statements,
-            })
+        if request.is_ajax():
+            return self.handle_ajax_request(request)
+        else:
+            id_list = map(int, request.GET.get('transfers').split(','))
+            transfers_list = Archives.objects.filter(pk__in=id_list)
+            rights_statements = RightsStatement.objects.filter(
+                archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
+            # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
+            organization = transfers_list[0].organization
+            notes = {'appraisal': []}
+            dates = {'start': [], 'end': []}
+            creators_list = []
+            descriptions_list = []
+            languages_list = []
+            extent_files = 0
+            extent_size = 0
+            for transfer in transfers_list:
+                bag_data = transfer.get_bag_data()
+                extent_size = extent_size + int(bag_data.get('payload_oxum', '0.0').split('.')[0])
+                extent_files = extent_files + int(bag_data.get('payload_oxum', '0.0').split('.')[1])
+                dates['start'].append(bag_data.get('date_start', ''))
+                dates['end'].append(bag_data.get('date_end', ''))
+                notes['appraisal'].append(bag_data.get('appraisal_note', ''))
+                descriptions_list.append(bag_data.get('internal_sender_description', ''))
+                for language in bag_data.get('language', []):
+                    languages_list.append(language)
+                creators_list += transfer.get_records_creators()
+            for statement in rights_statements:
+                rights_info = statement.get_rights_info_object()
+                rights_granted = statement.get_rights_granted_objects()
+                if not statement.rights_basis.lower() in notes:
+                    notes[statement.rights_basis.lower()] = []
+                notes[statement.rights_basis.lower()].append(next(value for key, value in rights_info.__dict__.iteritems() if '_note' in key.lower()))
+                for grant in rights_granted:
+                    notes[statement.rights_basis.lower()].append(grant.rights_granted_note)
+            record_creators = list(set(creators_list))
+            languages_list = list(set(languages_list))
+            language = LanguageCode.objects.get_or_create(code='und')[0]
+            if len(languages_list) == 1:
+                LanguageCode.objects.get_or_create(code=languages_list[0])[0]
+            if len(languages_list) > 1:
+                language = LanguageCode.objects.get_or_create(code='mul')[0]
+            title = '{} {}'.format(organization, bag_data.get('record_type', ''))
+            if len(record_creators) > 0:
+                title = '{}, {} {}'.format(
+                    organization, ', '.join([creator.name for creator in record_creators]),
+                    bag_data.get('record_type', ''))
+            form = AccessionForm(initial={
+                'title': title,
+                'start_date': sorted(dates.get('start', []))[0],
+                'end_date': sorted(dates.get('end', []))[-1],
+                'description': ' '.join(set(descriptions_list)),
+                'extent_files': extent_files,
+                'extent_size': extent_size,
+                'access_restrictions': ' '.join(set(notes.get('other', [])+notes.get('license', [])+notes.get('statute', []))),
+                'use_restrictions': ' '.join(set(notes.get('copyright', []))),
+                'acquisition_type': organization.acquisition_type,
+                'appraisal_note': ' '.join(set(notes.get('appraisal', []))),
+                'organization': organization,
+                'language': language,
+                'creators': record_creators,
+                })
+            creators_formset = CreatorsFormSet(
+                queryset=RecordCreators.objects.filter(name__in=record_creators))
+            return render(request, self.template_name, {
+                'form': form,
+                'creators_formset': creators_formset,
+                'meta_page_title': 'Create Accession Record',
+                'transfers': transfers_list,
+                'rights_statements': rights_statements,
+                })
+
+    def handle_ajax_request(self, request):
+        rdata = {}
+        rdata['success'] = False
+        if 'resource_id' in request.GET:
+            try:
+                client = ArchivesSpaceClient(
+                    settings.ASPACE['baseurl'], settings.ASPACE['username'],
+                    settings.ASPACE['password'], settings.ASPACE['repo_id'])
+                resp = client.get_resource(request.GET.get('resource_id'))
+                rdata['title'] = "{} ({})".format(resp['title'], resp['id_0'])
+                rdata['uri'] = resp['uri']
+                rdata['success'] = True
+            except Exception as e:
+                rdata['error'] = str(e)
+        return self.render_to_json_response(rdata)
+
+    def render_to_json_response(self, context, **response_kwargs):
+        data = json.dumps(context)
+        response_kwargs['content_type'] = 'application/json'
+        return HttpResponse(data, **response_kwargs)
 
 
 class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView):

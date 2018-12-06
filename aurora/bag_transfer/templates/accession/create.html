@@ -20,12 +20,20 @@
   {% for hidden in form.hidden_fields %}
     {{hidden}}
   {% endfor %}
+  <!-- {{form.resource}} -->
   <div class="row">
     <div class="col-md-12">
       <div class="box box-primary">
         <div class="box-body">
-          {% include 'accession/form_fields.html' with field=form.resource %}
-          <button class="btn btn-default">Find in ArchivesSpace</button>
+          <label for="id_resource">Related Resource *</label>
+          <div id="resource_input">
+            <input id="resource_id" class="form-control" type="text"></input>
+            <p class="help-text">Enter an ID for a resource (for example <code>231</code>)</p>
+            <button href="#" id="resource_find" class="btn btn-default">Find in ArchivesSpace</button>
+          </div>
+          <div id="resource_result" style="display: none;">
+            <h3><span class="label label-default"><span id="resource_title">Resource name</span> <a href="#" id="resource_title_dismisss"><i class="fa fa-times"></i></a></span></h3>
+          </div>
         </div>
       </div>
     </div>
@@ -127,4 +135,47 @@
 
 </form>
 
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  url = "{% url 'accession:detail' %}";
+
+  $(function(){
+    $('#resource_find').on('click', function(e){
+      e.preventDefault();
+
+      $('#messages').empty()
+      $('#resource_input').fadeTo(200, 0.5)
+
+      $.get(url, {'resource_id': $('#resource_id').val()}, function(resp){
+        if (resp.success){
+          $('#resource_input').hide()
+          $('#resource_title').text(resp.title)
+          $('#id_resource').val(resp.uri)
+          $('#resource_result').show()
+        } else {
+          $('#resource_input').fadeTo(0, 1).show()
+          $('#messages').empty()
+          $('#messages').append(
+            '<div class="row">\
+            	<div class="col-md-12">\
+                <div class="alert alert-danger alert-dismissible">\
+                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
+                    <i class="icon fa fa-check"></i>There was an error finding this resource in ArchivesSpace: '+ resp.error +'\
+                </div>\
+              </div>\
+            </div>').fadeIn(300);
+        }
+      })
+    });
+
+    $('#resource_title_dismisss').on('click', function(){
+      $('#resource_result').hide()
+      $('#resource_title').text("")
+      $('#id_resource').val("")
+      $('#resource_input').fadeTo(0, 1).show()
+    });
+  });
+</script>
 {% endblock %}

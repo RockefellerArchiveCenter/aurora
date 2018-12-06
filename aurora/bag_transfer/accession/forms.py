@@ -25,7 +25,7 @@ class AccessionForm(forms.ModelForm):
             'description': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'access_restrictions': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'use_restrictions': forms.widgets.Textarea(attrs={'class': 'form-control', 'rows': 3}),
-            'resource': forms.widgets.TextInput(attrs={'class': 'form-control'}),
+            'resource': forms.widgets.HiddenInput(),
             'accession_number': forms.widgets.HiddenInput(),
             'extent_files': forms.widgets.HiddenInput(),
             'extent_size': forms.widgets.HiddenInput(),

@@ -19,7 +19,7 @@ class Accession(models.Model):
     description = models.TextField()
     access_restrictions = models.TextField()
     use_restrictions = models.TextField()
-    resource = models.URLField()
+    resource = models.CharField(max_length=255)
     acquisition_type = models.CharField(max_length=200)
     appraisal_note = models.TextField(blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='accession', null=True, blank=True)
