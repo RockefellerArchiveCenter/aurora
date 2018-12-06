@@ -227,7 +227,9 @@ class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView
     def get_filter_method(self): return self.FILTER_ICONTAINS
 
     def button(self, accession):
-        button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' if (accession.process_status < Accession.DELIVERED) else ''
+        button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' \
+            if (accession.process_status < Accession.DELIVERED) \
+            else '<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>'
         return button
 
     def prepare_results(self, qs):
