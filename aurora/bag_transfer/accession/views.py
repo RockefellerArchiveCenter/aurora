@@ -18,12 +18,13 @@ from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
 from bag_transfer.rights.models import RightsStatement
 
 
-class AccessionView(AccessioningArchivistMixin, ListView):
+class AccessionView(AccessioningArchivistMixin, JSONResponseMixin, ListView):
     template_name = "accession/main.html"
     model = Accession
 
@@ -63,13 +64,8 @@ class AccessionView(AccessioningArchivistMixin, ListView):
                     rdata['error'] = str(e)
         return self.render_to_json_response(rdata)
 
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
 
-
-class AccessionRecordView(AccessioningArchivistMixin, View):
+class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
     template_name = "accession/create.html"
     model = Accession
     form_class = AccessionForm
@@ -211,11 +207,6 @@ class AccessionRecordView(AccessioningArchivistMixin, View):
             except Exception as e:
                 rdata['error'] = str(e)
         return self.render_to_json_response(rdata)
-
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
 
 
 class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView):

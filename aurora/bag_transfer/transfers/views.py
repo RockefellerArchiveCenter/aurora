@@ -101,14 +101,13 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['meta_page_title'] = "Dashboard"
         context['sorted_org_list'] = []
 
+        organizations = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
+
         if self.request.user.is_archivist():
-            organizations = Organization.objects.all()
             all_orgs_data = self.get_org_data(organizations, 'All Organizations', User.objects.all())
             context['data']['all_orgs'] = {}
             context['data']['all_orgs'].update(all_orgs_data)
             context['sorted_org_list'].append(['all_orgs', 'All Organizations'])
-        else:
-            organizations = Organization.objects.filter(id=self.request.user.organization.pk)
 
         user_data = self.get_org_data(Organization.objects.filter(
             id=self.request.user.organization.pk), 'My Transfers',
@@ -132,10 +131,7 @@ class TransfersView(LoggedInMixinDefaults, View):
     template_name = 'orgs/transfers.html'
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_archivist():
-            organization = Organization.objects.all()
-        else:
-            organization = Organization.objects.filter(id=self.request.user.organization.pk)
+        organization = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
         return render(request, self.template_name, {
             'meta_page_title': 'Transfers',
             'org_uploads_count': Archives.objects.filter(
@@ -204,15 +200,12 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         elif status in [30, 60]:
             label_class = 'red'
         percentage = int(round(status/Archives.ACCESSIONING_COMPLETE * 100))
-        return "{} <div class='progress progress-xs'>\
-                    <div class='progress-bar progress-bar-{}' style='width: {}%' aria-label='{}% complete'></div>\
-                </div>".format(self.process_status_display(status), label_class, percentage, percentage)
+        return "{label} <div class='progress progress-xs'>\
+                    <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
+                </div>".format(label=self.process_status_display(status), label_class=label_class, percentage=percentage)
 
     def get_initial_queryset(self):
-        if self.request.user.is_archivist():
-            organization = Organization.objects.all()
-        else:
-            organization = Organization.objects.filter(id=self.request.user.organization.pk)
+        organization = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
         if self.request.GET.get('q', None) == 'user':
             return Archives.objects.filter(
                 process_status__gte=Archives.TRANSFER_COMPLETED,
@@ -268,6 +261,5 @@ class TransferDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.bag_or_failed_name
-        metadata = self.object.get_bag_data()
-        context['metadata'] = sorted(metadata.iteritems())
+        context['metadata'] = sorted(self.object.get_bag_data().iteritems())
         return context

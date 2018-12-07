@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 from django.db import models
 from bag_transfer.models import Organization, RecordCreators, LanguageCode
 

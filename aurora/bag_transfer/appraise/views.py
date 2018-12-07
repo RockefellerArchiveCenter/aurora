@@ -10,10 +10,11 @@ from django.shortcuts import render, redirect
 
 from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.models import Archives, BAGLog
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import ArchivistMixin
 
 
-class AppraiseView(ArchivistMixin, View):
+class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
     template_name = "appraise/main.html"
 
     def get(self, request, *args, **kwargs):
@@ -63,11 +64,6 @@ class AppraiseView(ArchivistMixin, View):
             'meta_page_title': 'Appraisal Queue',
             'uploads_count': len(Archives.objects.filter(process_status=Archives.VALIDATED).order_by('created_time'))
         })
-
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
 
 
 class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):

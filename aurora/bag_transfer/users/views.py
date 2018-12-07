@@ -17,8 +17,6 @@ from bag_transfer.users.form import *
 
 
 class SplashView(AnonymousRequiredMixin, TemplateView):
-    # template_name = 'transfers/splash.html'
-    # authenticated_redirect_url = reverse_lazy(u"app_home")
 
     def get(self, request):
         return redirect('login')
@@ -126,11 +124,10 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
 
 
 class UserPasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(required=True,
-                  widget=forms.EmailInput(attrs={
-                    'class': 'form-control has-feedback'}),
-                  error_messages={
-                    'required': 'Please enter your email'})
+    email = forms.EmailField(
+            required=True,
+            widget=forms.EmailInput(attrs={'class': 'form-control has-feedback'}),
+            error_messages={'required': 'Please enter your email'})
 
 
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
@@ -153,16 +150,14 @@ class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
 
 
 class UserPasswordResetConfirmForm(SetPasswordForm):
-    new_password1 = forms.CharField(required=True, label='New Password',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please enter your new password'})
-    new_password2 = forms.CharField(required=True, label='New Password (repeat)',
-                  widget=forms.PasswordInput(attrs={
-                    'class': 'form-control'}),
-                  error_messages={
-                    'required': 'Please confirm your new password'})
+    new_password1 = forms.CharField(
+                    required=True, label='New Password',
+                    widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+                    error_messages={'required': 'Please enter your new password'})
+    new_password2 = forms.CharField(
+                    required=True, label='New Password (repeat)',
+                    widget=forms.PasswordInput(attrs={'class': 'form-control'}),
+                    error_messages={'required': 'Please confirm your new password'})
 
 
 class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):

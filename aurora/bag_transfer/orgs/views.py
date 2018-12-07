@@ -5,11 +5,10 @@ from decimal import *
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import JsonResponse, Http404
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
+from django.urls import reverse
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView
 
 from bag_transfer.models import Archives, Organization, User, BagItProfile
 from bag_transfer.orgs.form import *
@@ -78,7 +77,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         return context
 
 
-class BagItProfileManageView(View):
+class BagItProfileManageView(TemplateView):
     template_name = 'bagit_profiles/manage.html'
     model = BagItProfile
 
