@@ -110,29 +110,13 @@
       $.get(url, data, function(resp){
         if (resp.success){
           button.remove();
-          displayMessage('success', 'Accession delivered.');
+          displayMessage('success', 'Accession delivered.', true);
         } else {
-          displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.');
+          displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.', false);
         }
       });
 
     });
-
-    function displayMessage(type, message) {
-      $('#messages').empty()
-      $('#messages').append(
-        '<div class="row">\
-        	<div class="col-md-12">\
-            <div class="alert alert-'+type+' alert-dismissible">\
-              <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
-                <i class="icon fa fa-check"></i>'+message+'\
-            </div>\
-          </div>\
-        </div>').fadeIn(300);
-        setTimeout(function(){
-    			$('.alert-dismissible').fadeOut(1300).remove();
-    		}, 8000);
-    }
   })
 </script>
 {% endblock %}
