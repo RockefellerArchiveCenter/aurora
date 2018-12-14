@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from dateutil import tz
 import json
 import requests
 
@@ -228,7 +229,7 @@ class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView
         for accession in qs:
             json_data.append([
                 accession.title,
-                accession.created.strftime('%b %e, %Y %I:%M:%S %p'),
+                accession.created.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
                 "{} files ({})".format(accession.extent_files, accession.extent_size),
                 self.button(accession),
                 accession.pk

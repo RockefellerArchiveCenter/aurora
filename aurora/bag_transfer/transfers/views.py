@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, division
 from django_datatables_view.base_datatable_view import BaseDatatableView
-import datetime
+from datetime import date
+from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
 from django.views.generic import TemplateView, View, DetailView
@@ -51,7 +52,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['upload_size_by_year'] = 0
         data['record_types_by_year'] = []
 
-        today = datetime.date.today()
+        today = date.today()
         current = today - relativedelta(years=1)
         year_archives = []
         colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
@@ -222,6 +223,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         for transfer in qs:
             dates = ''
             creators = ''
+            upload_time = transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M:%S %p')
             bag_info_data = transfer.get_bag_data()
             if bag_info_data:
                 dates = "{} - {}".format(
@@ -237,7 +239,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                     creators,
                     bag_info_data.get('record_type'),
                     self.file_size(int(transfer.machine_file_size)),
-                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
             else:
@@ -248,7 +250,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                     creators,
                     bag_info_data.get('record_type'),
                     self.file_size(int(transfer.machine_file_size)),
-                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
         return json_data

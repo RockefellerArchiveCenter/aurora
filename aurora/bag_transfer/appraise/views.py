@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from dateutil import tz
 import json
 
 from django.http import HttpResponse
@@ -95,7 +96,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 transfer.organization.name,
                 creators,
                 bag_info_data.get('record_type'),
-                transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
                 self.appraise_buttons(),
                 transfer.id
             ])
