@@ -141,8 +141,10 @@
     $('#resource_find').on('click', function(e){
       e.preventDefault();
 
-      $('#messages').empty()
-      $('#resource_input').fadeTo(200, 0.5)
+      $('#messages').empty();
+      $(this).parents('.form-group').removeClass('has-error');
+      $(this).siblings('.help-block').hide();
+      $('#resource_input').fadeTo(200, 0.5);
 
       $.get(url, {'resource_id': $('#resource_id').val()}, function(resp){
         if (resp.success){
@@ -152,7 +154,7 @@
           $('#resource_result').show()
         } else {
           $('#resource_input').fadeTo(0, 1).show()
-          displayMessage('danger', 'There was an error finding this resource in ArchivesSpace<p>'+ resp.error +'</p>', false);
+          displayMessage('danger', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
         }
       })
     });
