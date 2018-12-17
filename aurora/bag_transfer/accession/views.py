@@ -52,16 +52,16 @@ class AccessionView(AccessioningArchivistMixin, JSONResponseMixin, ListView):
                 try:
                     accession = Accession.objects.get(pk=request.GET['accession_id'])
                     accession_data = AccessionSerializer(accession, context={'request': request})
-                    requests.post(
+                    resp = requests.post(
                         settings.DELIVERY_URL,
                         data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
                         headers={'Content-Type': 'application/json'}
                     )
+                    resp.raise_for_status()
                     accession.process_status = Accession.DELIVERED
                     accession.save()
                     rdata['success'] = 1
                 except Exception as e:
-                    print(e)
                     rdata['error'] = str(e)
         return self.render_to_json_response(rdata)
 
@@ -97,11 +97,12 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
                 if settings.DELIVERY_URL:
                     try:
                         accession_data = AccessionSerializer(accession, context={'request': request})
-                        requests.post(
+                        resp = requests.post(
                             settings.DELIVERY_URL,
                             data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
                             headers={'Content-Type': 'application/json'}
                         )
+                        resp.raise_for_status()
                         accession.process_status = Accession.DELIVERED
                         messages.success(request, 'Accession data delivered.')
                     except Exception as e:

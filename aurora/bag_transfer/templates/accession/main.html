@@ -109,7 +109,7 @@
 
       $.get(url, data, function(resp){
         if (resp.success){
-          button.remove();
+          button.replaceWith('<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>');
           displayMessage('success', 'Accession delivered.', true);
         } else {
           displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.', false);
