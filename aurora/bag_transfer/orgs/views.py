@@ -5,11 +5,10 @@ from decimal import *
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import JsonResponse, Http404
+from django.http import Http404
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse, reverse_lazy
-from django.utils import timezone
-from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView, View
+from django.urls import reverse
+from django.views.generic import ListView, UpdateView, CreateView, DetailView, TemplateView
 
 from bag_transfer.models import Archives, Organization, User, BagItProfile
 from bag_transfer.orgs.form import *
@@ -41,11 +40,13 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
         context = super(OrganizationDetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.name
         context['uploads'] = []
-        archives = Archives.objects.filter(process_status__gte=20, organization=context['object']).order_by('-created_time')[:8]
+        archives = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED,
+                                           organization=context['object']).order_by('-created_time')[:8]
         for archive in archives:
             archive.bag_info_data = archive.get_bag_data()
             context['uploads'].append(archive)
-        context['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization=context['object']).count()
+        context['uploads_count'] = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED,
+                                                           organization=context['object']).count()
         return context
 
 
@@ -76,7 +77,7 @@ class OrganizationListView(ArchivistMixin, ListView):
         return context
 
 
-class BagItProfileManageView(View):
+class BagItProfileManageView(TemplateView):
     template_name = 'bagit_profiles/manage.html'
     model = BagItProfile
 

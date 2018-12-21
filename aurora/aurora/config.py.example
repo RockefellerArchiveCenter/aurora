@@ -63,3 +63,11 @@ EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
 
 DELIVERY_URL = 'http://zodiac-web:8001/api/store-accessions/'
+
+# ArchivesSpace configs
+ASPACE = {
+  "baseurl": "http://localhost:8089/",
+  "username": "admin",
+  "password": "admin",
+  "repo_id": 2,
+}

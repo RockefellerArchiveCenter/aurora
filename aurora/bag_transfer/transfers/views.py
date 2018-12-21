@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals, division
 from django_datatables_view.base_datatable_view import BaseDatatableView
-import datetime
+from datetime import date
+from dateutil import tz
 from dateutil.relativedelta import relativedelta
 
 from django.views.generic import TemplateView, View, DetailView
@@ -25,13 +26,25 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['users'] = []
         data['user_uploads'] = []
         for user in users:
-            user.uploads = Archives.objects.filter(user_uploaded=user, process_status__gte=20).count()
+            user.uploads = Archives.objects.filter(
+                user_uploaded=user,
+                process_status__gte=Archives.TRANSFER_COMPLETED).count()
             data['users'].append(user)
-        data['uploads'] = Archives.objects.filter(process_status__gte=20, organization__in=org).order_by('-created_time')[:15]
-        data['uploads_count'] = Archives.objects.filter(process_status__gte=20, organization__in=org).count()
-        data['validated_count'] = Archives.objects.filter(process_status__gte=40, organization__in=org).count()
-        data['accepted_count'] = Archives.objects.filter(process_status__gte=70, organization__in=org).count()
-        data['accessioned_count'] = Archives.objects.filter(process_status__gte=90, organization__in=org).count()
+        data['uploads'] = Archives.objects.filter(
+            process_status__gte=Archives.TRANSFER_COMPLETED,
+            organization__in=org).order_by('-created_time')[:15]
+        data['uploads_count'] = Archives.objects.filter(
+            process_status__gte=Archives.TRANSFER_COMPLETED,
+            organization__in=org).count()
+        data['validated_count'] = Archives.objects.filter(
+            process_status__gte=Archives.VALIDATED,
+            organization__in=org).count()
+        data['accepted_count'] = Archives.objects.filter(
+            process_status__gte=Archives.ACCEPTED,
+            organization__in=org).count()
+        data['accessioned_count'] = Archives.objects.filter(
+            process_status__gte=Archives.ACCESSIONING_COMPLETE,
+            organization__in=org).count()
         data['month_labels'] = []
         data['upload_count_by_month'] = []
         data['upload_count_by_year'] = 0
@@ -39,14 +52,19 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         data['upload_size_by_year'] = 0
         data['record_types_by_year'] = []
 
-        today = datetime.date.today()
+        today = date.today()
         current = today - relativedelta(years=1)
         year_archives = []
-        colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de', '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de']
+        colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
+                  '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de']
 
         while current <= today:
             data['month_labels'].append(current.strftime("%B"))
-            archives = Archives.objects.filter(process_status__gte=20, organization__in=org, machine_file_upload_time__year=current.year, machine_file_upload_time__month=current.month)
+            archives = Archives.objects.filter(
+                process_status__gte=Archives.TRANSFER_COMPLETED,
+                organization__in=org,
+                machine_file_upload_time__year=current.year,
+                machine_file_upload_time__month=current.month)
             for archive in archives:
                 year_archives.append(archive)
             upload_count = archives.count()
@@ -60,9 +78,11 @@ class MainView(LoggedInMixinDefaults, TemplateView):
                 data['upload_size_by_month'].append(0)
             current += relativedelta(months=1)
 
-        labels = BagInfoMetadata.objects.filter(archive__in=year_archives).values_list('record_type', flat=True)
+        labels = BagInfoMetadata.objects.filter(
+            archive__in=year_archives).values_list('record_type', flat=True)
         for (n, label) in enumerate(set(labels)):
-            number = BagInfoMetadata.objects.filter(archive__in=year_archives, record_type=label).count()
+            number = BagInfoMetadata.objects.filter(
+                archive__in=year_archives, record_type=label).count()
             if label in data['record_types_by_year']:
                 dict_index = next((index for (index, d) in enumerate(lst) if d["label"] == label), None)
                 data['record_types_by_year'][dict_index]["value"] += number
@@ -82,22 +102,25 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context['meta_page_title'] = "Dashboard"
         context['sorted_org_list'] = []
 
+        organizations = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
+
         if self.request.user.is_archivist():
-            organizations = Organization.objects.all()
             all_orgs_data = self.get_org_data(organizations, 'All Organizations', User.objects.all())
             context['data']['all_orgs'] = {}
             context['data']['all_orgs'].update(all_orgs_data)
             context['sorted_org_list'].append(['all_orgs', 'All Organizations'])
-        else:
-            organizations = Organization.objects.filter(id=self.request.user.organization.pk)
 
-        user_data = self.get_org_data(Organization.objects.filter(id=self.request.user.organization.pk), 'My Transfers', User.objects.filter(id=self.request.user.pk))
+        user_data = self.get_org_data(Organization.objects.filter(
+            id=self.request.user.organization.pk), 'My Transfers',
+            User.objects.filter(id=self.request.user.pk))
         context['data'][self.request.user] = {}
         context['data'][self.request.user].update(user_data)
         context['sorted_org_list'].append([self.request.user.username, 'My Transfers'])
 
         for organization in organizations:
-            org_data = self.get_org_data(Organization.objects.filter(id=organization.pk), organization.name, User.objects.filter(organization=organization))
+            org_data = self.get_org_data(Organization.objects.filter(
+                id=organization.pk), organization.name,
+                User.objects.filter(organization=organization))
             context['data'][organization.machine_name] = {}
             context['data'][organization.machine_name].update(org_data)
             context['sorted_org_list'].append([organization.machine_name, organization.name])
@@ -109,14 +132,15 @@ class TransfersView(LoggedInMixinDefaults, View):
     template_name = 'orgs/transfers.html'
 
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_archivist():
-            organization = Organization.objects.all()
-        else:
-            organization = Organization.objects.filter(id=self.request.user.organization.pk)
+        organization = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
         return render(request, self.template_name, {
             'meta_page_title': 'Transfers',
-            'org_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization).count(),
-            'user_uploads_count': Archives.objects.filter(process_status__gte=20, organization__in=organization, user_uploaded=request.user).count(),
+            'org_uploads_count': Archives.objects.filter(
+                process_status__gte=Archives.TRANSFER_COMPLETED,
+                organization__in=organization).count(),
+            'user_uploads_count': Archives.objects.filter(
+                process_status__gte=Archives.TRANSFER_COMPLETED,
+                organization__in=organization, user_uploaded=request.user).count(),
         })
 
 
@@ -126,10 +150,13 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
     def get(self, request, *args, **kwargs):
         data = [('Bag Name', 'Status', 'Organization', 'Size', 'Upload Time', 'Errors')]
         if self.request.user.is_archivist:
-            transfers = Archives.objects.filter(process_status__gte=20).order_by('-created_time')
+            transfers = Archives.objects.filter(
+                process_status__gte=Archives.TRANSFER_COMPLETED).order_by('-created_time')
         else:
             self.organization = get_object_or_404(Organization, pk=self.kwargs['pk'])
-            transfers = Archives.objects.filter(process_status__gte=20, organization=self.organization).order_by('-created_time')
+            transfers = Archives.objects.filter(
+                process_status__gte=Archives.TRANSFER_COMPLETED,
+                organization=self.organization).order_by('-created_time')
         for transfer in transfers:
             transfer_errors = transfer.get_errors()
             errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
@@ -146,8 +173,12 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
 
 class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     model = Archives
-    columns = ['title', 'metadata__date_start', 'process_status', 'organization__name', 'metadata__record_creators__name', 'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
-    order_columns = ['title', 'metadata__date_start', 'process_status', 'organization__name', 'metadata__record_creators__name', 'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
+    columns = ['title', 'metadata__date_start', 'process_status',
+               'organization__name', 'metadata__record_creators__name',
+               'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
+    order_columns = ['title', 'metadata__date_start', 'process_status',
+                     'organization__name', 'metadata__record_creators__name',
+                     'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
     max_display_length = 500
 
     def get_filter_method(self): return self.FILTER_ICONTAINS
@@ -169,21 +200,21 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
             label_class = 'yellow'
         elif status in [30, 60]:
             label_class = 'red'
-        return "{} <div class='progress progress-xs'><div class='progress-bar progress-bar-{}' style='width: {}%' aria-label='{}% complete'></div></div>".format(self.process_status_display(status), label_class, status, status)
+        percentage = int(round(status/Archives.ACCESSIONING_COMPLETE * 100))
+        return "{label} <div class='progress progress-xs'>\
+                    <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
+                </div>".format(label=self.process_status_display(status), label_class=label_class, percentage=percentage)
 
     def get_initial_queryset(self):
-        if self.request.user.is_archivist():
-            organization = Organization.objects.all()
-        else:
-            organization = Organization.objects.filter(id=self.request.user.organization.pk)
+        organization = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
         if self.request.GET.get('q', None) == 'user':
             return Archives.objects.filter(
-                process_status__gte=20,
+                process_status__gte=Archives.TRANSFER_COMPLETED,
                 organization__in=organization,
                 user_uploaded=self.request.user
                 ).annotate(title=Concat('metadata__title', 'bag_it_name'))
         return Archives.objects.filter(
-            process_status__gte=20,
+            process_status__gte=Archives.TRANSFER_COMPLETED,
             organization__in=organization
             ).annotate(title=Concat('metadata__title', 'bag_it_name'))
 
@@ -192,9 +223,12 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         for transfer in qs:
             dates = ''
             creators = ''
+            upload_time = transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M:%S %p')
             bag_info_data = transfer.get_bag_data()
             if bag_info_data:
-                dates = "{} - {}".format(bag_info_data.get('date_start').strftime('%b %e, %Y'), bag_info_data.get('date_end').strftime('%b %e, %Y'))
+                dates = "{} - {}".format(
+                    bag_info_data.get('date_start').strftime('%b %e, %Y'),
+                    bag_info_data.get('date_end').strftime('%b %e, %Y'))
                 creators = ('<br/>').join(bag_info_data.get('record_creators'))
             if self.request.user.is_archivist():
                 json_data.append([
@@ -205,18 +239,18 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                     creators,
                     bag_info_data.get('record_type'),
                     self.file_size(int(transfer.machine_file_size)),
-                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
             else:
                 json_data.append([
-                    bag_info_data.get('title', transfer.bag_or_failed_name()),  # escape HTML for security reasons
+                    bag_info_data.get('title', transfer.bag_or_failed_name()),
                     dates,
                     self.process_status_tag(transfer.process_status),
                     creators,
                     bag_info_data.get('record_type'),
                     self.file_size(int(transfer.machine_file_size)),
-                    transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                    upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
         return json_data
@@ -229,6 +263,5 @@ class TransferDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context['meta_page_title'] = self.object.bag_or_failed_name
-        metadata = self.object.get_bag_data()
-        context['metadata'] = sorted(metadata.iteritems())
+        context['metadata'] = sorted(self.object.get_bag_data().iteritems())
         return context

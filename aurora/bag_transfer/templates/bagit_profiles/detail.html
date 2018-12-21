@@ -28,7 +28,9 @@
         </dl>
       </div>
     </div>
+  </div>
 
+  <div class="col-md-6">
     <div class="box box-info">
     	<div class="box-header with-border">
     		<h2 class="box-title">Technical Information</h2>
@@ -63,14 +65,17 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="col-md-6">
+<div class="row">
+  <div class="col-md-12">
     <div class="box box-info">
     	<div class="box-header with-border">
     		<h2 class="box-title">Metadata Elements</h2>
       </div>
       <div class="box-body">
         {% for b in object.bag_info.all %}
+        <div class="col-md-6">
           <div class="panel panel-default">
             <div class="panel-heading">
               {{b.get_field_display}}
@@ -90,6 +95,7 @@
               {% else %}
                 All values are accepted.
               {% endif %}
+            </div>
           </div>
         </div>
         {% endfor %}

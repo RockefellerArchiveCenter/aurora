@@ -35,12 +35,12 @@ class RightsStatementSerializer(serializers.ModelSerializer):
     start_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
     note = serializers.SerializerMethodField()
-    jurisdiction = serializers.SerializerMethodField()
-    determination_date = serializers.SerializerMethodField()
-    status = serializers.SerializerMethodField()
-    terms = serializers.SerializerMethodField()
-    citation = serializers.SerializerMethodField()
-    other_rights_basis = serializers.SerializerMethodField()
+    jurisdiction = serializers.SerializerMethodField(allow_null=True, required=False)
+    determination_date = serializers.SerializerMethodField(allow_null=True, required=False)
+    status = serializers.SerializerMethodField(allow_null=True, required=False)
+    terms = serializers.SerializerMethodField(allow_null=True, required=False)
+    citation = serializers.SerializerMethodField(allow_null=True, required=False)
+    other_rights_basis = serializers.SerializerMethodField(allow_null=True, required=False)
 
     class Meta:
         model = RightsStatement

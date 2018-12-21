@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from dateutil import tz
 import json
 
 from django.http import HttpResponse
@@ -10,10 +11,11 @@ from django.shortcuts import render, redirect
 
 from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.models import Archives, BAGLog
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import ArchivistMixin
 
 
-class AppraiseView(ArchivistMixin, View):
+class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
     template_name = "appraise/main.html"
 
     def get(self, request, *args, **kwargs):
@@ -49,7 +51,7 @@ class AppraiseView(ArchivistMixin, View):
                                         appraisal_decision = int(request.GET['appraisal_decision'])
                                     except Exception as e:
                                         print e
-                                    upload.process_status = (70 if appraisal_decision else 60)
+                                    upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
                                     BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                     if not appraisal_decision:
                                         remove_file_or_dir(upload.machine_file_path)
@@ -61,13 +63,8 @@ class AppraiseView(ArchivistMixin, View):
 
         return render(request, self.template_name, {
             'meta_page_title': 'Appraisal Queue',
-            'uploads_count': len(Archives.objects.filter(process_status=40).order_by('created_time'))
+            'uploads_count': len(Archives.objects.filter(process_status=Archives.VALIDATED).order_by('created_time'))
         })
-
-    def render_to_json_response(self, context, **response_kwargs):
-        data = json.dumps(context)
-        response_kwargs['content_type'] = 'application/json'
-        return HttpResponse(data, **response_kwargs)
 
 
 class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
@@ -85,7 +82,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
 
     def get_initial_queryset(self):
-        return Archives.objects.filter(process_status=40)
+        return Archives.objects.filter(process_status=Archives.VALIDATED)
 
     def prepare_results(self, qs):
         json_data = []
@@ -99,7 +96,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 transfer.organization.name,
                 creators,
                 bag_info_data.get('record_type'),
-                transfer.machine_file_upload_time.strftime('%b %e, %Y %I:%M:%S %p'),
+                transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
                 self.appraise_buttons(),
                 transfer.id
             ])

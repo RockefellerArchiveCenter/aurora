@@ -8,12 +8,17 @@
 {% block content %}
 <div class="row">
   <div class="col-md-12">
-    <div class="box box-default">
-      <div class="box-body">
+    <div class="nav-tabs-custom">
+			<ul class="nav nav-tabs">
+				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions ({{ uploads|length }})</a></li>
+				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions|length }})</a></li>
+			</ul>
+			<div class="tab-content">
+				<div class="tab-pane active table-responsive" id="pending">
           {% if not uploads %}
         <div>No pending accessions</div>
           {% else %}
-        <table id="accession_table" class="table table-striped dataTable">
+        <table id="pending_accession_table" class="table table-striped dataTable">
           <thead>
             <tr>
               <th>Organization</th>
@@ -39,9 +44,25 @@
           </tbody>
         </table>
         {% endif %}
-
-      </div>
-    </div>
+				</div>
+				<div class="tab-pane table-responsive" id="saved">
+          {% if not accessions %}
+        <div>No saved accessions</div>
+          {% else %}
+          <table id="saved_accession_table" class="table table-striped dataTable" style="width:100%">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Date Created</th>
+                <th>Extent</th>
+                <th></th>
+              </tr>
+            </thead>
+          </table>
+        {% endif %}
+				</div>
+			</div>
+		</div>
   </div>
 </div>
 
@@ -51,7 +72,24 @@
 <script type="text/javascript">
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    $('#accession_table').DataTable({
+    $('#saved_accession_table').DataTable({
+      'createdRow': function(row, data, dataIndex) {
+          console.log(data)
+          $(row).attr('data-accession-id', data[4]);
+      },
+      'stateSave'   : true,
+      'paging'      : true,
+      'lengthChange': false,
+      'searching'   : true,
+      'ordering'    : true,
+      'info'        : true,
+      'autoWidth'   : true,
+      'pageLength'  : 25,
+      'processing': true,
+      'serverSide': true,
+      'ajax': '{% url "accession:saved-datatable" %}'
+    })
+    $('#pending_accession_table').DataTable({
       'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
@@ -61,6 +99,24 @@
       'autoWidth'   : true,
       'pageLength'  : 25
     })
+
+    $("#saved_accession_table tbody").on("click", ".deliver", function(e){
+      e.preventDefault();
+      url = '{% url 'accession:list' %}';
+
+      var data = {'accession_id': $(this).closest('tr').attr('data-accession-id')}
+      var button = $(this)
+
+      $.get(url, data, function(resp){
+        if (resp.success){
+          button.replaceWith('<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>');
+          displayMessage('success', 'Accession delivered.', true);
+        } else {
+          displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.', false);
+        }
+      });
+
+    });
   })
 </script>
 {% endblock %}

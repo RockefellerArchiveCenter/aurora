@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from datetime import datetime
-
 from django.db import models
 from bag_transfer.models import Organization, RecordCreators, LanguageCode
 
@@ -19,16 +17,17 @@ class Accession(models.Model):
     description = models.TextField()
     access_restrictions = models.TextField()
     use_restrictions = models.TextField()
-    resource = models.URLField()
+    resource = models.CharField(max_length=255)
     acquisition_type = models.CharField(max_length=200)
     appraisal_note = models.TextField(blank=True, null=True)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name='accession', null=True, blank=True)
     language = models.ForeignKey(LanguageCode, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     last_modified = models.DateTimeField(auto_now=True)
+    CREATED = 10
+    DELIVERED = 20
     PROCESS_STATUS_CHOICES = (
-        (10, 'Accession created'),
-        (20, 'Accession delivered to ArchivesSpace'),
-        (30, 'Accession delivered to Archivematica')
+        (CREATED, 'Accession created'),
+        (DELIVERED, 'Accession delivered to queue'),
     )
     process_status = models.PositiveSmallIntegerField(choices=PROCESS_STATUS_CHOICES, default=10, null=True, blank=True)

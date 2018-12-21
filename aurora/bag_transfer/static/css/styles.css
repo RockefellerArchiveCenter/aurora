@@ -194,6 +194,10 @@ div.dataTables_wrapper div.dataTables_filter input {
 	font-weight: 600;
 }
 
+#resource_result h3 {
+	margin-top: 0;
+}
+
 @media (min-width: 768px) {
 	.dl-horizontal dt {width:180px}
 	.dl-horizontal dd {margin-left: 200px;}
