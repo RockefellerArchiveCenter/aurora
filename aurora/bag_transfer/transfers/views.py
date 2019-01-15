@@ -59,20 +59,27 @@ class MainView(LoggedInMixinDefaults, TemplateView):
 
         while current <= today:
             if DashboardMonthData.objects.filter(organization__in=org, sort_date=int(str(current.year)+str(current.month))).exists():
-                month_data = DashboardMonthData.objects.get(organization__in=org, sort_date=int(str(current.year)+str(current.month)))
+                upload_count = 0
+                upload_size = 0
+                for month_data in DashboardMonthData.objects.filter(organization__in=org, sort_date=int(str(current.year)+str(current.month))):
+                    upload_count += month_data.upload_count
+                    upload_size += month_data.upload_size
                 data['month_labels'].append(str(month_data.month_label))
-                data['upload_count_by_month'].append(month_data.upload_count)
-                data['upload_count_by_year'] += month_data.upload_count
-                data['upload_size_by_month'].append(month_data.upload_size)
-                data['upload_size_by_year'] += month_data.upload_size
+                data['upload_count_by_month'].append(upload_count)
+                data['upload_count_by_year'] += upload_count
+                data['upload_size_by_month'].append(upload_size)
+                data['upload_size_by_year'] += upload_size
             else:
                 data['month_labels'].append(current.strftime("%B"))
                 data['upload_count_by_month'].append(0)
                 data['upload_size_by_month'].append(0)
             current += relativedelta(months=1)
 
-        for (n, record_type) in enumerate(DashboardRecordTypeData.objects.filter(organization__in=org)):
-            data['record_types_by_year'].append({"label": record_type.label, "value": record_type.count, "color": colors[n]})
+        for (n, label) in enumerate(set(DashboardRecordTypeData.objects.all().values_list('label', flat=True))):
+            record_type_count = 0
+            for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=org).values_list('count', flat=True):
+                record_type_count += count
+            data['record_types_by_year'].append({"label": label, "value": record_type_count, "color": colors[n]})
 
         data['size_trend'] = round((data['upload_size_by_month'][-1] - (data['upload_size_by_year']/12))/100, 2)
         data['count_trend'] = round((data['upload_count_by_month'][-1] - (data['upload_count_by_year']/12))/100, 2)
