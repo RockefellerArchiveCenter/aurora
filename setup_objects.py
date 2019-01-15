@@ -187,9 +187,12 @@ if len(User.objects.all()) == 0:
                 g = Group.objects.get_or_create(name=group)[0]
                 new_user.groups.add(g)
         new_user.save()
-        home = '/home/{}'.format(user['username'])
-        command = 'useradd {} -d {} -m -g {}'.format(user['username'], home, 'users')
-        try:
-            output = check_output(command, shell=True, stderr=STDOUT)
-        except Exception as e:
-            print e
+
+print "Adding users to system"
+for user in DEFAULT_USERS:
+    home = '/home/{}'.format(user['username'])
+    command = 'useradd {} -d {} -m -g {}'.format(user['username'], home, 'users')
+    try:
+        output = check_output(command, shell=True, stderr=STDOUT)
+    except Exception as e:
+        print e
