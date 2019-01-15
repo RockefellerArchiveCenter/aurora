@@ -11,7 +11,7 @@ from django.db.models.functions import Concat
 from django.shortcuts import render
 from django.utils.html import escape
 
-from bag_transfer.models import Archives, Organization, User, BagInfoMetadata
+from bag_transfer.models import Archives, Organization, User, BagInfoMetadata, DashboardMonthData, DashboardRecordTypeData
 from bag_transfer.rights.models import RightsStatement
 from bag_transfer.mixins.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
@@ -54,45 +54,28 @@ class MainView(LoggedInMixinDefaults, TemplateView):
 
         today = date.today()
         current = today - relativedelta(years=1)
-        year_archives = []
         colors = ['#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de',
                   '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de']
 
         while current <= today:
-            data['month_labels'].append(current.strftime("%B"))
-            archives = Archives.objects.filter(
-                process_status__gte=Archives.TRANSFER_COMPLETED,
-                organization__in=org,
-                machine_file_upload_time__year=current.year,
-                machine_file_upload_time__month=current.month)
-            for archive in archives:
-                year_archives.append(archive)
-            upload_count = archives.count()
-            data['upload_count_by_month'].append(upload_count)
-            data['upload_count_by_year'] += upload_count
-            upload_size = archives.aggregate(Sum('machine_file_size'))
-            if upload_size['machine_file_size__sum']:
-                data['upload_size_by_month'].append(upload_size['machine_file_size__sum']/1000000000)
-                data['upload_size_by_year'] += upload_size['machine_file_size__sum']/1000000000
+            if DashboardMonthData.objects.filter(organization__in=org, sort_date=int(str(current.year)+str(current.month))).exists():
+                month_data = DashboardMonthData.objects.get(organization__in=org, sort_date=int(str(current.year)+str(current.month)))
+                data['month_labels'].append(str(month_data.month_label))
+                data['upload_count_by_month'].append(month_data.upload_count)
+                data['upload_count_by_year'] += month_data.upload_count
+                data['upload_size_by_month'].append(month_data.upload_size)
+                data['upload_size_by_year'] += month_data.upload_size
             else:
+                data['month_labels'].append(current.strftime("%B"))
+                data['upload_count_by_month'].append(0)
                 data['upload_size_by_month'].append(0)
             current += relativedelta(months=1)
 
-        labels = BagInfoMetadata.objects.filter(
-            archive__in=year_archives).values_list('record_type', flat=True)
-        for (n, label) in enumerate(set(labels)):
-            number = BagInfoMetadata.objects.filter(
-                archive__in=year_archives, record_type=label).count()
-            if label in data['record_types_by_year']:
-                dict_index = next((index for (index, d) in enumerate(lst) if d["label"] == label), None)
-                data['record_types_by_year'][dict_index]["value"] += number
-            else:
-                data['record_types_by_year'].append({"label": label, "value": number, "color": colors[n]})
+        for (n, record_type) in enumerate(DashboardRecordTypeData.objects.filter(organization__in=org)):
+            data['record_types_by_year'].append({"label": record_type.label, "value": record_type.count, "color": colors[n]})
 
-        data['average_size'] = sum(data['upload_size_by_month'])/len(data['upload_size_by_month'])
-        data['average_count'] = sum(data['upload_count_by_month'])/len(data['upload_count_by_month'])
-        data['size_trend'] = round((data['upload_size_by_month'][-1] - data['average_size'])/100, 2)
-        data['count_trend'] = round((data['upload_count_by_month'][-1] - data['average_count'])/100, 2)
+        data['size_trend'] = round((data['upload_size_by_month'][-1] - (data['upload_size_by_year']/12))/100, 2)
+        data['count_trend'] = round((data['upload_count_by_month'][-1] - (data['upload_count_by_year']/12))/100, 2)
 
         return data
 
