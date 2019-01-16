@@ -55,7 +55,7 @@ class AccessionView(AccessioningArchivistMixin, JSONResponseMixin, ListView):
                     resp = requests.post(
                         settings.DELIVERY_URL,
                         data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
-                        headers={'Content-Type': 'application/json'}
+                        headers={'Content-Type': 'application/json', 'apikey': settings.API_KEY}
                     )
                     resp.raise_for_status()
                     accession.process_status = Accession.DELIVERED
@@ -100,7 +100,7 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
                         resp = requests.post(
                             settings.DELIVERY_URL,
                             data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
-                            headers={'Content-Type': 'application/json'}
+                            headers={'Content-Type': 'application/json', 'apikey': settings.API_KEY}
                         )
                         resp.raise_for_status()
                         accession.process_status = Accession.DELIVERED

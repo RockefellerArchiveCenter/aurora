@@ -183,6 +183,7 @@ TEST_USER = CF.TEST_USER
 
 # Post-accession callbacks
 DELIVERY_URL = getattr(CF, 'DELIVERY_URL', None)
+API_KEY = getattr(CF, 'API_KEY', None)
 
 # ArchivesSpace configs
 ASPACE = CF.ASPACE
