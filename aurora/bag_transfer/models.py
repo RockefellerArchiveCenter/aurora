@@ -760,3 +760,18 @@ class BagItProfileBagInfo(models.Model):
 class BagItProfileBagInfoValues(models.Model):
     bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
     name = models.CharField(max_length=256)
+
+
+class DashboardMonthData(models.Model):
+    year = models.PositiveSmallIntegerField()
+    month_label = models.CharField(max_length=15)
+    sort_date = models.PositiveIntegerField()
+    organization = models.ForeignKey(Organization)
+    upload_count = models.PositiveSmallIntegerField(default=0)
+    upload_size = models.FloatField(default=0)
+
+
+class DashboardRecordTypeData(models.Model):
+    organization = models.ForeignKey(Organization)
+    label = models.CharField(max_length=255)
+    count = models.PositiveSmallIntegerField(default=0)
