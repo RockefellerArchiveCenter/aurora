@@ -33,3 +33,8 @@ volumes:
   auroradb:
   auroraldap:
   storage:
+
+# networks:
+#   default:
+#     external:
+#       name: zodiac_microservices
