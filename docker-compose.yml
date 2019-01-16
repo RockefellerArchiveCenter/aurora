@@ -34,7 +34,7 @@ volumes:
   auroraldap:
   storage:
 
-networks:
-  default:
-    external:
-      name: zodiac_microservices
+# networks:
+#   default:
+#     external:
+#       name: zodiac_microservices
