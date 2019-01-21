@@ -98,7 +98,7 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'bag_transfer.backend.RACLDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # Password validation

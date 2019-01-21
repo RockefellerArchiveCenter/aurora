@@ -7,14 +7,6 @@ services:
       MYSQL_ROOT_PASSWORD: example
     volumes:
       - auroradb:/var/lib/mysql
-  ldap:
-    build: ldap/
-    volumes:
-      - .:/code
-    ports:
-      - "389:389"
-    volumes:
-      - auroraldap:/var/lib/ldap
   web:
     build: .
     entrypoint: /code/entrypoint.sh
@@ -27,11 +19,9 @@ services:
       - "8000:8000"
     depends_on:
       - db
-      - ldap
 
 volumes:
   auroradb:
-  auroraldap:
   storage:
 
 # networks:

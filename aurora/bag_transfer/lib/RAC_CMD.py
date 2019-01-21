@@ -24,10 +24,12 @@ def add_org(org_name):
     return (0, '')
 
 
-def add_user(machine_user_id):
+def add_user(username):
     # try add user
     has_ERR = False
-    command = 'sudo /usr/local/bin/RACcreateuser {}'.format(machine_user_id)
+    home = '/home/{}'.format(username)
+    shell = '/bin/bash'
+    command = 'useradd {} -d {} -m -g {} -s {}'.format(username, home, 'users', shell)
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
@@ -48,7 +50,7 @@ def add_user(machine_user_id):
 
 def add2grp(organization_machine_name, machine_user_id):
     has_ERR = False
-    command = 'sudo /usr/local/bin/RACadd2grp {} {}'.format(organization_machine_name, machine_user_id)
+    command = 'usermod -G {} {}'.format(organization_machine_name, machine_user_id)
 
     output = None
     try:
@@ -63,7 +65,7 @@ def delete_system_group(organization_machine_name):
     if not organization_machine_name.startswith('org'):
         return False
     has_ERR = False
-    command = 'sudo sh /usr/local/bin/RACdelorg {}'.format(organization_machine_name)
+    command = 'groupdel {}'.format(organization_machine_name)
     output = None
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
@@ -79,7 +81,7 @@ def del_from_org(machine_user_id):
 
     for group in ugroups:
 
-        command = 'sudo sh /usr/local/bin/RACdelfromorg {} {}'.format(machine_user_id,group)
+        command = 'gpasswd -d $1 $2 {} {}'.format(machine_user_id,group)
 
         output = None
         try:

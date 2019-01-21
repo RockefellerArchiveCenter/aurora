@@ -27,43 +27,26 @@ class UsersListView(ArchivistMixin, SuccessMessageMixin, ListView):
     model = User
 
     def get(self, request, *args, **kwargs):
-        refresh_ldap = User.refresh_ldap_accounts()
-        if refresh_ldap:
-            messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
-
         users_list = [{'org': {}, 'users': []}]
         users_list[0]['org'] = {'pass': 'pass'}
         users_list[0]['users'] = User.objects.all().order_by('username')
-
         org_users_list = [{'org': {}, 'users': []}]
         org_users_list = Organization.users_by_org()
-
-        next_unassigned_user = User.objects.filter(
-            from_ldap=True,
-            is_new_account=True,
-            organization=None).order_by('username').first()
-
-        if not next_unassigned_user:
-            messages.info(
-                request,
-                "No unassigned users available. Additional users must be created in LDAP first.")
 
         return render(request, self.template_name, {
             'meta_page_title': 'Users',
             'users_list': users_list,
             'org_users_list': org_users_list,
-            'next_unassigned_user': next_unassigned_user
             })
 
 
 class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'users/update.html'
     model = User
-    fields = ['is_new_account']
     success_message = "New User Saved!"
 
     def get_form_class(self):
-        return (OrgUserUpdateForm)
+        return (OrgUserCreateForm)
 
     def get_success_url(self):
         return reverse('users:detail', kwargs={'pk': self.object.pk})
@@ -92,7 +75,6 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
 class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'users/update.html'
     model = User
-    page_title = "Edit User"
     success_message = "Your changes have been saved!"
 
     def get_form_class(self):
@@ -100,8 +82,8 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
-        context['page_title'] = "Edit User"
-        context['meta_page_title'] = "Edit User"
+        context['page_title'] = "Edit {}".format(self.object.username)
+        context['meta_page_title'] = "Edit {}".format(self.object.username)
         return context
 
     def get_success_url(self):

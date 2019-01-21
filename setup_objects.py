@@ -3,7 +3,7 @@ from subprocess import *
 
 from bag_transfer.models import Organization, User, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagManifestsRequired, TagFilesRequired
 from bag_transfer.rights.models import RightsStatement, RightsStatementCopyright, RightsStatementOther, RightsStatementRightsGranted, RecordType
-from bag_transfer.lib.RAC_CMD import add_org
+from bag_transfer.lib.RAC_CMD import add_org, add_user
 from aurora import settings
 
 orgs = Organization.objects.all()
@@ -12,18 +12,24 @@ DEFAULT_USERS = [
     {
         "username": "admin",
         "password": "password",
+        "first_name": "System",
+        "last_name": "Administrator",
         "superuser": True,
         "staff": True,
     },
     {
         "username": "donor",
         "password": "password",
+        "first_name": "Donor",
+        "last_name": "Representative",
         "superuser": False,
         "staff": False,
     },
     {
         "username": "manager",
         "password": "password",
+        "first_name": "Managing",
+        "last_name": "Archivist",
         "superuser": False,
         "staff": True,
         "groups": ["managing_archivists"],
@@ -31,6 +37,8 @@ DEFAULT_USERS = [
     {
         "username": "appraiser",
         "password": "password",
+        "first_name": "Appraisal",
+        "last_name": "Archivist",
         "superuser": False,
         "staff": True,
         "groups": ["appraisal_archivists"],
@@ -38,6 +46,8 @@ DEFAULT_USERS = [
     {
         "username": "accessioner",
         "password": "password",
+        "first_name": "Accessioning",
+        "last_name": "Archivist",
         "superuser": False,
         "staff": True,
         "groups": ["accessioning_archivists"],
@@ -178,21 +188,17 @@ else:
 if len(User.objects.all()) == 0:
     print "Creating users"
     for user in DEFAULT_USERS:
-        new_user = User.objects.create_user(user['username'], password=user['password'])
-        new_user.is_superuser = user['superuser']
-        new_user.is_staff = user['staff']
-        new_user.organization = orgs[0]
+        new_user = User.objects.create_user(
+            user['username'],
+            first_name=user['first_name'],
+            last_name=user['last_name'],
+            password=user['password'],
+            email="{}@example.org".format(user['username']),
+            is_superuser=user['superuser'],
+            is_staff=user['staff'],
+            organization=orgs[0])
         if 'groups' in user:
             for group in user['groups']:
                 g = Group.objects.get_or_create(name=group)[0]
                 new_user.groups.add(g)
         new_user.save()
-
-print "Adding users to system"
-for user in DEFAULT_USERS:
-    home = '/home/{}'.format(user['username'])
-    command = 'useradd {} -d {} -m -g {}'.format(user['username'], home, 'users')
-    try:
-        output = check_output(command, shell=True, stderr=STDOUT)
-    except Exception as e:
-        print e

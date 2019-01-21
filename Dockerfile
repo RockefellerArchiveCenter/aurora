@@ -28,7 +28,7 @@ RUN apt-get update \
 COPY ldap/ldap.* /etc/
 COPY scripts/RAC* /usr/local/bin/
 COPY import_sample_data.sh /usr/local/bin/import_sample_data
-RUN gcc /usr/local/bin/RACcreateuser.c -o /usr/local/bin/RACcreateuser -lldap -llber -lresolv
+RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
 RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
 
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config

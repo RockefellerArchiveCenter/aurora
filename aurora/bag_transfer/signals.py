@@ -6,10 +6,10 @@ import os
 
 from bag_transfer.lib.files_helper import chown_path_to_root
 
-from django.db.models.signals import pre_delete, post_save
+from django.db.models.signals import m2m_changed, pre_delete, post_save
 from django.dispatch import receiver
 
-from bag_transfer.models import Archives, BagInfoMetadata, Organization, DashboardMonthData, DashboardRecordTypeData
+from bag_transfer.models import Archives, User, BagInfoMetadata, Organization, DashboardMonthData, DashboardRecordTypeData
 
 from bag_transfer.lib.RAC_CMD import delete_system_group
 
@@ -22,6 +22,12 @@ def delete_organization(sender, instance, **kwargs):
 
     # remove system group
     delete_system_group(instance.machine_name)
+
+
+@receiver(m2m_changed, sender=User.groups.through)
+def set_is_staff(sender, instance, **kwargs):
+    instance.is_staff = True if (any(name in ['managing_archivists', 'accessioning_archivists', 'appraisal_archivists'] for name in instance.groups.values_list('name', flat=True)) or (instance.is_superuser)) else False
+    instance.save()
 
 
 @receiver(post_save, sender=Archives)

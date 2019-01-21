@@ -1,7 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load util %}
 
-{% block h1_title %}{{page_title}}{% endblock %}
+{% block h1_title %}{% if page_title %}{{page_title}}{% else %}Add User{% endif %}{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -9,47 +9,23 @@
     <div class="col-md-12">
 
         <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
-            <div class="box-header with-border">
-            </div>
             <div class="box-body">
                 <form role="form" action="" method="post">
                     {% csrf_token %}
-                    {% if object.is_new_account %}
-                        <div class="callout callout-info">
-                            <h4>Unassigned Account!</h4>
-                            <p>Updating the user record will remove them from unassigned list.</p>
-                        </div>
-                    {% endif %}
 
                     {% if request.user.is_manager or request.user.is_superuser %}
-                    <div class="checkbox">
-                      <label for="id_is_active">
-                        <input id="id_is_active" type="checkbox" name="is_active" {% if object.is_active %}checked{% endif %}> Active?
-                      </label>
-                    </div>
-
-                    <input type="hidden" name="from_ldap" value="1" />
-
-                    <div class="form-group">
-                      <label for="id_first_name">First Name</label>
-                      <input type="text" name="first_name" value="{{ object.first_name }}" class="form-control" id="id_first_name" placeholder="First Name" required>
-                    </div>
-
-                    <div class="form-group">
-                      <label for="id_last_name">Last Name</label>
-                      <input type="text" name="last_name" value="{{ object.last_name }}" class="form-control" id="id_last_name" placeholder="Last Name" required>
-                    </div>
-
+                      {% include 'rights/form_fields.html' with field=form.is_active %}
+                      {% include 'rights/form_fields.html' with field=form.username %}
+                      {% include 'rights/form_fields.html' with field=form.first_name %}
+                      {% include 'rights/form_fields.html' with field=form.last_name %}
                     {% endif %}
 
-                    <div class="form-group">
-                      <label for="id_email">Email address</label>
-                      <input type="email" name="email" value="{{ object.email }}" class="form-control" id="id_email" placeholder="Enter email" required>
-                    </div>
+                    {% include 'rights/form_fields.html' with field=form.email %}
 
                     {% if request.user.is_manager or request.user.is_superuser %}
 
                         {% if not object.is_staff %}
+                        {% include 'rights/form_fields.html' with field=form.organization %}
                         <div class="form-group">
                             <label for="id_organization">Organization</label>
                             <select id="id_organization" class="form-control" name="organization" required>
