@@ -45,8 +45,6 @@ def add_user(username):
 
     return (True if not has_ERR else False)
 
-    # possible check next account exist in LDAP
-
 
 def add2grp(organization_machine_name, machine_user_id):
     has_ERR = False

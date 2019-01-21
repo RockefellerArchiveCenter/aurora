@@ -10,10 +10,6 @@ RUN apt-get update \
     clamav-daemon \
     clamav-freshclam \
     default-libmysqlclient-dev \
-    ldap-utils \
-    libldap2-dev \
-    libsasl2-dev \
-    libssl-dev \
     python-dev \
     python-pip \
     slapd \
@@ -25,7 +21,6 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy and make Aurora scripts
-COPY ldap/ldap.* /etc/
 COPY scripts/RAC* /usr/local/bin/
 COPY import_sample_data.sh /usr/local/bin/import_sample_data
 RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data

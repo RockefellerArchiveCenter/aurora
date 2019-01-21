@@ -14,7 +14,6 @@ from django.urls import reverse
 from django.utils.translation import gettext as _
 
 from bag_transfer.lib import RAC_CMD
-from bag_transfer.lib.ldap_auth import LDAP_Manager
 
 
 class Organization(models.Model):
@@ -164,22 +163,6 @@ class User(AbstractUser):
 
     def can_appraise(self):
         return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
-
-    def check_password_ldap(self, password):
-        from bag_transfer.mixins.ldap_mixin import _LDAPUserExtension
-        ldap_interface = _LDAPUserExtension()
-        if ldap_interface.authenticate(username=self.username, password=password):
-            return True
-        return False
-
-    def set_password_ldap(self, raw_password):
-        from bag_transfer.mixins.ldap_mixin import _LDAPUserExtension
-        ldap_interface = _LDAPUserExtension()
-        if ldap_interface.set_password(username=self.username,password=raw_password):
-            self.password = make_password(raw_password)
-            self._password = raw_password
-            return True
-        return False
 
     def save(self, *args, **kwargs):
         if self.pk is None:
