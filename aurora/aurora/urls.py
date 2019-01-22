@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from bag_transfer.users.views import SplashView
-from bag_transfer.users.form import UserPasswordResetForm, UserPasswordResetConfirmForm
+from bag_transfer.users.form import UserPasswordResetForm, UserSetPasswordForm
 from django.contrib.auth import views as auth_views
 from bag_transfer.transfers.views import MainView
 
@@ -39,12 +39,12 @@ urlpatterns = [
         name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
         auth_views.password_reset_confirm,
-        {'password_reset_confirm_form': UserPasswordResetConfirmForm,
+        {'set_password_form': UserSetPasswordForm,
          'template_name': 'users/password_reset_confirm.html'},
-        name='password-reset-confirm'),
+        name='password_reset_confirm'),
     url(r'^reset/done/$', auth_views.password_reset_complete,
         {'template_name': 'users/password_reset_complete.html'},
-        name='password-reset-complete'),
+        name='password_reset_complete'),
     url(r'^app/accession/',     include('bag_transfer.accession.urls', namespace='accession')),
     url(r'^app/appraise/',      include('bag_transfer.appraise.urls', namespace='appraise')),
     url(r'^app/rights/',        include('bag_transfer.rights.urls', namespace='rights')),

@@ -79,7 +79,7 @@ class UserPasswordResetForm(PasswordResetForm):
             error_messages={'required': 'Please enter your email'})
 
 
-class UserPasswordResetConfirmForm(SetPasswordForm):
+class UserSetPasswordForm(SetPasswordForm):
     new_password1 = forms.CharField(
                     required=True, label='New Password',
                     widget=forms.PasswordInput(attrs={'class': 'form-control'}),
