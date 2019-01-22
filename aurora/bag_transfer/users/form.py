@@ -15,6 +15,7 @@ class OrgUserCreateForm(forms.ModelForm):
             'first_name': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'email': forms.widgets.EmailInput(attrs={'class': 'form-control'}),
+            'organization': forms.widgets.Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -27,6 +28,7 @@ class OrgUserUpdateForm(forms.ModelForm):
             'first_name': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'last_name': forms.widgets.TextInput(attrs={'class': 'form-control'}),
             'email': forms.widgets.EmailInput(attrs={'class': 'form-control'}),
+            'organization': forms.widgets.Select(attrs={'class': 'form-control'}),
         }
 
 

@@ -25,15 +25,7 @@
                     {% if request.user.is_manager or request.user.is_superuser %}
 
                         {% if not object.is_staff %}
-                        {% include 'rights/form_fields.html' with field=form.organization %}
-                        <div class="form-group">
-                            <label for="id_organization">Organization</label>
-                            <select id="id_organization" class="form-control" name="organization" required>
-                                {% for org in form.fields.organization.choices %}
-                                <option value="{{org.0}}" {% if object.organization and object.organization.pk == org.0 %}selected="selected"{% endif %}>{{ org.1 }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
+                          {% include 'rights/form_fields.html' with field=form.organization %}
                         {% endif %}
 
                         <div class="form-group">
