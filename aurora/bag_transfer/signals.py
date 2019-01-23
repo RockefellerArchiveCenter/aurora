@@ -4,14 +4,12 @@ from dateutil.relativedelta import relativedelta
 import pwd
 import os
 
-from bag_transfer.lib.files_helper import chown_path_to_root
-
 from django.db.models.signals import m2m_changed, pre_delete, post_save
 from django.dispatch import receiver
 
-from bag_transfer.models import Archives, User, BagInfoMetadata, Organization, DashboardMonthData, DashboardRecordTypeData
-
+from bag_transfer.lib.files_helper import chown_path_to_root
 from bag_transfer.lib.RAC_CMD import delete_system_group
+from bag_transfer.models import Archives, User, BagInfoMetadata, Organization, DashboardMonthData, DashboardRecordTypeData
 
 
 @receiver(pre_delete, sender=Organization)

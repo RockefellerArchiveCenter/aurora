@@ -168,6 +168,7 @@ class User(AbstractUser):
         if self.pk is None:
             if RAC_CMD.add_user(self.username):
                 if RAC_CMD.add2grp(self.organization.machine_name, self.username):
+                    self.set_password(User.objects.make_random_password())
                     super(User, self).save(*args, **kwargs)
         else:
             orig = User.objects.get(pk=self.pk)

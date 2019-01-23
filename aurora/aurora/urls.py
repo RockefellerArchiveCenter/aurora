@@ -26,11 +26,14 @@ urlpatterns = [
     url(r'^app/transfers/',     include('bag_transfer.transfers.urls', namespace='transfers')),
     url(r'^app/orgs/',          include('bag_transfer.orgs.urls', namespace='orgs')),
     url(r'^app/users/',         include('bag_transfer.users.urls', namespace='users')),
-    url(r'^reset-password/$',   UserPasswordResetView.as_view(), name='password_reset'),
+    url(r'^reset-password/$',   UserPasswordResetView.as_view(
+                                    email_template_name='users/password_reset_email.html',
+                                    subject_template_name='users/password_reset_subject.txt'
+                                ), name='password_reset'),
     url(r'^reset-password/done/$', UserPasswordResetDoneView.as_view(), name='password_reset_done'),
     url(r'^reset/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$',
-        UserPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    url(r'^reset/done/$',       UserPasswordResetConfirmView.as_view(), name='password_reset_complete'),
+                                UserPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    url(r'^reset/done/$',       UserPasswordResetCompleteView.as_view(), name='password_reset_complete'),
     url(r'^app/accession/',     include('bag_transfer.accession.urls', namespace='accession')),
     url(r'^app/appraise/',      include('bag_transfer.appraise.urls', namespace='appraise')),
     url(r'^app/rights/',        include('bag_transfer.rights.urls', namespace='rights')),

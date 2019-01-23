@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
 from django.contrib import messages
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
@@ -49,6 +50,16 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         return reverse('users:detail', kwargs={'pk': self.object.pk})
+
+    def post(self, request, *args, **kwargs):
+        post = super(UsersCreateView, self).post(request, *args, **kwargs)
+        # send password reset email (should be different email template)
+        form = PasswordResetForm({"email": request.POST.get('email')})
+        form.is_valid()
+        form.save(request=self.request,
+                  subject_template_name='users/password_initial_set_subject.txt',
+                  email_template_name='users/password_initial_set_email.html',)
+        return post
 
 
 class UsersDetailView(OrgReadViewMixin, DetailView):
