@@ -2,22 +2,21 @@
 layout: docs
 title:  "Rockefeller Archive Center - Aurora Features"
 ---
-## Features
 
-### Dashboard
+## Dashboard
 
-### Track Transfers
+## Track Transfers
 
-### Appraise
+## Appraise
 
-### Accession
+## Accession
 
-### Organizations
+## Organizations
 
-#### BagIt Profiles
+### BagIt Profiles
 
-#### PREMIS Rights
+### PREMIS Rights
 
-### Users
+## Users
 
-### Developer Resources
+## Developer Resources
