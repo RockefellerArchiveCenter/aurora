@@ -1,9 +1,0 @@
-<div class="box box-primary">
-	<div class="box-header with-border">
-		<h2 class="box-title">BagIt Profiles</h2>
-		{% if request.user.is_superuser %}<a href="{% url 'orgs:bagit-profiles-add' object.pk %}" class="bagit-profile-add btn btn-primary pull-right" {% if object.bagit_profiles %}style="display:none"{% endif %}><i class="fa fa-plus"></i> Add BagIt Profile</a>{% endif %}
-	</div>
-	<div class="box-body {% if object.bagit_profiles %}no-padding{% endif %}">
-		{% include 'parts/bagit_profiles_table.html' with org=object %}
-	</div>
-</div>

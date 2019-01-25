@@ -1,8 +1,0 @@
-194577a7e20bdcc7afbb718f502c134c  data/.DS_Store
-d52d759e406e40739203b494cebb0e71  data/Lorem ipsum dolor sit amet.docx
-6b78065070118d9657b7dface5bf8065  data/Lorem ipsum.odt
-6b417a5079c8dab04cbda2c4d0b4f40f  data/consectetur adipiscing elit.pdf
-22146c62a885ca2ff813e1de16bdd86a  data/consectetur adipiscing elit.rtf
-805541eca3750659ba97aacbb4d8a1db  data/metadata.json
-20e136ecba3d349c5ea2ea75d1a2a547  data/more_data.xlsx
-2144cb2ec4ebbc8cd508d8cf02c04bd2  data/sample_data.xlsx

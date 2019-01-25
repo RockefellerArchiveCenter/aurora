@@ -1,7 +1,0 @@
-{% if trend > 0 %}
-<span class="description-percentage text-green"><i class="fa fa-caret-up"></i> {{trend}}%</span>
-{% elif trend < 0 %}
-<span class="description-percentage text-red"><i class="fa fa-caret-down"></i> {{trend|slice:"1:"}}%</span>
-{% else %}
-<span class="description-percentage text-orange"><i class="fa fa-caret-left"></i> {{trend}}%</span>
-{% endif %}
