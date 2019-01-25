@@ -9,7 +9,6 @@ The name of the application is a reference both to the natural light display oft
 
 Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/). Project updates are available on [Bits & Bytes](http://blog.rockarch.org/), the RAC's blog.
 
-
 ## Installation
 
 ### Quick Start
@@ -48,6 +47,17 @@ Note that with Docker Toolbox, Aurora will not default to run on `http://localho
 ```
 $ docker-machine ip default
 ```
+
+### Sample Data
+If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
+
+Open up a new terminal window and navigate to the root of the application, then run
+
+        $ docker-compose exec web import_sample_data
+
+### Data Persistence
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
+
 ### User accounts
 
 By default, Aurora comes with five user accounts:
@@ -60,20 +70,7 @@ By default, Aurora comes with five user accounts:
 |accessioner|password|Accessioning Archivist|
 |manager|password|Managing Archivist|
 
-See below for permissions associated with each user role.
-
-
-### Sample Data
-If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
-
-Open up a new terminal window and navigate to the root of the application, then run
-
-        $ docker-compose exec web import_sample_data
-
-
-### Data Persistence
-The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
-
+See the Aurora User Documentation for more information about permissions associated with each user role.
 
 ## Transferring digital records
 
@@ -87,102 +84,6 @@ At a high level, transfers are processed as follows:
 - Transfers are validated against the BagIt specification using `bagit-python`.
 - Transfers are validated against the BagIt Profile specified in their `bag-info.txt` file using `bagit-profiles-validator`.
 - Relevant PREMIS rights statements are assigned to transfers (see Organization Management section for details).
-
-
-## Appraising Digital Records
-
-Although the upfront validation provided by Aurora (particularly the BagIt Profile validation) should prevent many out-of-scope records from being accessioned, Aurora also allows archivists to review a queue of valid transfers to ensure they are relevant to collecting scope. Users with the appropriate permissions (see User Management section) can accept or reject transfers, and optionally can add an appraisal note.
-
-
-## Accessioning Digital Records
-
-Once transfers have been accepted, they are moved to the accessioning queue, where they are grouped by organization, record creators and record type. Archivists with the necessary permissions can create accession records, which represent data about one or (usually) more transfers.
-
-
-## Organization Management
-
-Organizations can be created or deleted by archivists with the necessary permissions (see User Management section). In addition, Aurora allows for the management of two additional types of objects associated with organizations.
-
-### BagIt Profiles
-
-[BagIt Profiles](https://github.com/bagit-profiles/bagit-profiles) allow for detailed validation of metadata elements included in a transfer. Aurora allows archivists to create, edit and delete these profiles, and provides a JSON representation of the Profile against which transfers can be validated. Each organization can only have one BagIt Profile.
-
-### PREMIS Rights Statements
-
-[PREMIS Rights Statements](https://www.loc.gov/standards/premis/understanding-premis.pdf) allow archivists to specify, in a machine-actionable way, what can and cannot be done with digital records. Aurora allows archivists to create, edit and delete one or more PREMIS Rights Statements, and associate them with record types.
-
-
-## User Management
-
-Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign them to roles.
-
-### User roles and permissions
-
-Aurora implements the following user roles and associated permissions:
-
-#### Read Only User
-
-All users have a few basic permissions:
-
-*  View all own organization transfers
-*  View all own transfers
-*  View dashboard for own organization
-*  View rights statements for own organization
-*  View BagIt Profile for own organization
-*  View own organization profile
-*  View own profile
-*  Change own password
-
-#### Archivist Users
-
-In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
-
-##### All Archivists
-*  View all transfers
-*  View all organizations
-*  View all organization profiles
-*  View all rights statements
-*  View all BagIt Profiles
-*  View appraisal queue
-*  View accessioning queue
-
-##### Appraisal Archivist
-
-In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-
-##### Accessioning Archivist
-
-In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
-
-*  Create accession records
-
-##### Managing Archivist
-
-In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-*  Create accession records
-*  Add/edit organizations
-*  Add/edit users
-*  Add/edit rights statements
-*  Add/edit bag profiles
-
-##### System Administrator
-
-In addition to the permissions of **All Archivists**, System Administrators have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-*  Create accession records
-*  Add/edit organizations
-*  Add/edit users
-*  Add/edit rights statements
-*  Add/edit bag profiles
-*  Change system settings
 
 ## API
 
@@ -200,6 +101,8 @@ Your token will be returned in the response. You can then use the token in reque
 
       $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 
+## Django Admin Configuration
+[placeholder - add app configuration and editing error messages]
 
 ## Scripts
 
@@ -209,6 +112,9 @@ Aurora uses several shell scripts to interact with LDAP for authentication purpo
 -   **RACcreateuser.c**: creates an administrative user (c program)
 -   **RACadd2grp**: adds a user to the group that represents the organization. (Bash)
 -   **RACdeluser**: removes a user from the server. The user will remain in LDAP. (Bash)
+
+## Contributing
+[placeholder]
 
 ## License
 
