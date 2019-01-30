@@ -23,7 +23,7 @@ Aurora provides a searchable, sortable table to view all transfers and informati
 
 ### Transfer details
 
-Aurora allows users to view more details by clicking on a row for a particular transfer on the table. Details provide, as applicable:
+Aurora enables users to view more details about a particular transfer by clicking on its row in the table. The detail page provides, as applicable:
 - Error messages
 - Metadata associated with the digital records
 - Manifest
