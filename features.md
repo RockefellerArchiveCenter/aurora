@@ -25,10 +25,10 @@ Aurora provides a searchable, sortable table to view all transfers and informati
 
 Aurora enables users to view more details about a particular transfer by clicking on its row in the table. The detail page provides, as applicable:
 - Error messages
-- Metadata associated with the digital records
+- Metadata
 - Manifest
 - Log
-- Rights statements associated with transfer
+- Rights statements
 - Appraisal note
 
 ## Appraise
