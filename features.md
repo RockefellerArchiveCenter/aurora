@@ -5,7 +5,7 @@ title:  "Rockefeller Archive Center - Aurora Features"
 
 ## Dashboard
 
-The homepage of Aurora provides a dashboard
+The homepage of Aurora is a dashboard where all users can view information about recent transfer activity including graphs and charts
 
 ## Transfers
 
