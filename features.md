@@ -5,7 +5,7 @@ title:  "Rockefeller Archive Center - Aurora Features"
 
 ## Dashboard
 
-The homepage of Aurora is a dashboard where all users can view information about recent transfer activity including graphs and charts
+The homepage of Aurora is a dashboard that provides key metrics about transfer activity including related graphs and charts. A context switcher allows users to access the dashboard for either their own transfer activity or their organization's activity. Archivists can switch between dashboards for all active organizations.
 
 ## Transfers
 
@@ -134,3 +134,5 @@ In addition to the permissions of **All Archivists**, System Administrators have
 
 
 ## Developer Resources
+
+Aurora includes
