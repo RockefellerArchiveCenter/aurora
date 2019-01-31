@@ -6,7 +6,7 @@ tags:
   - "appraise"
   - "accession"
 title: "Aurora User Guide"
-description: "User documentation for the Aurora digital records transfer application"
+description: "User documentation for the Aurora digital records transfer application."
 pages:
   - ["Overview", "index"]
   - ["Features", "features"]
