@@ -135,4 +135,4 @@ In addition to the permissions of **All Archivists**, System Administrators have
 
 ## Developer Resources
 
-Aurora includes
+Aurora comes with a RESTful API, built using the Django Rest Framework. Users can interact with the API using a command-line client, but the application also includes a browsable API interface and the JSON API schema.
