@@ -209,11 +209,11 @@ if len(User.objects.all()) == 0:
             user['username'],
             first_name=user['first_name'],
             last_name=user['last_name'],
-            password=user['password'],
             email="{}@example.org".format(user['username']),
             is_superuser=user['superuser'],
             is_staff=user['staff'],
             organization=Organization.objects.get(name=user['org']))
+        new_user.set_password(user['password'])
         if 'groups' in user:
             for group in user['groups']:
                 g = Group.objects.get_or_create(name=group)[0]
