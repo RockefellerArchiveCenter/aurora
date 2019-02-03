@@ -10,11 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
-import ldap
 import os
 import sys
-
-from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
 
 from aurora import config as CF
 
@@ -98,7 +95,7 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'bag_transfer.backend.RACLDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # Password validation
@@ -144,18 +141,6 @@ TRANSFER_FILESIZE_MAX = CF.TRANSFER_FILESIZE_MAX
 TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
 TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
 UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE
-
-
-# LDAP Configs
-AUTH_LDAP_GLOBAL_OPTIONS = {
-    ldap.OPT_X_TLS_REQUIRE_CERT:    CF.LDAP_OPTIONS_X_TLS_REQUIRE_CERT,
-    ldap.OPT_REFERRALS:             CF.LDAP_OPTIONS_REFERRALS,
-}
-AUTH_LDAP_SERVER_URI = CF.AUTH_LDAP_SERVER_URI
-AUTH_LDAP_BIND_DN = CF.AUTH_LDAP_BIND_DN
-AUTH_LDAP_BIND_PASSWORD = CF.AUTH_LDAP_BIND_PASSWORD
-AUTH_LDAP_ALWAYS_UPDATE_USER = CF.AUTH_LDAP_ALWAYS_UPDATE_USER
-AUTH_LDAP_USER_SEARCH = LDAPSearch(CF.LDAP_SEARCH_DN, ldap.SCOPE_SUBTREE, CF.LDAP_SEARCH_REGEX)
 
 
 # Django Cron

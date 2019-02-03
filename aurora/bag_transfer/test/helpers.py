@@ -151,7 +151,7 @@ def create_test_user(username=None, org=None):
         org = random.choice(Organization.objects.all())
     test_user = User(
         username=username,
-        email='test@example.org',
+        email='{}@example.org'.format(username),
         organization=org)
     test_user.save()
     print 'Test user {username} created'.format(username=username)

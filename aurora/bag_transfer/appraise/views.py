@@ -56,7 +56,6 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                                     if not appraisal_decision:
                                         remove_file_or_dir(upload.machine_file_path)
                                 upload.save()
-                                print upload
                                 rdata['success'] = 1
 
             return self.render_to_json_response(rdata)

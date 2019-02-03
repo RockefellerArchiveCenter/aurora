@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 from django import forms
 from django.views.generic import TemplateView, ListView, CreateView, DetailView, UpdateView
 from django.contrib import messages
+from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.urlresolvers import reverse_lazy
 from django.shortcuts import render, redirect
@@ -27,46 +27,39 @@ class UsersListView(ArchivistMixin, SuccessMessageMixin, ListView):
     model = User
 
     def get(self, request, *args, **kwargs):
-        refresh_ldap = User.refresh_ldap_accounts()
-        if refresh_ldap:
-            messages.info(self.request, '{} new accounts were just synced!'.format(refresh_ldap))
-
         users_list = [{'org': {}, 'users': []}]
         users_list[0]['org'] = {'pass': 'pass'}
         users_list[0]['users'] = User.objects.all().order_by('username')
-
         org_users_list = [{'org': {}, 'users': []}]
         org_users_list = Organization.users_by_org()
-
-        next_unassigned_user = User.objects.filter(
-            from_ldap=True,
-            is_new_account=True,
-            organization=None).order_by('username').first()
-
-        if not next_unassigned_user:
-            messages.info(
-                request,
-                "No unassigned users available. Additional users must be created in LDAP first.")
 
         return render(request, self.template_name, {
             'meta_page_title': 'Users',
             'users_list': users_list,
             'org_users_list': org_users_list,
-            'next_unassigned_user': next_unassigned_user
             })
 
 
 class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = 'users/update.html'
     model = User
-    fields = ['is_new_account']
     success_message = "New User Saved!"
 
     def get_form_class(self):
-        return (OrgUserUpdateForm)
+        return (OrgUserCreateForm)
 
     def get_success_url(self):
         return reverse('users:detail', kwargs={'pk': self.object.pk})
+
+    def post(self, request, *args, **kwargs):
+        post = super(UsersCreateView, self).post(request, *args, **kwargs)
+        # send password reset email (should be different email template)
+        form = PasswordResetForm({"email": request.POST.get('email')})
+        form.is_valid()
+        form.save(request=self.request,
+                  subject_template_name='users/password_initial_set_subject.txt',
+                  email_template_name='users/password_initial_set_email.html',)
+        return post
 
 
 class UsersDetailView(OrgReadViewMixin, DetailView):
@@ -92,7 +85,6 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
 class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = 'users/update.html'
     model = User
-    page_title = "Edit User"
     success_message = "Your changes have been saved!"
 
     def get_form_class(self):
@@ -100,8 +92,8 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(UsersEditView, self).get_context_data(**kwargs)
-        context['page_title'] = "Edit User"
-        context['meta_page_title'] = "Edit User"
+        context['page_title'] = "Edit {}".format(self.object.username)
+        context['meta_page_title'] = "Edit {}".format(self.object.username)
         return context
 
     def get_success_url(self):
@@ -123,57 +115,19 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
         return reverse('users:detail', kwargs={'pk': self.request.user.pk})
 
 
-class UserPasswordResetForm(PasswordResetForm):
-    email = forms.EmailField(
-            required=True,
-            widget=forms.EmailInput(attrs={'class': 'form-control has-feedback'}),
-            error_messages={'required': 'Please enter your email'})
-
-
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
-    template_name = 'users/password_reset.html'
+    template_name = 'users/password_reset_form.html'
     form_class = UserPasswordResetForm
-
-    def get_context_data(self, **kwargs):
-        context = super(PasswordResetView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Reset Password'
-        return context
 
 
 class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
     template_name = 'users/password_reset_done.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(PasswordResetDoneView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Password Reset Link Sent'
-        return context
-
-
-class UserPasswordResetConfirmForm(SetPasswordForm):
-    new_password1 = forms.CharField(
-                    required=True, label='New Password',
-                    widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-                    error_messages={'required': 'Please enter your new password'})
-    new_password2 = forms.CharField(
-                    required=True, label='New Password (repeat)',
-                    widget=forms.PasswordInput(attrs={'class': 'form-control'}),
-                    error_messages={'required': 'Please confirm your new password'})
-
 
 class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
-    form_class = UserPasswordResetConfirmForm
-
-    def get_context_data(self, **kwargs):
-        context = super(PasswordResetConfirmView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Change Password'
-        return context
+    form_class = UserSetPasswordForm
 
 
 class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):
     template_name = 'users/password_reset_complete.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(PasswordResetCompleteView, self).get_context_data(**kwargs)
-        context['meta_page_title'] = 'Password Change Complete'
-        return context

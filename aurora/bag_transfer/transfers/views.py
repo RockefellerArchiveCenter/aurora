@@ -58,10 +58,11 @@ class MainView(LoggedInMixinDefaults, TemplateView):
                   '#f56954', '#00a65a', '#f39c12', '#00c0ef', '#3c8dbc', '#d2d6de']
 
         while current <= today:
-            if DashboardMonthData.objects.filter(organization__in=org).exists():
+            sort_date = int(str(current.year)+str(current.month))
+            if DashboardMonthData.objects.filter(organization__in=org, sort_date=sort_date).exists():
                 upload_count = 0
                 upload_size = 0
-                for month_data in DashboardMonthData.objects.filter(organization__in=org):
+                for month_data in DashboardMonthData.objects.filter(organization__in=org, sort_date=sort_date):
                     upload_count += month_data.upload_count
                     upload_size += month_data.upload_size
                 data['month_labels'].append(str(month_data.month_label))
