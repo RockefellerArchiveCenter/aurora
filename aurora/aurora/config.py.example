@@ -26,11 +26,11 @@ TIME_ZONE = 'America/New_York'
 # Directory configs
 STORAGE_ROOT_DIR = '/data1/'
 DELIVERY_QUEUE_DIR = '/delivery/'
-STATIC_ROOT = '/data/htdocs/aurora/aurora/static/'
-PROJECT_ROOT_DIR = '/data/htdocs/aurora/'
+STATIC_ROOT = '/code/static/'
+PROJECT_ROOT_DIR = '/code/'
 
 # Unit test configs
-TEST_BAGS_DIR = '/data/htdocs/aurora/test_bags/'
+TEST_BAGS_DIR = '/code/test_bags/'
 TEST_USER = {'USERNAME': 'manager', 'PASSWORD': 'password'}
 
 # Transfer configs

@@ -12,7 +12,7 @@ services:
     entrypoint: /code/entrypoint.sh
     volumes:
       - .:/code
-      - ./aurora/:/data/htdocs/aurora/aurora/
+      - ~/.pe-shared/aurora-upload:/data
       - storage:/data1
       - ~/.pe-shared/aurora-ursamajor:/delivery
     ports:

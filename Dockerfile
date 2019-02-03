@@ -24,8 +24,8 @@ RUN apt-get update \
 COPY scripts/RAC* /usr/local/bin/
 COPY import_sample_data.sh /usr/local/bin/import_sample_data
 RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
-RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
 
+# Setup SSH
 RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
 RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
 
@@ -41,15 +41,13 @@ RUN mkdir /var/run/clamav && \
     chmod 750 /var/run/clamav
 
 # Copy Aurora application files
-RUN mkdir -p /data/htdocs/aurora/
-COPY requirements.txt /data/htdocs/aurora/
-COPY test_bags/ /data/htdocs/aurora/test_bags
-COPY sample_bags/ /data/htdocs/aurora/sample_bags
-COPY aurora/ /data/htdocs/aurora/aurora
-COPY setup_objects.py /data/htdocs/aurora/
+RUN mkdir -p /code/
+COPY . /code
+
+RUN mkdir -p /data/
 
 # Install Python modules
-RUN pip install --upgrade pip && pip install -r /data/htdocs/aurora/requirements.txt
+RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 
 EXPOSE 8000 3310
 
@@ -57,4 +55,4 @@ EXPOSE 8000 3310
 ADD clamav_bootstrap.sh /
 CMD ["/clamav_bootstrap.sh"]
 
-WORKDIR /data/htdocs/aurora/aurora
+WORKDIR /code/aurora
