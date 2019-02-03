@@ -138,8 +138,19 @@ class TransfersView(LoggedInMixinDefaults, View):
 class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
     model = Organization
 
+    def file_size(self, num):
+        for unit in ['B', 'KB', 'MB', 'GB']:
+            if abs(num) < 1024.0:
+                return "%3.1f %s" % (num, unit)
+            num /= 1024.0
+
+    def process_status_display(self, status):
+        for s in Archives.processing_statuses:
+            if s[0] == status:
+                return s[1]
+
     def get(self, request, *args, **kwargs):
-        data = [('Bag Name', 'Status', 'Organization', 'Size', 'Upload Time', 'Errors')]
+        data = [('Bag Name', 'Dates', 'Status', 'Organization', 'Record Creators', 'Record Type', 'Size', 'Upload Time')]
         if self.request.user.is_archivist:
             transfers = Archives.objects.filter(
                 process_status__gte=Archives.TRANSFER_COMPLETED).order_by('-created_time')
@@ -149,16 +160,25 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 process_status__gte=Archives.TRANSFER_COMPLETED,
                 organization=self.organization).order_by('-created_time')
         for transfer in transfers:
-            transfer_errors = transfer.get_errors()
-            errors = (', '.join([e.code.code_desc for e in transfer_errors]) if transfer_errors else '')
+            dates = ''
+            creators = ''
+            upload_time = transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M:%S %p')
+            bag_info_data = transfer.get_bag_data()
+            if bag_info_data:
+                dates = "{} - {}".format(
+                    bag_info_data.get('date_start').strftime('%b %e, %Y'),
+                    bag_info_data.get('date_end').strftime('%b %e, %Y'))
+                creators = (', ').join(bag_info_data.get('record_creators'))
 
             data.append((
-                transfer.bag_or_failed_name(),
-                transfer.process_status,
-                transfer.organization,
-                transfer.machine_file_size,
-                transfer.machine_file_upload_time,
-                errors))
+                bag_info_data.get('title', transfer.bag_or_failed_name()),
+                dates,
+                self.process_status_display(transfer.process_status),
+                transfer.organization.name,
+                creators,
+                bag_info_data.get('record_type'),
+                self.file_size(int(transfer.machine_file_size)),
+                upload_time))
         return self.render_to_csv(data)
 
 
