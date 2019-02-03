@@ -49,6 +49,7 @@ $ docker-machine ip default
 ```
 
 ### Sample Data
+
 If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
 
 Open up a new terminal window and navigate to the root of the application, then run
@@ -56,6 +57,7 @@ Open up a new terminal window and navigate to the root of the application, then 
         $ docker-compose exec web import_sample_data
 
 ### Data Persistence
+
 The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
 
 ### User accounts
@@ -102,7 +104,10 @@ Your token will be returned in the response. You can then use the token in reque
       $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 
 ## Django Admin Configuration
-[placeholder - add app configuration and editing error messages]
+
+Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, which can be accessed by clicking on the profile menu and selecting "Administration".
+
+In addition to allowing for the manual creation and deletion of certain objects, this interface also allows authorized users to edit system values which are used by the application, including the human-readable strings associated with Bag Log Codes. Care should be taken when making changes in the Django admin interface, particularly the creation or deletion of objects, since they can have unintended consequences.
 
 ## Scripts
 
@@ -114,7 +119,13 @@ Aurora uses several shell scripts to interact with LDAP for authentication purpo
 -   **RACdeluser**: removes a user from the server. The user will remain in LDAP. (Bash)
 
 ## Contributing
-[placeholder]
+
+Aurora is an open source project and we welcome contributions! If you want to fix a bug, or have an idea of how to enhance the application, the process looks like this:
+
+1. File an issue in this repository. This will provide a location to discuss proposed implementations of fixes or enhancements, and can then be tied to a subsequent pull request.
+2. If you have an idea of how to fix the bug (or make the improvements), fork the repository and work in your own branch. When you are done, push the branch back to this repository and set up a pull request. Automated unit tests are run on all pull requests. Any new code should have unit test coverage, documentation (if necessary), and should conform to the Python PEP8 style guidelines.
+3. After some back and forth between you and core committers (or individuals who have privileges to commit to the master branch of this repository), your code will probably be merged, perhaps with some minor changes.
+
 
 ## License
 
