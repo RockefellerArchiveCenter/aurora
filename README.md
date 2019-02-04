@@ -12,6 +12,7 @@ Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an i
 ## Installation
 
 ### Quick Start
+
 If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
 ```
 git clone https://github.com/RockefellerArchiveCenter/aurora.git
@@ -21,6 +22,7 @@ docker-compose up
 Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
 
 ### Detailed Installation Instructions
+
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
 ```
@@ -35,6 +37,7 @@ $ docker-compose up
 4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
 #### Installation Notes for Windows Users
+
 Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
 
 To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
@@ -108,15 +111,6 @@ Your token will be returned in the response. You can then use the token in reque
 Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, which can be accessed by clicking on the profile menu and selecting "Administration".
 
 In addition to allowing for the manual creation and deletion of certain objects, this interface also allows authorized users to edit system values which are used by the application, including the human-readable strings associated with Bag Log Codes. Care should be taken when making changes in the Django admin interface, particularly the creation or deletion of objects, since they can have unintended consequences.
-
-## Scripts
-
-Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/aurora/blob/master/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
-
--   **RACaddorg**: creates a new organization on the server (Bash)
--   **RACcreateuser.c**: creates an administrative user (c program)
--   **RACadd2grp**: adds a user to the group that represents the organization. (Bash)
--   **RACdeluser**: removes a user from the server. The user will remain in LDAP. (Bash)
 
 ## Contributing
 
