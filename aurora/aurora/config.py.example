@@ -48,6 +48,8 @@ EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
 EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
+DEFAULT_FROM_EMAIL = 'test@example.com'
+SERVER_EMAIL = 'test@example.com'
 
 DELIVERY_URL = 'http://zodiac-web:8001/api/store-accessions/'
 API_KEY = 'demo'
