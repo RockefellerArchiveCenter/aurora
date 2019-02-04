@@ -53,7 +53,6 @@ class DiscoverTransfers(CronJobBase):
                     user = None
                 else:
                     email.to = [user.email]
-                    print user.email
 
                 ## Init / Save
                 new_arc = Archives.initial_save(
@@ -67,7 +66,6 @@ class DiscoverTransfers(CronJobBase):
                     upload_list['bag_it_name']
                 )
 
-                print 'archive saved'
                 BAGLog.log_it('ASAVE', new_arc)
 
                 if upload_list['auto_fail']:

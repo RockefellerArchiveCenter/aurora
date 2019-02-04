@@ -176,7 +176,6 @@ def dir_extract_all(file_path,tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
-        print '!!!!!!!!!!!!!!!!!!!!!!!!!!!'
         copy_tree(file_path,'{}{}'.format(tmp_dir, file_path.split('/')[-1]), update=1)
         extracted = True
     except Exception as e:
@@ -210,7 +209,7 @@ def get_fields_from_file(file_path):
     return fields
 
 def remove_file_or_dir(file_path):
-    print '@@@-- deleting file/dir ------ {}'.format(file_path)
+    print 'deleting {}'.format(file_path)
     if os.path.isfile(file_path):
         try:
             os.remove(file_path)
