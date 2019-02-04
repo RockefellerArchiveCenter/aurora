@@ -263,10 +263,10 @@ class TransferFileObject(object):
     return True
 
   def _resolve_org_machine_name(self):
-    org_in_path = re.search('\/(?P<organization>org\d+)\/', self.file_path)
+    org_in_path = self.file_path.split(os.sep)[-3]
     if not org_in_path:
       return False
-    self.org_machine_name = org_in_path.group('organization')
+    self.org_machine_name = org_in_path
     return True
 
   def _resolve_virus_scan_connection(self):

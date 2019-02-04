@@ -47,15 +47,13 @@ class Organization(models.Model):
     def org_root_dir(self):
         return "%s%s".format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
 
-    def save(self, *args, **kwargs):
+    def construct_machine_name(self):
+        return "".join(c for c in self.name.lower() if c.isalnum()).rstrip()
 
-        if self.pk is None:                         # Initial Save / Sync table
-            results = RAC_CMD.add_org(self.name)
-            if results[0]:
-                self.machine_name = results[1]
-            else:
-                go = 1
-                # and when it fails
+    def save(self, *args, **kwargs):
+        if self.pk is None:
+            self.machine_name = self.construct_machine_name()
+            RAC_CMD.add_org(self.machine_name)
         else:
             # SET USERS INACTIVE WHEN ORG IS SET TO INACTIVE
             orig = Organization.objects.get(pk=self.pk)

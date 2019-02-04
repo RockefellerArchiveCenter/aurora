@@ -3,25 +3,15 @@ from subprocess import *
 import grp, pwd
 
 
-def add_org(org_name):
-    command = 'sudo sh /usr/local/bin/RACaddorg {}'.format(org_name)
-
+def add_org(organization_machine_name):
+    command = 'sudo sh /usr/local/bin/RACaddorg {}'.format(organization_machine_name)
     output = None
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
 
-    if output is not None:
-
-        for line in output.split('\n'):
-            if line.startswith('org='):
-                orgname = line[4:].strip()
-                print orgname
-                # check server for actual dir location for 2nd validation
-
-                return (1, orgname)
-    return (0, '')
+    return True
 
 
 def add_user(username):
