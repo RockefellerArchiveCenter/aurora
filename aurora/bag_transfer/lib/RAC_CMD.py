@@ -9,8 +9,7 @@ def add_org(organization_machine_name):
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
-        raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
+        raise RuntimeError("command '{}' returned with error (code {}): {}".format(e.cmd, e.returncode, e.output))
     return True
 
 
@@ -23,7 +22,7 @@ def add_user(username):
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
-        print "command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output)
+        print "command '{}' returned with error (code {}): {}".format(e.cmd, e.returncode, e.output)
         # error codes not isolated..
         if 'Account created' in e.output:
             pass
@@ -50,8 +49,6 @@ def add2grp(organization_machine_name, machine_user_id):
 
 
 def delete_system_group(organization_machine_name):
-    if not organization_machine_name.startswith('org'):
-        return False
     has_ERR = False
     command = 'groupdel {}'.format(organization_machine_name)
     output = None
@@ -64,7 +61,7 @@ def delete_system_group(organization_machine_name):
 
 
 def del_from_org(machine_user_id):
-    ugroups = [g for g in user_groups(machine_user_id) if g[:3] == "org"]
+    ugroups = [g for g in user_groups(machine_user_id)]
     has_ERR = False
 
     for group in ugroups:
