@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from bag_transfer.test import helpers
-from bag_transfer.models import Archives, User
+from bag_transfer.models import Archives, User, Organization
 from bag_transfer.test import setup
 from bag_transfer.appraise.views import AppraiseView
 from bag_transfer.lib.bag_checker import bagChecker
@@ -73,6 +73,9 @@ class UserOrgTestCase(TestCase):
 
         # Test Org views
         self.org_views()
+        for org in Organization.objects.all():
+            if org not in self.orgs:
+                self.orgs.append(org)
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

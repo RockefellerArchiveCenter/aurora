@@ -57,3 +57,6 @@ class APITest(TestCase):
 
     def test_api(self):
         self.update_transfer()
+
+    def tearDown(self):
+        helpers.delete_test_orgs(self.orgs)
