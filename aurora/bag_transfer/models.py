@@ -164,9 +164,13 @@ class User(AbstractUser):
         return self.groups.filter(name='managing_archivists').exists()
 
     def can_appraise(self):
+        if self.is_superuser:
+            return True
         return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
     def can_accession(self):
+        if self.is_superuser:
+            return True
         return self.groups.filter(name__in=['accessioning_archivists', 'managing_archivists']).exists()
 
     def save(self, *args, **kwargs):
