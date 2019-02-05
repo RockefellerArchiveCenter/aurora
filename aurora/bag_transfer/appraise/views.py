@@ -23,7 +23,7 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
             rdata = {}
             rdata['success'] = 0
 
-            if request.user.has_privs('APPRAISER'):
+            if request.user.is_archivist():
 
                 if 'upload_id' in request.GET:
                     try:
@@ -38,25 +38,26 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                             rdata['success'] = 1
 
                         elif request.GET['req_form'] == 'appraise':
-                            if 'req_type' in request.GET:
-                                if request.GET['req_type'] == 'edit':
-                                    rdata['appraisal_note'] = upload.appraisal_note
-                                elif request.GET['req_type'] == 'submit':
-                                    upload.appraisal_note = request.GET['appraisal_note']
-                                elif request.GET['req_type'] == 'delete':
-                                    upload.appraisal_note = None
-                                elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
-                                    appraisal_decision = 0
-                                    try:
-                                        appraisal_decision = int(request.GET['appraisal_decision'])
-                                    except Exception as e:
-                                        print e
-                                    upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
-                                    BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
-                                    if not appraisal_decision:
-                                        remove_file_or_dir(upload.machine_file_path)
-                                upload.save()
-                                rdata['success'] = 1
+                            if request.user.can_appraise():
+                                if 'req_type' in request.GET:
+                                    if request.GET['req_type'] == 'edit':
+                                        rdata['appraisal_note'] = upload.appraisal_note
+                                    elif request.GET['req_type'] == 'submit':
+                                        upload.appraisal_note = request.GET['appraisal_note']
+                                    elif request.GET['req_type'] == 'delete':
+                                        upload.appraisal_note = None
+                                    elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                                        appraisal_decision = 0
+                                        try:
+                                            appraisal_decision = int(request.GET['appraisal_decision'])
+                                        except Exception as e:
+                                            print e
+                                        upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
+                                        BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+                                        if not appraisal_decision:
+                                            remove_file_or_dir(upload.machine_file_path)
+                                    upload.save()
+                                    rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 
@@ -75,10 +76,13 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def get_filter_method(self): return self.FILTER_ICONTAINS
 
     def appraise_buttons(self):
-        return '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
-                <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
-                <a type="button" class="appraisal-note btn btn-xs btn-info edit-note" data-toggle="modal" data-target="#modal-appraisal-note" href="#">Note</a>\
-                <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
+        buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
+        if self.request.user.can_appraise():
+            buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
+                       <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
+                       <a type="button" class="appraisal-note btn btn-xs btn-info edit-note" data-toggle="modal" data-target="#modal-appraisal-note" href="#">Note</a>\
+                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
+        return buttons
 
     def get_initial_queryset(self):
         return Archives.objects.filter(process_status=Archives.VALIDATED)
