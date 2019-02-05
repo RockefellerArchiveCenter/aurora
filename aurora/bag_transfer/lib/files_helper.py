@@ -64,13 +64,6 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                         if os.path.isfile(fullpath):
                             files.append(fullpath)
 
-            #print to console
-            if files:
-                print "\n\nCURRENT FILES STILL OPEN"
-                for f in files:
-                    print f
-                print '\n'
-
     else:
         for f1 in os.listdir(dirpath):
             if os.path.isfile(f1):
@@ -164,7 +157,6 @@ def tar_extract_all(file_path, tmp_dir):
     try:
         tf = tarfile.open(file_path, 'r:*')
         tf.extractall(tmp_dir)
-        print tmp_dir
         tf.close()
         extracted = True
     except Exception as e:
@@ -209,7 +201,6 @@ def get_fields_from_file(file_path):
     return fields
 
 def remove_file_or_dir(file_path):
-    print 'deleting {}'.format(file_path)
     if os.path.isfile(file_path):
         try:
             os.remove(file_path)
@@ -225,7 +216,6 @@ def remove_file_or_dir(file_path):
     return True
 
 def move_file_or_dir(src, dest):
-    print "moving {} to {}".format(src, dest)
     try:
         move(src, dest)
     except Exception as e:

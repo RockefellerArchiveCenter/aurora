@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import iso8601
 import datetime
 from dateutil.relativedelta import relativedelta
 from uuid import uuid4
@@ -131,6 +132,9 @@ class User(AbstractUser):
     AbstractUser._meta.get_field('last_name').blank = False
     AbstractUser._meta.get_field('username').blank = False
 
+    class Meta:
+        ordering = ['username']
+
     def in_group(self, GRP):
         return User.objects.filter(pk=self.pk, groups__name=GRP).exists()
 
@@ -190,23 +194,19 @@ class User(AbstractUser):
     def is_user_active(u, org):
         user = {}
         try:
-            print 'i am here'
             user = User.objects.get(username=u, organization=org)
         except User.DoesNotExist as e:
             print e
         if not user:
-            print 'not a user or not in org'
+            print 'No user matching that username or organization'
             return False
         if not user.is_active:
-            print 'this would help to chain different message'
+            print 'User is inactive'
             return False
         return user
 
     def get_absolute_url(self):
         return reverse('users:detail', kwargs={'pk': self.pk})
-
-    class Meta:
-        ordering = ['username']
 
 
 class RecordCreators(models.Model):
@@ -389,10 +389,10 @@ class Archives(models.Model):
                 external_identifier=metadata.get('External_Identifier', ''),
                 internal_sender_description=metadata.get('Internal_Sender_Description', ''),
                 title=metadata.get('Title', ''),
-                date_start=metadata.get('Date_Start', ''),
-                date_end=metadata.get('Date_End', ''),
+                date_start=iso8601.parse_date(metadata.get('Date_Start', '')),
+                date_end=iso8601.parse_date(metadata.get('Date_End', '')),
                 record_type=metadata.get('Record_Type', ''),
-                bagging_date=metadata.get('Bagging_Date', ''),
+                bagging_date=iso8601.parse_date(metadata.get('Bagging_Date', '')),
                 bag_count=metadata.get('Bag_Count', ''),
                 bag_group_identifier=metadata.get('Bag_Group_Identifier', ''),
                 payload_oxum=metadata.get('Payload_Oxum', ''),
@@ -540,37 +540,35 @@ class BAGLog(models.Model):
     log_info = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ['-created_time']
+
     def __unicode__(self):
         val = "-- : {}".format(self.code.code_desc)
         if self.archive:
-            val = "{} : {}".format( self.archive.bag_or_failed_name(), self.code.code_desc)
+            val = "{} : {}".format(self.archive.bag_or_failed_name(), self.code.code_desc)
         return val
 
     @classmethod
-    def log_it(cls, code, archive = None):
+    def log_it(cls, code, archive=None):
         try:
-            print code
             item = cls(
-                code = BAGLogCodes.objects.get(code_short=code),
-                archive = archive
+                code=BAGLogCodes.objects.get(code_short=code),
+                archive=archive
             ).save()
-
 
             if archive:
                 if code in BAGLogCodes.eCat_bagit_validation:
-                    cls.log_it('GBERR',archive)
+                    cls.log_it('GBERR', archive)
 
                 if code in BAGLogCodes.eCat_rac_profile:
-                    cls.log_it('RBERR',archive)
+                    cls.log_it('RBERR', archive)
 
             return True
         except Exception as e:
             print e
         else:
             return False
-
-    class Meta:
-        ordering = ['-created_time']
 
 
 class BagInfoMetadata(models.Model):

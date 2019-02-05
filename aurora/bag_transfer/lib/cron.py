@@ -32,29 +32,23 @@ class DiscoverTransfers(CronJobBase):
 
             for upload_list in to_process:
 
-
-                # Init Mailer
                 email = Mailer()
 
-                # Create a unique HASH
                 machine_file_identifier = Archives().gen_identifier()
                 if not machine_file_identifier:
                     print 'shouldnt overwrite file, need to make sure this file doesnt get discovered again'
                     continue
 
-                ## IS ORG AND IS ACTIVE ORG
                 org = Organization().is_org_active(upload_list['org'])
                 if not org:
                     org = None
 
-                ## IS USER / IN ORG / AND ACITVE
-                user = User().is_user_active(upload_list['upload_user'],org)
+                user = User().is_user_active(upload_list['upload_user'], org)
                 if not user:
                     user = None
                 else:
                     email.to = [user.email]
 
-                ## Init / Save
                 new_arc = Archives.initial_save(
                     org,
                     user,
@@ -67,6 +61,7 @@ class DiscoverTransfers(CronJobBase):
                 )
 
                 BAGLog.log_it('ASAVE', new_arc)
+                print "\nValidating transfer {}".format(new_arc.machine_file_identifier)
 
                 if upload_list['auto_fail']:
                     new_arc.setup_save(upload_list)
@@ -77,26 +72,23 @@ class DiscoverTransfers(CronJobBase):
                     FH.remove_file_or_dir(new_arc.machine_file_path)
 
                 else:
-
-                    ## NOW FOR BAG CHECK
                     bag = bagChecker(new_arc)
                     if bag.bag_passed_all():
+                        print "Transfer {} is valid".format(new_arc.machine_file_identifier)
                         new_arc.process_status = Archives.VALIDATED
                         new_arc.bag_it_valid = True
                         BAGLog.log_it('APASS',new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
-                        # Move bag to storage
-                        # Should bags be stored in org directories for security purposes?
                         FH.move_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name), '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier))
                         FH.remove_file_or_dir(new_arc.machine_file_path)
                         new_arc.machine_file_path = '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier)
                     else:
+                        print "Transfer {} is invalid".format(new_arc.machine_file_identifier)
                         new_arc.process_status = Archives.INVALID
                         BAGLog.log_it(bag.ecode, new_arc)
                         email.setup_message('TRANS_FAIL_VAL',new_arc)
                         email.send()
-                        # Delete file
                         FH.remove_file_or_dir(new_arc.machine_file_path)
 
                 new_arc.save()

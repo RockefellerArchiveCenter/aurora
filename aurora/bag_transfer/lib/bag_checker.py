@@ -182,7 +182,7 @@ class bagChecker():
 
         if not self._has_valid_datatypes():
             self.ecode = 'DTERR'
-            print 'didnt pass rac datatype specs'
+            print 'Datatype validation failed'
             return self.bag_failed()
 
         if not self._has_valid_metadata_file():
