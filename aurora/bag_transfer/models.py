@@ -166,6 +166,9 @@ class User(AbstractUser):
     def can_appraise(self):
         return self.groups.filter(name__in=['appraisal_archivists', 'managing_archivists']).exists()
 
+    def can_accession(self):
+        return self.groups.filter(name__in=['accessioning_archivists', 'managing_archivists']).exists()
+
     def save(self, *args, **kwargs):
         if self.pk is None:
             if RAC_CMD.add_user(self.username):

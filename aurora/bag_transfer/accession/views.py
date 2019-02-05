@@ -20,12 +20,12 @@ from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.authmixins import AccessioningArchivistMixin
+from bag_transfer.mixins.authmixins import ArchivistMixin, AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
 from bag_transfer.rights.models import RightsStatement
 
 
-class AccessionView(AccessioningArchivistMixin, JSONResponseMixin, ListView):
+class AccessionView(ArchivistMixin, JSONResponseMixin, ListView):
     template_name = "accession/main.html"
     model = Accession
 
@@ -211,7 +211,7 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
         return self.render_to_json_response(rdata)
 
 
-class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView):
+class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     model = Accession
     columns = ['title', 'created', 'extent_files', 'extent_size']
     order_columns = ['title', 'created', 'extent_files', 'extent_size']
@@ -220,9 +220,11 @@ class SavedAccessionsDatatableView(AccessioningArchivistMixin, BaseDatatableView
     def get_filter_method(self): return self.FILTER_ICONTAINS
 
     def button(self, accession):
-        button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' \
-            if (accession.process_status < Accession.DELIVERED) \
-            else '<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>'
+        button = "Accession not delivered"
+        if self.request.user.can_accession():
+            button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' \
+                if (accession.process_status < Accession.DELIVERED) \
+                else '<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>'
         return button
 
     def prepare_results(self, qs):
