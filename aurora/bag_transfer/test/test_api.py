@@ -22,6 +22,7 @@ class APITest(TestCase):
         self.orgs = helpers.create_test_orgs(org_count=1)
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         self.user.is_staff = True
+        self.user.set_password(settings.TEST_USER['PASSWORD'])
         self.user.save()
         self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
         tr = helpers.run_transfer_routine()
@@ -56,3 +57,6 @@ class APITest(TestCase):
 
     def test_api(self):
         self.update_transfer()
+
+    def tearDown(self):
+        helpers.delete_test_orgs(self.orgs)

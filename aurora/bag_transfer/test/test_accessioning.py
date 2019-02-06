@@ -33,6 +33,7 @@ class AccessioningTestCase(TestCase):
         for group in self.groups:
             self.user.groups.add(group)
         self.user.is_staff = True
+        self.user.set_password(settings.TEST_USER['PASSWORD'])
         self.user.save()
 
     def test_accessioning(self):

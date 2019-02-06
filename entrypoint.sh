@@ -7,6 +7,9 @@ echo "Updating clamav configs"
 sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
 sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
 
+# Start virus definition update
+freshclam -d
+
 # Start clamav services
 /etc/init.d/clamav-daemon start
 /etc/init.d/clamav-freshclam start

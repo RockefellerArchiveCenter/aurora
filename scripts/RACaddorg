@@ -92,39 +92,11 @@ fi
 #
 set -u
 
-# Check what organizations alreadly exist on the filesystem.
-search_dir='/data'
-org='org'
-count='0'
-for entry in `ls $search_dir`; do
-    if echo "$entry" | grep -q "$org"; then
-       if [ ! $debug == '0' ] ; then echo "Existing org: $entry"; fi
-       newcount=$(echo $entry | cut -d'g' -f 2)
-       if [ $(($newcount)) -gt $(($count)) ];  then           #Convert to integer and compair
-            count=$newcount
-       fi
-    fi
-done
-
-nextorg='org'$((count+1))
-
-#
-# Before we do anything,  lets make sure the group $nextorg does not exit.
-#
-if grep -a $nextorg /etc/group; then
-   log err  "Unable to create organization, group $nextorg exists"
-   exit 3
-fi
-
-
-
-
 #
 # Check if running in INTERACTIVE_MODE.
 #
-if [ $INTERACTIVE_MODE == '1' ]; then
+if [ $INTERACTIVE_MODE = '1' ]; then
    echo "Running in Interactive Mode"
-   echo "Next available org is:  $nextorg "
    read -p "Create new Organization [y/n]? " -n 1 -r
    if [[ ! $REPLY =~ ^[Yy]$ ]]
    then
@@ -132,11 +104,19 @@ if [ $INTERACTIVE_MODE == '1' ]; then
        exit 1  #nothing to do - get out.
    fi
    echo
-   echo "Enter the name of the Organization"
-   read orgname
+   echo "Enter the machine name of the Organization"
+   read nextorg
    echo
 else
-   orgname=$@
+   nextorg=$@
+fi
+
+#
+# Before we do anything,  lets make sure the group $nextorg does not exit.
+#
+if grep -a $nextorg /etc/group; then
+   log err  "Unable to create organization, group $nextorg exists"
+   exit 3
 fi
 
 #
@@ -149,7 +129,7 @@ if [ $? -ne 0 ]; then
    log err  "Unable to create Group: $nextorg, termining."
    exit 1
 fi
-log info "Group: $nextorg created for $orgname."
+log info "Group: $nextorg created."
 
 
 #Create the directory for the organization and a upload directory within.
@@ -163,9 +143,6 @@ if [ ! -d $newdir ]; then
       log err "Unable to create directory $newdir, exiting"
       exit 4
    fi
-else
-   log err  "Directory $newdir exists, exiting"
-   exit 8
 fi
 
 for dir in $uploaddir $processingdir; do
@@ -176,9 +153,6 @@ for dir in $uploaddir $processingdir; do
         log err "Unable to create directory $dir, exiting"
         exit 4
      fi
-  else
-     log err "Directory $dir exists, exiting"
-     exit 8
   fi
 
   chown root:$nextorg $dir
@@ -203,7 +177,6 @@ README=$newdir'/README'
 if [ ! -e $README ] ; then
    echo "README"  > "$README"
    echo "This is a System generated file, DO NOT ERASE"   >> "$README"
-   echo "ORGANIZATION NAME: $orgname "                    >> "$README"
    echo "ORGANIZATION GROUP: $nextorg"                    >> "$README"
    echo " "                                               >> "$README"
    echo "This directory is write protected."              >> "$README"
@@ -219,7 +192,7 @@ if [  -e $sshdfile ] ; then
    echo "  "                                                                       >> "$sshdfile"
    echo "# This section was created with the addorg script. Please DO NOT ERASE"   >> "$sshdfile"
    echo "# The addorg script is located in /usr/local/bin/addorg."                 >> "$sshdfile"
-   echo "# This is for group: $nextorg, $orgname. "                                >> "$sshdfile"
+   echo "# This is for group: $nextorg. "                                          >> "$sshdfile"
    echo                                                                            >> "$sshdfile"
    echo "Match group $nextorg"                                                     >> "$sshdfile"
    echo "      ChrootDirectory  $newdir"                                           >> "$sshdfile"
@@ -237,10 +210,9 @@ log info "Updated the sshd config file with new organization: $nextorg"
 # Print Summary
 #
 #
-log info "System updates complete for new organization: $nextorg, $orgname, using directory $uploaddir."
+log info "System updates complete for new organization: $nextorg, using directory $uploaddir."
 systemctl restart sshd2.service
 
 log info "Operations Complete"
-echo "org="$nextorg
 exit 0
 ##########################################################################################################################

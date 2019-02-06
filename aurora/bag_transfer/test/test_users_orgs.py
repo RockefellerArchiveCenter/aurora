@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from bag_transfer.test import helpers
-from bag_transfer.models import Archives, User
+from bag_transfer.models import Archives, User, Organization
 from bag_transfer.test import setup
 from bag_transfer.appraise.views import AppraiseView
 from bag_transfer.lib.bag_checker import bagChecker
@@ -39,6 +39,7 @@ class UserOrgTestCase(TestCase):
                 user.groups.add(group)
                 if group.name in ['managing_archivists', 'appraisal_archivists', 'accessioning_archivists']:
                     user.is_staff = True
+                    user.set_password(settings.TEST_USER['PASSWORD'])
                     user.save()
 
         # Username, assertTrue methods, assertFalse methods
@@ -66,11 +67,15 @@ class UserOrgTestCase(TestCase):
         for group in groups:
             user.groups.add(group)
         user.is_staff = True
+        user.set_password(settings.TEST_USER['PASSWORD'])
         user.save()
         self.client.login(username=user.username, password=settings.TEST_USER['PASSWORD'])
 
         # Test Org views
         self.org_views()
+        for org in Organization.objects.all():
+            if org not in self.orgs:
+                self.orgs.append(org)
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)
@@ -79,13 +84,16 @@ class UserOrgTestCase(TestCase):
         user = User.objects.get(groups__name='managing_archivists')
         self.client.login(username=user.username, password=settings.TEST_USER['PASSWORD'])
 
-        for view in ['users:detail', 'users:add', 'users:edit']:
+        for view in ['users:detail', 'users:edit']:
             response = self.client.get(reverse(view, kwargs={'pk': random.choice(User.objects.all()).pk}))
             self.assertEqual(response.status_code, 200)
 
+        response = self.client.get(reverse('users:add'))
+        self.assertEqual(response.status_code, 200)
+
         user_data = setup.user_data
         user_data['organization'] = random.choice(self.orgs)
-        response = self.client.post(reverse('users:add', kwargs={'pk': random.choice(User.objects.all()).pk}), user_data)
+        response = self.client.post(reverse('users:add'), user_data)
         self.assertTrue(response.status_code, 200)
 
         # make user inactive

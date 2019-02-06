@@ -9,10 +9,10 @@ The name of the application is a reference both to the natural light display oft
 
 Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/). Project updates are available on [Bits & Bytes](http://blog.rockarch.org/), the RAC's blog.
 
-
 ## Installation
 
 ### Quick Start
+
 If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
 ```
 git clone https://github.com/RockefellerArchiveCenter/aurora.git
@@ -22,6 +22,7 @@ docker-compose up
 Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
 
 ### Detailed Installation Instructions
+
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
 ```
@@ -36,6 +37,7 @@ $ docker-compose up
 4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
 
 #### Installation Notes for Windows Users
+
 Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
 
 To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
@@ -48,6 +50,27 @@ Note that with Docker Toolbox, Aurora will not default to run on `http://localho
 ```
 $ docker-machine ip default
 ```
+
+### Sample Data
+
+If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
+
+Open up a new terminal window and navigate to the root of the application, then run
+
+```
+$ docker-compose exec web import_sample_data
+```
+
+If you're using the Docker container and would like to upload a bag you've made, you can do that by navigating to the uploads root located on your local machine at `~/.pe-shared/aurora-upload/` and moving the bag into the `/upload/` directory of the desired organization. To process the transfers, run
+
+```
+$ docker-compose exec web python manage.py runcrons
+```
+
+### Data Persistence
+
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
+
 ### User accounts
 
 By default, Aurora comes with five user accounts:
@@ -60,20 +83,7 @@ By default, Aurora comes with five user accounts:
 |accessioner|password|Accessioning Archivist|
 |manager|password|Managing Archivist|
 
-See below for permissions associated with each user role.
-
-
-### Sample Data
-If desired, you can import a set of sample bags (not all of which are valid) by running the `import_sample_data.sh` script.
-
-Open up a new terminal window and navigate to the root of the application, then run
-
-        $ docker-compose exec web import_sample_data
-
-
-### Data Persistence
-The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
-
+See the Aurora User Documentation for more information about permissions associated with each user role.
 
 ## Transferring digital records
 
@@ -88,102 +98,6 @@ At a high level, transfers are processed as follows:
 - Transfers are validated against the BagIt Profile specified in their `bag-info.txt` file using `bagit-profiles-validator`.
 - Relevant PREMIS rights statements are assigned to transfers (see Organization Management section for details).
 
-
-## Appraising Digital Records
-
-Although the upfront validation provided by Aurora (particularly the BagIt Profile validation) should prevent many out-of-scope records from being accessioned, Aurora also allows archivists to review a queue of valid transfers to ensure they are relevant to collecting scope. Users with the appropriate permissions (see User Management section) can accept or reject transfers, and optionally can add an appraisal note.
-
-
-## Accessioning Digital Records
-
-Once transfers have been accepted, they are moved to the accessioning queue, where they are grouped by organization, record creators and record type. Archivists with the necessary permissions can create accession records, which represent data about one or (usually) more transfers.
-
-
-## Organization Management
-
-Organizations can be created or deleted by archivists with the necessary permissions (see User Management section). In addition, Aurora allows for the management of two additional types of objects associated with organizations.
-
-### BagIt Profiles
-
-[BagIt Profiles](https://github.com/bagit-profiles/bagit-profiles) allow for detailed validation of metadata elements included in a transfer. Aurora allows archivists to create, edit and delete these profiles, and provides a JSON representation of the Profile against which transfers can be validated. Each organization can only have one BagIt Profile.
-
-### PREMIS Rights Statements
-
-[PREMIS Rights Statements](https://www.loc.gov/standards/premis/understanding-premis.pdf) allow archivists to specify, in a machine-actionable way, what can and cannot be done with digital records. Aurora allows archivists to create, edit and delete one or more PREMIS Rights Statements, and associate them with record types.
-
-
-## User Management
-
-Aurora supports management of user accounts, and allows certain archivists to declare user accounts active or inactive, associate them with an organization, and assign them to roles.
-
-### User roles and permissions
-
-Aurora implements the following user roles and associated permissions:
-
-#### Read Only User
-
-All users have a few basic permissions:
-
-*  View all own organization transfers
-*  View all own transfers
-*  View dashboard for own organization
-*  View rights statements for own organization
-*  View BagIt Profile for own organization
-*  View own organization profile
-*  View own profile
-*  Change own password
-
-#### Archivist Users
-
-In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
-
-##### All Archivists
-*  View all transfers
-*  View all organizations
-*  View all organization profiles
-*  View all rights statements
-*  View all BagIt Profiles
-*  View appraisal queue
-*  View accessioning queue
-
-##### Appraisal Archivist
-
-In addition to the permissions of **All Archivists**, Appraisal Archivists have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-
-##### Accessioning Archivist
-
-In addition to the permissions of **All Archivists**, Accessioning Archivists have the following additional permissions:
-
-*  Create accession records
-
-##### Managing Archivist
-
-In addition to the permissions of **All Archivists**, Managing Archivists have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-*  Create accession records
-*  Add/edit organizations
-*  Add/edit users
-*  Add/edit rights statements
-*  Add/edit bag profiles
-
-##### System Administrator
-
-In addition to the permissions of **All Archivists**, System Administrators have the following additional permissions:
-
-*  Accept or reject transfers
-*  Add appraisal notes to transfers
-*  Create accession records
-*  Add/edit organizations
-*  Add/edit users
-*  Add/edit rights statements
-*  Add/edit bag profiles
-*  Change system settings
-
 ## API
 
 Aurora comes with a RESTful API, built using the Django Rest Framework. In addition to interacting with the API via your favorite command-line client, you can also use the browsable API interface available in the application.
@@ -194,21 +108,30 @@ Aurora uses JSON Web Tokens for validation. As with all token-based authenticati
 
 To get your token, send a POST request to the `/get-token/` endpoint, passing your username and password:
 
-      $ curl -X POST -d "username=admin&password=password123" http://localhost:8000/api/get-token/
+```
+$ curl -X POST -d "username=admin&password=password123" http://localhost:8000/api/get-token/
+```
 
 Your token will be returned in the response. You can then use the token in requests such as:
 
-      $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
+```
+$ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
+```
 
+## Django Admin Configuration
 
-## Scripts
+Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, which can be accessed by clicking on the profile menu and selecting "Administration".
 
-Aurora uses several shell scripts to interact with LDAP for authentication purposes. Brief descriptions are provided below, and full documentation is available [here](https://github.com/RockefellerArchiveCenter/aurora/blob/master/scripts/Rockefeller%20Archive%20Center%20Bash%20Scripts%20Documentation.pdf) (PDF).
+In addition to allowing for the manual creation and deletion of certain objects, this interface also allows authorized users to edit system values which are used by the application, including the human-readable strings associated with Bag Log Codes. Care should be taken when making changes in the Django admin interface, particularly the creation or deletion of objects, since they can have unintended consequences.
 
--   **RACaddorg**: creates a new organization on the server (Bash)
--   **RACcreateuser.c**: creates an administrative user (c program)
--   **RACadd2grp**: adds a user to the group that represents the organization. (Bash)
--   **RACdeluser**: removes a user from the server. The user will remain in LDAP. (Bash)
+## Contributing
+
+Aurora is an open source project and we welcome contributions! If you want to fix a bug, or have an idea of how to enhance the application, the process looks like this:
+
+1. File an issue in this repository. This will provide a location to discuss proposed implementations of fixes or enhancements, and can then be tied to a subsequent pull request.
+2. If you have an idea of how to fix the bug (or make the improvements), fork the repository and work in your own branch. When you are done, push the branch back to this repository and set up a pull request. Automated unit tests are run on all pull requests. Any new code should have unit test coverage, documentation (if necessary), and should conform to the Python PEP8 style guidelines.
+3. After some back and forth between you and core committers (or individuals who have privileges to commit to the master branch of this repository), your code will probably be merged, perhaps with some minor changes.
+
 
 ## License
 

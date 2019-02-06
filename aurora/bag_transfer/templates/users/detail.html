@@ -8,7 +8,7 @@
 <div class="row">
     <div class="col-md-3">
 
-        <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
+        <div class="box box-primary">
             <div class="box-body box-profile">
 
                 <h2 class="profile-username text-center">
@@ -35,7 +35,7 @@
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
-                    <a href="{% url 'users:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit User</a>
+                    <a href="{% url 'users:edit' object.pk %}" class="btn btn-primary btn-block">Edit User</a>
                 {% endif %}
                 {% if request.user.pk == object.pk %}
                     <a href="{% url 'users:password-change' %}" class="btn btn-default btn-block">Change Password</a>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
+        <div class="box box-primary">
             <div class="box-header with-border">
                 <h2 class="box-title">Details </h2>
             </div>
