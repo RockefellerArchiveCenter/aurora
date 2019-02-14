@@ -92,8 +92,3 @@ In addition to the permissions of **All Archivists**, System Administrators have
 *  Add/edit rights statements
 *  Add/edit Bag-It Profiles
 *  Change system settings
-
-
-## Developer Resources
-
-Aurora comes with a RESTful API, built using the Django Rest Framework. Users can interact with the API using a command-line client, but the application also includes a browsable API interface and the JSON API schema.
