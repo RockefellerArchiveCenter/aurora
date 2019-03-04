@@ -3,7 +3,7 @@ layout: docs
 title:  "Aurora - Viewing Transfers"
 ---
 
-Aurora offers users the ability to view recent transfer activity via a dashboard, as well as the ability to view more detailed information about transfers in detail or aggregate via a transfers page.
+As transfers pass through validation, appraisal and accessioning processes, Aurora offers users the ability to view detailed information about them singly or aggregate via a transfers page. Recent transfer activity is also available via a dashboard, which serves as a landing page for the application.
 
 ## Dashboard
 
