@@ -1,48 +1,9 @@
 ---
 layout: docs
-title:  "Rockefeller Archive Center - Aurora Features"
+title:  "Aurora - Administration Features"
 ---
 
-## Dashboard
-
-The homepage of Aurora is a dashboard that provides key metrics about transfer activity including related graphs and charts. A context switcher allows users to access the dashboard for either their own transfer activity or their organization's activity. Archivists can switch between dashboards for all active organizations.
-
-## Transfers
-
-Aurora provides a searchable, sortable table to view all transfers and information about them. A button allows the download of a CSV file containing the data from the transfer table. Users can view the status of each transfer, which is updated as it moves through the process. There are 9 possible statuses:
-
-1. Transfer Started
-2. Transfer Complete
-3. Invalid
-4. Validated
-5. Rejected
-6. Accepted
-7. Accessioning Started
-8. In Accession Queue
-9. Accession Complete
-
-### Transfer details
-
-Aurora enables users to view more details about a particular transfer by clicking on its row in the table. The detail page provides, as applicable:
-- Error messages
-- Metadata
-- Manifest
-- Log
-- Rights statements
-- Appraisal note
-
-## Appraise
-
-The application allows archivists to review a queue of the valid transfers to ensure they are relevant to the collecting scope before accessioning. The upfront validation provided by Aurora (particularly the BagIt Profile validation) should prevent most out-of-scope records from being received, but this step allows a manual check by users with the appropriate permissions (see Users section) who will:
-
-1. View transfer details
-2. Add an appraisal note (optional)
-3. Accept or reject transfers
-
-## Accession
-
-Once transfers have been accepted in the appraisal queue, they are moved to the accessioning queue, where multiple transfers can be grouped together into a single accession if they have the same organization, record creators and record type. Archivists with the necessary permissions can create accession records, which represent data about one or (usually) more transfers.
-
+Aurora provides the ability to manage organizations and users accounts with those organizations.
 
 ## Organizations
 
@@ -131,8 +92,3 @@ In addition to the permissions of **All Archivists**, System Administrators have
 *  Add/edit rights statements
 *  Add/edit Bag-It Profiles
 *  Change system settings
-
-
-## Developer Resources
-
-Aurora comes with a RESTful API, built using the Django Rest Framework. Users can interact with the API using a command-line client, but the application also includes a browsable API interface and the JSON API schema.

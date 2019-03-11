@@ -1,4 +1,4 @@
-public: false
+public: true
 type: "docs"
 category: "collection development and management"
 tags:
@@ -6,7 +6,11 @@ tags:
   - "appraise"
   - "accession"
 title: "Aurora User Guide"
-description: "User documentation for the Aurora digital records transfer application"
+description: "User documentation for the Aurora digital records transfer application."
 pages:
   - ["Overview", "index"]
-  - ["Features", "features"]
+  - ["Viewing Transfers", "viewing-transfers"]
+  - ["Accessioning", "accessioning"]
+  - ["Appraisal", "appraisal"]
+  - ["Organization and User Administration", "administration"]
+  - ["Developer Resources", "developers"]
