@@ -21,7 +21,7 @@ idna==2.6
 inflection==0.3.1
 iso8601==0.1.12
 itypes==1.1.0
-Jinja2==2.10
+Jinja2==2.10.1
 jsonpointer==1.14
 jsonschema==2.6.0
 MarkupSafe==1.0
@@ -41,6 +41,6 @@ six==1.11.0
 strict-rfc3339==0.7
 swagger-spec-validator==2.1.0
 uritemplate==3.0.0
-urllib3==1.23
+urllib3==1.24.2
 validate-email==1.3
 virtualenv==16.0.0
