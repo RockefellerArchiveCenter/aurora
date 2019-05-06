@@ -192,7 +192,7 @@ class User(AbstractUser):
                     if RAC_CMD.add2grp(self.organization.machine_name, self.username):
                         print 'GROUP CHANGED'
 
-            super(User, self).save(*args, **kwargs)
+        super(User, self).save(*args, **kwargs)
 
     def total_uploads(self):
         return Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED, user_uploaded=self).count()
