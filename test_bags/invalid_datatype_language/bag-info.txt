@@ -1,7 +1,7 @@
 Bag-Count: 1 of 2
 Bag-Group-Identifier: Grants1968
 Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
-BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json
+BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/aurora/master/test_bags/test_profile.json
 Bagging-Date: 2017-11-05T12:27:05.739812
 Date-End: 1968-11-22
 Date-Start: 1966-11
