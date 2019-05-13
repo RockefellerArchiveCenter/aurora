@@ -14,7 +14,7 @@ from braces.views import AnonymousRequiredMixin
 
 from bag_transfer.mixins.authmixins import *
 from bag_transfer.users.form import *
-
+from bag_transfer.lib.RAC_CMD import set_server_password
 
 class SplashView(AnonymousRequiredMixin, TemplateView):
 
@@ -114,10 +114,16 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     def get_success_url(self):
         return reverse('users:detail', kwargs={'pk': self.request.user.pk})
 
+    def form_valid(self, form):
+        result = super(UserPasswordChangeView, self).form_valid(form)
+        set_server_password(form.user.username, form.cleaned_data['new_password1'])
+        return result	
+
 
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
     template_name = 'users/password_reset_form.html'
     form_class = UserPasswordResetForm
+
 
 
 class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
@@ -127,6 +133,11 @@ class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
 class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
     template_name = 'users/password_reset_confirm.html'
     form_class = UserSetPasswordForm
+
+    def form_valid(self, form):
+        results = super(UserPasswordResetConfirmView, self).form_valid(form)
+        set_server_password(form.user.username, form.cleaned_data['new_password1'])
+        return results
 
 
 class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):

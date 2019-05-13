@@ -25,8 +25,8 @@ bags_ref = (
     ('missing_bag_declaration', 'GBERR', True),
     ('missing_payload_directory', 'GBERR', True),
     ('missing_payload_manifest', 'GBERR', True),
+    ('no_bagit_profile', 'GBERR', True),
 
-    ('invalid_bagit_profile_url', 'RBERR', True),
     ('missing_description', 'RBERR', True),
     ('missing_record_type', 'RBERR', True),
     ('missing_source_organization', 'RBERR', True),
