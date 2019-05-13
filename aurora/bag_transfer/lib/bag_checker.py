@@ -19,7 +19,6 @@ class bagChecker():
     def __init__(self, archiveObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP
-        self.RAC_profile_identifier = 'https://raw.githubusercontent.com/RockefellerArchiveCenter/project_electron/master/transfer/organizational-bag-profile.json'
         self.bag_dates_to_validate = ['Date_Start', 'Date_End', 'Bagging_Date']
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
