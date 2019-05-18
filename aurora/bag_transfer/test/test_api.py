@@ -55,8 +55,13 @@ class APITest(TestCase):
                 settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(new_transfer['identifier']))),
                 "File was not removed")
 
+    def schema(self):
+        schema = self.client.get(reverse('schema-json', kwargs={"format": ".json"}))
+        self.assertEqual(schema.status_code, 200, "Wrong HTTP code")
+
     def test_api(self):
         self.update_transfer()
+        self.schema()
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)
