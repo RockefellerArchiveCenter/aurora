@@ -7,22 +7,24 @@
   <div class="col-md-12">
     <div class="box box-default">
       <div class="box-body">
-       {% if not uploads_count %}
-				<div>No transfers to appraise</div>
-			 {% else %}
-				<table id="appraise_table" class="table table-striped dataTable">
-					<thead>
-						<tr>
-							<th>Transfer File Name</th>
-              <th>Organization</th>
-							<th>Record Creators</th>
-							<th>Record Type</th>
-							<th>Transfer Date</th>
-              <th></th>
-						</tr>
-					</thead>
-				</table>
-			{% endif %}
+        <div class="table-responsive">
+         {% if not uploads_count %}
+  				<div>No transfers to appraise</div>
+  			 {% else %}
+  				<table id="appraise_table" class="table table-striped dataTable">
+  					<thead>
+  						<tr>
+  							<th>Transfer File Name</th>
+                <th>Organization</th>
+  							<th>Record Creators</th>
+  							<th>Record Type</th>
+  							<th>Transfer Date</th>
+                <th></th>
+  						</tr>
+  					</thead>
+  				</table>
+  			{% endif %}
+        </div>
       </div>
     </div>
   </div>
