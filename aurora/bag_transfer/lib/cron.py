@@ -108,28 +108,31 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         Pter.cron_open(self.code)
         for archive in Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED):
-            tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
-            FH.make_tarfile(
-                join(settings.STORAGE_ROOT_DIR, tar_filename),
-                join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
+            try:
+                tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
+                FH.make_tarfile(
+                    join(settings.STORAGE_ROOT_DIR, tar_filename),
+                    join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier))
 
-            mkdir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+                mkdir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
-            FH.move_file_or_dir(
-                join(settings.STORAGE_ROOT_DIR, tar_filename),
-                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
+                FH.move_file_or_dir(
+                    join(settings.STORAGE_ROOT_DIR, tar_filename),
+                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
 
-            archive_json = ArchivesSerializer(archive, context={'request': None}).data
-            with open(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, "{}.json".format(archive.machine_file_identifier)), 'wb') as f:
-                json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
+                archive_json = ArchivesSerializer(archive, context={'request': None}).data
+                with open(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, "{}.json".format(archive.machine_file_identifier)), 'wb') as f:
+                    json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
 
-            FH.make_tarfile(
-                join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)),
-                join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+                FH.make_tarfile(
+                    join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)),
+                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
-            FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
+                FH.remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
-            archive.process_status = Archives.DELIVERED
-            archive.save()
+                archive.process_status = Archives.DELIVERED
+                archive.save()
+            except Exception as e:
+                print "Error delivering transfer {}: {}".format(archive, str(e))
 
         Pter.cron_close(self.code)
