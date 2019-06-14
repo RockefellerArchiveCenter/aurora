@@ -61,3 +61,6 @@ ASPACE = {
   "password": "admin",
   "repo_id": 2,
 }
+
+#Analytics configs
+GA_TRACKING_ID = 'UA-########-##'
