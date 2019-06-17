@@ -8,20 +8,20 @@
     <div class="timeline-body">
       <dl>
         {% if rights_granted.start_date %}
-        <dt>Applicable Dates</dt>
-        {% if rights_granted.end_date %}
-        <dd>{{ rights_granted.start_date }} - {{ rights_granted.end_date }}</dd>
-        {% elif rights_granted.end_date_open %}
-        <dd>{{ rights_granted.start_date }} - OPEN</dd>
-        {% else %}
-        <dd>{{ rights_granted.start_date }}</dd>
-        {% endif %}
-        {% elif rights_granted.start_date_period %}
-        <dt>Applicable Date Rules</dt>
-        <dd>{{ rights_granted.start_date_period }} years after start date</dd>
+          <dt>Applicable Dates</dt>
+          {% if rights_granted.end_date %}
+            <dd>{{ rights_granted.start_date }} - {{ rights_granted.end_date }}</dd>
+          {% elif rights_granted.end_date_open %}
+            <dd>{{ rights_granted.start_date }} - OPEN</dd>
+          {% else %}
+            <dd>{{ rights_granted.start_date }}</dd>
+          {% endif %}
         {% elif rights_granted.end_date_period %}
-        <dt>Applicable Date Rules</dt>
-        <dd>{{ rights_granted.end_date_period }} years after end date</dd>
+          <dt>Applicable Date Rules</dt>
+          <dd>{{ rights_granted.end_date_period }} years after end date</dd>
+        {% else %}
+          <dt>Applicable Date Rules</dt>
+          <dd>{{ rights_granted.start_date_period }} years after start date</dd>
         {% endif %}
         <dt>Note</dt>
         <dd>{{ rights_granted.rights_granted_note }}</dd>

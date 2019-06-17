@@ -3,7 +3,12 @@
 
 {% block h1_title %}
   Rights Statement <small>{{object.organization}}</small>
-  <a href="{% url 'orgs:detail' object.organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+  <div class="pull-right">
+    <a href="{% url 'orgs:detail' object.organization.pk %}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+    {% if request.user.is_manager or request.user.is_superuser %}
+      <a href="{% url 'rights:edit' object.pk %}" class="btn btn-warning">Edit Rights Statement</a>
+    {% endif %}
+  </div>
 {% endblock %}
 
 {% block content %}
