@@ -62,5 +62,5 @@ ASPACE = {
   "repo_id": 2,
 }
 
-#Analytics configs
-GA_TRACKING_ID = 'UA-########-##'
+# Google analytics configs
+GTM_ID = 'GTM-xxxxxxx'
