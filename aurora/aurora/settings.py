@@ -69,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bag_transfer.context_processors.gtm_id',
             ],
         },
     },
@@ -173,3 +174,6 @@ API_KEY = getattr(CF, 'API_KEY', None)
 
 # ArchivesSpace configs
 ASPACE = CF.ASPACE
+
+# Google Analytics configs
+GTM_ID = CF.GTM_ID

@@ -61,3 +61,6 @@ ASPACE = {
   "password": "admin",
   "repo_id": 2,
 }
+
+# Google analytics configs
+GTM_ID = 'GTM-xxxxxxx'
