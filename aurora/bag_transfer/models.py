@@ -687,6 +687,9 @@ class BagItProfileBagInfoValues(models.Model):
     bagit_profile_baginfo = models.ForeignKey(BagItProfileBagInfo)
     name = models.CharField(max_length=256)
 
+    class Meta:
+        ordering = ['name']
+
 
 class DashboardMonthData(models.Model):
     year = models.PositiveSmallIntegerField()
