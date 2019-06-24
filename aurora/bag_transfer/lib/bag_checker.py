@@ -1,10 +1,10 @@
 import bagit
 import bagit_profile
+from iso639 import languages
 import iso8601
 import glob
 import json
 from os.path import isfile, join
-from pycountry import languages
 
 from django.conf import settings
 from django.urls import reverse
@@ -135,8 +135,8 @@ class bagChecker():
                 langz = [langz]
             for language in langz:
                 try:
-                    languages.get(alpha_3=language)
-                except Exception as e:
+                    languages.get(part2b=language)
+                except KeyError as e:
                     print e
                     self.bag_exception = "Invalid language value: {}".format(language)
                     return False
