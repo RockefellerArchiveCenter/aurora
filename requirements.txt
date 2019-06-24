@@ -14,13 +14,13 @@ django-datatables-view==1.17.0
 djangorestframework==3.9.1
 djangorestframework-jwt==1.11.0
 drf-yasg==1.11.0
-flex==6.14
+flex==6.14.0
 functools32==3.2.3.post2
 future==0.16.0
 idna==2.6
 inflection==0.3.1
+iso-639==0.4.5
 iso8601==0.1.12
-iso-639
 itypes==1.1.0
 Jinja2==2.10.1
 jsonpointer==1.14
@@ -34,6 +34,7 @@ PyJWT==1.6.1
 python-dateutil==2.6.1
 pytz==2018.5
 PyYAML==4.2b4
+requests==2.22.0
 rfc3987==1.3.7
 ruamel.ordereddict==0.4.13
 ruamel.yaml==0.15.71
