@@ -24,4 +24,4 @@ script:
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web echo $PWD
-  - docker-compose exec web coverage xml && ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - docker-compose exec web coverage -o xml && ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
