@@ -13,7 +13,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
   - docker-compose up -d
-  - sleep 40s
+  - sleep 30s
   - docker-compose exec web pip install coverage
 install: true
 before_script:
