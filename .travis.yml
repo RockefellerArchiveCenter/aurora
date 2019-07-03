@@ -23,4 +23,4 @@ before_script:
 script:
   - docker-compose exec web coverage run manage.py test
 after_script:
-- docker-compose exec web coverage xml && docker-compose exec web ls && docker-compose exec web echo $PWD && ./cc-test-reporter format-coverage --input-type coverage.py < /home/travis/build/RockefellerArchiveCenter/aurora/coverage.xml && ./cc-test-reporter upload-coverage -i /home/travis/build/RockefellerArchiveCenter/aurora/coverage.xml $TRAVIS_TEST_RESULT
+  - docker-compose exec web coverage xml && docker-compose exec web ls && docker-compose exec web echo $PWD && ./cc-test-reporter format-coverage --input-type coverage.py /home/travis/build/RockefellerArchiveCenter/aurora/aurora/coverage/coverage.xml && ./cc-test-reporter upload-coverage -i /home/travis/build/RockefellerArchiveCenter/aurora/aurora/coverage/coverage.xml $TRAVIS_TEST_RESULT
