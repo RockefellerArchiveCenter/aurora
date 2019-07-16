@@ -67,7 +67,7 @@ class DiscoverTransfers(CronJobBase):
                     new_arc.setup_save(upload_list)
                     new_arc.process_status = Archives.INVALID
                     BAGLog.log_it(upload_list['auto_fail_code'], new_arc)
-                    email.setup_message('TRANS_FAIL_VAL',new_arc)
+                    email.setup_message('TRANS_FAIL_VAL', new_arc)
                     email.send()
                     FH.remove_file_or_dir(new_arc.machine_file_path)
 
@@ -77,7 +77,7 @@ class DiscoverTransfers(CronJobBase):
                         print "Transfer {} is valid".format(new_arc.machine_file_identifier)
                         new_arc.process_status = Archives.VALIDATED
                         new_arc.bag_it_valid = True
-                        BAGLog.log_it('APASS',new_arc)
+                        BAGLog.log_it('APASS', new_arc)
                         email.setup_message('TRANS_PASS_ALL',new_arc)
                         email.send()
                         FH.move_file_or_dir('/data/tmp/{}'.format(new_arc.bag_it_name), '{}{}'.format(settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier))

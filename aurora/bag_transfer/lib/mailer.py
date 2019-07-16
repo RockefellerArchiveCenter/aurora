@@ -1,13 +1,18 @@
 from django.core.mail import EmailMessage
 from django.conf import settings as CF
+from django.urls import reverse
 
 
 class Mailer():
-    def __init__(self,subject ='',to=[],text_content=''):
+    def __init__(self, subject='', to=[], text_content=''):
         self.subject = subject
-        self.from_email= CF.EMAIL_HOST_USER
-        self.to= to
-        self.text_content = text_content
+        self.from_email = CF.EMAIL_HOST_USER
+        self.to = to
+        footer = "\r\n".join(["Rockefeller Archive Center",
+                              "15 Dayton Avenue, Sleepy Hollow, NY 10591",
+                              "(914) 366-6300", "archive@rockarch.org",
+                              "https://rockarch.org"])
+        self.text_content = '{}\r\n\r\n{}'.format(text_content, footer)
 
         self.email = {}
 
@@ -27,7 +32,7 @@ class Mailer():
             self.text_content,
             self.from_email,
             send_to,
-            reply_to = [self.from_email]
+            reply_to=[self.from_email]
         )
 
         try:
@@ -39,30 +44,22 @@ class Mailer():
             return True
 
     def setup_message(self, mess_code, archive_obj={}):
-        if mess_code == 'TRANS_RECEIPT':
-            self.subject = 'Your transfer reciept'
-            self.text_content = """Your transfer has been recieved, and is being processed.
-            """
-        elif mess_code == 'TRANS_PASS_ALL':
-            self.subject = 'Your transfer passed all validation'
+        if mess_code == 'TRANS_PASS_ALL':
+            self.subject = 'Transfer {} passed all validation'.format(archive_obj.bag_or_failed_name())
 
             lcodes = archive_obj.get_bag_validations()
 
             eparts = [
-                'The transfer {} was received at {} and has passed all automated checks:',
-                'bag validation\t\t\t{}',
-                'bag profile validation\t\t{}',
-                'You can review the status of this transfer at any time by logging into {}'
+                'The transfer {} was received at {} and has passed all automated validation checks:',
+                'You can view the current status of this transfer at {}'
             ]
-            self.text_content =  "\r\n".join(eparts).format(
+            self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),
                 archive_obj.machine_file_upload_time,
-                (lcodes['PBAG'] if lcodes else '--'),
-                (lcodes['PBAGP'] if lcodes else '--'),
-                CF.BASE_URL + 'app'
+                CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': archive_obj.pk})
             )
         elif mess_code == 'TRANS_FAIL_VAL':
-            self.subject = 'Your Transfer Failed Validation'
+            self.subject = 'Transfer {} failed validation'.format(archive_obj.bag_or_failed_name())
 
             eparts = [
                 'An error occurred for the transfer {} during {} at {}. The transfer has been deleted from our systems.',
@@ -75,7 +72,7 @@ class Mailer():
                 archive_obj.bag_or_failed_name(),
                 (error_obj.code.code_desc if error_obj else '--'),
                 (error_obj.created_time if error_obj else '--'),
-                CF.BASE_URL + 'app/transfers/'
+                CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': archive_obj.pk})
             )
 
             # additional errs
@@ -84,3 +81,15 @@ class Mailer():
                 self.text_content += '\r\n\r\nAdditional Error Information:\r\n\r\n'
                 for err in additional_errors:
                     self.text_content += '{}\r\n\r\n'.format(err)
+
+        elif mess_code == 'TRANS_REJECT':
+            self.subject = 'Transfer {} was rejected'.format(archive_obj.bag_or_failed_name())
+
+            eparts = [
+                'An appraisal archivist rejected transfer {}. The transfer has been deleted from our systems.'.format(archive_obj.bag_or_failed_name())
+            ]
+
+            if archive_obj.appraisal_note:
+                eparts.append('The reason for this action was: {}'.format(archive_obj.appraisal_note))
+
+            self.text_content = "\r\n\r\n".join(eparts)
