@@ -23,10 +23,12 @@ class Mailer():
             self.text_content = "TEST EMAIL: SHOULD BE SENT TO {}\r\n\r\n{}".format(",".join(self.to), self.text_content)
             send_to = CF.EMAIL_OVERRIDE_USERS
 
-        self.text_content += "\r\n".join(["Rockefeller Archive Center",
+        footer += "\r\n".join(["Rockefeller Archive Center",
                               "15 Dayton Avenue, Sleepy Hollow, NY 10591",
                               "(914) 366-6300", "archive@rockarch.org",
                               "https://rockarch.org"])
+
+        self.content += "\r\n\r\n\r\n{}".format(footer)
 
         self.email = EmailMessage(
             self.subject,
