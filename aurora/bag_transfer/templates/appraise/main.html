@@ -223,16 +223,16 @@ function activateModal(uid, label, bag_name, appraisal_note) {
 function resolveRowCallback(uid, action) {
   $('.appraisal-note').each(function(){
     if (action == 'add') {
-      if ($(this).attr('rel') == uid){
+      if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Edit Note');
-        $(this).removeClass('btn-default');
-        $(this).addClass('btn-info').addClass('edit-note');
+        $(this).addClass('edit-note');
+        $(this).attr('aria-label', 'Note exists');
       }
     } else {
-      if ($(this).attr('rel') == uid){
+      if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Add Note');
-        $(this).removeClass('btn-info');
-        $(this).addClass('btn-default').removeClass('edit-note');
+        $(this).removeClass('edit-note');
+        $(this).removeAttr('aria-label')
       }
     }
   });

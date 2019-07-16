@@ -75,13 +75,14 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
 
     def get_filter_method(self): return self.FILTER_ICONTAINS
 
-    def appraise_buttons(self):
+    def appraise_buttons(self, bag):
         buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
         if self.request.user.can_appraise():
             buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                        <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
-                       <a type="button" class="appraisal-note btn btn-xs btn-info edit-note" data-toggle="modal" data-target="#modal-appraisal-note" href="#">Note</a>\
-                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
+                       <a type="button" class="appraisal-note btn btn-xs btn-info {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>\
+                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'\
+                       .format('edit-note' if bag.appraisal_note else '', 'aria-label="Note exists"' if bag.appraisal_note else '', 'Edit' if bag.appraisal_note else 'Add')
         return buttons
 
     def get_initial_queryset(self):
@@ -100,7 +101,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 creators,
                 bag_info_data.get('record_type'),
                 transfer.machine_file_upload_time.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
-                self.appraise_buttons(),
+                self.appraise_buttons(transfer),
                 transfer.id
             ])
         return json_data
