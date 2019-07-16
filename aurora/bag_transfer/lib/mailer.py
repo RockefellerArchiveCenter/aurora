@@ -8,7 +8,7 @@ class Mailer():
         self.subject = subject
         self.from_email = CF.EMAIL_HOST_USER
         self.to = to
-        self.text_content = text_content, footer
+        self.text_content = text_content
 
         self.email = {}
 
