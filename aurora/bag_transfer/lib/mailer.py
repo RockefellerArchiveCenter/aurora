@@ -28,11 +28,9 @@ class Mailer():
                               "(914) 366-6300", "archive@rockarch.org",
                               "https://rockarch.org"])
 
-        self.text_content += footer
-
         self.email = EmailMessage(
             self.subject,
-            self.text_content,
+            self.text_content + footer,
             self.from_email,
             send_to,
             reply_to=[self.from_email]
