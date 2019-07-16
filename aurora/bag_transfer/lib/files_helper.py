@@ -68,6 +68,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
         for f1 in os.listdir(dirpath):
             if os.path.isfile(f1):
                 files.append(f1)
+
     return files
 
 def file_owner(file_path):
