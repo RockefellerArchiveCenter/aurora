@@ -28,7 +28,7 @@ class Mailer():
                               "(914) 366-6300", "archive@rockarch.org",
                               "https://rockarch.org"])
 
-        self.content += "\r\n\r\n\r\n{}".format(footer)
+        self.text_content += "\r\n\r\n\r\n{}".format(footer)
 
         self.email = EmailMessage(
             self.subject,
