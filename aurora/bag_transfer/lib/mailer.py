@@ -12,7 +12,7 @@ class Mailer():
                               "15 Dayton Avenue, Sleepy Hollow, NY 10591",
                               "(914) 366-6300", "archive@rockarch.org",
                               "https://rockarch.org"])
-        self.text_content = '{}\r\n\r\n{}'.format(text_content, footer)
+        self.text_content = '{}\r\n\r\n{}\r\n\r\n'.format(text_content, footer)
 
         self.email = {}
 
