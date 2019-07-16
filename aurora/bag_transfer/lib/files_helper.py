@@ -24,7 +24,6 @@ def open_files_list():
         if open_files:
             for fileObj in open_files:
                 path_list.append(fileObj.path)
-    print "OPEN FILES LIST", path_list
     return path_list
 
 def files_in_unserialized(dirpath, CK_SUBDIRS=False):
@@ -69,7 +68,6 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
         for f1 in os.listdir(dirpath):
             if os.path.isfile(f1):
                 files.append(f1)
-    print "FILES IN UNSERIALIZED", files
     return files
 
 def file_owner(file_path):
