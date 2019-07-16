@@ -148,8 +148,11 @@ UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE
 CRON_CLASSES = [
     "bag_transfer.lib.cron.DiscoverTransfers",
     "bag_transfer.lib.cron.DeliverTransfers",
+    "django_cron.backends.lock.file.FileLock",
 ]
 
+#Django Cron Lock
+DJANGO_CRON_LOCK_BACKEND="django_cron.backends.lock.file.FileLock"
 
 # Email
 EMAIL_HOST = CF.EMAIL_HOST
