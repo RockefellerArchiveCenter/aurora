@@ -50,6 +50,7 @@ EMAIL_OVERRIDE = True
 EMAIL_OVERRIDE_USERS = ['test@example.com']
 DEFAULT_FROM_EMAIL = 'test@example.com'
 SERVER_EMAIL = 'test@example.com'
+PASSWORD_RESET_TIMEOUT_DAYS = 1
 
 DELIVERY_URL = 'http://zodiac-web:8001/api/store-accessions/'
 API_KEY = 'demo'

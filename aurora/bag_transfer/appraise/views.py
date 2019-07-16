@@ -10,6 +10,7 @@ from django.views.generic import TemplateView, UpdateView
 from django.shortcuts import render, redirect
 
 from bag_transfer.lib.files_helper import remove_file_or_dir
+from bag_transfer.lib.mailer import Mailer
 from bag_transfer.models import Archives, BAGLog
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import ArchivistMixin
@@ -56,6 +57,11 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                                         BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
                                         if not appraisal_decision:
                                             remove_file_or_dir(upload.machine_file_path)
+                                            if upload.user_uploaded:
+                                                email = Mailer()
+                                                email.to = [upload.user_uploaded.email]
+                                                email.setup_message('TRANS_REJECT', upload)
+                                                email.send()
                                     upload.save()
                                     rdata['success'] = 1
 

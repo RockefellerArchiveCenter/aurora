@@ -117,13 +117,12 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
     def form_valid(self, form):
         result = super(UserPasswordChangeView, self).form_valid(form)
         set_server_password(form.user.username, form.cleaned_data['new_password1'])
-        return result	
+        return result
 
 
 class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
     template_name = 'users/password_reset_form.html'
     form_class = UserPasswordResetForm
-
 
 
 class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
