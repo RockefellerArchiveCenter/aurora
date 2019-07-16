@@ -30,21 +30,6 @@
 </div>
 {% endif %}
 
-{% if object.manifest %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Manifest</h2>
-			</div>
-			<div class="box-body">
-				<pre>{{ object.manifest|linebreaks }}</pre>
-			</div>
-		</div>
-	</div>
-</div>
-{% endif %}
-
 {% if object.get_errors %}
 <div class="row">
 	<div class="col-md-12">
@@ -137,6 +122,21 @@
 				<p class="list-label">ArchivesSpace Parent Component</p>
 				<p>{{object.archivesspace_parent_identifier}}</p>
 				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% if object.manifest %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h2 class="box-title">Manifest</h2>
+			</div>
+			<div class="box-body">
+				<pre>{{ object.manifest|linebreaks }}</pre>
 			</div>
 		</div>
 	</div>

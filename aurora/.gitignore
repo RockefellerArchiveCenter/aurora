@@ -1,5 +1,4 @@
 *.pyc
-static/
 test_scripts/
 .coverage
 .DS_Store
