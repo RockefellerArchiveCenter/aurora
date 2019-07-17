@@ -37,7 +37,6 @@ class AccessionView(ArchivistMixin, JSONResponseMixin, ListView):
                 process_status=Archives.ACCEPTED).annotate(
                     transfer_group=Concat('organization', 'metadata__record_type',
                                           GroupConcat('metadata__record_creators'),
-                                          'metadata__bag_group_identifier',
                                           output_field=CharField())).order_by('transfer_group'),
             'accessions': Accession.objects.all(),
             'meta_page_title': 'Accessioning Queue',
