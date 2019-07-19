@@ -26,4 +26,4 @@ after_script:
   - docker-compose exec web coverage xml
   - ls
   - pwd
-  - ./cc-test-reporter after-build aurora/coverage.xml --debug --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build aurora/coverage.xml --prefix /aurora/aurora --debug -t coverage.py --exit-code $TRAVIS_TEST_RESULT
