@@ -24,6 +24,4 @@ script:
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web coverage xml
-  - docker-compose exec web echo $PWD
-  - docker-compose exec web ls
-  - ./cc-test-reporter after-build coverage.xml --debug -t coverage.py -p /home/travis/build/RockefellerArchiveCenter/aurora/aurora --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build coverage.xml --prefix /code/aurora --debug -t coverage.py -p /home/travis/build/RockefellerArchiveCenter/aurora/aurora --exit-code $TRAVIS_TEST_RESULT
