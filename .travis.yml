@@ -24,7 +24,10 @@ script:
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web coverage xml
-  - docker-compose exec web mv /code/aurora/aurora/coverage.xml /code/aurora/coverage.xml 
+  - docker-compose exec web cp /code/aurora/aurora/coverage.xml /code/aurora/coverage.xml
+  - cp aurora/coverage.xml coverage.xml
   - ls
+  - docker-compose exec web ls
   - pwd
+  - docker-compose exec web pwd
   - ./cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
