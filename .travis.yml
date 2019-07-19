@@ -26,5 +26,5 @@ after_script:
   - docker-compose exec web coverage xml
   - ls
   - pwd
-  - ./cc-test-reporter format-coverage --debug -t coverage.py --add-prefix aurora coverage.xml
+  - ./cc-test-reporter format-coverage --debug -t coverage.py --add-prefix aurora aurora/coverage.xml
   - ./cc-test-reporter upload-coverage --debug
