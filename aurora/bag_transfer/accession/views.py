@@ -101,6 +101,7 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
                     )
                     resp.raise_for_status()
                     accession.process_status = Accession.DELIVERED
+                    accession.save()
                     messages.success(request, 'Accession data delivered.')
                 except Exception as e:
                     print(e)
