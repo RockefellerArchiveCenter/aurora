@@ -54,6 +54,7 @@ class Mailer():
 
             eparts = [
                 'The transfer {} was received at {} and has passed all automated validation checks:',
+                'This transfer is now awaiting archival appraisal and accessioning.',
                 'You can view the current status of this transfer at {}'
             ]
             self.text_content = "\r\n\r\n".join(eparts).format(
