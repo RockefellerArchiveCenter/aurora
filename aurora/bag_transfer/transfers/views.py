@@ -271,7 +271,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
 
 
 class TransferDetailView(OrgReadViewMixin, DetailView):
-    template_name = 'transfers/transfer_detail.html'
+    template_name = 'transfers/detail.html'
     model = Archives
 
     def get_context_data(self, **kwargs):
