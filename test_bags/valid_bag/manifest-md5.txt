@@ -1,4 +1,3 @@
-194577a7e20bdcc7afbb718f502c134c  data/.DS_Store
 d52d759e406e40739203b494cebb0e71  data/Lorem ipsum dolor sit amet.docx
 6b78065070118d9657b7dface5bf8065  data/Lorem ipsum.odt
 6b417a5079c8dab04cbda2c4d0b4f40f  data/consectetur adipiscing elit.pdf
