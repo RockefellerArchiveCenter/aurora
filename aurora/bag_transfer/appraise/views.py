@@ -105,7 +105,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
             if bag_info_data:
                 creators = ('<br/>').join(bag_info_data.get('record_creators'))
             json_data.append([
-                transfer.bag_it_name,
+                transfer.bag_or_failed_name(),
                 transfer.organization.name,
                 creators,
                 bag_info_data.get('record_type'),

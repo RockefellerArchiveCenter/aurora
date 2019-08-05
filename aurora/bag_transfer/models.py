@@ -286,7 +286,11 @@ class Archives(models.Model):
         return '{}: {}'.format(self.pk, self.bag_or_failed_name())
 
     def bag_or_failed_name(self):
-        return self.bag_it_name if self.bag_it_valid else self.machine_file_path.split('/')[-1]
+        if self.bag_it_valid:
+            bag_info_data = self.get_bag_data()
+            return "{} ({})".format(bag_info_data.get('title'), bag_info_data.get('external_identifier')) \
+                   if bag_info_data.get('external_identifier') else bag_info_data.get('title')
+        return self.machine_file_path.split('/')[-1]
 
     def rights_statements(self):
         return self.rightsstatement_set.all()

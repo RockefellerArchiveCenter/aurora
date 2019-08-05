@@ -53,12 +53,13 @@ class Mailer():
             lcodes = archive_obj.get_bag_validations()
 
             eparts = [
-                'The transfer {} was received at {} and has passed all automated validation checks:',
+                'The transfer {} with the bag name {} was received at {} and has passed all automated validation checks:',
                 'This transfer is now awaiting archival appraisal and accessioning.',
                 'You can view the current status of this transfer at {}'
             ]
             self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),
+                archive_obj.bag_it_name,
                 archive_obj.machine_file_upload_time,
                 CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': archive_obj.pk})
             )
@@ -66,7 +67,8 @@ class Mailer():
             self.subject = 'Transfer {} failed validation'.format(archive_obj.bag_or_failed_name())
 
             eparts = [
-                'An error occurred for the transfer {} during {} at {}. The transfer has been deleted from our systems.',
+                'An error occurred for the transfer with bag name {} during {} at {}.',
+                'The transfer has been deleted from our systems.',
                 'Please review the complete error log at {}, correct any errors, and try sending the transfer again.'
             ]
 
