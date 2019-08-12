@@ -58,6 +58,7 @@ class AccessioningTestCase(TestCase):
         self.assertEqual(list_response.status_code, 200)
 
         # These are all the same transfer so there should only be one transfer group
+        print list_response.context
         transfer_group = list_response.context['uploads'][0].transfer_group
         for upload in list_response.context['uploads']:
             self.assertEqual(upload.transfer_group, transfer_group)
