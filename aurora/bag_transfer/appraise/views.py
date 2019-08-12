@@ -20,16 +20,16 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
     template_name = "appraise/main.html"
 
     def handle_note_request(self, request, upload, rdata):
-        if request.GET['req_type'] == 'edit':
+        if request.GET.get('req_type') == 'edit':
             rdata['appraisal_note'] = upload.appraisal_note
-        elif request.GET['req_type'] == 'submit':
-            upload.appraisal_note = request.GET['appraisal_note']
-        elif request.GET['req_type'] == 'delete':
+        elif request.GET.get('req_type') == 'submit':
+            upload.appraisal_note = request.GET.get('appraisal_note')
+        elif request.GET.get('req_type') == 'delete':
             upload.appraisal_note = None
 
     def handle_appraisal_request(self, request, upload):
         appraisal_decision = 0
-        appraisal_decision = int(request.GET['appraisal_decision'])
+        appraisal_decision = int(request.GET.get('appraisal_decision'))
         upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
         BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
         if not appraisal_decision:
@@ -45,21 +45,20 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
             rdata = {}
             rdata['success'] = 0
 
-            if ('upload_id' in request.GET and request.user.is_archivist()):
+            if request.user.is_archivist():
                 try:
-                    upload = Archives.objects.get(pk=request.GET['upload_id'])
+                    upload = Archives.objects.get(pk=request.GET.get('upload_id'))
                 except Archives.DoesNotExist as e:
                     rdata['emess'] = e
                     return self.render_to_json_response(rdata)
 
-                if request.GET['req_form'] == 'detail':
+                if request.GET.get('req_form') == 'detail':
                     rdata['object'] = upload.id
                     rdata['success'] = 1
 
-                elif (request.GET['req_form'] == 'appraise' and
-                      request.user.can_appraise() and
-                      'req_type' in request.GET):
-                    if request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                elif (request.GET.get('req_form') == 'appraise' and
+                      request.user.can_appraise()):
+                    if request.GET.get('req_type') == 'decision':
                         self.handle_appraisal_request(request, upload)
                     else:
                         self.handle_note_request(request, upload, rdata)
