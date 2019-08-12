@@ -12,7 +12,7 @@ class Accession(models.Model):
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
     extent_files = models.PositiveIntegerField()
-    extent_size = models.PositiveIntegerField()
+    extent_size = models.BigIntegerField()
     creators = models.ManyToManyField(RecordCreators, blank=True)
     description = models.TextField()
     access_restrictions = models.TextField()
