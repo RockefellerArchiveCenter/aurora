@@ -45,29 +45,26 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
             rdata = {}
             rdata['success'] = 0
 
-            if request.user.is_archivist():
+            if ('upload_id' in request.GET and request.user.is_archivist()):
+                try:
+                    upload = Archives.objects.get(pk=request.GET['upload_id'])
+                except Archives.DoesNotExist as e:
+                    rdata['emess'] = e
+                    return self.render_to_json_response(rdata)
 
-                if 'upload_id' in request.GET:
-                    try:
-                        upload = Archives.objects.get(pk=request.GET['upload_id'])
-                    except Archives.DoesNotExist as e:
-                        rdata['emess'] = e
-                        return self.render_to_json_response(rdata)
+                if request.GET['req_form'] == 'detail':
+                    rdata['object'] = upload.id
+                    rdata['success'] = 1
 
-                    if 'req_form' in request.GET:
-                        if request.GET['req_form'] == 'detail':
-                            rdata['object'] = upload.id
-                            rdata['success'] = 1
-
-                        elif (request.GET['req_form'] == 'appraise' and
-                              request.user.can_appraise() and
-                              'req_type' in request.GET):
-                            if request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
-                                self.handle_appraisal_request(request, upload)
-                            else:
-                                self.handle_note_request(request, upload, rdata)
-                            upload.save()
-                            rdata['success'] = 1
+                elif (request.GET['req_form'] == 'appraise' and
+                      request.user.can_appraise() and
+                      'req_type' in request.GET):
+                    if request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                        self.handle_appraisal_request(request, upload)
+                    else:
+                        self.handle_note_request(request, upload, rdata)
+                    upload.save()
+                    rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 
