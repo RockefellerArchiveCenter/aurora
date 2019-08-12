@@ -28,7 +28,6 @@ def set_is_staff(sender, instance, **kwargs):
     instance.save()
 
 
-@receiver(post_save, sender=Archives)
 def update_dashboard_data(sender, instance, **kwargs):
     today = date.today()
     current = today - relativedelta(years=1)
@@ -60,3 +59,13 @@ def update_dashboard_data(sender, instance, **kwargs):
                 )[0]
                 data.count = Archives.objects.filter(organization=organization, metadata__record_type=label).count()
                 data.save()
+
+
+@receiver(post_save, sender=Archives)
+def dashboard_data(sender, instance, **kwargs):
+    update_dashboard_data(sender, instance, **kwargs)
+
+
+@receiver(pre_delete, sender=Archives)
+def dashboard_data(sender, instance, **kwargs):
+    update_dashboard_data(sender, instance, **kwargs)
