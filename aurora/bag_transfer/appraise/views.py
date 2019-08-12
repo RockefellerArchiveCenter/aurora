@@ -19,6 +19,27 @@ from bag_transfer.mixins.authmixins import ArchivistMixin
 class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
     template_name = "appraise/main.html"
 
+    def handle_note_request(self, request, upload, rdata):
+        if request.GET['req_type'] == 'edit':
+            rdata['appraisal_note'] = upload.appraisal_note
+        elif request.GET['req_type'] == 'submit':
+            upload.appraisal_note = request.GET['appraisal_note']
+        elif request.GET['req_type'] == 'delete':
+            upload.appraisal_note = None
+
+    def handle_appraisal_request(self, request, upload):
+        appraisal_decision = 0
+        appraisal_decision = int(request.GET['appraisal_decision'])
+        upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
+        BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
+        if not appraisal_decision:
+            remove_file_or_dir(upload.machine_file_path)
+            if upload.user_uploaded:
+                email = Mailer()
+                email.to = [upload.user_uploaded.email]
+                email.setup_message('TRANS_REJECT', upload)
+                email.send()
+
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
             rdata = {}
@@ -38,32 +59,15 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                             rdata['object'] = upload.id
                             rdata['success'] = 1
 
-                        elif request.GET['req_form'] == 'appraise':
-                            if request.user.can_appraise():
-                                if 'req_type' in request.GET:
-                                    if request.GET['req_type'] == 'edit':
-                                        rdata['appraisal_note'] = upload.appraisal_note
-                                    elif request.GET['req_type'] == 'submit':
-                                        upload.appraisal_note = request.GET['appraisal_note']
-                                    elif request.GET['req_type'] == 'delete':
-                                        upload.appraisal_note = None
-                                    elif request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
-                                        appraisal_decision = 0
-                                        try:
-                                            appraisal_decision = int(request.GET['appraisal_decision'])
-                                        except Exception as e:
-                                            print e
-                                        upload.process_status = (Archives.ACCEPTED if appraisal_decision else Archives.REJECTED)
-                                        BAGLog.log_it(('BACPT' if appraisal_decision else 'BREJ'), upload)
-                                        if not appraisal_decision:
-                                            remove_file_or_dir(upload.machine_file_path)
-                                            if upload.user_uploaded:
-                                                email = Mailer()
-                                                email.to = [upload.user_uploaded.email]
-                                                email.setup_message('TRANS_REJECT', upload)
-                                                email.send()
-                                    upload.save()
-                                    rdata['success'] = 1
+                        elif (request.GET['req_form'] == 'appraise' and
+                              request.user.can_appraise() and
+                              'req_type' in request.GET):
+                            if request.GET['req_type'] == 'decision' and 'appraisal_decision' in request.GET:
+                                self.handle_appraisal_request(request, upload)
+                            else:
+                                self.handle_note_request(request, upload, rdata)
+                            upload.save()
+                            rdata['success'] = 1
 
             return self.render_to_json_response(rdata)
 
