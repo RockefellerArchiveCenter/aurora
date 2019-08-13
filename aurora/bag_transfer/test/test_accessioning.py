@@ -28,6 +28,7 @@ class AccessioningTestCase(TestCase):
         for transfer in tr.transfers:
             archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
+        print "ARCHIVES", self.archives
         self.groups = helpers.create_test_groups(['accessioning_archivists'])
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         for group in self.groups:
@@ -42,7 +43,6 @@ class AccessioningTestCase(TestCase):
             archive.process_status = Archives.ACCEPTED
             archive.save()
             transfer_ids.append(str(archive.id))
-            print archive.__dict__
         id_list = ','.join(transfer_ids)
 
         # Test GET views
