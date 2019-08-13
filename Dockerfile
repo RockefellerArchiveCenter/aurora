@@ -37,6 +37,10 @@ RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav
 
+# Run clamav as root
+RUN sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
+RUN sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
+
 # Copy Aurora application files
 RUN mkdir -p /code/
 COPY . /code
