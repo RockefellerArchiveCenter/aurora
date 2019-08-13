@@ -86,7 +86,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
         if self.request.user.can_appraise():
             btn_class = 'btn-primary' if bag.appraisal_note else 'btn-info'
             note_class = 'edit-note' if bag.appraisal_note else ''
-            aria_label = 'aria-label="Note exists"' if bag.appraisal_note else ''
+            aria_label = 'aria-label="Edit existing note"' if bag.appraisal_note else ''
             note_text = 'Edit' if bag.appraisal_note else 'Add'
             buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                        <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\

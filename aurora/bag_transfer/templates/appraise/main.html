@@ -227,7 +227,7 @@ function resolveRowCallback(uid, action) {
         $(this).text('Edit Note');
         $(this).removeClass('btn-info');
         $(this).addClass('edit-note btn-primary');
-        $(this).attr('aria-label', 'Note exists');
+        $(this).attr('aria-label', 'Edit existing note');
       }
     } else {
       if ($(this).parents('tr').data('transfer-id') == uid){
