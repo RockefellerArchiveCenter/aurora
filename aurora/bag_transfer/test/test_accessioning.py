@@ -42,6 +42,7 @@ class AccessioningTestCase(TestCase):
             archive.process_status = Archives.ACCEPTED
             archive.save()
             transfer_ids.append(str(archive.id))
+            print archive.__dict__
         id_list = ','.join(transfer_ids)
 
         # Test GET views
