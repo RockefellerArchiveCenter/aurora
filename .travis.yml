@@ -20,6 +20,7 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
+  - docker-compose exec web bash clamd
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web coverage xml
