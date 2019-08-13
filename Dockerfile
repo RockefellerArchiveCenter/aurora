@@ -3,8 +3,6 @@ FROM python:2.7
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
-  && echo 'slapd/root_password password password' | debconf-set-selections \
-  && echo 'slapd/root_password_again password password' | debconf-set-selections \
   && DEBIAN_FRONTEND=noninteractive apt-get -y install sudo \
     apt-utils \
     clamav-daemon \
@@ -12,7 +10,6 @@ RUN apt-get update \
     default-libmysqlclient-dev \
     python-dev \
     python-pip \
-    slapd \
     ssh \
     vim \
     wget \
@@ -52,7 +49,7 @@ RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 EXPOSE 8000 3310
 
 # clamav daemon bootstrapping
-ADD clamav_bootstrap.sh /
-CMD ["/clamav_bootstrap.sh"]
+# ADD clamav_bootstrap.sh /
+# CMD ["/clamav_bootstrap.sh"]
 
 WORKDIR /code/aurora

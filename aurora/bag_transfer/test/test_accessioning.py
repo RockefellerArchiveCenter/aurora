@@ -24,7 +24,7 @@ class AccessioningTestCase(TestCase):
         self.record_creators = helpers.create_test_record_creators(count=3)
         self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
         tr = helpers.run_transfer_routine()
-        print tr
+        print tr.__dict__
         self.archives = []
         for transfer in tr.transfers:
             archive = helpers.create_test_archive(transfer, self.orgs[0])
