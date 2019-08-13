@@ -24,7 +24,6 @@ class AccessioningTestCase(TestCase):
         self.record_creators = helpers.create_test_record_creators(count=3)
         self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
         tr = helpers.run_transfer_routine()
-        print tr.__dict__
         self.archives = []
         for transfer in tr.transfers:
             archive = helpers.create_test_archive(transfer, self.orgs[0])
@@ -59,7 +58,6 @@ class AccessioningTestCase(TestCase):
         self.assertEqual(list_response.status_code, 200)
 
         # These are all the same transfer so there should only be one transfer group
-        print list_response.context
         transfer_group = list_response.context['uploads'][0].transfer_group
         for upload in list_response.context['uploads']:
             self.assertEqual(upload.transfer_group, transfer_group)

@@ -52,8 +52,4 @@ RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 
 EXPOSE 8000 3310
 
-# clamav daemon bootstrapping
-# ADD clamav_bootstrap.sh /
-# CMD ["/clamav_bootstrap.sh"]
-
 WORKDIR /code/aurora
