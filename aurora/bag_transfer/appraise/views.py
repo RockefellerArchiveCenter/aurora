@@ -97,7 +97,8 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
             buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                        <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
                        <a type="button" class="appraisal-note btn btn-xs {} {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>\
-                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'.format(btn_class, note_class, aria_label, note_text)
+                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'\
+                       .format(btn_class, note_class, aria_label, note_text)
         return buttons
 
     def get_initial_queryset(self):
