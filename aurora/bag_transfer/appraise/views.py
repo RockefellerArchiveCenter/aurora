@@ -84,10 +84,16 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def appraise_buttons(self, bag):
         buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
         if self.request.user.can_appraise():
-            btn_class = 'btn-primary' if bag.appraisal_note else 'btn-info'
-            note_class = 'edit-note' if bag.appraisal_note else ''
-            aria_label = 'aria-label="Note exists"' if bag.appraisal_note else ''
-            note_text = 'Edit' if bag.appraisal_note else 'Add'
+            if bag.appraisal_note:
+                btn_class = 'btn-primary'
+                note_class = 'edit-note'
+                aria_label = 'aria-label="Note exists"'
+                note_text = 'Edit'
+            else:
+                btn_class = 'btn-info'
+                note_class = ''
+                aria_label = ''
+                note_text = 'Add'
             buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                        <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
                        <a type="button" class="appraisal-note btn btn-xs {} {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>\
