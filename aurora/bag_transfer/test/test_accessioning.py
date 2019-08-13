@@ -24,11 +24,11 @@ class AccessioningTestCase(TestCase):
         self.record_creators = helpers.create_test_record_creators(count=3)
         self.bags = helpers.create_target_bags('valid_bag', settings.TEST_BAGS_DIR, self.orgs[0])
         tr = helpers.run_transfer_routine()
+        print tr
         self.archives = []
         for transfer in tr.transfers:
             archive = helpers.create_test_archive(transfer, self.orgs[0])
             self.archives.append(archive)
-        print "ARCHIVES", self.archives
         self.groups = helpers.create_test_groups(['accessioning_archivists'])
         self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
         for group in self.groups:
