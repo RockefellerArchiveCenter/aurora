@@ -13,6 +13,13 @@
           <i class="fa fa-exchange"></i> <span>Transfers</span>
         </a>
       </li>
+      {% if not request.user.is_staff %}
+      <li>
+        <a href="{% url 'orgs:detail' pk=request.user.organization.pk %}">
+          <i class="fa fa-building-o"></i> <span>My Organization</span>
+        </a>
+      </li>
+      {% endif %}
       {% if request.user.is_staff %}
       <li>
         <a href="{% url 'appraise:list' %}">

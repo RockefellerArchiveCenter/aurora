@@ -148,8 +148,11 @@ UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE
 CRON_CLASSES = [
     "bag_transfer.lib.cron.DiscoverTransfers",
     "bag_transfer.lib.cron.DeliverTransfers",
+    "django_cron.backends.lock.file.FileLock",
 ]
 
+#Django Cron Lock
+DJANGO_CRON_LOCK_BACKEND="django_cron.backends.lock.file.FileLock"
 
 # Email
 EMAIL_HOST = CF.EMAIL_HOST
@@ -162,6 +165,7 @@ EMAIL_OVERRIDE = CF.EMAIL_OVERRIDE
 EMAIL_OVERRIDE_USERS = CF.EMAIL_OVERRIDE_USERS
 DEFAULT_FROM_EMAIL = CF.DEFAULT_FROM_EMAIL
 SERVER_EMAIL = CF.SERVER_EMAIL
+PASSWORD_RESET_TIMEOUT_DAYS = CF.PASSWORD_RESET_TIMEOUT_DAYS
 
 # Unit Test configs
 TEST_BAGS_DIR = CF.TEST_BAGS_DIR

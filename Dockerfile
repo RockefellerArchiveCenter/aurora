@@ -3,8 +3,6 @@ FROM python:2.7
 ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update \
-  && echo 'slapd/root_password password password' | debconf-set-selections \
-  && echo 'slapd/root_password_again password password' | debconf-set-selections \
   && DEBIAN_FRONTEND=noninteractive apt-get -y install sudo \
     apt-utils \
     clamav-daemon \
@@ -12,7 +10,6 @@ RUN apt-get update \
     default-libmysqlclient-dev \
     python-dev \
     python-pip \
-    slapd \
     ssh \
     vim \
     wget \
@@ -40,6 +37,10 @@ RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav
 
+# Run clamav as root
+RUN sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
+RUN sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
+
 # Copy Aurora application files
 RUN mkdir -p /code/
 COPY . /code
@@ -50,9 +51,5 @@ RUN mkdir -p /data/
 RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 
 EXPOSE 8000 3310
-
-# clamav daemon bootstrapping
-ADD clamav_bootstrap.sh /
-CMD ["/clamav_bootstrap.sh"]
 
 WORKDIR /code/aurora

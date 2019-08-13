@@ -6,7 +6,7 @@ Date-Start: 2000-05-14
 External-Identifier: records-2017-11-04T14:40:17.118401
 Internal-Sender-Description: Grant awarded to the Village Green Preservation Society for the purpose of "preserving the old ways from being abused, protecting the new ways for me and for you"
 Language: eng
-Payload-Oxum: 435255.8
+Payload-Oxum: 429107.7
 Record-Creators: Custard Pie Appreciation Consortium
 Record-Creators: Desperate Dan Appreciation Society
 Record-Type: grant records

@@ -150,7 +150,7 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 return s[1]
 
     def get(self, request, *args, **kwargs):
-        data = [('Bag Name', 'Dates', 'Status', 'Organization', 'Record Creators', 'Record Type', 'Size', 'Upload Time')]
+        data = [('Bag Name', 'Identifier', 'Status', 'Dates', 'Organization', 'Record Creators', 'Record Type', 'Size', 'Upload Time')]
         if self.request.user.is_archivist:
             transfers = Archives.objects.filter(
                 process_status__gte=Archives.TRANSFER_COMPLETED).order_by('-created_time')
@@ -171,9 +171,10 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 creators = (', ').join(bag_info_data.get('record_creators'))
 
             data.append((
-                bag_info_data.get('title', transfer.bag_or_failed_name()),
-                dates,
+                transfer.bag_or_failed_name(),
+                transfer.machine_file_identifier,
                 self.process_status_display(transfer.process_status),
+                dates,
                 transfer.organization.name,
                 creators,
                 bag_info_data.get('record_type'),
@@ -184,10 +185,10 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
 
 class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     model = Archives
-    columns = ['title', 'metadata__date_start', 'process_status',
+    columns = ['title', 'machine_file_identifier', 'process_status', 'metadata__date_start',
                'organization__name', 'metadata__record_creators__name',
                'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
-    order_columns = ['title', 'metadata__date_start', 'process_status',
+    order_columns = ['title', 'machine_file_identifier', 'process_status', 'metadata__date_start',
                      'organization__name', 'metadata__record_creators__name',
                      'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
     max_display_length = 500
@@ -243,9 +244,10 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 creators = ('<br/>').join(bag_info_data.get('record_creators'))
             if self.request.user.is_archivist():
                 json_data.append([
-                    bag_info_data.get('title', transfer.bag_or_failed_name()),
-                    dates,
+                    transfer.bag_or_failed_name(),
+                    transfer.machine_file_identifier,
                     self.process_status_tag(transfer.process_status),
+                    dates,
                     transfer.organization.name,
                     creators,
                     bag_info_data.get('record_type'),
@@ -255,9 +257,10 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 ])
             else:
                 json_data.append([
-                    bag_info_data.get('title', transfer.bag_or_failed_name()),
-                    dates,
+                    transfer.bag_or_failed_name(),
+                    transfer.machine_file_identifier,
                     self.process_status_tag(transfer.process_status),
+                    dates,
                     creators,
                     bag_info_data.get('record_type'),
                     self.file_size(int(transfer.machine_file_size)),
@@ -268,7 +271,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
 
 
 class TransferDetailView(OrgReadViewMixin, DetailView):
-    template_name = 'transfers/transfer_detail.html'
+    template_name = 'transfers/detail.html'
     model = Archives
 
     def get_context_data(self, **kwargs):

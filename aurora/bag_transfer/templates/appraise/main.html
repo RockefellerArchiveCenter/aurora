@@ -14,11 +14,11 @@
   				<table id="appraise_table" class="table table-striped dataTable">
   					<thead>
   						<tr>
-  							<th>Transfer File Name</th>
+  							<th>Name</th>
                 <th>Organization</th>
   							<th>Record Creators</th>
   							<th>Record Type</th>
-  							<th>Transfer Date</th>
+  							<th>Transfer Time</th>
                 <th></th>
   						</tr>
   					</thead>
@@ -223,16 +223,18 @@ function activateModal(uid, label, bag_name, appraisal_note) {
 function resolveRowCallback(uid, action) {
   $('.appraisal-note').each(function(){
     if (action == 'add') {
-      if ($(this).attr('rel') == uid){
+      if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Edit Note');
-        $(this).removeClass('btn-default');
-        $(this).addClass('btn-info').addClass('edit-note');
+        $(this).removeClass('btn-info');
+        $(this).addClass('edit-note btn-primary');
+        $(this).attr('aria-label', 'Edit existing note');
       }
     } else {
-      if ($(this).attr('rel') == uid){
+      if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Add Note');
-        $(this).removeClass('btn-info');
-        $(this).addClass('btn-default').removeClass('edit-note');
+        $(this).removeClass('edit-note btn-primary');
+        $(this).addClass('btn-info');
+        $(this).removeAttr('aria-label')
       }
     }
   });

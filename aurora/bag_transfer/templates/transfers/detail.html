@@ -7,6 +7,7 @@
 
 <div class="row">
 	<div class="col-md-12">
+		<p>Identifier {{ object.machine_file_identifier }}</p>
 		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}</p>
 	</div>
 </div>
@@ -24,21 +25,6 @@
 			</div>
 			<div class="box-body">
 				<p>{{ object.appraisal_note }}</p>
-			</div>
-		</div>
-	</div>
-</div>
-{% endif %}
-
-{% if object.manifest %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Manifest</h2>
-			</div>
-			<div class="box-body">
-				<pre>{{ object.manifest|linebreaks }}</pre>
 			</div>
 		</div>
 	</div>
@@ -137,6 +123,21 @@
 				<p class="list-label">ArchivesSpace Parent Component</p>
 				<p>{{object.archivesspace_parent_identifier}}</p>
 				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
+{% if object.manifest %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h2 class="box-title">Manifest</h2>
+			</div>
+			<div class="box-body">
+				<pre>{{ object.manifest|linebreaks }}</pre>
 			</div>
 		</div>
 	</div>

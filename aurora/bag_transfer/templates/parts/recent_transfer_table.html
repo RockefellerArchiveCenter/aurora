@@ -5,17 +5,17 @@
 	<table id="{{ table_id }}" class="table table-striped dataTable">
 		<thead>
 			<tr>
-				<th>Bag Name</th>
+				<th>Name</th>
 				<th>Record Creators</th>
 				<th>Record Type</th>
-				<th>Upload Time</th>
+				<th>Transfer Time</th>
 			</tr>
 		</thead>
 
 		<tbody>
 		{% for upload in uploads %}
 			<tr tabindex="0" data-url="{% url 'transfers:detail' upload.pk %}" class="pointer-row">
-				<td>{{ upload.bag_or_failed_name }} {% if upload.bag_count %}({{ upload.bag_count }}){% endif %}</td>
+				<td>{{ upload.bag_or_failed_name }}</td>
 				<td>
 					{% for c in upload.get_bag_data.record_creators %}
 						{{ c }} <br />

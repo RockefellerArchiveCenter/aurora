@@ -198,7 +198,13 @@ div.dataTables_wrapper div.dataTables_filter input {
 	margin-top: 0;
 }
 
+#context-switcher {float: none;}
+
 @media (min-width: 768px) {
 	.dl-horizontal dt {width:180px}
 	.dl-horizontal dd {margin-left: 200px;}
+}
+
+@media (min-width: 590px) {
+	#context-switcher {float: right;}
 }

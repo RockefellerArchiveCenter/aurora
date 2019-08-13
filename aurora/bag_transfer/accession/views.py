@@ -37,7 +37,6 @@ class AccessionView(ArchivistMixin, JSONResponseMixin, ListView):
                 process_status=Archives.ACCEPTED).annotate(
                     transfer_group=Concat('organization', 'metadata__record_type',
                                           GroupConcat('metadata__record_creators'),
-                                          'metadata__bag_group_identifier',
                                           output_field=CharField())).order_by('transfer_group'),
             'accessions': Accession.objects.all(),
             'meta_page_title': 'Accessioning Queue',
@@ -78,38 +77,36 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements = RightsStatement.objects.filter(
             archive__in=id_list).annotate(rights_group=F('rights_basis')).order_by('rights_group')
-        if form.is_valid():
+        if (form.is_valid() and creators_formset.is_valid()):
+            form.process_status = Accession.CREATED
             accession = form.save()
-            accession.process_status = Accession.CREATED
-            accession.save()
+            creators_formset.save()
             merged_rights_statements = RightsStatement.merge_rights(rights_statements)
             for statement in merged_rights_statements:
                 statement.accession = accession
                 statement.save()
-            if creators_formset.is_valid():
-                creators_formset.save()
-                for transfer in transfers_list:
-                    BAGLog.log_it('BACC', transfer)
-                    transfer.process_status = Archives.ACCESSIONING_STARTED
-                    transfer.accession = accession
-                    transfer.save()
-                messages.success(request, ' Accession created successfully!')
-                if settings.DELIVERY_URL:
-                    try:
-                        accession_data = AccessionSerializer(accession, context={'request': request})
-                        resp = requests.post(
-                            settings.DELIVERY_URL,
-                            data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
-                            headers={'Content-Type': 'application/json', 'apikey': settings.API_KEY}
-                        )
-                        resp.raise_for_status()
-                        accession.process_status = Accession.DELIVERED
-                        messages.success(request, 'Accession data delivered.')
-                    except Exception as e:
-                        print(e)
-                        messages.error(request, 'Error delivering accession data: {}'.format(e))
-                accession.save()
-                return redirect('accession:list')
+            for transfer in transfers_list:
+                BAGLog.log_it('BACC', transfer)
+                transfer.process_status = Archives.ACCESSIONING_STARTED
+                transfer.accession = accession
+                transfer.save()
+            messages.success(request, ' Accession created successfully!')
+            if settings.DELIVERY_URL:
+                try:
+                    accession_data = AccessionSerializer(accession, context={'request': request})
+                    resp = requests.post(
+                        settings.DELIVERY_URL,
+                        data=json.dumps(accession_data.data, indent=4, sort_keys=True, default=str),
+                        headers={'Content-Type': 'application/json', 'apikey': settings.API_KEY}
+                    )
+                    resp.raise_for_status()
+                    accession.process_status = Accession.DELIVERED
+                    accession.save()
+                    messages.success(request, 'Accession data delivered.')
+                except Exception as e:
+                    print(e)
+                    messages.error(request, 'Error delivering accession data: {}'.format(e))
+            return redirect('accession:list')
         messages.error(
             request,
             "There was a problem with your submission. Please correct the error(s) below and try again.")

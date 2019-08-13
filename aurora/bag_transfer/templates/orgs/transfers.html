@@ -34,7 +34,7 @@ Transfers
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#org_transfers').DataTable({
 			'createdRow': function(row, data, dataIndex) {
-					$(row).attr('data-url', data[{% if request.user.is_archivist %}8{% else %}7{% endif %}]);
+					$(row).attr('data-url', data[{% if request.user.is_archivist %}9{% else %}8{% endif %}]);
 					$(row).addClass('pointer-row');
 					$(row).attr('tabindex', 0)
   		},
