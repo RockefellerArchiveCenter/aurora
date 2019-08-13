@@ -13,8 +13,7 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
   - docker-compose up -d
-  - sleep 40s
-  - docker-compose exec web pip install coverage
+  - sleep 60s
 install: true
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
@@ -24,4 +23,4 @@ script:
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web coverage xml
-  - cd aurora && ../cc-test-reporter after-build --debug --exit-code $TRAVIS_TEST_RESULT
+  - cd aurora && ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
