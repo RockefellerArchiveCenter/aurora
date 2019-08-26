@@ -31,7 +31,7 @@ def set_is_staff(sender, instance, **kwargs):
 def update_dashboard_data(sender, instance, **kwargs):
     today = date.today()
     current = today - relativedelta(years=1)
-    if instance.process_status == sender.TRANSFER_COMPLETED:
+    if instance.process_status >= sender.TRANSFER_COMPLETED:
         while current <= today:
             for organization in Organization.objects.all():
                 data = DashboardMonthData.objects.get_or_create(
@@ -50,7 +50,7 @@ def update_dashboard_data(sender, instance, **kwargs):
                     machine_file_upload_time__month=current.month).values_list('machine_file_size', flat=True)))/1000000000
                 data.save()
             current += relativedelta(months=1)
-    elif instance.process_status == sender.VALIDATED:
+    elif instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(BagInfoMetadata.objects.all().values_list('record_type', flat=True)):
                 data = DashboardRecordTypeData.objects.get_or_create(
