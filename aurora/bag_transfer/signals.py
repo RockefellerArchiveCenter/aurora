@@ -50,7 +50,7 @@ def update_dashboard_data(sender, instance, **kwargs):
                     machine_file_upload_time__month=current.month).values_list('machine_file_size', flat=True)))/1000000000
                 data.save()
             current += relativedelta(months=1)
-    elif instance.process_status >= sender.VALIDATED:
+    if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(BagInfoMetadata.objects.all().values_list('record_type', flat=True)):
                 data = DashboardRecordTypeData.objects.get_or_create(
