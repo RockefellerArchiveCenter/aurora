@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 import pwd
 import os
 
-from django.db.models.signals import m2m_changed, post_delete, post_save
+from django.db.models.signals import m2m_changed, pre_delete, post_delete, post_save
 from django.dispatch import receiver
 
 from bag_transfer.lib.files_helper import chown_path_to_root
