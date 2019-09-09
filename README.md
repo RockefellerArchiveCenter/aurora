@@ -118,6 +118,9 @@ Your token will be returned in the response. You can then use the token in reque
 $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 ```
 
+In a production environment, successfully authenticating against this endpoint may require setting Apache's  `WSGIPassAuthorization` to `On`.
+
+
 ## Django Admin Configuration
 
 Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, which can be accessed by clicking on the profile menu and selecting "Administration".
