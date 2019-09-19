@@ -240,7 +240,7 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
         if self.request.user.can_accession():
             button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' \
                 if (accession.process_status < Accession.DELIVERED) \
-                else '<p class="pull-right" style="margin-right:.7em;">'+access.get_process_status_display+'</p>'
+                else '<p class="pull-right" style="margin-right:.7em;">'+accession.get_process_status_display()+'</p>'
         return button
 
     def prepare_results(self, qs):

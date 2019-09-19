@@ -243,11 +243,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
-    creators = RecordCreatorsSerializer(many=True)
-    transfers = ArchivesListSerializer(source='accession_transfers', many=True)
-    organization = serializers.StringRelatedField()
-    rights_statements = RightsStatementSerializer(many=True)
-    language = serializers.StringRelatedField()
+    creators = RecordCreatorsSerializer(many=True, read_only=True)
+    transfers = ArchivesListSerializer(source='accession_transfers', many=True, read_only=True)
+    organization = serializers.StringRelatedField(read_only=True)
+    rights_statements = RightsStatementSerializer(many=True, read_only=True)
+    language = serializers.StringRelatedField(read_only=True)
 
     class Meta:
         model = Accession

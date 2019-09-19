@@ -5,7 +5,7 @@
 {% block h1_title %}
 	Accession {{object.title}}
 	<small>{{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}</small>
-	<span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
+	<span class="pull-right label label-{% if object.process_status == 40 %}success{% else %}warning{% endif %}">{{ object.get_process_status_display }}</span>
 {% endblock %}
 
 {% block content %}
