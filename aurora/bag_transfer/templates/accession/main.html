@@ -10,8 +10,10 @@
   <div class="col-md-12">
     <div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions ({{ uploads|length }})</a></li>
-				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions|length }})</a></li>
+				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions ({{ uploads.count }})</a></li>
+        {% if accessions.count %}
+				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions.count }})</a></li>
+        {% endif %}
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active table-responsive" id="pending">
@@ -40,7 +42,7 @@
               <td>{{group.list.0.get_bag_data.record_type}}</td>
               <td>
                 {% if request.user.can_accession %}
-                <a href="{% url 'accession:detail' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a>
+                <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a>
                 {% endif %}
               </td>
             </tr>
@@ -49,6 +51,7 @@
         </table>
         {% endif %}
 				</div>
+        {% if accessions.count %}
 				<div class="tab-pane table-responsive" id="saved">
           {% if not accessions %}
         <div>No saved accessions</div>
@@ -59,12 +62,14 @@
                 <th>Title</th>
                 <th>Date Created</th>
                 <th>Extent</th>
+                <th>Transfers</th>
                 <th></th>
               </tr>
             </thead>
           </table>
         {% endif %}
 				</div>
+        {% endif %}
 			</div>
 		</div>
   </div>
