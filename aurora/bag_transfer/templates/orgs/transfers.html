@@ -13,15 +13,19 @@ Transfers
 		<div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
 				<li class="active"><a href="#tab_org" data-toggle="tab">{% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} Transfers ({{ org_uploads_count }})</a></li>
+				{% if user_uploads_count %}
 				<li class=""><a href="#tab_user" data-toggle="tab">My Transfers ({{ user_uploads_count }})</a></li>
+				{% endif %}
 			</ul>
 			<div class="tab-content">
 				<div class="tab-pane active table-responsive" id="tab_org">
 					{% include 'parts/transfer_table.html' with uploads_count=org_uploads_count table_id='org_transfers' %}
 				</div>
+				{% if user_uploads_count %}
 				<div class="tab-pane table-responsive" id="tab_user">
 					{% include 'parts/transfer_table.html' with uploads_count=user_uploads_count table_id='user_transfers' %}
 				</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>
