@@ -96,6 +96,9 @@
       'pageLength'  : 25,
       'processing': true,
       'serverSide': true,
+      fixedHeader: {
+        headerOffset: $('.navbar').outerHeight()
+	    },
       'ajax': '{% url "accession:saved-datatable" %}'
     })
     $('#pending_accession_table').DataTable({
@@ -106,6 +109,9 @@
       'ordering'    : true,
       'info'        : true,
       'autoWidth'   : true,
+      fixedHeader: {
+        headerOffset: $('.navbar').outerHeight()
+	    },
       'pageLength'  : 25
     })
 

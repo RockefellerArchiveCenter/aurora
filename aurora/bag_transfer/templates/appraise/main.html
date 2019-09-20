@@ -64,6 +64,9 @@ var appraise_table = '';
         'pageLength'  : 25,
         'processing': true,
         'serverSide': true,
+        fixedHeader: {
+          headerOffset: $('.navbar').outerHeight()
+  	    },
         'ajax': '{% url "appraise:datatable" %}'
       })
 

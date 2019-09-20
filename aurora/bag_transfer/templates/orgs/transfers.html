@@ -53,6 +53,9 @@ Transfers
       'pageLength'  : 25,
 			'processing': true,
       'serverSide': true,
+			fixedHeader: {
+        headerOffset: $('.navbar').outerHeight()
+	    },
       'ajax': '{% url "transfers:datatable" %}'
     })
 		$('#user_transfers').DataTable({
@@ -71,6 +74,9 @@ Transfers
       'pageLength'  : 25,
 			'processing': true,
       'serverSide': true,
+			fixedHeader: {
+        headerOffset: $('.navbar').outerHeight()
+	    },
       'ajax': '{% url "transfers:datatable" %}?q=user'
     })
   })
