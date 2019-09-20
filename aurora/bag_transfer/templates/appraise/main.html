@@ -49,6 +49,12 @@ var appraise_table = '';
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#appraise_table').DataTable({
+        'columnDefs': [
+          {
+            width: "20%",
+            targets: [5]
+          }
+        ],
         'createdRow': function(row, data, dataIndex) {
             $(row).attr('data-transfer-id', data[6]);
             $(row).attr('data-transfer-name', data[0]);
