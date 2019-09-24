@@ -20,7 +20,15 @@ def open_files_list():
     path_list = []
 
     for proc in psutil.process_iter():
-        open_files = proc.open_files()
+        try:
+            open_files = proc.open_files()
+        except psutil.AccessDenied as e:
+            print proc.as_dict(), e
+            for x in range(0, 10):
+                try:
+                    open_files = proc.open_files()
+                except Exception as e:
+                    print proc.as_dict(), e
         if open_files:
             for fileObj in open_files:
                 path_list.append(fileObj.path)
