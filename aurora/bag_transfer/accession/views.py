@@ -215,8 +215,8 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
 
 class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     model = Accession
-    columns = ['title', 'created', 'extent_files', 'extent_size']
-    order_columns = ['title', 'created', 'extent_files', 'extent_size']
+    columns = ['title', 'created', 'extent_files', 'accession_transfers__machine_file_identifier', 'extent_size']
+    order_columns = ['title', 'created', 'extent_files', 'accession_transfers__machine_file_identifier', 'extent_size']
     max_display_length = 500
 
     def get_filter_method(self): return self.FILTER_ICONTAINS
