@@ -81,9 +81,8 @@
 <script type="text/javascript">
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    $('#saved_accession_table').DataTable({
+    saved = $('#saved_accession_table').DataTable({
       'createdRow': function(row, data, dataIndex) {
-          console.log(data)
           $(row).attr('data-accession-id', data[4]);
       },
       'stateSave'   : true,
@@ -100,8 +99,9 @@
         headerOffset: $('.navbar').outerHeight()
 	    },
       'ajax': '{% url "accession:saved-datatable" %}'
-    })
-    $('#pending_accession_table').DataTable({
+    });
+    saved.draw();
+    pending = $('#pending_accession_table').DataTable({
       'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
@@ -113,6 +113,12 @@
         headerOffset: $('.navbar').outerHeight()
 	    },
       'pageLength'  : 25
+    })
+    pending.draw()
+
+    $("ul.nav-tabs").on("click", function(e) {
+      saved.draw()
+      pending.draw()
     })
 
     $("#saved_accession_table tbody").on("click", ".deliver", function(e){
