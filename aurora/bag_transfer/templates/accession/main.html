@@ -83,7 +83,7 @@
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     saved = $('#saved_accession_table').DataTable({
       'createdRow': function(row, data, dataIndex) {
-          $(row).attr('data-accession-id', data[4]);
+          $(row).attr('data-accession-id', data[5]);
       },
       'stateSave'   : true,
       'paging'      : true,
