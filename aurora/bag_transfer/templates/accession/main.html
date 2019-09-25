@@ -130,7 +130,7 @@
 
       $.get(url, data, function(resp){
         if (resp.success){
-          button.replaceWith('<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>');
+          button.replaceWith('<p class="pull-right" style="margin-right:.7em;">Accession transfers delivered to queue</p>');
           displayMessage('success', 'Accession delivered.', true);
         } else {
           displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.', false);
