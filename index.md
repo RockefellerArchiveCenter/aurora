@@ -50,9 +50,7 @@ When an archivist rejects a transfer, the donor account that submitted that tran
 ## Accessioning
 Once transfers have been accepted in the appraisal queue, they are moved to the accessioning queue, where multiple transfers can be grouped together into a single accession if they have the same organization, record creators and record type. Archivists with the necessary permissions can create accession records with data about one or (usually) more transfers, and point them to specific ArchivesSpace resource records.
 
-Information about each accession is saved in the Saved Accessions tab, where archivists can view a table with information about each accession and click on an accession for more more details.
-
-Aurora provides the ability to manage organizations and users accounts with those organizations.
+Information about each accession is saved in the Saved Accessions tab, where archivists can view a table with information about each accession and click on an accession for more details.
 
 ## Administration
 Aurora provides the ability to manage organizations and users accounts with those organizations.
