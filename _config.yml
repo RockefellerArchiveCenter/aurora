@@ -2,15 +2,8 @@ public: true
 type: "docs"
 category: "collection development and management"
 tags:
-  - "tranfer"
-  - "appraise"
-  - "accession"
+  - "workflow"
 title: "Aurora User Guide"
 description: "User documentation for the Aurora digital records transfer application."
 pages:
-  - ["Overview", "index"]
-  - ["Viewing Transfers", "viewing-transfers"]
-  - ["Accessioning", "accessioning"]
-  - ["Appraisal", "appraisal"]
-  - ["Organization and User Administration", "administration"]
-  - ["Developer Resources", "developers"]
+  - ["Aurora User Guide", "index"]
