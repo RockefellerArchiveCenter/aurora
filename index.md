@@ -61,7 +61,6 @@ Aurora provides the ability to manage organizations and users accounts with thos
 
 Organizations can be created or deleted by archivists with the necessary permissions. In addition, Aurora allows for the management of the BagIt Profile and PREMIS Rights Statements associated with the organizations.
 
-
 #### BagIt Profiles
 
 [BagIt Profiles](https://github.com/bagit-profiles/bagit-profiles) allow for detailed validation of metadata elements included in a transfer. Aurora allows archivists to create, edit, delete and view these profiles, and provides a JSON representation of the Profile against which transfers can be validated. Each organization can only have one BagIt Profile.
@@ -80,7 +79,7 @@ Aurora supports management of user accounts, and allows archivists with appropri
 
 Aurora implements the following user roles and associated permissions:
 
-#### Read-only user
+#### Read-only users
 
 All users (including those form donor organizations) have a few basic permissions:
 
@@ -93,7 +92,7 @@ All users (including those form donor organizations) have a few basic permission
 *  View own user profile
 *  Change own password
 
-#### Archivist asers
+#### Archivist users
 
 In addition to the permissions for **All Users**, users who are archivists have the following additional permissions:
 
