@@ -166,10 +166,12 @@ def tar_extract_all(file_path, tmp_dir):
 
     return extracted
 
-def dir_extract_all(file_path,tmp_dir):
+def dir_extract_all(file_path, tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
+        if is_dir_or_file('{}{}'.format(tmp_dir, file_path.split('/')[-1])):
+            rmtree('{}{}'.format(tmp_dir, file_path.split('/')[-1]))
         copytree(file_path, '{}{}'.format(tmp_dir, file_path.split('/')[-1]))
         extracted = True
     except Exception as e:
