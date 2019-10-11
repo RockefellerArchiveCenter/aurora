@@ -378,14 +378,13 @@ class Archives(models.Model):
     def save_mtm_fields(self, cls, field, model_field, metadata):
         obj_list = []
         if field in metadata:
-            if len(metadata[field].strip()):
-                if type(metadata[field]) is list:
-                    for f in metadata[field]:
-                        new_obj = cls.objects.get_or_create(**{model_field: f})[0]
-                        obj_list.append(new_obj)
-                else:
-                    new_obj = cls.objects.get_or_create(**{model_field: metadata[field]})[0]
+            if type(metadata[field]) is list:
+                for f in metadata[field]:
+                    new_obj = cls.objects.get_or_create(**{model_field: f})[0]
                     obj_list.append(new_obj)
+            elif len(metadata[field].strip()):
+                new_obj = cls.objects.get_or_create(**{model_field: metadata[field]})[0]
+                obj_list.append(new_obj)
         return obj_list
 
     def save_bag_data(self, metadata):
