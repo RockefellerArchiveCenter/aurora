@@ -61,7 +61,7 @@
 				        <tbody>
 				          {% for t in object.accession_transfers.all %}
 				          <tr>
-				            <td>{{t.bag_or_failed_name}}</td>
+				            <td><a href="{% url 'transfers:detail' t.pk %}">{{t.bag_or_failed_name}}</a></td>
 				            <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
 				            <td>{{t.machine_file_size|filesizeformat}}</td>
 										<td>
