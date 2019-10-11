@@ -186,9 +186,9 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
 
 class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     model = Archives
-    columns = ['title', 'machine_file_identifier', 'process_status', 'metadata__date_start',
+    columns = ['metadata__external_identifier', 'title', 'machine_file_identifier', 'process_status', 'metadata__date_start',
                'organization__name', 'metadata__record_creators__name',
-               'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
+               'metadata__record_type', 'machine_file_size', 'machine_file_upload_time',]
     order_columns = ['title', 'machine_file_identifier', 'process_status', 'metadata__date_start',
                      'organization__name', 'metadata__record_creators__name',
                      'metadata__record_type', 'machine_file_size', 'machine_file_upload_time']
