@@ -19,6 +19,7 @@ from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
+from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import ArchivistMixin, AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
@@ -224,12 +225,6 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     def title(self, accession):
         return "{} ({})".format(accession.title, accession.accession_number) if accession.accession_number else accession.title
 
-    def file_size(self, num):
-        for unit in ['B', 'KB', 'MB', 'GB']:
-            if abs(num) < 1024.0:
-                return "%3.1f %s" % (num, unit)
-            num /= 1024.0
-
     def transfers(self, accession):
         transfers = accession.accession_transfers.count()
         label = 'transfer' if transfers == 1 else 'transfers'
@@ -249,7 +244,7 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
             json_data.append([
                 "<a href='{}'>{}</a.".format(reverse('accession:detail', kwargs={'pk': accession.pk}), self.title(accession)),
                 accession.created.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
-                "{} files ({})".format(accession.extent_files, self.file_size(int(accession.extent_size))),
+                "{} files ({})".format(accession.extent_files, file_size(int(accession.extent_size))),
                 self.transfers(accession),
                 self.button(accession),
                 accession.pk

@@ -11,6 +11,7 @@ from django.db.models.functions import Concat
 from django.shortcuts import render
 from django.utils.html import escape
 
+from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.models import Archives, Organization, User, BagInfoMetadata, DashboardMonthData, DashboardRecordTypeData
 from bag_transfer.rights.models import RightsStatement
 from bag_transfer.mixins.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
@@ -139,12 +140,6 @@ class TransfersView(LoggedInMixinDefaults, View):
 class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
     model = Organization
 
-    def file_size(self, num):
-        for unit in ['B', 'KB', 'MB', 'GB']:
-            if abs(num) < 1024.0:
-                return "%3.1f %s" % (num, unit)
-            num /= 1024.0
-
     def process_status_display(self, status):
         for s in Archives.processing_statuses:
             if s[0] == status:
@@ -179,7 +174,7 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 transfer.organization.name,
                 creators,
                 bag_info_data.get('record_type'),
-                self.file_size(int(transfer.machine_file_size)),
+                file_size(int(transfer.machine_file_size)),
                 upload_time))
         return self.render_to_csv(data)
 
@@ -195,12 +190,6 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     max_display_length = 500
 
     def get_filter_method(self): return self.FILTER_ICONTAINS
-
-    def file_size(self, num):
-        for unit in ['B', 'KB', 'MB', 'GB']:
-            if abs(num) < 1024.0:
-                return "%3.1f %s" % (num, unit)
-            num /= 1024.0
 
     def process_status_display(self, status):
         for s in Archives.processing_statuses:
@@ -252,7 +241,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                     transfer.organization.name,
                     creators,
                     bag_info_data.get('record_type'),
-                    self.file_size(int(transfer.machine_file_size)),
+                    file_size(int(transfer.machine_file_size)),
                     upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
@@ -264,7 +253,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                     dates,
                     creators,
                     bag_info_data.get('record_type'),
-                    self.file_size(int(transfer.machine_file_size)),
+                    file_size(int(transfer.machine_file_size)),
                     upload_time,
                     "/app/transfers/{}".format(transfer.pk)
                 ])
