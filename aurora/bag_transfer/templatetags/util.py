@@ -1,5 +1,6 @@
 from django import template
 from django.contrib.auth.models import Group
+from bag_transfer.lib.view_helpers import label_class
 from bag_transfer.models import Archives
 
 register = template.Library()
@@ -19,12 +20,7 @@ def has_group(user, group_name):
 
 @register.filter
 def progress_class(status):
-    label_class = 'green'
-    if status in [10, 20]:
-        label_class = 'yellow'
-    elif status in [30, 60]:
-        label_class = 'red'
-    return label_class
+    return label_class(status)
 
 
 @register.filter

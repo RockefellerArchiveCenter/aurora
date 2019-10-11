@@ -11,7 +11,7 @@ from django.db.models.functions import Concat
 from django.shortcuts import render
 from django.utils.html import escape
 
-from bag_transfer.lib.view_helpers import file_size
+from bag_transfer.lib.view_helpers import file_size, label_class
 from bag_transfer.models import Archives, Organization, User, BagInfoMetadata, DashboardMonthData, DashboardRecordTypeData
 from bag_transfer.rights.models import RightsStatement
 from bag_transfer.mixins.authmixins import LoggedInMixinDefaults, OrgReadViewMixin, ArchivistMixin
@@ -197,15 +197,10 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 return s[1]
 
     def process_status_tag(self, status):
-        label_class = 'green'
-        if status in [10, 20]:
-            label_class = 'yellow'
-        elif status in [30, 60]:
-            label_class = 'red'
         percentage = int(round(status/Archives.ACCESSIONING_COMPLETE * 100))
         return "{label} <div class='progress progress-xs'>\
                     <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
-                </div>".format(label=self.process_status_display(status), label_class=label_class, percentage=percentage)
+                </div>".format(label=self.process_status_display(status), label_class=label_class(status), percentage=percentage)
 
     def get_initial_queryset(self):
         organization = Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
