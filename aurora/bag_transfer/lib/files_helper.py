@@ -3,8 +3,7 @@ import re
 import datetime
 import tarfile
 import zipfile
-from distutils.dir_util import copy_tree
-from shutil import rmtree, move
+from shutil import rmtree, move, copytree
 import psutil
 import pwd
 
@@ -171,7 +170,7 @@ def dir_extract_all(file_path,tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
-        copy_tree(file_path,'{}{}'.format(tmp_dir, file_path.split('/')[-1]), update=1)
+        copytree(file_path, '{}{}'.format(tmp_dir, file_path.split('/')[-1]))
         extracted = True
     except Exception as e:
         print e
