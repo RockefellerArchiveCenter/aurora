@@ -1,5 +1,7 @@
 from django import template
 from django.contrib.auth.models import Group
+from bag_transfer.lib.view_helpers import label_class
+from bag_transfer.models import Archives
 
 register = template.Library()
 
@@ -14,3 +16,13 @@ def has_group(user, group_name):
     if not user:
         return False
     return user.groups.filter(name=group_name).exists()
+
+
+@register.filter
+def progress_class(status):
+    return label_class(status)
+
+
+@register.filter
+def progress_percentage(status):
+    return int(round(float(status)/Archives.ACCESSIONING_COMPLETE * 100))

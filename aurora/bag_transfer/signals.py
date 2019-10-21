@@ -7,6 +7,7 @@ import os
 from django.db.models.signals import m2m_changed, pre_delete, post_delete, post_save
 from django.dispatch import receiver
 
+from bag_transfer.accession.models import Accession
 from bag_transfer.lib.files_helper import chown_path_to_root
 from bag_transfer.lib.RAC_CMD import delete_system_group
 from bag_transfer.models import Archives, User, BagInfoMetadata, Organization, DashboardMonthData, DashboardRecordTypeData
@@ -29,8 +30,12 @@ def set_is_staff(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Archives)
-@receiver(post_delete, sender=Archives)
+@receiver(pre_delete, sender=Archives)
 def dashboard_data(sender, instance, **kwargs):
+    """
+    Updates dashboard data each time a transfer is saved or deleted, which
+    avoids expensive data operations on the database.
+    """
     today = date.today()
     current = today - relativedelta(years=1)
     if instance.process_status >= sender.TRANSFER_COMPLETED:
@@ -61,3 +66,17 @@ def dashboard_data(sender, instance, **kwargs):
                 )[0]
                 data.count = Archives.objects.filter(organization=organization, metadata__record_type=label).count()
                 data.save()
+
+
+@receiver(post_save, sender=Archives)
+def update_accession_status(sender, instance, **kwargs):
+    """
+    Updates Accession status to COMPLETE if all of the transfers in an accession
+    have finished processing.
+    """
+    if instance.process_status == Archives.ACCESSIONING_COMPLETE:
+        accession = instance.accession
+        last_update = sorted(set([t.process_status for t in accession.accession_transfers.all()]))[0]
+        if last_update == Archives.ACCESSIONING_COMPLETE:
+            accession.process_status = Accession.COMPLETE
+            accession.save()

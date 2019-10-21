@@ -5,13 +5,13 @@ from dateutil import tz
 import json
 import requests
 
-from django.views.generic import ListView, View
+from django.views.generic import DetailView, ListView, View
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.contrib import messages
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 
 from aurora import settings
 from bag_transfer.accession.models import Accession
@@ -19,6 +19,7 @@ from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
+from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.authmixins import ArchivistMixin, AccessioningArchivistMixin
 from bag_transfer.models import Archives, RecordCreators, Organization, BAGLog, LanguageCode
@@ -65,7 +66,12 @@ class AccessionView(ArchivistMixin, JSONResponseMixin, ListView):
         return self.render_to_json_response(rdata)
 
 
-class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
+class AccessionDetailView(AccessioningArchivistMixin, DetailView):
+    template_name = 'accession/detail.html'
+    model = Accession
+
+
+class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
     template_name = "accession/create.html"
     model = Accession
     form_class = AccessionForm
@@ -106,7 +112,7 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
                 except Exception as e:
                     print(e)
                     messages.error(request, 'Error delivering accession data: {}'.format(e))
-            return redirect('accession:list')
+            return redirect('accession:detail', accession.pk)
         messages.error(
             request,
             "There was a problem with your submission. Please correct the error(s) below and try again.")
@@ -210,27 +216,36 @@ class AccessionRecordView(AccessioningArchivistMixin, JSONResponseMixin, View):
 
 class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     model = Accession
-    columns = ['title', 'created', 'extent_files', 'extent_size']
-    order_columns = ['title', 'created', 'extent_files', 'extent_size']
+    columns = ['title', 'created', 'extent_files', 'accession_transfers__machine_file_identifier', 'extent_size']
+    order_columns = ['title', 'created', 'extent_files', 'accession_transfers__machine_file_identifier', 'extent_size']
     max_display_length = 500
 
     def get_filter_method(self): return self.FILTER_ICONTAINS
+
+    def title(self, accession):
+        return "{} ({})".format(accession.title, accession.accession_number) if accession.accession_number else accession.title
+
+    def transfers(self, accession):
+        transfers = accession.accession_transfers.count()
+        label = 'transfer' if transfers == 1 else 'transfers'
+        return "{} {}".format(transfers, label)
 
     def button(self, accession):
         button = "Accession not delivered"
         if self.request.user.can_accession():
             button = '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>' \
                 if (accession.process_status < Accession.DELIVERED) \
-                else '<p class="pull-right" style="margin-right:.7em;">Accession delivered</p>'
+                else '<p class="pull-right" style="margin-right:.7em;">'+accession.get_process_status_display()+'</p>'
         return button
 
     def prepare_results(self, qs):
         json_data = []
         for accession in qs:
             json_data.append([
-                accession.title,
+                "<a href='{}'>{}</a.".format(reverse('accession:detail', kwargs={'pk': accession.pk}), self.title(accession)),
                 accession.created.astimezone(tz.tzlocal()).strftime('%b %e, %Y %I:%M %p'),
-                "{} files ({})".format(accession.extent_files, accession.extent_size),
+                "{} files ({})".format(accession.extent_files, file_size(int(accession.extent_size))),
+                self.transfers(accession),
                 self.button(accession),
                 accession.pk
             ])

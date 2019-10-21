@@ -1,0 +1,27 @@
+<div class="modal fade" id="modal-confirm" role="dialog" aria-labelledby="modal-appraisal-note-title", tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form id="confirm-reject-form" method='get' class="form" role="form" action='.' >
+        <input type="hidden" name="upload_id" class="upload_id" />
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+          <h1 id="modal-appraisal-note-title" class="modal-title">
+            Are you sure you want to reject <span class="bag-name"></span>
+          </h1>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="appraisal_note">Appraisal Note</label>
+            <textarea class="form-control appraisal_note" id="appraisal_note" rows="5"></textarea>
+            <p class="help-block">A notification that includes this note will be sent to the user who uploaded the transfer.</p>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <input id="confirm-reject" type="submit" class="btn btn-primary" value="Reject Transfer"/>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

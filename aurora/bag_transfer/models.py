@@ -382,7 +382,7 @@ class Archives(models.Model):
                 for f in metadata[field]:
                     new_obj = cls.objects.get_or_create(**{model_field: f})[0]
                     obj_list.append(new_obj)
-            else:
+            elif len(metadata[field].strip()):
                 new_obj = cls.objects.get_or_create(**{model_field: metadata[field]})[0]
                 obj_list.append(new_obj)
         return obj_list

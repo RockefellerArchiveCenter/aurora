@@ -384,8 +384,20 @@ def create_test_record_creators(count=1):
     return record_creators
 
 
+def create_test_languages(count=1):
+    languages = []
+    for n in xrange(count):
+        language = LanguageCode(
+            code=random_string(3)
+        )
+        language.save()
+        languages.append(language)
+    return languages
+
+
 def get_accession_data(creator=None):
-    creator = creator if creator else random.choice(RecordCreators.objects.all())
+    creator = creator if creator else create_test_record_creators()[0]
+    language = create_test_languages()[0]
     accession_data = {
         'use_restrictions': random_string(100),
         'access_restrictions': random_string(100),
@@ -399,7 +411,7 @@ def get_accession_data(creator=None):
         'start_date': random_date(1960),
         'extent_files': '14',
         'appraisal_note': random_string(150),
-        'language': random.choice(LanguageCode.objects.all()).id,
+        'language': language.id,
         'creators': [creator.id],
         'form-0-id': creator.id,
         'form-MIN_NUM_FORMS': 0,

@@ -1,0 +1,105 @@
+{% extends 'transfers/base.html' %}
+{% load tz static %}
+{% load util %}
+
+{% block h1_title %}
+  <a href="{% url 'accession:list' %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> View all Accessions</a>
+	Accession {{object.title}}
+	<small>{{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}</small>
+	<span class="label label-{% if object.process_status == 40 %}success{% else %}warning{% endif %}">{{ object.get_process_status_display }}</span>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box box-primary">
+						<div class="box-header with-border">
+							<h2 class="box-title">Accession Details</h2>
+						</div>
+						<div class="box-body">
+							<dl>
+								<dt>Description</dt>
+								<dd>{{object.description}}</dd>
+								<dt>Organization</dt>
+								<dd>{{object.organization}}</dd>
+								<dt>Extent</dt>
+								<dd>{{ object.extent_size|filesizeformat }} ({{object.extent_files}} files)</dd>
+								<dt>Dates</dt>
+								<dd>{{object.start_date}}-{{object.end_date}}</dd>
+								<dt>Creators</dt>
+								<dd>{% for c in object.creators.all %}{{c.name}}{% if not forloop.last %}, {% endif %}{% endfor %}</dd>
+								<dt>Language</dt>
+								<dd>{{object.language}}</dd>
+								<dt>Acquisition Type</dt>
+								<dd>{{object.acquisition_type}}</dd>
+								<dt>Accession Date</dt>
+								<dd>{{object.accession_date}}</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box box-primary">
+						<div class="box-header with-border">
+							<h2 class="box-title">Accession Transfers</h2>
+						</div>
+						<div class="box-body">
+							<table class="table table-striped">
+				    		<thead>
+				    			<tr>
+				    				<th>Name</th>
+				    				<th>Dates</th>
+				    				<th>Size</th>
+										<th>Status</th>
+				    			</tr>
+				    		</thead>
+				        <tbody>
+				          {% for t in object.accession_transfers.all %}
+				          <tr>
+				            <td><a href="{% url 'transfers:detail' t.pk %}">{{t.bag_or_failed_name}}</a></td>
+				            <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
+				            <td>{{t.machine_file_size|filesizeformat}}</td>
+										<td>
+											{{t.get_process_status_display}}
+											<div class='progress progress-xs'>
+												<div class='progress-bar progress-bar-{{t.process_status | progress_class}}' style='width: {{t.process_status | progress_percentage}}%' aria-label='{{t.process_status | progress_percentage}}% complete'></div>
+											</div>
+										</td>
+				          </tr>
+				          {% endfor %}
+				        </tbody>
+				    	</table>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col-md-12">
+					<div class="box box-primary">
+						<div class="box-header with-border">
+							<h2 class="box-title">External Identifiers</h2>
+						</div>
+						<div class="box-body">
+							{% if object.accession_number %}
+							<p class="list-label">ArchivesSpace Accession Number</p>
+							<p>{{object.accession_number}}</p>
+							{% endif %}
+							{% if object.archivesspace_identifier %}
+							<p class="list-label">ArchivesSpace Accession Record</p>
+							<p>{{object.archivesspace_identifier}}</p>
+							{% endif %}
+							<p class="list-label">ArchivesSpace Related Resource Record</p>
+							<p>{{object.resource}}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

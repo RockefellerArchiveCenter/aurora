@@ -26,8 +26,13 @@ class Accession(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     CREATED = 10
     DELIVERED = 20
+    RECORD_CREATED = 30
+    COMPLETE = 40
     PROCESS_STATUS_CHOICES = (
         (CREATED, 'Accession created'),
-        (DELIVERED, 'Accession delivered to queue'),
+        (DELIVERED, 'Accession transfers delivered to queue'),
+        (RECORD_CREATED, 'Accession record created in ArchivesSpace'),
+        (COMPLETE, 'Accession complete')
     )
     process_status = models.PositiveSmallIntegerField(choices=PROCESS_STATUS_CHOICES, default=10, null=True, blank=True)
+    archivesspace_identifier = models.CharField(max_length=255, blank=True, null=True)

@@ -3,8 +3,7 @@ import re
 import datetime
 import tarfile
 import zipfile
-from distutils.dir_util import copy_tree
-from shutil import rmtree, move
+from shutil import rmtree, move, copytree
 import psutil
 import pwd
 
@@ -20,7 +19,10 @@ def open_files_list():
     path_list = []
 
     for proc in psutil.process_iter():
-        open_files = proc.open_files()
+        try:
+            open_files = proc.open_files()
+        except psutil.AccessDenied as e:
+            print proc.as_dict(), e
         if open_files:
             for fileObj in open_files:
                 path_list.append(fileObj.path)
@@ -164,11 +166,13 @@ def tar_extract_all(file_path, tmp_dir):
 
     return extracted
 
-def dir_extract_all(file_path,tmp_dir):
+def dir_extract_all(file_path, tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
-        copy_tree(file_path,'{}{}'.format(tmp_dir, file_path.split('/')[-1]), update=1)
+        if is_dir_or_file('{}{}'.format(tmp_dir, file_path.split('/')[-1])):
+            rmtree('{}{}'.format(tmp_dir, file_path.split('/')[-1]))
+        copytree(file_path, '{}{}'.format(tmp_dir, file_path.split('/')[-1]))
         extracted = True
     except Exception as e:
         print e

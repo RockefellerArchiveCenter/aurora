@@ -19,7 +19,7 @@
   							<th>Record Creators</th>
   							<th>Record Type</th>
   							<th>Transfer Time</th>
-                <th></th>
+                <th>Action</th>
   						</tr>
   					</thead>
   				</table>
@@ -35,11 +35,13 @@
 {% block modals %}
   {% include 'appraise/edit_note.html' %}
   {% include 'appraise/detail_modal.html' %}
+  {% include 'appraise/confirm_modal.html' %}
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
 var amodal = $("#modal-appraisal-note");
+var cmodal = $("#modal-confirm");
 var dmodal = $("#modal-detail");
 var url = '{% url 'appraise:list' %}';
 var appraise_table = '';
@@ -47,6 +49,12 @@ var appraise_table = '';
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#appraise_table').DataTable({
+        'columnDefs': [
+          {
+            width: "20%",
+            targets: [5]
+          }
+        ],
         'createdRow': function(row, data, dataIndex) {
             $(row).attr('data-transfer-id', data[6]);
             $(row).attr('data-transfer-name', data[0]);
@@ -62,6 +70,9 @@ var appraise_table = '';
         'pageLength'  : 25,
         'processing': true,
         'serverSide': true,
+        fixedHeader: {
+          headerOffset: $('.navbar').outerHeight()
+  	    },
         'ajax': '{% url "appraise:datatable" %}'
       })
 
@@ -110,7 +121,6 @@ var appraise_table = '';
             transfer_url = '{% url "transfers:detail" pk=1 %}';
             transfer_url = transfer_url.replace('1', upload_id);
             $.get(transfer_url, function(resp){
-              console.log(resp)
               dmodal.find('.content').replaceWith($(resp).find('main.content'))
               dmodal.modal('show');
             })
@@ -170,33 +180,22 @@ var appraise_table = '';
       return false;
     });
 
-    $("#appraise_table tbody").on("click", ".appraisal-accept, .appraisal-reject", function(e){
+    $("#appraise_table tbody").on("click", ".appraisal-accept", function(e){
       e.preventDefault();
       var upload_row = $(this).closest('tr');
       var upload_id = upload_row.attr('data-transfer-id');
-      var appraisal_decision = 0; // reject
-
-      if ($(this).hasClass('appraisal-accept')){
-        appraisal_decision = 1; //accept
-      }
       var data = {
         'req_form': 'appraise',
         'req_type': 'decision',
         'upload_id': upload_id,
-        'appraisal_decision': appraisal_decision
+        'appraisal_decision': 1
       }
 
       $.get(url, data, function(resp){
         if (resp.success){
-          // remove row
-          $( upload_row ).remove();
-          decision = 'rejected'
+          $( upload_row ).remove(); // remove row
           name = $(upload_row).children('td').first().text()
-          if (appraisal_decision == 1) {
-            displayMessage('success', 'Transfer <b>'+name+'</b> accepted.', true);
-          } else {
-            displayMessage('danger', 'Transfer <b>'+name+'</b> rejected.', true);
-          }
+          displayMessage('success', 'Transfer <b>'+name+'</b> accepted.', true);
         } else {
           displayMessage('danger', 'Something went wrong! Please try again.', false);
         }
@@ -204,6 +203,58 @@ var appraise_table = '';
 
     });
 
+    $("#appraise_table tbody").on("click", ".appraisal-reject", function(e) {
+      e.preventDefault();
+
+      var bag_name = $(this).closest('tr').attr('data-transfer-name');
+      var upload_id = $(this).closest('tr').attr('data-transfer-id');
+
+      cmodal.find('.bag-name').text(bag_name);
+      cmodal.find('.upload_id').val(upload_id)
+      cmodal.modal('show');
+
+      return false;
+    })
+
+    $("#confirm-reject-form").submit(function(e){
+      e.preventDefault();
+      var frm = $(this)
+      var upload_id = frm.find('.upload_id').val()
+      var upload_row = $("#appraise_table tbody").find('tr[data-transfer-id='+upload_id+']');
+      var data = {
+        'upload_id': upload_id,
+        'appraisal_note': frm.find('.appraisal_note').val(),
+        'req_form' : 'appraise',
+        'req_type' : 'submit'
+      }
+
+      // empty check, no need to submit
+      if (data.appraisal_note.length && data.appraisal_note.length < 2){
+        alert('Note is too short!');
+        return false;
+      }
+
+      $.get(url,data,function(resp){
+        if (resp.success) {
+          cmodal.modal('hide');
+          var data = {
+            'req_form': 'appraise',
+            'req_type': 'decision',
+            'upload_id': upload_id,
+            'appraisal_decision': 0
+          }
+          $.get(url, data, function(resp){
+            if (resp.success){
+              $(upload_row).remove()
+              name = $(upload_row).children('td').first().text()
+              displayMessage('danger', 'Transfer <b>'+name+'</b> rejected.', true);
+            } else {
+              displayMessage('danger', 'Something went wrong! Please try again.', false);
+            }
+          });
+        }
+      });
+    });
   })
 
 function activateModal(uid, label, bag_name, appraisal_note) {

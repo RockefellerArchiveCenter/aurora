@@ -16,7 +16,7 @@ from bag_transfer.test import helpers
 class APITest(TestCase):
     def setUp(self):
         self.factory = APIRequestFactory()
-        self.process_status = Archives.ACCESSIONING_COMPLETE
+        self.process_status = Archives.ACCESSIONING_STARTED
         self.archivesspace_identifier = "/repositories/2/archival_objects/3"
         self.archivesspace_parent_identifier = "/repositories/2/archival_objects/4"
         self.orgs = helpers.create_test_orgs(org_count=1)
