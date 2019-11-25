@@ -1,4 +1,5 @@
 from django.contrib.auth.models import Group
+import psutil
 from subprocess import *
 
 from bag_transfer.models import Organization, User, BagItProfile, BagItProfileBagInfo, BagItProfileBagInfoValues, ManifestsRequired, AcceptSerialization, AcceptBagItVersion, TagManifestsRequired, TagFilesRequired
@@ -212,3 +213,13 @@ else:
     for user in User.objects.all():
         if add_user(user.username):
             add2grp(user.organization.machine_name, user.username)
+
+# Terminate any idle processes, which cause problems later.
+open = [p for p in psutil.process_iter(attrs=['pid', 'name']) if p.info['name'] in ['add_org', 'add_user', 'add2grp']]
+for p in open:
+    print "terminating", p
+    p.terminate()
+gone, alive = psutil.wait_procs(open, timeout=3)
+for p in alive:
+    print "killing", p
+    p.kill()
