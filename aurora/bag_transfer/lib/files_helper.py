@@ -7,12 +7,6 @@ from shutil import rmtree, move, copytree
 import psutil
 import pwd
 
-from django.conf import settings
-from aurora import config
-from bag_transfer.models import BAGLog, Organization
-
-import bag_transfer.lib.log_print as Pter
-from bag_transfer.lib.virus_scanner import VirusScan
 
 def open_files_list():
     """Return a list of files open on the linux system"""
@@ -25,6 +19,7 @@ def open_files_list():
                 path_list.append(fileObj.path)
     return path_list
 
+
 def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     files = []
 
@@ -36,13 +31,13 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
         # build list from all files in Infinite sub dirs
         while True:
 
-            #resolve new dir to check
+            # resolve new dir to check
             if not to_check:
                 break
             live_dir = to_check[0]
 
             for path in os.listdir(live_dir):
-                fullpath = "{}/{}".format(live_dir,path)
+                fullpath = "{}/{}".format(live_dir, path)
                 if os.path.isdir(fullpath):
                     dirpaths.append(fullpath)
 
@@ -59,7 +54,7 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
                 d = os.listdir(dire)
                 if d:
                     for contents in d:
-                        fullpath = "{}/{}".format(dire,contents)
+                        fullpath = "{}/{}".format(dire, contents)
                         if os.path.isfile(fullpath):
                             files.append(fullpath)
 
@@ -70,11 +65,14 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
 
     return files
 
+
 def file_owner(file_path):
     return pwd.getpwuid(os.stat(file_path).st_uid).pw_name
 
+
 def file_modified_time(file_path):
     return datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+
 
 def get_dir_size(start_path):
     """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
@@ -84,33 +82,36 @@ def get_dir_size(start_path):
             fp = os.path.join(dirpath, f)
             total_size += os.path.getsize(fp)
         for d in dirnames:
-            dp = os.path.join(dirpath,d)
+            dp = os.path.join(dirpath, d)
             total_size += os.path.getsize(dp)
-    return (total_size if total_size else False)
+    return total_size if total_size else False
+
 
 def splitext_(file_path):
     # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
-    if len(file_path.split('.')) > 2:
-        return file_path.split('.')[0],'.'.join(file_path.split('.')[-2:])
+    if len(file_path.split(".")) > 2:
+        return file_path.split(".")[0], ".".join(file_path.split(".")[-2:])
     return os.path.splitext(file_path)
+
 
 def zip_has_top_level_only(file_path):
     items = []
-    with zipfile.ZipFile(file_path, 'r') as zfile:
+    with zipfile.ZipFile(file_path, "r") as zfile:
 
         items = zfile.namelist()
 
-    top_dir = items[0].split('/')[0]
+    top_dir = items[0].split("/")[0]
 
     for item in items[1:]:
-        if item.split('/')[0] != top_dir:
+        if item.split("/")[0] != top_dir:
             return False
 
     return top_dir
 
+
 def tar_has_top_level_only(file_path):
     items = []
-    with tarfile.open(file_path,'r:*') as tfile:
+    with tarfile.open(file_path, "r:*") as tfile:
         items = tfile.getnames()
         if not tfile.getmembers()[0].isdir():
             return False
@@ -119,9 +120,10 @@ def tar_has_top_level_only(file_path):
     # items 0 should be the first of every split
     top_dir = items[0]
     for item in items:
-        if item.split('/')[0] != top_dir:
+        if item.split("/")[0] != top_dir:
             return False
     return top_dir
+
 
 def anon_extract_all(file_path, tmp_dir):
     """determine which path type, return extraction results"""
@@ -130,11 +132,11 @@ def anon_extract_all(file_path, tmp_dir):
         return dir_extract_all(file_path, tmp_dir)
     else:
         # is it a tar
-        if file_path.endswith('tar.gz') or file_path.endswith('.tar'):
+        if file_path.endswith("tar.gz") or file_path.endswith(".tar"):
             return tar_extract_all(file_path, tmp_dir)
 
         # is it a zip
-        if file_path.endswith('.zip'):
+        if file_path.endswith(".zip"):
             return zip_extract_all(file_path, tmp_dir)
 
     return False
@@ -143,53 +145,53 @@ def anon_extract_all(file_path, tmp_dir):
 def zip_extract_all(file_path, tmp_dir):
     extracted = False
     try:
-        zf = zipfile.ZipFile(file_path,'r')
+        zf = zipfile.ZipFile(file_path, "r")
         zf.extractall(tmp_dir)
         zf.close()
         extracted = True
     except Exception as e:
-        print e
+        print(e)
     return extracted
+
 
 def tar_extract_all(file_path, tmp_dir):
     extracted = False
     try:
-        tf = tarfile.open(file_path, 'r:*')
+        tf = tarfile.open(file_path, "r:*")
         tf.extractall(tmp_dir)
         tf.close()
         extracted = True
     except Exception as e:
-        print e
+        print(e)
 
     return extracted
+
 
 def dir_extract_all(file_path, tmp_dir):
     extracted = False
     try:
         # notice forward slash missing
-        if is_dir_or_file('{}{}'.format(tmp_dir, file_path.split('/')[-1])):
-            rmtree('{}{}'.format(tmp_dir, file_path.split('/')[-1]))
-        copytree(file_path, '{}{}'.format(tmp_dir, file_path.split('/')[-1]))
+        if is_dir_or_file("{}{}".format(tmp_dir, file_path.split("/")[-1])):
+            rmtree("{}{}".format(tmp_dir, file_path.split("/")[-1]))
+        copytree(file_path, "{}{}".format(tmp_dir, file_path.split("/")[-1]))
         extracted = True
     except Exception as e:
-        print e
+        print(e)
     return extracted
+
 
 def get_fields_from_file(file_path):
     fields = {}
     try:
-        patterns = [
-            '(?P<key>[\w\-]+)',
-            '(?P<val>.+)'
-        ]
-        with open(file_path, 'rb') as f:
+        patterns = ["(?P<key>[\w\-]+)", "(?P<val>.+)"]
+        with open(file_path, "r") as f:
             for line in f.readlines():
-                line = line.strip('\n')
+                line = line.strip("\n")
 
                 row_search = re.search(":?(\s)?".join(patterns), line)
                 if row_search:
-                    key = row_search.group('key').replace('-','_').strip()
-                    val = row_search.group('val').strip()
+                    key = row_search.group("key").replace("-", "_").strip()
+                    val = row_search.group("val").strip()
                     if key in fields:
                         listval = [fields[key]]
                         listval.append(val)
@@ -197,36 +199,42 @@ def get_fields_from_file(file_path):
                     else:
                         fields[key] = val
     except Exception as e:
-        print e
+        print(e)
 
     return fields
+
 
 def remove_file_or_dir(file_path):
     if os.path.isfile(file_path):
         try:
             os.remove(file_path)
         except Exception as e:
-            print e
+            print(e)
             return False
     elif os.path.isdir(file_path):
         try:
             rmtree(file_path)
         except Exception as e:
-            print e
+            print(e)
             return False
     return True
+
 
 def move_file_or_dir(src, dest):
     try:
         move(src, dest)
     except Exception as e:
-        print e
+        print(e)
         return False
 
+
 def is_dir_or_file(file_path):
-    if os.path.isdir(file_path): return True
-    if os.path.isfile(file_path): return True
+    if os.path.isdir(file_path):
+        return True
+    if os.path.isfile(file_path):
+        return True
     return False
+
 
 def all_paths_exist(list_of_paths):
     for p in list_of_paths:
@@ -234,23 +242,26 @@ def all_paths_exist(list_of_paths):
             return False
     return True
 
+
 def get_file_contents(f):
     """returns contents of file as str"""
 
-    data = ''
+    data = ""
     try:
-        with open(f, 'r') as open_file:
+        with open(f, "r") as open_file:
             data = open_file.read()
     except Exception as e:
-        print e
+        print(e)
     finally:
         return data
 
+
 def chown_path_to_root(file_path):
     if is_dir_or_file(file_path):
-        root_uid = pwd.getpwnam('root').pw_uid
+        root_uid = pwd.getpwnam("root").pw_uid
         os.chown(file_path, root_uid, root_uid)
 
+
 def make_tarfile(output_filename, source_dir):
-    with tarfile.open(output_filename, 'w:gz') as tar:
+    with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir, arcname=os.path.basename(source_dir))

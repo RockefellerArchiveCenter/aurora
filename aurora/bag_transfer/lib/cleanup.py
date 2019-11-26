@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from os.path import join, isfile
 from os import remove
 
 from aurora import settings
 
 
-class CleanupError(Exception): pass
+class CleanupError(Exception):
+    pass
 
 
 class CleanupRoutine:
