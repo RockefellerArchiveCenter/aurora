@@ -40,7 +40,7 @@ ruamel.ordereddict==0.4.13
 ruamel.yaml==0.15.71
 six==1.11.0
 strict-rfc3339==0.7
-swagger-spec-validator==2.1.0
+swagger-spec-validator==2.4.3
 uritemplate==3.0.0
 urllib3==1.24.2
 validate-email==1.3
