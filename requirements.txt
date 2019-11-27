@@ -24,7 +24,7 @@ iso8601==0.1.12
 itypes==1.1.0
 Jinja2==2.10.1
 jsonpointer==1.14
-jsonschema==2.6.0
+jsonschema==3.2.0
 MarkupSafe==1.0
 mysqlclient==1.4.2.post1
 openapi-codec==1.3.2
