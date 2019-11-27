@@ -93,7 +93,7 @@ class APITest(TestCase):
             )
 
     def schema(self):
-        schema = self.client.get(reverse("schema-json", kwargs={"format": ".json"}))
+        schema = self.client.get(reverse("schema"))
         self.assertEqual(schema.status_code, 200, "Wrong HTTP code")
 
     def test_api(self):
