@@ -71,4 +71,5 @@ urlpatterns = [
     ),
     url(r"^logout/$", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
     url(r"^api/", include("bag_transfer.api.urls")),
+    url(r'^status/', include('health_check.api.urls')),
 ]

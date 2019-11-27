@@ -96,9 +96,14 @@ class APITest(TestCase):
         schema = self.client.get(reverse("schema"))
         self.assertEqual(schema.status_code, 200, "Wrong HTTP code")
 
+    def health_check(self):
+        status = self.client.get(reverse('api_health_ping'))
+        self.assertEqual(status.status_code, 200, "Wrong HTTP code")
+
     def test_api(self):
         self.update_transfer()
         self.schema()
+        self.health_check()
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

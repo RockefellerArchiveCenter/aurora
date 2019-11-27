@@ -11,6 +11,7 @@ django-cron==0.5.1
 django-datatables-view==1.19.1
 djangorestframework==3.10.3
 djangorestframework-jwt==1.11.0
+health-check==3.4.1
 idna==2.8
 importlib-metadata==0.23
 inflection==0.3.1
