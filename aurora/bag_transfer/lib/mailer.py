@@ -87,7 +87,7 @@ class Mailer:
                 "Please review the complete error log at {}, correct any errors, and try sending the transfer again.",
             ]
 
-            error_obj = archive_obj.get_bag_failure(LAST_ONLY=True)
+            error_obj = archive_obj.get_bag_failure(last_only=True)
 
             self.text_content = "\r\n\r\n".join(eparts).format(
                 archive_obj.bag_or_failed_name(),

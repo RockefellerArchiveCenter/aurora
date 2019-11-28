@@ -373,7 +373,7 @@ class Archives(models.Model):
         """Returns additional error information"""
         errs = []
         codes = []
-        failures = self.get_bag_failure(LAST_ONLY=False)
+        failures = self.get_bag_failure(last_only=False)
         for fails in failures:
             codes.append(fails.code.code_short)
 
