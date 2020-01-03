@@ -1,5 +1,6 @@
 from datetime import datetime
-from os import path, listdir, rename
+from os import path, listdir, rename, chown
+import pwd
 import random
 import string
 from django.contrib.auth.models import Group
@@ -204,7 +205,7 @@ def create_test_archive(transfer, org):
 
 # Creates target bags to be picked up by a TransferRoutine based on a string.
 # This allows processing of bags serialized in multiple formats at once.
-def create_target_bags(target_str, test_bags_dir, org):
+def create_target_bags(target_str, test_bags_dir, org, username):
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
@@ -223,7 +224,8 @@ def create_target_bags(target_str, test_bags_dir, org):
         index += 1
 
         # chowning path to root
-        FH.chown_path_to_root(new_path)
+        # FH.chown_path_to_root(new_path)
+        chown(new_path, pwd.getpwnam(username).pw_uid, -1)
         moved_bags.append(new_path)
 
     return moved_bags
