@@ -21,6 +21,7 @@ class DiscoverTransfers(CronJobBase):
     code = "transfers.discover_transfers"
 
     def do(self):
+        result = True
         Pter.cron_open(self.code)
         BAGLog.log_it("CSTR")
 
@@ -29,78 +30,82 @@ class DiscoverTransfers(CronJobBase):
         if to_process:
 
             for upload_list in to_process:
+                try:
+                    email = Mailer()
 
-                email = Mailer()
+                    machine_file_identifier = Archives().gen_identifier()
+                    org = Organization.is_org_active(upload_list["org"])
+                    user = User.is_user_active(upload_list["upload_user"], org)
 
-                machine_file_identifier = Archives().gen_identifier()
-                org = Organization.is_org_active(upload_list["org"])
-                user = User.is_user_active(upload_list["upload_user"], org)
+                    email.to = [user.email]
 
-                email.to = [user.email]
+                    new_arc = Archives.initial_save(
+                        org,
+                        user,
+                        upload_list["file_path"],
+                        upload_list["file_size"],
+                        upload_list["file_modtime"],
+                        machine_file_identifier,
+                        upload_list["file_type"],
+                        upload_list["bag_it_name"],
+                    )
 
-                new_arc = Archives.initial_save(
-                    org,
-                    user,
-                    upload_list["file_path"],
-                    upload_list["file_size"],
-                    upload_list["file_modtime"],
-                    machine_file_identifier,
-                    upload_list["file_type"],
-                    upload_list["bag_it_name"],
-                )
+                    BAGLog.log_it("ASAVE", new_arc)
+                    print(
+                        "\nValidating transfer {}".format(new_arc.machine_file_identifier)
+                    )
 
-                BAGLog.log_it("ASAVE", new_arc)
-                print(
-                    "\nValidating transfer {}".format(new_arc.machine_file_identifier)
-                )
-
-                if upload_list["auto_fail"]:
-                    new_arc.setup_save(upload_list)
-                    new_arc.process_status = Archives.INVALID
-                    BAGLog.log_it(upload_list["auto_fail_code"], new_arc)
-                    email.setup_message("TRANS_FAIL_VAL", new_arc)
-                    email.send()
-                    FH.remove_file_or_dir(new_arc.machine_file_path)
-
-                else:
-                    bag = bagChecker(new_arc)
-                    if bag.bag_passed_all():
-                        print(
-                            "Transfer {} is valid".format(
-                                new_arc.machine_file_identifier
-                            )
-                        )
-                        new_arc.process_status = Archives.VALIDATED
-                        new_arc.bag_it_valid = True
-                        BAGLog.log_it("APASS", new_arc)
-                        email.setup_message("TRANS_PASS_ALL", new_arc)
-                        email.send()
-                        FH.move_file_or_dir(
-                            "/data/tmp/{}".format(new_arc.bag_it_name),
-                            "{}{}".format(
-                                settings.STORAGE_ROOT_DIR,
-                                new_arc.machine_file_identifier,
-                            ),
-                        )
-                        FH.remove_file_or_dir(new_arc.machine_file_path)
-                        new_arc.machine_file_path = "{}{}".format(
-                            settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier
-                        )
-                    else:
-                        print(
-                            "Transfer {} is invalid".format(
-                                new_arc.machine_file_identifier
-                            )
-                        )
+                    if upload_list["auto_fail"]:
+                        new_arc.setup_save(upload_list)
                         new_arc.process_status = Archives.INVALID
-                        BAGLog.log_it(bag.ecode, new_arc)
+                        BAGLog.log_it(upload_list["auto_fail_code"], new_arc)
                         email.setup_message("TRANS_FAIL_VAL", new_arc)
                         email.send()
                         FH.remove_file_or_dir(new_arc.machine_file_path)
 
-                new_arc.save()
-                FH.remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
+                    else:
+                        bag = bagChecker(new_arc)
+                        if bag.bag_passed_all():
+                            print(
+                                "Transfer {} is valid".format(
+                                    new_arc.machine_file_identifier
+                                )
+                            )
+                            new_arc.process_status = Archives.VALIDATED
+                            new_arc.bag_it_valid = True
+                            BAGLog.log_it("APASS", new_arc)
+                            email.setup_message("TRANS_PASS_ALL", new_arc)
+                            email.send()
+                            FH.move_file_or_dir(
+                                "/data/tmp/{}".format(new_arc.bag_it_name),
+                                "{}{}".format(
+                                    settings.STORAGE_ROOT_DIR,
+                                    new_arc.machine_file_identifier,
+                                ),
+                            )
+                            FH.remove_file_or_dir(new_arc.machine_file_path)
+                            new_arc.machine_file_path = "{}{}".format(
+                                settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier
+                            )
+                        else:
+                            print(
+                                "Transfer {} is invalid".format(
+                                    new_arc.machine_file_identifier
+                                )
+                            )
+                            new_arc.process_status = Archives.INVALID
+                            BAGLog.log_it(bag.ecode, new_arc)
+                            email.setup_message("TRANS_FAIL_VAL", new_arc)
+                            email.send()
+                            FH.remove_file_or_dir(new_arc.machine_file_path)
+
+                    new_arc.save()
+                    FH.remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
+                except Exception as e:
+                    print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
+                    result = False
         Pter.cron_close(self.code)
+        return result
 
 
 class DeliverTransfers(CronJobBase):
@@ -110,6 +115,7 @@ class DeliverTransfers(CronJobBase):
     code = "transfers.deliver_transfers"
 
     def do(self):
+        result = True
         Pter.cron_open(self.code)
         for archive in Archives.objects.filter(
             process_status=Archives.ACCESSIONING_STARTED
@@ -163,5 +169,7 @@ class DeliverTransfers(CronJobBase):
                 archive.save()
             except Exception as e:
                 print("Error delivering transfer {}: {}".format(archive, str(e)))
+                result = False
 
         Pter.cron_close(self.code)
+        return result
