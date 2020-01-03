@@ -3,8 +3,8 @@ import random
 from django.test import TransactionTestCase
 
 from bag_transfer.test import helpers
-from bag_transfer.lib.transfer_routine import *
-from bag_transfer.lib.files_helper import *
+from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.lib.files_helper import remove_file_or_dir
 
 
 class TransferRoutineTestCase(TransactionTestCase):
@@ -31,23 +31,25 @@ class TransferRoutineTestCase(TransactionTestCase):
         helpers.delete_test_orgs(self.orgs)
 
     def sub_test_db_has_active_orgs(self):
-        self.change_all_orgs_in_list_status(self.orgs, False)   # turns all test orgs inactive
-        self.assertFalse(self.TR.setup_routine())               # test setup catches inactives
-        self.assertTrue(self.TR.has_setup_err)                  # 2nd check that it was an error
-        self.change_all_orgs_in_list_status(self.orgs, True)    #reverts back to True
+        self.change_all_orgs_in_list_status(
+            self.orgs, False
+        )  # turns all test orgs inactive
+        self.assertFalse(self.TR.setup_routine())  # test setup catches inactives
+        self.assertTrue(self.TR.has_setup_err)  # 2nd check that it was an error
+        self.change_all_orgs_in_list_status(self.orgs, True)  # reverts back to True
 
     def sub_test_verify_organizations_paths(self):
         """removes directory from an org and check to see if item removed from active orgs"""
-        self.TR.has_active_organizations()          #resets the active orgs
+        self.TR.has_active_organizations()  # resets the active orgs
         original_active_count = len(self.TR.active_organizations)
         last_org = self.TR.active_organizations[0]
         last_org_upload_paths = last_org.org_machine_upload_paths()
-        random_index = random.randrange(0,len(last_org_upload_paths))
+        random_index = random.randrange(0, len(last_org_upload_paths))
         remove_file_or_dir(last_org_upload_paths[random_index])
         self.TR.verify_organizations_paths()
-        self.assertNotEqual(original_active_count,len(self.TR.active_organizations))
+        self.assertNotEqual(original_active_count, len(self.TR.active_organizations))
 
-    def change_all_orgs_in_list_status(self, orgs ={}, Status=False):
+    def change_all_orgs_in_list_status(self, orgs={}, Status=False):
         for org in orgs:
             org.is_active = Status
             org.save()

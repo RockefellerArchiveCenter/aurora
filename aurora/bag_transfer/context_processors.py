@@ -1,6 +1,6 @@
-# bag_transfer/context_processors.py
-
 from django.conf import settings
 
+
 def gtm_id(request):
-    return {'gtm_id': settings.GTM_ID}
+    """Adds Google Tag Manager ID to requests."""
+    return {"gtm_id": settings.GTM_ID}

@@ -1,3 +1,5 @@
 env/
 /scripts/ldap.*
 .DS_Store
+__pycache__
+*.pyc
