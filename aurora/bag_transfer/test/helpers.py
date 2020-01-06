@@ -41,13 +41,13 @@ from bag_transfer.lib.transfer_routine import TransferRoutine
 ####################################
 
 
-# Returns a random string of specified length
 def random_string(length):
+    """Returns a random string of specified length."""
     return "".join(random.choice(string.ascii_letters) for m in range(length))
 
 
-# Feturns a random date in a given year
 def random_date(year):
+    """Returns a random date in a given year."""
     try:
         return datetime.strptime("{} {}".format(random.randint(1, 366), year), "%j %Y")
     # accounts for leap year values
@@ -57,6 +57,7 @@ def random_date(year):
 
 
 def random_name(prefix, suffix):
+    """Returns a random name."""
     return "{} {} {}".format(prefix, random.choice(string.ascii_letters), suffix)
 
 
@@ -64,9 +65,9 @@ def random_name(prefix, suffix):
 # CREATE TEST OBJECTS
 ####################################
 
-# Creates a RecordType object for each value in list provided.
-# If no list is given, RecordTypes created from a default list
 def create_test_record_types(record_types=None):
+    """Creates a RecordType object for each value in list provided.
+    If no list is given, RecordTypes are create for each item in a default list."""
     objects = []
     if record_types is None:
         record_types = [
@@ -83,9 +84,9 @@ def create_test_record_types(record_types=None):
     return objects
 
 
-# Creates a Group for each value in a list of names.
-# If no list is given, Groups are created from a default list
 def create_test_groups(names=None):
+    """Creates a Group for each value in a list of names.
+    If no list is given, Groups are created for each item in a default list."""
     groups = []
     if names is None:
         names = [
@@ -106,7 +107,6 @@ def create_test_groups(names=None):
     return groups
 
 
-# Review
 def create_test_orgs(org_count=1):
     """creates random orgs based on org_count"""
     if org_count < 1:
@@ -168,10 +168,11 @@ def create_test_baglogcodes():
     return code_objects
 
 
-# Creates test user given a username and organization.
-# If no username is given, the default username supplied in settings is used.
-# If no organization is given, an organization is randomly chosen.
 def create_test_user(username=None, org=None):
+    """Creates test user given a username and organization.
+    If no username is given, the default username supplied in settings is used.
+    If no organization is given, an organization is randomly chosen.
+    """
     if username is None:
         username = settings.TEST_USER["USERNAME"]
     if org is None:
@@ -184,8 +185,8 @@ def create_test_user(username=None, org=None):
     return test_user
 
 
-# Creates Archive objects by running bags through TransferRoutine
 def create_test_archive(transfer, org):
+    """Creates Archive objects by running bags through TransferRoutine."""
     machine_file_identifier = Archives().gen_identifier()
     archive = Archives.initial_save(
         org,
@@ -205,9 +206,9 @@ def create_test_archive(transfer, org):
     return archive
 
 
-# Creates target bags to be picked up by a TransferRoutine based on a string.
-# This allows processing of bags serialized in multiple formats at once.
 def create_target_bags(target_str, test_bags_dir, org, username=None):
+    """Creates target bags to be picked up by a TransferRoutine based on a string.
+    # This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
@@ -240,9 +241,9 @@ def run_transfer_routine():
     return tr
 
 
-# Creates a rights statement given a record type, organization and rights basis.
-# If any one of these values are not given, random values are assigned.
 def create_rights_statement(record_type=None, org=None, rights_basis=None):
+    """Creates a rights statement given a record type, organization and rights basis.
+    If any one of these values are not given, random values are assigned."""
     record_type = (
         record_type if record_type else random.choice(RecordType.objects.all())
     )
@@ -255,9 +256,9 @@ def create_rights_statement(record_type=None, org=None, rights_basis=None):
     rights_statement.applies_to_type.add(record_type)
 
 
-# Creates a rights info object given a rights statement
-# If no rights statement is given, a random value is selected
 def create_rights_info(rights_statement=None):
+    """Creates a rights info object given a rights statement
+    If no rights statement is given, a random value is selected"""
     rights_statement = (
         rights_statement
         if rights_statement
@@ -298,7 +299,8 @@ def create_rights_info(rights_statement=None):
 
 
 def create_rights_granted(rights_statement=None, granted_count=1):
-    """Creates one or more rights granted objects, based on the grant count, if no rights statement is given, a random value is selected"""
+    """Creates one or more rights granted objects, based on the grant count.
+    If no rights statement is given, a random value is selected."""
     rights_statement = (
         rights_statement
         if rights_statement
