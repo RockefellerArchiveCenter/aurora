@@ -222,6 +222,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
             "payload_oxum",
             "bagit_profile_identifier",
             "bagging_date",
+            "origin",
         )
 
 
@@ -232,6 +233,7 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     file_size = serializers.StringRelatedField(source="machine_file_size")
     file_type = serializers.StringRelatedField(source="machine_file_type")
     identifier = serializers.StringRelatedField(source="machine_file_identifier")
+    origin = serializers.StringRelatedField(source="metadata.origin")
 
     class Meta:
         model = Archives
@@ -239,6 +241,7 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
             "url",
             "identifier",
             "organization",
+            "origin",
             "bag_it_name",
             "process_status",
             "file_size",

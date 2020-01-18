@@ -671,6 +671,7 @@ class BagInfoMetadata(models.Model):
     bag_group_identifier = models.CharField(max_length=256)
     payload_oxum = models.CharField(max_length=20)
     bagit_profile_identifier = models.URLField()
+    origin = models.CharField(max_length=10, default="aurora")
 
 
 class BagItProfile(models.Model):
