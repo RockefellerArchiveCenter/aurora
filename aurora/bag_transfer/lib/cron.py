@@ -121,6 +121,10 @@ class DeliverTransfers(CronJobBase):
             process_status=Archives.ACCESSIONING_STARTED
         ):
             try:
+                FH.update_bag_info(
+                    join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
+                    {"Origin": "aurora"}
+                )
                 tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
                 FH.make_tarfile(
                     join(settings.STORAGE_ROOT_DIR, tar_filename),
@@ -166,6 +170,7 @@ class DeliverTransfers(CronJobBase):
                 )
 
                 archive.process_status = Archives.DELIVERED
+                print(archive.machine_file_identifier)
                 archive.save()
             except Exception as e:
                 print("Error delivering transfer {}: {}".format(archive, str(e)))

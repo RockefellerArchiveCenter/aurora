@@ -7,6 +7,8 @@ from shutil import rmtree, move, copytree
 import psutil
 import pwd
 
+import bagit
+
 
 def open_files_list():
     """Return a list of files open on the linux system"""
@@ -265,3 +267,11 @@ def chown_path_to_root(file_path):
 def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+
+def update_bag_info(bag_path, data):
+    """Adds metadata to `bag-info.txt`"""
+    bag = bagit.Bag(bag_path)
+    for k,v in data.items():
+        bag.info[k] = v
+    bag.save()
