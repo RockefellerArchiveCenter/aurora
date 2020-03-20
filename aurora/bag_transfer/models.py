@@ -158,15 +158,16 @@ class User(AbstractUser):
     def is_manager(self):
         return self.groups.filter(name__in=User.MANAGER_GROUPS).exists()
 
-    def can_appraise(self):
+    def permissions_by_group(self, group):
         if self.is_superuser:
             return True
-        return self.groups.filter(name__in=User.APPRAISER_GROUPS).exists()
+        return self.groups.filter(name__in=group).exists()
+
+    def can_appraise(self):
+        return self.permissions_by_group(User.APPRAISER_GROUPS)
 
     def can_accession(self):
-        if self.is_superuser:
-            return True
-        return self.groups.filter(name__in=User.ACCESSIONER_GROUPS).exists()
+        return self.permissions_by_group(User.ACCESSIONER_GROUPS)
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to default save."""
