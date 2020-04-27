@@ -717,6 +717,7 @@ class AcceptBagItVersion(models.Model):
     BAGIT_VERSION_NAME_CHOICES = (
         ("0.96", "0.96"),
         ("0.97", "0.97"),
+        ("1.0", "1.0"),
     )
     name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="accept_bagit_version")
