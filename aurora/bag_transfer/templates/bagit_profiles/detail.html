@@ -2,7 +2,7 @@
 {% load tz %}
 
 {% block h1_title %}
-  BagIt Profile <small>{{object.applies_to_organization}}</small>
+  BagIt Profile <small>{{object.applies_to_organization.name}}</small>
   <a href="{% url 'orgs:detail' pk=object.applies_to_organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
 {% endblock %}
 
@@ -20,7 +20,7 @@
             <dd>{{object.external_description}}</dd>
           {% endif %}
           <dt>Creator</dt>
-          <dd>{{object.source_organization}}</dd>
+          <dd>{{object.source_organization.name}}</dd>
           <dt>Contact Email</dt>
           <dd>{{object.contact_email}}</dd>
           <dt>BagIt Profile Identifier</dt>
@@ -41,6 +41,10 @@
           <dd>{{object.allow_fetch|yesno:"Yes,No"}}</dd>
           <dt>Serialization Allowed?</dt>
           <dd>{{object.serialization}}</dd>
+          {% if object.manifests_allowed.all %}
+            <dt>Manifests Allowed</dt>
+            <dd>{% for s in object.manifests_allowed.all %}{{s.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          {% endif %}
           {% if object.manifests_required.all %}
             <dt>Manifests Required</dt>
             <dd>{% for s in object.manifests_required.all %}{{s.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
