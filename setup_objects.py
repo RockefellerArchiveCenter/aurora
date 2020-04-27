@@ -2,6 +2,7 @@ from django.contrib.auth.models import Group
 import psutil
 
 from bag_transfer.models import (
+    ManifestsAllowed
     Organization,
     User,
     BagItProfile,
@@ -110,6 +111,8 @@ if len(orgs) == 0:
         AcceptSerialization.objects.create(
             name="application/x-gzip", bagit_profile=profile
         )
+        ManifestsAllowed.objects.create(name="sha256", bagit_profile=profile)
+        ManifestsAllowed.objects.create(name="sha512", bagit_profile=profile)
         AcceptBagItVersion.objects.create(name="0.97", bagit_profile=profile)
         for field in [
             "external_identifier",
