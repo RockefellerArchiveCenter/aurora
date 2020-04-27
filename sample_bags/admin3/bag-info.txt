@@ -1,0 +1,13 @@
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+BagIt-Profile-Identifier: http://localhost:8000/api/bagit_profiles/2/
+Bagging-Date: 2017-12-11T20:16:29.250116
+Date-End: 2004-06-17
+Date-Start: 1999-05-14
+External-Identifier: records-2017-12-11T20:16:29.250116
+Internal-Sender-Description: Administrative records for the Office of Important Affairs
+Language: eng
+Payload-Oxum: 249376.6
+Record-Creators: Office of Important Affairs adminstrators
+Record-Type: administrative records
+Source-Organization: Donor Organization
+Title: OIA Administrative records

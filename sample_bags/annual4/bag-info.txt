@@ -1,0 +1,13 @@
+Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
+BagIt-Profile-Identifier: http://localhost:8000/api/bagit_profiles/2/
+Bagging-Date: 2017-12-11T20:19:40.210341
+Date-End: 2010-06-30
+Date-Start: 2008-07-01
+External-Identifier: records-2017-12-11T20:19:40.210341
+Internal-Sender-Description: Annual Reports detailing the activities of the foundation.
+Language: eng
+Payload-Oxum: 8595832.2
+Record-Creators: Office of Important Affairs
+Record-Type: annual reports
+Source-Organization: Donor Organization
+Title: Annual Reports
