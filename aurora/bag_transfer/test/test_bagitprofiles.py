@@ -7,6 +7,7 @@ from django.urls import reverse
 from bag_transfer.lib.bag_checker import bagChecker
 from bag_transfer.models import (
     BagItProfile,
+    ManifestsAllowed,
     ManifestsRequired,
     AcceptSerialization,
     AcceptBagItVersion,
@@ -50,6 +51,7 @@ class BagItProfileTestCase(TestCase):
         self.assertEqual(len(self.bagitprofiles), len(self.orgs))
 
         for profile in self.bagitprofiles:
+            helpers.create_test_manifestsallowed(bagitprofile=profile)
             helpers.create_test_manifestsrequired(bagitprofile=profile)
             helpers.create_test_acceptserialization(bagitprofile=profile)
             helpers.create_test_acceptbagitversion(bagitprofile=profile)
@@ -67,21 +69,10 @@ class BagItProfileTestCase(TestCase):
             for info in self.baginfos:
                 helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
 
-            self.assertEqual(
-                len(ManifestsRequired.objects.all()), len(self.bagitprofiles)
-            )
-            self.assertEqual(
-                len(AcceptSerialization.objects.all()), len(self.bagitprofiles)
-            )
-            self.assertEqual(
-                len(AcceptBagItVersion.objects.all()), len(self.bagitprofiles)
-            )
-            self.assertEqual(
-                len(TagManifestsRequired.objects.all()), len(self.bagitprofiles)
-            )
-            self.assertEqual(
-                len(TagFilesRequired.objects.all()), len(self.bagitprofiles)
-            )
+            for obj in (ManifestsAllowed, ManifestsRequired, AcceptSerialization,
+                        AcceptBagItVersion, TagManifestsRequired, TagFilesRequired):
+                self.assertEqual(len(obj.objects.all()), len(self.bagitprofiles))
+
             for info in BagItProfileBagInfo.objects.all():
                 self.assertTrue(len(info.bagitprofilebaginfovalues_set.all()) > 0)
 
@@ -151,13 +142,13 @@ class BagItProfileTestCase(TestCase):
                 "tag_files-0-name": helpers.random_string(20),
                 "tag_manifests-TOTAL_FORMS": 1,
                 "tag_manifests-INITIAL_FORMS": 0,
-                "tag_manifests-0-name": random.choice(["sha256", "md5"]),
+                "tag_manifests-0-name": random.choice(["sha256", "sha512"]),
                 "version-TOTAL_FORMS": 1,
                 "version-INITIAL_FORMS": 0,
                 "version-0-name": random.choice(["0.96", 0.97]),
                 "manifests-TOTAL_FORMS": 1,
                 "manifests-INITIAL_FORMS": 0,
-                "manifests-0-name": random.choice(["sha256", "md5"]),
+                "manifests-0-name": random.choice(["sha256", "sha512"]),
             },
         )
         self.assertEqual(new_request.status_code, 302, "Request was not redirected")
