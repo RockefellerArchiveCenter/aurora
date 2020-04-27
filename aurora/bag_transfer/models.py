@@ -697,8 +697,14 @@ class BagItProfile(models.Model):
     )
 
 
+class ManifestsAllowed(models.Model):
+    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
+    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_allowed")
+
+
 class ManifestsRequired(models.Model):
-    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("md5", "md5"))
+    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
     name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_required")
 
@@ -723,7 +729,7 @@ class AcceptBagItVersion(models.Model):
 
 
 class TagManifestsRequired(models.Model):
-    TAG_MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("md5", "md5"))
+    TAG_MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
     name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
     bagit_profile = models.ForeignKey(
         BagItProfile, on_delete=models.CASCADE, related_name="tag_manifests_required"
