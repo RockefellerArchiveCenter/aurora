@@ -82,6 +82,13 @@ class bagChecker:
                     self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
                     return False
                 try:
+                    profile.validate_payload_manifests_allowed(self.bag)
+                except Exception as e:
+                    self.bag_exception = "An unallowed manifest was found: {}".format(
+                        e.value
+                    )
+                    return False
+                try:
                     profile.validate_manifests_required(self.bag)
                 except Exception as e:
                     self.bag_exception = "Required manifests not found: {}".format(
