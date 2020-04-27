@@ -149,6 +149,9 @@ class BagItProfileTestCase(TestCase):
                 "manifests-TOTAL_FORMS": 1,
                 "manifests-INITIAL_FORMS": 0,
                 "manifests-0-name": random.choice(["sha256", "sha512"]),
+                "manifests_allowed-TOTAL_FORMS": 1,
+                "manifests_allowed-INITIAL_FORMS": 0,
+                "manifests_allowed-0-name": random.choice(["sha256", "sha512"]),
             },
         )
         self.assertEqual(new_request.status_code, 302, "Request was not redirected")
@@ -201,6 +204,10 @@ class BagItProfileTestCase(TestCase):
                 "manifests-INITIAL_FORMS": 1,
                 "manifests-0-id": 1,
                 "manifests-0-DELETE": True,
+                "manifests_allowed-TOTAL_FORMS": 0,
+                "manifests_allowed-INITIAL_FORMS": 1,
+                "manifests_allowed-0-id": 1,
+                "manifests_allowed-0-DELETE": True,
             },
         )
         self.assertEqual(update_request.status_code, 302, "Request was not redirected")
