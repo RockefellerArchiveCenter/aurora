@@ -6,7 +6,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import TEST_ORG_COUNT, bags_ref
+from bag_transfer.test.setup import TEST_ORG_COUNT, BAGS_REF
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.lib.bag_checker import bagChecker
@@ -30,10 +30,10 @@ class BagTestCase(TransactionTestCase):
 
     def test_bags(self):
 
-        test_on_bagchecker = [r[0] for r in bags_ref if len(r) > 2 and r[2]]
-        test_on_transfer_routine = [r[0] for r in bags_ref if len(r) > 3 and r[3]]
+        test_on_bagchecker = [r[0] for r in BAGS_REF if len(r) > 2 and r[2]]
+        test_on_transfer_routine = [r[0] for r in BAGS_REF if len(r) > 3 and r[3]]
 
-        for ref in bags_ref:
+        for ref in BAGS_REF:
 
             # creates test bags
             helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0])

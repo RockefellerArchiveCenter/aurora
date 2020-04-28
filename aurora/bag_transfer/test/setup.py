@@ -12,7 +12,7 @@ TEST_ORG_COUNT = 3
 
 # tuple of tuples
 # (str that test bag starts with, ecode, test on bag checker, test on transfer routine)
-bags_ref = (
+BAGS_REF = (
     # ('invalid<filename', 'BFNM', False, True),
     ("valid_bag", ""),
     ("changed_file", "GBERR", True),
@@ -20,7 +20,6 @@ bags_ref = (
     ("missing_bag_declaration", "GBERR", True),
     ("missing_payload_directory", "GBERR", True),
     ("missing_payload_manifest", "GBERR", True),
-    ("no_bagit_profile", "GBERR", True),
     ("missing_description", "RBERR", True),
     ("missing_record_type", "RBERR", True),
     ("missing_source_organization", "RBERR", True),

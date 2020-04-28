@@ -1,4 +1,0 @@
-9e5ad981e0d29adc278f6a294b8c2aca bagit.txt
-5a76dc93d44df3f169a94c2f3405e51e bag-info.txt
-dd7a1449ac7e9ef79093ce133e1b593a .DS_Store
-171bd937a8ae63f7309447c02c94895c manifest-md5.txt
