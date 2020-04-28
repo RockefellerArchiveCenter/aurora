@@ -43,8 +43,11 @@ class bagChecker:
         try:
             self.bag = bagit.Bag(self.archive_path)
             self.bag.validate()
+        except ValueError as e:
+            self.bag_exception = "Error during BagIt validation (likely caused by presence of unsupported md5 checksum): {}".format(e)
+            return False
         except Exception as e:
-            self.bag_exception = "Error during BagIt validation".format(e)
+            self.bag_exception = "Error during BagIt validation: {}".format(e)
             return False
         else:
             for filename in glob.glob("{}/manifest-*.txt".format(self.archive_path)):
@@ -80,6 +83,13 @@ class bagChecker:
                     profile.validate_bag_info(self.bag)
                 except Exception as e:
                     self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
+                    return False
+                try:
+                    profile.validate_payload_manifests_allowed(self.bag)
+                except Exception as e:
+                    self.bag_exception = "An unallowed manifest was found: {}".format(
+                        e.value
+                    )
                     return False
                 try:
                     profile.validate_manifests_required(self.bag)

@@ -4,6 +4,7 @@ from bag_transfer.models import (
     BagItProfile,
     BagItProfileBagInfo,
     BagItProfileBagInfoValues,
+    ManifestsAllowed,
     ManifestsRequired,
     AcceptSerialization,
     AcceptBagItVersion,
@@ -68,6 +69,20 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
                 attrs={
                     "class": "form-control multi-value",
                     "aria-labelledby": "values-label",
+                }
+            )
+        }
+
+
+class ManifestsAllowedForm(forms.ModelForm):
+    class Meta:
+        model = ManifestsAllowed
+        fields = ("name",)
+        widgets = {
+            "name": forms.widgets.Select(
+                attrs={
+                    "class": "form-control multi-value",
+                    "aria-labelledby": "manifests_allowed-label",
                 }
             )
         }
@@ -191,6 +206,15 @@ BagItProfileBagInfoFormset = forms.inlineformset_factory(
     extra=1,
     form=BagItProfileBagInfoForm,
     formset=BaseBagInfoFormset,
+)
+
+ManifestsAllowedFormset = forms.inlineformset_factory(
+    BagItProfile,
+    ManifestsAllowed,
+    fields=("name",),
+    extra=1,
+    max_num=2,
+    form=ManifestsAllowedForm,
 )
 
 ManifestsRequiredFormset = forms.inlineformset_factory(

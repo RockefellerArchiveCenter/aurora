@@ -1,6 +1,0 @@
-af296662fe5909749c983f98746bd4f8  data/Project Electron Milestones.png
-0b492d1e3a586f363c3f24302b9a525f  data/Project Electron Year Two Gantt.png
-d68b445ceb1befbcb6bdc357e6896edc  data/demo.docx
-8eb7307b41ae27e400ffd3db47be3f09  data/hGrant_Spec.pdf
-cfc62f46dcbaf505b60140ea5051db77  data/idealware_gms_trends_4.21.16.pdf
-94b6e2e66323c5ce3273ef6af9a66126  data/metadata.json

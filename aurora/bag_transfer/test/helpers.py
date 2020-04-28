@@ -13,6 +13,7 @@ from bag_transfer.models import (
     BagItProfileBagInfoValues,
     BAGLogCodes,
     LanguageCode,
+    ManifestsAllowed,
     ManifestsRequired,
     Organization,
     RecordCreators,
@@ -350,12 +351,23 @@ def create_test_bagitprofile(applies_to_organization=None):
     return profile
 
 
+def create_test_manifestsallowed(bagitprofile=None):
+    bagitprofile = (
+        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
+    )
+    manifests_required = ManifestsAllowed(
+        bagit_profile=bagitprofile, name=random.choice(["sha256", "sha512"])
+    )
+    manifests_required.save()
+    return manifests_required
+
+
 def create_test_manifestsrequired(bagitprofile=None):
     bagitprofile = (
         bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     )
     manifests_required = ManifestsRequired(
-        bagit_profile=bagitprofile, name=random.choice(["sha256", "md5"])
+        bagit_profile=bagitprofile, name=random.choice(["sha256", "sha512"])
     )
     manifests_required.save()
     return manifests_required
@@ -391,7 +403,7 @@ def create_test_tagmanifestsrequired(bagitprofile=None):
         bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
     )
     tagmanifestsrequired = TagManifestsRequired(
-        name=random.choice(["sha256", "md5"]), bagit_profile=bagitprofile
+        name=random.choice(["sha256", "sha512"]), bagit_profile=bagitprofile
     )
     tagmanifestsrequired.save()
     return tagmanifestsrequired

@@ -60,7 +60,7 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
 
-    queryset = BagItProfile.objects.all()
+    queryset = BagItProfile.objects.all().order_by("id")
 
     def get_serializer_class(self):
         if self.action == "list":

@@ -8,7 +8,7 @@ from django.conf import settings
 
 from bag_transfer.lib.cron import DiscoverTransfers, DeliverTransfers
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import bags_ref, TEST_ORG_COUNT
+from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
 from bag_transfer.models import Archives, User
 
 
@@ -26,7 +26,7 @@ class CronTestCase(TransactionTestCase):
         self.client = Client()
 
     def test_cron(self):
-        for ref in bags_ref:
+        for ref in BAGS_REF:
             helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)
         discovered = DiscoverTransfers().do()
         self.assertIsNot(False, discovered)
