@@ -9,6 +9,7 @@ from bag_transfer.models import (
     BagItProfileBagInfo,
     BagItProfileBagInfoValues,
     BAGLog,
+    ManifestsAllowed,
     ManifestsRequired,
     Organization,
     RecordCreators,
@@ -304,6 +305,9 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         accept_serialization = NameArraySerializer(
             AcceptSerialization.objects.filter(bagit_profile=obj), many=True
         ).data
+        manifests_allowed = NameArraySerializer(
+            ManifestsAllowed.objects.filter(bagit_profile=obj), many=True
+        ).data
         manifests_required = NameArraySerializer(
             ManifestsRequired.objects.filter(bagit_profile=obj), many=True
         ).data
@@ -322,6 +326,7 @@ class BagItProfileSerializer(serializers.BaseSerializer):
                 "Source-Organization": obj.source_organization.name,
             },
             "Bag-Info": bag_info,
+            "Manifests-Allowed": manifests_allowed,
             "Manifests-Required": manifests_required,
             "Allow-Fetch.txt": obj.allow_fetch,
             "Serialization": obj.serialization,

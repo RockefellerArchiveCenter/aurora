@@ -19,6 +19,7 @@ from bag_transfer.orgs.form import (
     AcceptBagItVersionFormset,
     BagItProfileForm,
     BagItProfileBagInfoFormset,
+    ManifestsAllowedFormset,
     ManifestsRequiredFormset,
     TagFilesRequiredFormset,
     TagManifestsRequiredFormset,
@@ -118,6 +119,9 @@ class BagItProfileManageView(TemplateView):
         bag_info_formset = BagItProfileBagInfoFormset(
             instance=profile, prefix="bag_info"
         )
+        manifests_allowed_formset = ManifestsAllowedFormset(
+            instance=profile, prefix="manifests_allowed"
+        )
         manifests_formset = ManifestsRequiredFormset(
             instance=profile, prefix="manifests"
         )
@@ -137,6 +141,7 @@ class BagItProfileManageView(TemplateView):
             {
                 "form": form,
                 "bag_info_formset": bag_info_formset,
+                "manifests_allowed_formset": manifests_allowed_formset,
                 "manifests_formset": manifests_formset,
                 "serialization_formset": serialization_formset,
                 "version_formset": version_formset,
@@ -181,6 +186,9 @@ class BagItProfileManageView(TemplateView):
             bag_info_formset = BagItProfileBagInfoFormset(
                 request.POST, instance=bagit_profile, prefix="bag_info"
             )
+            manifests_allowed_formset = ManifestsAllowedFormset(
+                request.POST, instance=bagit_profile, prefix="manifests_allowed"
+            )
             manifests_formset = ManifestsRequiredFormset(
                 request.POST, instance=bagit_profile, prefix="manifests"
             )
@@ -198,6 +206,7 @@ class BagItProfileManageView(TemplateView):
             )
             forms_to_save = [
                 bag_info_formset,
+                manifests_allowed_formset,
                 manifests_formset,
                 serialization_formset,
                 version_formset,
@@ -217,6 +226,7 @@ class BagItProfileManageView(TemplateView):
                             "organization": bagit_profile.applies_to_organization,
                             "form": form,
                             "bag_info_formset": bag_info_formset,
+                            "manifests_allowed_formset": manifests_allowed_formset,
                             "manifests_formset": manifests_formset,
                             "serialization_formset": serialization_formset,
                             "version_formset": version_formset,
@@ -255,6 +265,9 @@ class BagItProfileManageView(TemplateView):
                 "organization": organization,
                 "bag_info_formset": BagItProfileBagInfoFormset(
                     request.POST, prefix="bag_info"
+                ),
+                "manifests__allowed_formset": ManifestsAllowedFormset(
+                    request.POST, prefix="manifests_allowed"
                 ),
                 "manifests_formset": ManifestsRequiredFormset(
                     request.POST, prefix="manifests"
