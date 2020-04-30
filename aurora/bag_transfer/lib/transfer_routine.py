@@ -249,7 +249,7 @@ class TransferFileObject(object):
     AUTO_FAIL_ZIP = "BZIP"
     AUTO_FAIL_ZIP2 = "BZIP2"
     AUTO_FAIL_FSERR = "FSERR"
-    ACCEPTABLE_FILE_EXT = {FILE_TYPE_TAR: ["tar.gz", ".tar"], FILE_TYPE_ZIP: [".zip"]}
+    ACCEPTABLE_FILE_EXT = {FILE_TYPE_TAR: [".gz", ".tar"], FILE_TYPE_ZIP: [".zip"]}
     PATH_TYPE_DIR = "isdir"
     PATH_TYPE_FILE = "isfile"
 
