@@ -153,7 +153,7 @@ class DeliverTransfers(CronJobBase):
                         archive.machine_file_identifier,
                         "{}.json".format(archive.machine_file_identifier),
                     ),
-                    "wb",
+                    "w",
                 ) as f:
                     json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
 
