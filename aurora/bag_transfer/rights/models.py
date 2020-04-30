@@ -14,7 +14,7 @@ class RecordType(models.Model):
 
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -39,7 +39,7 @@ class RightsStatement(models.Model):
     )
     rights_basis = models.CharField(choices=RIGHTS_BASIS_CHOICES, max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}: {}".format(self.organization, self.rights_basis)
 
     def get_rights_info_object(self):
@@ -219,7 +219,7 @@ class RightsStatementRightsGranted(models.Model):
     )
     restriction = models.CharField(choices=RESTRICTION_CHOICES, max_length=64)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}: {}".format(self.act, self.restriction)
 
 

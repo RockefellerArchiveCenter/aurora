@@ -34,7 +34,7 @@ class Organization(models.Model):
     class Meta:
         ordering = ["name"]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):
@@ -211,14 +211,14 @@ class RecordCreators(models.Model):
     )
     type = models.CharField(max_length=50, choices=TYPE_CHOICES)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class LanguageCode(models.Model):
     code = models.CharField(max_length=3)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.code
 
 
@@ -273,7 +273,7 @@ class Archives(models.Model):
     class Meta:
         ordering = ["machine_file_upload_time"]
 
-    def __unicode__(self):
+    def __str__(self):
         return "{}: {}".format(self.pk, self.bag_or_failed_name())
 
     def bag_or_failed_name(self):
@@ -611,7 +611,7 @@ class BAGLogCodes(models.Model):
     code_desc = models.CharField(max_length=60)
     next_action = models.CharField(max_length=255, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return "{} : {}".format(self.code_short, self.code_desc)
 
 
@@ -626,7 +626,7 @@ class BAGLog(models.Model):
     class Meta:
         ordering = ["-created_time"]
 
-    def __unicode__(self):
+    def __str__(self):
         val = "-- : {}".format(self.code.code_desc)
         if self.archive:
             val = "{} : {}".format(
