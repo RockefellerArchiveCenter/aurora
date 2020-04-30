@@ -4,7 +4,7 @@ import pwd
 
 
 def set_server_password(user, password):
-    command = "sudo usermod --password $(echo {} | openssl passwd -1 -stdin) {}".format(
+    command = "sudo usermod --password $(echo {} | openssl passwd -crypt -stdin) {}".format(
         password, user
     )
     try:
