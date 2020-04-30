@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 import psutil
 
 from bag_transfer.models import (
-    ManifestsAllowed
+    ManifestsAllowed,
     Organization,
     User,
     BagItProfile,
