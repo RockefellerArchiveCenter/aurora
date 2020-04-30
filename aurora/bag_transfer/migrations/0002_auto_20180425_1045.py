@@ -22,7 +22,7 @@ def create_baglogs(apps, schema_editor):
           ('RBERR', 'BE', "Transfer failed BagIt Profile validation", "Transfer deleted"),
           ('GBERR', 'BE', "Transfer failed BagIt validation", "Transfer deleted"),
           ('EXERR', 'BE', "Problem extracting serialized transfer", "Transfer deleted"),
-          ('BDIR', 'BE', "Problem with directory of unserialized transfer", "Transfer deleted"),
+          ('BDIR', 'BE', "Unrecognized transfer type, must be either a directory, ZIP or TAR (compressed or uncompressed) file", "Transfer deleted"),
           ('BZIP2', 'BE', "ZIP file has more than one top level directory", "Transfer deleted"),
           ('BZIP', 'BE', "Invalid ZIP file", "Transfer deleted"),
           ('BTAR2', 'BE', "TAR file has more than one top level directory", "Transfer deleted"),
