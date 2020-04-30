@@ -14,11 +14,9 @@ from django.core.wsgi import get_wsgi_application
 
 path = '/data/htdocs/aurora/aurora'
 
-try:
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bag_transfer.settings")
-except ModuleNotFoundError:
-    if path not in sys.path:
-        sys.path.append(path)
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bag_transfer.settings")
+if path not in sys.path:
+    sys.path.append(path)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "aurora.settings")
 
 application = get_wsgi_application()
