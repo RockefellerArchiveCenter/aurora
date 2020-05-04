@@ -24,13 +24,24 @@
 					</div>
 					<div class="row">
 						<div class="col-md-12">
+							<label id="{{manifests_allowed_formset.prefix}}-label" for="id_{{manifests_allowed_formset.prefix}}-0-name">Manifests Allowed</label>
+							{{ manifests_allowed_formset.management_form }}
+							{{ manifests_allowed_formset.non_form_errors }}
+							{% for form in manifests_allowed_formset %}
+								{% include 'bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+							<p class="help-block">Select allowed algorithm(s) for manifest files. If no value is selected any algorithm is valid.</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
 							<label id="{{manifests_formset.prefix}}-label" for="id_{{manifests_formset.prefix}}-0-name">Manifests Required</label>
 							{{ manifests_formset.management_form }}
 							{{ manifests_formset.non_form_errors }}
 							{% for form in manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
-							<p class="help-block">Select a required algorithm for manifest files. If no value is selected any algorithm is valid.</p>
+							<p class="help-block">Select a required algorithm for manifest files. At least one value must be selected in order for bags to be valid.</p>
 						</div>
 					</div>
 
