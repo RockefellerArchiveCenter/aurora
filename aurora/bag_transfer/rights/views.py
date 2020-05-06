@@ -1,18 +1,16 @@
-from django.http import Http404
-from django.contrib import messages
-from django.views.generic import CreateView, DetailView, TemplateView
-from django.shortcuts import render, redirect, get_object_or_404
-
-from bag_transfer.models import (
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    Organization,
-)
-from bag_transfer.rights.models import RecordType, RightsStatement
-from bag_transfer.rights.forms import CopyrightFormSet, LicenseFormSet, StatuteFormSet, OtherFormSet, RightsGrantedFormSet, RightsForm
-from bag_transfer.mixins.authmixins import ManagingArchivistMixin, OrgReadViewMixin
+from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
+                                            OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.models import (BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, Organization)
+from bag_transfer.rights.forms import (CopyrightFormSet, LicenseFormSet,
+                                       OtherFormSet, RightsForm,
+                                       RightsGrantedFormSet, StatuteFormSet)
+from bag_transfer.rights.models import RecordType, RightsStatement
+from django.contrib import messages
+from django.http import Http404
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import CreateView, DetailView, TemplateView
 
 
 class RightsManageView(ManagingArchivistMixin, CreateView):

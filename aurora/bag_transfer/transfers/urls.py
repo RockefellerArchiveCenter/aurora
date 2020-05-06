@@ -1,10 +1,7 @@
+from bag_transfer.transfers.views import (TransferDataTableView,
+                                          TransferDataView, TransferDetailView,
+                                          TransfersView)
 from django.conf.urls import url
-from bag_transfer.transfers.views import (
-    TransfersView,
-    TransferDataView,
-    TransferDataTableView,
-    TransferDetailView,
-)
 
 app_name = "transfers"
 

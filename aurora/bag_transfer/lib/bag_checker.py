@@ -2,14 +2,13 @@ import glob
 import json
 from os.path import isfile
 
-from django.conf import settings
-import iso8601
 import bagit
 import bagit_profile
-from iso639 import languages
-
+import iso8601
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog
+from django.conf import settings
+from iso639 import languages
 
 
 class bagChecker:
@@ -143,7 +142,7 @@ class bagChecker:
             for date in dates:
                 try:
                     iso8601.parse_date(date)
-                except Exception as e:
+                except Exception:
                     print("Invalid date value: {}".format(date))
                     self.bag_exception = "Invalid date value: {}".format(date)
                     return False
@@ -154,7 +153,7 @@ class bagChecker:
             for language in langz:
                 try:
                     languages.get(part2b=language)
-                except KeyError as e:
+                except KeyError:
                     print("Invalid language value: {}".format(language))
                     self.bag_exception = "Invalid language value: {}".format(language)
                     return False

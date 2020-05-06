@@ -1,24 +1,14 @@
-from django.contrib.auth.models import Group
 import psutil
-
-from bag_transfer.models import (
-    ManifestsAllowed,
-    Organization,
-    User,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    AcceptSerialization,
-    AcceptBagItVersion,
-)
-from bag_transfer.rights.models import (
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementOther,
-    RightsStatementRightsGranted,
-    RecordType,
-)
-from bag_transfer.lib.RAC_CMD import add_org, add_user, add2grp
+from bag_transfer.lib.RAC_CMD import add2grp, add_org, add_user
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, ManifestsAllowed,
+                                 Organization, User)
+from bag_transfer.rights.models import (RecordType, RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted)
+from django.contrib.auth.models import Group
 
 orgs = Organization.objects.all()
 org_ids = []

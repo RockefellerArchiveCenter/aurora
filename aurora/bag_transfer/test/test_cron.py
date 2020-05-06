@@ -1,15 +1,13 @@
 import os
-import pwd
 import random
 
 import bagit
-from django.test import TransactionTestCase, Client
-from django.conf import settings
-
-from bag_transfer.lib.cron import DiscoverTransfers, DeliverTransfers
+from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
+from bag_transfer.models import Archives
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
-from bag_transfer.models import Archives, User
+from bag_transfer.test.setup import BAGS_REF
+from django.conf import settings
+from django.test import Client, TransactionTestCase
 
 
 class CronTestCase(TransactionTestCase):

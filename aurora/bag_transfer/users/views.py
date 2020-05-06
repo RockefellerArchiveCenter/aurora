@@ -1,38 +1,25 @@
-from django.views.generic import (
-    TemplateView,
-    ListView,
-    CreateView,
-    DetailView,
-    UpdateView,
-)
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.views import (
-    PasswordChangeView,
-    PasswordResetView,
-    PasswordResetDoneView,
-    PasswordResetConfirmView,
-    PasswordResetCompleteView,
-)
-from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import render, redirect
-from django.urls import reverse
-from braces.views import AnonymousRequiredMixin
-
-from bag_transfer.models import Archives, Organization, User
-from bag_transfer.mixins.authmixins import (
-    ArchivistMixin,
-    ManagingArchivistMixin,
-    OrgReadViewMixin,
-)
-from bag_transfer.users.form import (
-    OrgUserCreateForm,
-    OrgUserUpdateForm,
-    RACSuperUserUpdateForm,
-    UserPasswordChangeForm,
-    UserPasswordResetForm,
-    UserSetPasswordForm,
-)
 from bag_transfer.lib.RAC_CMD import set_server_password
+from bag_transfer.mixins.authmixins import (ArchivistMixin,
+                                            ManagingArchivistMixin,
+                                            OrgReadViewMixin)
+from bag_transfer.models import Archives, Organization, User
+from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
+                                     RACSuperUserUpdateForm,
+                                     UserPasswordChangeForm,
+                                     UserPasswordResetForm,
+                                     UserSetPasswordForm)
+from braces.views import AnonymousRequiredMixin
+from django.contrib.auth.forms import PasswordResetForm
+from django.contrib.auth.views import (PasswordChangeView,
+                                       PasswordResetCompleteView,
+                                       PasswordResetConfirmView,
+                                       PasswordResetDoneView,
+                                       PasswordResetView)
+from django.contrib.messages.views import SuccessMessageMixin
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
 
 class SplashView(AnonymousRequiredMixin, TemplateView):

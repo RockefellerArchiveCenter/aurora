@@ -1,13 +1,11 @@
+from bag_transfer.orgs.views import (BagItProfileAPIAdminView,
+                                     BagItProfileDetailView,
+                                     BagItProfileManageView,
+                                     OrganizationCreateView,
+                                     OrganizationDetailView,
+                                     OrganizationEditView,
+                                     OrganizationListView)
 from django.conf.urls import url
-from bag_transfer.orgs.views import (
-    BagItProfileAPIAdminView,
-    BagItProfileDetailView,
-    BagItProfileManageView,
-    OrganizationCreateView,
-    OrganizationDetailView,
-    OrganizationEditView,
-    OrganizationListView,
-)
 
 app_name = "orgs"
 

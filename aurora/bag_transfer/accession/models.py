@@ -1,5 +1,5 @@
+from bag_transfer.models import LanguageCode, Organization, RecordCreators
 from django.db import models
-from bag_transfer.models import Organization, RecordCreators, LanguageCode
 
 
 class Accession(models.Model):

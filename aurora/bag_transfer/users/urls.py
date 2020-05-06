@@ -1,5 +1,7 @@
+from bag_transfer.users.views import (UserPasswordChangeView, UsersCreateView,
+                                      UsersDetailView, UsersEditView,
+                                      UsersListView)
 from django.conf.urls import url
-from bag_transfer.users.views import UsersCreateView, UsersDetailView, UsersEditView, UsersListView, UserPasswordChangeView
 
 app_name = "users"
 

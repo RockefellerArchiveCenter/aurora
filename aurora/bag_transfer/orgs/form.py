@@ -1,16 +1,9 @@
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, ManifestsAllowed,
+                                 ManifestsRequired, TagFilesRequired,
+                                 TagManifestsRequired)
 from django import forms
-
-from bag_transfer.models import (
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    ManifestsAllowed,
-    ManifestsRequired,
-    AcceptSerialization,
-    AcceptBagItVersion,
-    TagManifestsRequired,
-    TagFilesRequired,
-)
 
 
 class BagItProfileForm(forms.ModelForm):

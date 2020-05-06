@@ -1,11 +1,10 @@
 import random
 
-from django.test import TestCase, Client
-from django.conf import settings
-from django.urls import reverse
-
-from bag_transfer.test import helpers
 from bag_transfer.models import Archives
+from bag_transfer.test import helpers
+from django.conf import settings
+from django.test import Client, TestCase
+from django.urls import reverse
 
 
 class AppraisalTestCase(TestCase):

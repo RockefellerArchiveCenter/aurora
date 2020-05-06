@@ -14,10 +14,10 @@ def plines(lst, WRAPPER=0, tab=0, pref="", line_after=False):
         elif WRAPPER == 3:
             lst = lst + [medium_wrapper_str]
 
-    for l in lst:
+    for line in lst:
         if pref:
-            l = "{} : {}".format(pref, l)
-        print(l if not tab else "{}{}".format("\t" * tab, l))
+            line = "{} : {}".format(pref, line)
+        print(line if not tab else "{}{}".format("\t" * tab, line))
     if WRAPPER in [1, 3]:
         print("\n")
     else:

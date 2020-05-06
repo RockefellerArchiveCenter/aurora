@@ -1,13 +1,13 @@
-import os
-import re
 import datetime
+import os
+import pwd
+import re
 import tarfile
 import zipfile
-from shutil import rmtree, move, copytree
-import psutil
-import pwd
+from shutil import copytree, move, rmtree
 
 import bagit
+import psutil
 
 
 def open_files_list():
@@ -185,12 +185,12 @@ def dir_extract_all(file_path, tmp_dir):
 def get_fields_from_file(file_path):
     fields = {}
     try:
-        patterns = ["(?P<key>[\w\-]+)", "(?P<val>.+)"]
+        patterns = [r"(?P<key>[\w\-]+)", "(?P<val>.+)"]
         with open(file_path, "r") as f:
             for line in f.readlines():
                 line = line.strip("\n")
 
-                row_search = re.search(":?(\s)?".join(patterns), line)
+                row_search = re.search(r":?(\s)?".join(patterns), line)
                 if row_search:
                     key = row_search.group("key").replace("-", "_").strip()
                     val = row_search.group("val").strip()
@@ -272,6 +272,6 @@ def make_tarfile(output_filename, source_dir):
 def update_bag_info(bag_path, data):
     """Adds metadata to `bag-info.txt`"""
     bag = bagit.Bag(bag_path)
-    for k,v in data.items():
+    for k, v in data.items():
         bag.info[k] = v
     bag.save()

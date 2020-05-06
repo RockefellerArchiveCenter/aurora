@@ -1,12 +1,11 @@
 import random
 
-from django.test import TestCase, Client
-from django.conf import settings
-from django.urls import reverse
-
-from bag_transfer.test import helpers, setup
-from bag_transfer.rights.models import RightsStatement
 from bag_transfer.lib.bag_checker import bagChecker
+from bag_transfer.rights.models import RightsStatement
+from bag_transfer.test import helpers, setup
+from django.conf import settings
+from django.test import Client, TestCase
+from django.urls import reverse
 
 
 class RightsTestCase(TestCase):

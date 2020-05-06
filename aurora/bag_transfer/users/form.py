@@ -1,13 +1,8 @@
-from django import forms
-
-from django.contrib.auth.forms import (
-    PasswordChangeForm,
-    PasswordResetForm,
-    SetPasswordForm,
-)
-from django.utils.translation import ugettext, ugettext_lazy as _
-
 from bag_transfer.models import User
+from django import forms
+from django.contrib.auth.forms import (PasswordChangeForm, PasswordResetForm,
+                                       SetPasswordForm)
+from django.utils.translation import ugettext_lazy as _
 
 
 class OrgUserCreateForm(forms.ModelForm):

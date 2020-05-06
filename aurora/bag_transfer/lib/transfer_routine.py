@@ -1,30 +1,23 @@
+import datetime
 import os
 import re
 import shutil
-from pwd import getpwuid
-import datetime
 import tarfile
 import zipfile
+from pwd import getpwuid
 
+import bag_transfer.lib.log_print as Pter
+from bag_transfer.lib.files_helper import (all_paths_exist,
+                                           files_in_unserialized, get_dir_size,
+                                           is_dir_or_file, open_files_list,
+                                           remove_file_or_dir, tar_extract_all,
+                                           tar_has_top_level_only,
+                                           zip_extract_all,
+                                           zip_has_top_level_only)
+from bag_transfer.lib.virus_scanner import VirusScan
+from bag_transfer.models import BAGLog, Organization
 from django.conf import settings
 from django.utils.timezone import make_aware
-
-from bag_transfer.models import BAGLog, Organization
-
-from bag_transfer.lib.files_helper import (
-    all_paths_exist,
-    files_in_unserialized,
-    get_dir_size,
-    is_dir_or_file,
-    open_files_list,
-    remove_file_or_dir,
-    tar_extract_all,
-    tar_has_top_level_only,
-    zip_extract_all,
-    zip_has_top_level_only,
-)
-import bag_transfer.lib.log_print as Pter
-from bag_transfer.lib.virus_scanner import VirusScan
 
 
 class TransferRoutine(object):
@@ -269,9 +262,7 @@ class TransferFileObject(object):
         self.virus_scanner = {}
 
         if (
-            self.path_still_exist()
-            and self._resolve_org_machine_name()
-            and self._resolve_virus_scan_connection()
+            self.path_still_exist() and self._resolve_org_machine_name() and self._resolve_virus_scan_connection()
         ):
             self._generate_file_info()
             self._is_processible = True
@@ -393,7 +384,7 @@ class TransferFileObject(object):
 
     def passes_filename(self):
         is_valid = re.match(
-            "^[a-zA-Z0-9\-\_\/\.\s]+$", self.file_path.split("/")[-1]
+            r"^[a-zA-Z0-9\-\_\/\.\s]+$", self.file_path.split("/")[-1]
         )
         if not is_valid:
             return self.set_auto_fail_with_code(self.AUTO_FAIL_BFNM)

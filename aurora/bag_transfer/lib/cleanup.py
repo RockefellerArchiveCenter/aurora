@@ -1,5 +1,5 @@
-from os.path import join, isfile
 from os import remove
+from os.path import isfile, join
 
 from aurora import settings
 

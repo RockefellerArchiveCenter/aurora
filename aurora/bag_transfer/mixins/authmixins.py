@@ -1,14 +1,9 @@
-from django.urls import reverse_lazy
-
-from braces.views import (
-    SuperuserRequiredMixin,
-    LoginRequiredMixin,
-    UserPassesTestMixin,
-)
-
 from bag_transfer.accession.models import Accession
-from bag_transfer.rights.models import RightsStatement
 from bag_transfer.models import Archives, Organization, User
+from bag_transfer.rights.models import RightsStatement
+from braces.views import (LoginRequiredMixin, SuperuserRequiredMixin,
+                          UserPassesTestMixin)
+from django.urls import reverse_lazy
 
 
 class LoggedInMixinDefaults(LoginRequiredMixin):
@@ -49,9 +44,7 @@ class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
 
     def test_func(self, user):
         return (
-            user.is_superuser
-            or user.in_group("managing_archivists")
-            or self.kwargs.get("pk") == str(user.pk)
+            user.is_superuser or user.in_group("managing_archivists") or self.kwargs.get("pk") == str(user.pk)
         )
 
 
