@@ -1,16 +1,15 @@
 import os
 import random
 
-from django.test import TransactionTestCase, Client
-from django.conf import settings
-from django.urls import reverse
-
-from bag_transfer.test import helpers
-from bag_transfer.test.setup import TEST_ORG_COUNT, BAGS_REF
-from bag_transfer.lib.transfer_routine import TransferRoutine
-from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.lib.bag_checker import bagChecker
+from bag_transfer.lib.files_helper import remove_file_or_dir
+from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import Archives, BAGLog, Organization, User
+from bag_transfer.test import helpers
+from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
+from django.conf import settings
+from django.test import Client, TransactionTestCase
+from django.urls import reverse
 
 
 class BagTestCase(TransactionTestCase):

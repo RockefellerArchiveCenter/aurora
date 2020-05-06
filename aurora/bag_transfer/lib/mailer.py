@@ -1,5 +1,5 @@
-from django.core.mail import EmailMessage
 from django.conf import settings as CF
+from django.core.mail import EmailMessage
 from django.urls import reverse
 
 
@@ -14,10 +14,7 @@ class Mailer:
 
     def send(self):
         if (
-            not self.subject
-            or not self.from_email
-            or not self.to
-            or not self.text_content
+            not self.subject or not self.from_email or not self.to or not self.text_content
         ):
             print("All Fields required werent present")
             return False
@@ -73,8 +70,7 @@ class Mailer:
                 archive_obj.bag_or_failed_name(),
                 archive_obj.bag_it_name,
                 archive_obj.machine_file_upload_time,
-                CF.BASE_URL
-                + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
+                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
             )
         elif mess_code == "TRANS_FAIL_VAL":
             self.subject = "Transfer {} failed validation".format(
@@ -93,8 +89,7 @@ class Mailer:
                 archive_obj.bag_or_failed_name(),
                 (error_obj.code.code_desc if error_obj else "--"),
                 (error_obj.created_time if error_obj else "--"),
-                CF.BASE_URL
-                + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
+                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
             )
 
             # additional errs

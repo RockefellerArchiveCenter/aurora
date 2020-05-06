@@ -1,31 +1,18 @@
-from rest_framework import serializers
-
-from bag_transfer.models import (
-    AcceptBagItVersion,
-    AcceptSerialization,
-    Archives,
-    BagInfoMetadata,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    BAGLog,
-    ManifestsAllowed,
-    ManifestsRequired,
-    Organization,
-    RecordCreators,
-    TagFilesRequired,
-    TagManifestsRequired,
-    User,
-)
 from bag_transfer.accession.models import Accession
-from bag_transfer.rights.models import (
-    RightsStatement,
-    RightsStatementRightsGranted,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-)
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 Archives, BagInfoMetadata, BagItProfile,
+                                 BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, BAGLog,
+                                 ManifestsAllowed, ManifestsRequired,
+                                 Organization, RecordCreators,
+                                 TagFilesRequired, TagManifestsRequired, User)
+from bag_transfer.rights.models import (RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
+from rest_framework import serializers
 
 
 class RecordCreatorsSerializer(serializers.ModelSerializer):

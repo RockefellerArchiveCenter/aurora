@@ -1,21 +1,22 @@
-from rest_framework import viewsets, generics, mixins
+from bag_transfer.accession.models import Accession
+from bag_transfer.api.serializers import (AccessionListSerializer,
+                                          AccessionSerializer,
+                                          ArchivesListSerializer,
+                                          ArchivesSerializer,
+                                          BagItProfileListSerializer,
+                                          BagItProfileSerializer,
+                                          BAGLogSerializer,
+                                          OrganizationSerializer,
+                                          RightsStatementSerializer,
+                                          UserSerializer)
+from bag_transfer.lib.cleanup import CleanupRoutine
+from bag_transfer.mixins.authmixins import OrgReadViewMixin
+from bag_transfer.models import (Archives, BagItProfile, BAGLog, Organization,
+                                 User)
+from bag_transfer.rights.models import RightsStatement
+from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
-from bag_transfer.lib.cleanup import CleanupRoutine
-from bag_transfer.models import (
-    Organization,
-    Archives,
-    BAGLog,
-    BagInfoMetadata,
-    BagItProfile,
-    ManifestsRequired,
-    User,
-)
-from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
-from bag_transfer.accession.models import Accession
-from bag_transfer.api.serializers import *
-from bag_transfer.rights.models import RightsStatement
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
@@ -40,7 +41,6 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, url_path="bagit_profiles/(?P<number>[0-9]+)")
     def bagit_profiles_detail(self, request, number=None, *args, **kwargs):
-        org = self.get_object()
         bagit_profile = BagItProfile.objects.get(id=number)
         serializer = BagItProfileSerializer(bagit_profile, context={"request": request})
         return Response(serializer.data)

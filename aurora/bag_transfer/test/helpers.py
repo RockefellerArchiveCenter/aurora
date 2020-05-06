@@ -1,39 +1,27 @@
-from datetime import datetime
-from os import path, listdir, rename, chown
 import pwd
 import random
 import string
-from django.contrib.auth.models import Group
-from bag_transfer.models import (
-    AcceptBagItVersion,
-    AcceptSerialization,
-    Archives,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    BAGLogCodes,
-    LanguageCode,
-    ManifestsAllowed,
-    ManifestsRequired,
-    Organization,
-    RecordCreators,
-    TagFilesRequired,
-    TagManifestsRequired,
-    User,
-)
-from bag_transfer.test import setup as org_setup
-from bag_transfer.rights.models import (
-    RecordType,
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-    RightsStatementRightsGranted,
-)
+from datetime import datetime
+from os import chown, listdir, path, rename
+
 from aurora import settings
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 Archives, BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, BAGLogCodes,
+                                 LanguageCode, ManifestsAllowed,
+                                 ManifestsRequired, Organization,
+                                 RecordCreators, TagFilesRequired,
+                                 TagManifestsRequired, User)
+from bag_transfer.rights.models import (RecordType, RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
+from bag_transfer.test import setup as org_setup
+from django.contrib.auth.models import Group
 
 # General variables and setup routines
 

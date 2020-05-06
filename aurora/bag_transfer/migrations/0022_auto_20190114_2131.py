@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 organization=archive.organization
             )[0]
             data.upload_count += 1
-            data.upload_size += int(archive.machine_file_size)/1000000000
+            data.upload_size += int(archive.machine_file_size) / 1000000000
             data.save()
 
     def remove_month_data(apps, schema_editor):

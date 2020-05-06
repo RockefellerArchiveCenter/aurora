@@ -1,25 +1,17 @@
-from django_datatables_view.base_datatable_view import BaseDatatableView
 from datetime import date
-from dateutil import tz
-from dateutil.relativedelta import relativedelta
-
-from django.views.generic import TemplateView, View, DetailView
-from django.db.models.functions import Concat
-from django.shortcuts import render, get_object_or_404
 
 from bag_transfer.lib.view_helpers import file_size, label_class
-from bag_transfer.models import (
-    Archives,
-    Organization,
-    User,
-    DashboardMonthData,
-    DashboardRecordTypeData,
-)
-from bag_transfer.mixins.authmixins import (
-    LoggedInMixinDefaults,
-    OrgReadViewMixin,
-)
+from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
+                                            OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
+from bag_transfer.models import (Archives, DashboardMonthData,
+                                 DashboardRecordTypeData, Organization, User)
+from dateutil import tz
+from dateutil.relativedelta import relativedelta
+from django.db.models.functions import Concat
+from django.shortcuts import get_object_or_404, render
+from django.views.generic import DetailView, TemplateView, View
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
 class MainView(LoggedInMixinDefaults, TemplateView):
@@ -116,15 +108,9 @@ class MainView(LoggedInMixinDefaults, TemplateView):
             )
 
         data["size_trend"] = round(
-            (data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12))
-            / 100,
-            2,
-        )
+            (data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
         data["count_trend"] = round(
-            (data["upload_count_by_month"][-1] - (data["upload_count_by_year"] / 12))
-            / 100,
-            2,
-        )
+            (data["upload_count_by_month"][-1] - (data["upload_count_by_year"] / 12)) / 100, 2,)
 
         return data
 
@@ -135,9 +121,7 @@ class MainView(LoggedInMixinDefaults, TemplateView):
         context["sorted_org_list"] = []
 
         organizations = (
-            Organization.objects.all()
-            if (self.request.user.is_archivist())
-            else Organization.objects.filter(id=self.request.user.organization.pk)
+            Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
         )
 
         if self.request.user.is_archivist():

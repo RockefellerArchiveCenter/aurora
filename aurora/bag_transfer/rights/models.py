@@ -1,9 +1,8 @@
 from datetime import datetime
 
-from django.db import models
-
-from bag_transfer.models import Organization, Archives
 from bag_transfer.accession.models import Accession
+from bag_transfer.models import Archives, Organization
+from django.db import models
 
 
 # Following models schema from

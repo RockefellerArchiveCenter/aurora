@@ -2,16 +2,15 @@ import json
 from os import mkdir
 from os.path import join
 
-from django_cron import CronJobBase, Schedule
-
+import bag_transfer.lib.log_print as Pter
 from aurora import settings
 from bag_transfer.api.serializers import ArchivesSerializer
 from bag_transfer.lib import files_helper as FH
-from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.lib.bag_checker import bagChecker
-import bag_transfer.lib.log_print as Pter
-from bag_transfer.models import Archives, Organization, User, BAGLog
 from bag_transfer.lib.mailer import Mailer
+from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.models import Archives, BAGLog, Organization, User
+from django_cron import CronJobBase, Schedule
 
 
 class DiscoverTransfers(CronJobBase):

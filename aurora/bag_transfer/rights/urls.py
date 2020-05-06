@@ -1,9 +1,6 @@
-from django.conf.urls import url, include
-from bag_transfer.rights.views import (
-    RightsAPIAdminView,
-    RightsDetailView,
-    RightsManageView,
-)
+from bag_transfer.rights.views import (RightsAPIAdminView, RightsDetailView,
+                                       RightsManageView)
+from django.conf.urls import url
 
 app_name = 'rights'
 

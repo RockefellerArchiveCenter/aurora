@@ -1,10 +1,9 @@
 import random
-from bag_transfer.rights.models import (
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-)
+
+from bag_transfer.rights.models import (RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementStatute)
 
 POTUS_NAMES = ["Ford", "Obama", "Trump", "Bush", "Clinton"]
 COMPANY_SUFFIX = ["Foundation", "Group", "Org"]

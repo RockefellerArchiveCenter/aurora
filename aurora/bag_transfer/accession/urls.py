@@ -1,10 +1,7 @@
+from bag_transfer.accession.views import (AccessionCreateView,
+                                          AccessionDetailView, AccessionView,
+                                          SavedAccessionsDatatableView)
 from django.conf.urls import url
-from bag_transfer.accession.views import (
-    AccessionView,
-    AccessionCreateView,
-    AccessionDetailView,
-    SavedAccessionsDatatableView,
-)
 
 app_name = 'accessions'
 

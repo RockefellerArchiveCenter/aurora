@@ -1,6 +1,6 @@
-from subprocess import CalledProcessError, check_output, STDOUT
 import grp
 import pwd
+from subprocess import STDOUT, CalledProcessError, check_output
 
 
 def set_server_password(user, password):

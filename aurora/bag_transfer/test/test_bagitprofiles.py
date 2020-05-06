@@ -1,22 +1,15 @@
 import random
 
-from django.test import TestCase, Client
-from django.conf import settings
-from django.urls import reverse
-
 from bag_transfer.lib.bag_checker import bagChecker
-from bag_transfer.models import (
-    BagItProfile,
-    ManifestsAllowed,
-    ManifestsRequired,
-    AcceptSerialization,
-    AcceptBagItVersion,
-    TagFilesRequired,
-    TagManifestsRequired,
-    BagItProfileBagInfo,
-)
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagItProfile, BagItProfileBagInfo,
+                                 ManifestsAllowed, ManifestsRequired,
+                                 TagFilesRequired, TagManifestsRequired)
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGINFO_FIELD_CHOICES
+from django.conf import settings
+from django.test import Client, TestCase
+from django.urls import reverse
 
 
 class BagItProfileTestCase(TestCase):

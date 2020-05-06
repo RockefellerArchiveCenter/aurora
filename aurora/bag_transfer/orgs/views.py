@@ -1,35 +1,24 @@
 from decimal import Decimal
 
+from bag_transfer.mixins.authmixins import (ArchivistMixin,
+                                            ManagingArchivistMixin,
+                                            OrgReadViewMixin)
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.models import Archives, BagItProfile, Organization
+from bag_transfer.orgs.form import (AcceptBagItVersionFormset,
+                                    AcceptSerializationFormset,
+                                    BagItProfileBagInfoFormset,
+                                    BagItProfileForm, ManifestsAllowedFormset,
+                                    ManifestsRequiredFormset,
+                                    TagFilesRequiredFormset,
+                                    TagManifestsRequiredFormset)
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.generic import (
-    ListView,
-    UpdateView,
-    CreateView,
-    DetailView,
-    TemplateView,
-)
-
-from bag_transfer.models import Archives, Organization, BagItProfile
-from bag_transfer.orgs.form import (
-    AcceptSerializationFormset,
-    AcceptBagItVersionFormset,
-    BagItProfileForm,
-    BagItProfileBagInfoFormset,
-    ManifestsAllowedFormset,
-    ManifestsRequiredFormset,
-    TagFilesRequiredFormset,
-    TagManifestsRequiredFormset,
-)
-from bag_transfer.mixins.authmixins import (
-    ArchivistMixin,
-    ManagingArchivistMixin,
-    OrgReadViewMixin,
-)
-from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, UpdateView)
 
 
 class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):

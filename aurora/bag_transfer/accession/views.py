@@ -1,30 +1,25 @@
-from dateutil import tz
 import json
+
 import requests
-
-from django.views.generic import DetailView, ListView, View
-from django_datatables_view.base_datatable_view import BaseDatatableView
-from django.db.models import CharField, F
-from django.db.models.functions import Concat
-from django.contrib import messages
-from django.shortcuts import render, redirect, reverse
-
 from aurora import settings
-from bag_transfer.accession.models import Accession
-from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.db_functions import GroupConcat
+from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
+from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
+from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
+                                            ArchivistMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.authmixins import ArchivistMixin, AccessioningArchivistMixin
-from bag_transfer.models import (
-    Archives,
-    RecordCreators,
-    BAGLog,
-    LanguageCode,
-)
+from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
 from bag_transfer.rights.models import RightsStatement
+from dateutil import tz
+from django.contrib import messages
+from django.db.models import CharField, F
+from django.db.models.functions import Concat
+from django.shortcuts import redirect, render, reverse
+from django.views.generic import DetailView, ListView, View
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
 class AccessionView(ArchivistMixin, JSONResponseMixin, ListView):
@@ -237,11 +232,7 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
                     "extent_files": extent_files,
                     "extent_size": extent_size,
                     "access_restrictions": " ".join(
-                        set(
-                            notes.get("other", [])
-                            + notes.get("license", [])
-                            + notes.get("statute", [])
-                        )
+                        set(notes.get("other", []) + notes.get("license", []) + notes.get("statute", []))
                     ),
                     "use_restrictions": " ".join(set(notes.get("copyright", []))),
                     "acquisition_type": organization.acquisition_type,
@@ -328,9 +319,7 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
             button = (
                 '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>'
                 if (accession.process_status < Accession.DELIVERED)
-                else '<p class="pull-right" style="margin-right:.7em;">'
-                + accession.get_process_status_display()
-                + "</p>"
+                else '<p class="pull-right" style="margin-right:.7em;">' + accession.get_process_status_display() + "</p>"
             )
         return button
 

@@ -2,14 +2,13 @@ import os
 import random
 import shutil
 
+from aurora import settings
+from bag_transfer.api.views import ArchivesViewSet
+from bag_transfer.models import Archives
+from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework.test import APIRequestFactory
-
-from aurora import settings
-from bag_transfer.models import Archives
-from bag_transfer.api.views import ArchivesViewSet
-from bag_transfer.test import helpers
 
 
 class APITest(TestCase):

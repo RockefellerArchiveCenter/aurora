@@ -1,12 +1,10 @@
 import random
 
-from django.test import TestCase, Client
+from bag_transfer.models import Organization, User
+from bag_transfer.test import helpers, setup
 from django.conf import settings
+from django.test import Client, TestCase
 from django.urls import reverse
-
-from bag_transfer.test import helpers
-from bag_transfer.models import User, Organization
-from bag_transfer.test import setup
 
 org_count = 1
 
