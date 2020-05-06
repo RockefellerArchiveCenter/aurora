@@ -14,13 +14,15 @@ before_install:
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
   - docker-compose up -d
   - sleep 60s
-  - docker-compose exec web pip install coverage
+  - docker-compose exec web pip install coverage pre-commit
+  - docker-compose exec web pre-commit install
 install: true
 before_script:
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 script:
+  - docker-compose exec web pre-commit run --all-files --show-diff-on-failure
   - docker-compose exec web coverage run manage.py test
 after_script:
   - docker-compose exec web coverage xml

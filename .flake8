@@ -1,0 +1,3 @@
+[flake8]
+ignore = E501
+exclude = .git,.github,__pycache__,*/migrations,fixtures,*manage.py,*apps.py,aurora/bag_transfer/lib/RAC_CMD.py
