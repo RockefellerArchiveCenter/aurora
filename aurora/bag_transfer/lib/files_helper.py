@@ -1,4 +1,3 @@
-import datetime
 import os
 import pwd
 import re
@@ -68,14 +67,6 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     return files
 
 
-def file_owner(file_path):
-    return pwd.getpwuid(os.stat(file_path).st_uid).pw_name
-
-
-def file_modified_time(file_path):
-    return datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
-
-
 def get_dir_size(start_path):
     """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
     total_size = 0
@@ -87,13 +78,6 @@ def get_dir_size(start_path):
             dp = os.path.join(dirpath, d)
             total_size += os.path.getsize(dp)
     return total_size if total_size else False
-
-
-def splitext_(file_path):
-    # https://stackoverflow.com/questions/37896386/how-to-get-file-extension-correctly
-    if len(file_path.split(".")) > 2:
-        return file_path.split(".")[0], ".".join(file_path.split(".")[-2:])
-    return os.path.splitext(file_path)
 
 
 def zip_has_top_level_only(file_path):
