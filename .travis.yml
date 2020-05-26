@@ -27,3 +27,5 @@ script:
 after_script:
   - docker-compose exec web coverage xml
   - cd aurora && ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+notifications:
+  email: false
