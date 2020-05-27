@@ -15,16 +15,12 @@ from django.urls import reverse
 class BagTestCase(TransactionTestCase):
     def setUp(self):
         self.orgs = helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
-        self.baglogcodes = helpers.create_test_baglogcodes()
-        self.groups = helpers.create_test_groups(["managing_archivists"])
         self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"], org=random.choice(self.orgs)
-        )
-        for group in self.groups:
-            self.user.groups.add(group)
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER["PASSWORD"])
-        self.user.save()
+            username=settings.TEST_USER["USERNAME"],
+            password=settings.TEST_USER["PASSWORD"],
+            org=random.choice(self.orgs),
+            groups=helpers.create_test_groups(["managing_archivists"]),
+            is_staff=True)
         self.client = Client()
 
     def test_bags(self):
@@ -82,8 +78,7 @@ class BagTestCase(TransactionTestCase):
 
                 # deleting path in processing and tmp dir
                 remove_file_or_dir(
-                    os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name)
-                )
+                    os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
                 remove_file_or_dir(archive.machine_file_path)
 
                 ###############
@@ -125,33 +120,25 @@ class BagTestCase(TransactionTestCase):
                 resp = self.client.get(
                     reverse(
                         "organization-detail",
-                        kwargs={"pk": random.choice(Organization.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(Organization.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "archives-detail",
-                        kwargs={"pk": random.choice(Archives.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(Archives.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "baglog-detail",
-                        kwargs={"pk": random.choice(BAGLog.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(BAGLog.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "user-detail",
-                        kwargs={"pk": random.choice(User.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(User.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
     def tearDown(self):
