@@ -16,29 +16,22 @@ class BagItProfileTestCase(TestCase):
     def setUp(self):
         self.client = Client()
         self.orgs = helpers.create_test_orgs(org_count=1)
-        self.groups = helpers.create_test_groups(["managing_archivists"])
         self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"], org=random.choice(self.orgs)
-        )
-        for group in self.groups:
-            self.user.groups.add(group)
-        self.user.org = self.orgs[0]
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER["PASSWORD"])
-        self.user.save()
+            username=settings.TEST_USER["USERNAME"],
+            password=settings.TEST_USER["PASSWORD"],
+            org=random.choice(self.orgs),
+            groups=helpers.create_test_groups(["managing_archivists"]),
+            is_staff=True)
+        self.client.login(
+            username=self.user.username, password=settings.TEST_USER["PASSWORD"])
         self.bagitprofiles = []
         self.baginfos = []
 
     def test_bagitprofiles(self):
-        self.client.login(
-            username=self.user.username, password=settings.TEST_USER["PASSWORD"]
-        )
-
         for org in self.orgs:
             profile = helpers.create_test_bagitprofile(applies_to_organization=org)
             response = self.client.get(
-                reverse("bagitprofile-detail", kwargs={"pk": profile.pk})
-            )
+                reverse("bagitprofile-detail", kwargs={"pk": profile.pk}))
             self.assertEqual(response.status_code, 200)
             self.bagitprofiles.append(profile)
         self.assertEqual(len(self.bagitprofiles), len(self.orgs))
@@ -52,12 +45,10 @@ class BagItProfileTestCase(TestCase):
             helpers.create_test_tagfilesrequired(bagitprofile=profile)
             for field in BAGINFO_FIELD_CHOICES:
                 baginfo = helpers.create_test_bagitprofilebaginfo(
-                    bagitprofile=profile, field=field
-                )
+                    bagitprofile=profile, field=field)
                 self.baginfos.append(baginfo)
             self.assertEqual(
-                len(BagItProfileBagInfo.objects.all()), len(BAGINFO_FIELD_CHOICES)
-            )
+                len(BagItProfileBagInfo.objects.all()), len(BAGINFO_FIELD_CHOICES))
 
             for info in self.baginfos:
                 helpers.create_test_bagitprofilebaginfovalues(baginfo=info)
@@ -109,7 +100,7 @@ class BagItProfileTestCase(TestCase):
             reverse("orgs:bagit-profiles-add", kwargs={"pk": organization.pk}),
             {
                 "contact_email": "archive@rockarch.org",
-                "source_organization": self.user.org.pk,
+                "source_organization": organization.pk,
                 "applies_to_organization": organization.pk,
                 "allow_fetch": random.choice([True, False]),
                 "external_description": helpers.random_string(100),
@@ -154,11 +145,10 @@ class BagItProfileTestCase(TestCase):
         update_request = self.client.post(
             reverse(
                 "orgs:bagit-profiles-edit",
-                kwargs={"pk": organization.pk, "profile_pk": profile.pk},
-            ),
+                kwargs={"pk": organization.pk, "profile_pk": profile.pk}),
             {
                 "contact_email": "archive@rockarch.org",
-                "source_organization": self.user.org.pk,
+                "source_organization": organization.pk,
                 "applies_to_organization": organization.pk,
                 "allow_fetch": random.choice([True, False]),
                 "external_description": helpers.random_string(100),
