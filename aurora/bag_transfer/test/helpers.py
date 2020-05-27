@@ -330,7 +330,7 @@ def create_rights_granted(rights_statement=None, granted_count=1):
 def create_test_archives(organization=None, process_status=None, count=1):
     archives = []
     organization = organization if organization else random.choice(Organization.objects.all())
-    process_status = process_status if process_status else random.choice(Archives.processing_statuses)
+    process_status = process_status if process_status else random.choice(Archives.processing_statuses)[0]
     try:
         user = random.choice(User.objects.filter(organization=organization))
     except IndexError:
