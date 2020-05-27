@@ -8,7 +8,8 @@ from aurora import settings
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 Archives, BagItProfile, BagItProfileBagInfo,
+                                 Archives, BagInfoMetadata, BagItProfile,
+                                 BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, LanguageCode,
                                  ManifestsAllowed, ManifestsRequired,
                                  Organization, RecordCreators,
@@ -156,27 +157,6 @@ def create_test_user(username=None, password=None, org=None, groups=[], is_staff
     test_user.save()
     print("Test user {username} created".format(username=username))
     return test_user
-
-
-def create_test_archive(transfer, org):
-    """Creates Archive objects by running bags through TransferRoutine."""
-    machine_file_identifier = Archives().gen_identifier()
-    archive = Archives.initial_save(
-        org,
-        None,
-        transfer["file_path"],
-        transfer["file_size"],
-        transfer["file_modtime"],
-        machine_file_identifier,
-        transfer["file_type"],
-        transfer["bag_it_name"],
-    )
-
-    # updating the name since the bag info reflects ford
-    archive.organization.name = "Ford Foundation"
-    archive.organization.save()
-
-    return archive
 
 
 def create_target_bags(target_str, test_bags_dir, org, username=None):
@@ -445,6 +425,27 @@ def create_test_bagitprofilebaginfovalues(baginfo=None):
         bag_info_value.save()
         values.append(bag_info_value)
     return values
+
+
+def create_test_baginfometadatas(archive, organization=None, count=1):
+    metadatas = []
+    organization = organization if organization else random.choice(Organization.objects.all())
+    for x in range(count):
+        baginfo = BagInfoMetadata.objects.create(
+            archive=archive,
+            source_organization=organization,
+            external_identifier=random_string(20),
+            internal_sender_description=random_string(50),
+            title=random_string(15),
+            date_start=make_aware(random_date(1960)),
+            date_end=make_aware(random_date(1970)),
+            record_type=random.choice(org_setup.record_types),
+            bagging_date=make_aware(datetime.now()),
+            bag_count=1,
+            bag_group_identifier=random.randint(1, 5),
+            payload_oxum=random.randint(0, 100),
+            bagit_profile_identifier="http://www.example.com")
+        metadatas.append(baginfo)
 
 
 def create_test_record_creators(count=1):

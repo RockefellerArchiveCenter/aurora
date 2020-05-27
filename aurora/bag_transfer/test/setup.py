@@ -5,7 +5,7 @@ from bag_transfer.rights.models import (RightsStatementCopyright,
                                         RightsStatementOther,
                                         RightsStatementStatute)
 
-POTUS_NAMES = ["Ford", "Obama", "Trump", "Bush", "Clinton"]
+POTUS_NAMES = ["Ford", "Obama", "Bush", "Clinton", "Roosevelt"]
 COMPANY_SUFFIX = ["Foundation", "Group", "Org"]
 TEST_ORG_COUNT = 3
 
