@@ -9,11 +9,10 @@ from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  Archives, BagItProfile, BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, BAGLogCodes,
-                                 LanguageCode, ManifestsAllowed,
-                                 ManifestsRequired, Organization,
-                                 RecordCreators, TagFilesRequired,
-                                 TagManifestsRequired, User)
+                                 BagItProfileBagInfoValues, LanguageCode,
+                                 ManifestsAllowed, ManifestsRequired,
+                                 Organization, RecordCreators,
+                                 TagFilesRequired, TagManifestsRequired, User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -133,28 +132,6 @@ def create_test_orgs(org_count=1):
 def delete_test_orgs(orgs=[]):
     for org in orgs:
         org.delete()
-
-
-def create_test_baglogcodes():
-    baglogcodes = (
-        ("ASAVE", "I"),
-        ("PBAG", "S"),
-        ("PBAGP", "S"),
-        ("GBERR", "BE"),
-        ("DTERR", "BE"),
-        ("MDERR", "BE"),
-        ("RBERR", "BE"),
-        ("BIERR", "BE"),
-    )
-    code_objects = []
-    for code in baglogcodes:
-        if not BAGLogCodes.objects.filter(code_short=code[0]).exists():
-            bag_log_code = BAGLogCodes(
-                code_short=code[0], code_type=code[1], code_desc=random_string(50),
-            )
-            bag_log_code.save()
-            code_objects.append(bag_log_code)
-    return code_objects
 
 
 def create_test_user(username=None, password=None, org=None, groups=[], is_staff=False):
