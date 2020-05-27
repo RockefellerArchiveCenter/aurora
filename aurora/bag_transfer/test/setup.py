@@ -66,7 +66,11 @@ user_data = {
     "email": "test@example.org",
 }
 
-org_data = {"active": True, "name": "Test Organization", "acquisition_type": "donation"}
+org_data = {
+    "active": True,
+    "name": "Test Organization",
+    "acquisition_type": "donation"
+}
 
 # Variables and setup routines for RightsStatements
 
