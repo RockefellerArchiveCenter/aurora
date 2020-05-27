@@ -22,6 +22,7 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementStatute)
 from bag_transfer.test import setup as org_setup
 from django.contrib.auth.models import Group
+from django.utils.timezone import make_aware
 
 # General variables and setup routines
 
@@ -41,7 +42,6 @@ def random_date(year):
         return datetime.strptime("{} {}".format(random.randint(1, 366), year), "%j %Y")
     # accounts for leap year values
     except ValueError:
-
         random_date(year)
 
 
@@ -157,18 +157,25 @@ def create_test_baglogcodes():
     return code_objects
 
 
-def create_test_user(username=None, org=None):
+def create_test_user(username=None, password=None, org=None, groups=[], is_staff=False):
     """Creates test user given a username and organization.
     If no username is given, the default username supplied in settings is used.
     If no organization is given, an organization is randomly chosen.
     """
-    if username is None:
-        username = settings.TEST_USER["USERNAME"]
-    if org is None:
-        org = random.choice(Organization.objects.all())
-    test_user = User(
-        username=username, email="{}@example.org".format(username), organization=org
+    username = username if username else settings.TEST_USER["USERNAME"]
+    org = org if org else random.choice(Organization.objects.all())
+    test_user = User.objects.create_user(
+        username,
+        first_name=random_string(5),
+        last_name=random_string(10),
+        email="{}@example.org".format(username),
+        is_staff=is_staff,
+        organization=org,
     )
+    for grp in groups:
+        test_user.groups.add(grp)
+    if password:
+        test_user.set_password(password)
     test_user.save()
     print("Test user {username} created".format(username=username))
     return test_user
@@ -318,6 +325,33 @@ def create_rights_granted(rights_statement=None, granted_count=1):
         rights_granted.save()
         all_rights_granted.append(rights_granted)
     return all_rights_granted
+
+
+def create_test_archives(organization=None, process_status=None, count=1):
+    archives = []
+    organization = organization if organization else random.choice(Organization.objects.all())
+    process_status = process_status if process_status else random.choice(Archives.processing_statuses)
+    try:
+        user = random.choice(User.objects.filter(organization=organization))
+    except IndexError:
+        user = create_test_user(
+            username=random_string(10),
+            org=organization)
+    for x in range(count):
+        arc = Archives.objects.create(
+            organization=organization,
+            user_uploaded=user,
+            machine_file_path=random_string(20),
+            machine_file_size=random.randint(10, 999999),
+            machine_file_upload_time=make_aware(random_date(2019)),
+            machine_file_identifier=Archives.gen_identifier(),
+            machine_file_type=random.choice(Archives.machine_file_types)[0],
+            bag_it_name=random_string(20),
+            bag_it_valid=True,
+            process_status=process_status,
+        )
+        archives.append(arc)
+    return archives
 
 
 def create_test_bagitprofile(applies_to_organization=None):
