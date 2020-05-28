@@ -17,7 +17,10 @@ class APITest(TestCase):
         self.archivesspace_identifier = "/repositories/2/archival_objects/3"
         self.archivesspace_parent_identifier = "/repositories/2/archival_objects/4"
         self.orgs = helpers.create_test_orgs(org_count=1)
-        helpers.create_test_archives(organization=self.orgs[0], count=10)
+        helpers.create_test_archives(
+            organization=self.orgs[0],
+            process_status=Archives.ACCEPTED,
+            count=10)
         self.user = helpers.create_test_user(
             username=settings.TEST_USER["USERNAME"],
             password=settings.TEST_USER["PASSWORD"],
