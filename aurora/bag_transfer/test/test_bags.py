@@ -8,11 +8,11 @@ from bag_transfer.models import Archives, BAGLog, Organization, User
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
 from django.conf import settings
-from django.test import Client, TransactionTestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 
-class BagTestCase(TransactionTestCase):
+class BagTestCase(TestCase):
     def setUp(self):
         self.orgs = helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
         self.user = helpers.create_test_user(
@@ -64,7 +64,17 @@ class BagTestCase(TransactionTestCase):
                 # END --  TEST RESULTS OF RUN ROUTINE
                 ###############
 
-                archive = helpers.create_test_archive(trans, self.orgs[0])
+                archive = Archives.initial_save(
+                    self.orgs[0],
+                    None,
+                    trans["file_path"],
+                    trans["file_size"],
+                    trans["file_modtime"],
+                    Archives().gen_identifier(),
+                    trans["file_type"],
+                    trans["bag_it_name"])
+                archive.organization.name = "Ford Foundation"
+                archive.organization.save()
 
                 # checks if this is unique which it should not already be in the system
                 self.assertIsNot(False, archive.machine_file_identifier)

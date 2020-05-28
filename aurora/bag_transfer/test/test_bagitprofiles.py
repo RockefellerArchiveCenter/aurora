@@ -1,6 +1,5 @@
 import random
 
-from bag_transfer.lib.bag_checker import bagChecker
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  BagItProfile, BagItProfileBagInfo,
                                  ManifestsAllowed, ManifestsRequired,
@@ -194,14 +193,6 @@ class BagItProfileTestCase(TestCase):
             },
         )
         self.assertEqual(update_request.status_code, 302, "Request was not redirected")
-
-        # Ensure bags are validated
-        helpers.create_target_bags("valid_bag", settings.TEST_BAGS_DIR, self.orgs[0])
-        tr = helpers.run_transfer_routine()
-        for transfer in tr.transfers:
-            archive = helpers.create_test_archive(transfer, self.orgs[0])
-            test_bag = bagChecker(archive)
-            self.assertTrue(test_bag.bag_passed_all())
 
         # Delete bagit profile
         delete_request = self.client.get(

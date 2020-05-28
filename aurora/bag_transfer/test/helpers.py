@@ -47,7 +47,7 @@ def random_date(year):
 
 def random_name(prefix, suffix):
     """Returns a random name."""
-    return "{} {} {}".format(prefix, random.choice(string.ascii_letters), suffix)
+    return "{} {} {}".format(prefix, random_string(5), suffix)
 
 
 ####################################
@@ -69,7 +69,6 @@ def create_test_record_types(record_types=None):
     for record_type in record_types:
         object = RecordType.objects.create(name=record_type)
         objects.append(object)
-        print("Test record type {record_type} created".format(record_type=object.name))
     return objects
 
 
@@ -88,9 +87,7 @@ def create_test_groups(names=None):
             group = Group(name=name)
             group.save()
             groups.append(group)
-            print("Test group {group} created".format(group=group.name))
         else:
-            print("Test group {group} already exists".format(group=name))
             group = Group.objects.get(name=name)
             groups.append(group)
     return groups
@@ -107,8 +104,7 @@ def create_test_orgs(org_count=1):
             break
         new_org_name = random_name(
             random.choice(org_setup.POTUS_NAMES),
-            random.choice(org_setup.COMPANY_SUFFIX),
-        )
+            random.choice(org_setup.COMPANY_SUFFIX))
         try:
             Organization.objects.get(name=new_org_name)
             continue
@@ -116,16 +112,9 @@ def create_test_orgs(org_count=1):
             pass
 
         test_org = Organization(
-            name=new_org_name, machine_name="org{}".format((len(generated_orgs) + 1))
-        )
+            name=new_org_name, machine_name="org{}".format((len(generated_orgs) + 1)))
         test_org.save()
         generated_orgs.append(test_org)
-
-        print(
-            "Test organization {} -- {} created".format(
-                test_org.name, test_org.machine_name
-            )
-        )
 
     return generated_orgs
 
@@ -155,13 +144,12 @@ def create_test_user(username=None, password=None, org=None, groups=[], is_staff
     if password:
         test_user.set_password(password)
     test_user.save()
-    print("Test user {username} created".format(username=username))
     return test_user
 
 
 def create_target_bags(target_str, test_bags_dir, org, username=None):
     """Creates target bags to be picked up by a TransferRoutine based on a string.
-    # This allows processing of bags serialized in multiple formats at once."""
+    This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:

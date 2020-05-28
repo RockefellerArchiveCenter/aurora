@@ -25,8 +25,7 @@ class AccessioningTestCase(TestCase):
             password=settings.TEST_USER["PASSWORD"])
         self.client.login(
             username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"]
-        )
+            password=settings.TEST_USER["PASSWORD"])
 
     def test_accessioning(self):
         id_list = ",".join([str(archive.id) for archive in self.archives])

@@ -7,10 +7,10 @@ from bag_transfer.models import Archives
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGS_REF
 from django.conf import settings
-from django.test import Client, TransactionTestCase
+from django.test import Client, TestCase
 
 
-class CronTestCase(TransactionTestCase):
+class CronTestCase(TestCase):
     def setUp(self):
         self.orgs = helpers.create_test_orgs(org_count=1)
         self.user = helpers.create_test_user(
@@ -40,8 +40,7 @@ class CronTestCase(TransactionTestCase):
         self.assertEqual(len(Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED)), 0)
         self.assertEqual(
             len(Archives.objects.filter(process_status=Archives.DELIVERED)),
-            len(os.listdir(settings.DELIVERY_QUEUE_DIR))
-        )
+            len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
         for bag_path in os.listdir(settings.DELIVERY_QUEUE_DIR):
             bag = bagit.Bag(os.path.join(settings.DELIVERY_QUEUE_DIR, bag_path))
             self.assertTrue("Origin" in bag.bag_info)
