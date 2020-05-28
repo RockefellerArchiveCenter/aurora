@@ -6,7 +6,6 @@ from os import chown, listdir, path, rename
 from asterism.file_helpers import anon_extract_all
 
 from aurora import settings
-from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  Archives, BagItProfile, BagItProfileBagInfo,

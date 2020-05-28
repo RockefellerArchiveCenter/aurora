@@ -1,7 +1,7 @@
 import json
 from os import mkdir
 from os.path import join
-from asterism.file_helpers import remove_file_or_dir
+from asterism.file_helpers import remove_file_or_dir, move_file_or_dir, make_tarfile
 
 
 import bag_transfer.lib.log_print as Pter
@@ -77,7 +77,7 @@ class DiscoverTransfers(CronJobBase):
                             BAGLog.log_it("APASS", new_arc)
                             email.setup_message("TRANS_PASS_ALL", new_arc)
                             email.send()
-                            FH.move_file_or_dir(
+                            move_file_or_dir(
                                 "/data/tmp/{}".format(new_arc.bag_it_name),
                                 "{}{}".format(
                                     settings.STORAGE_ROOT_DIR,
@@ -127,7 +127,7 @@ class DeliverTransfers(CronJobBase):
                     {"Origin": "aurora"}
                 )
                 tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
-                FH.make_tarfile(
+                make_tarfile(
                     join(settings.STORAGE_ROOT_DIR, tar_filename),
                     join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
                 )
@@ -136,7 +136,7 @@ class DeliverTransfers(CronJobBase):
                     join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
                 )
 
-                FH.move_file_or_dir(
+                move_file_or_dir(
                     join(settings.STORAGE_ROOT_DIR, tar_filename),
                     join(
                         settings.DELIVERY_QUEUE_DIR,
@@ -158,7 +158,7 @@ class DeliverTransfers(CronJobBase):
                 ) as f:
                     json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
 
-                FH.make_tarfile(
+                make_tarfile(
                     join(
                         settings.DELIVERY_QUEUE_DIR,
                         "{}.tar.gz".format(archive.machine_file_identifier),

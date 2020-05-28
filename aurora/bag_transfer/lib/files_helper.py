@@ -4,6 +4,7 @@ import re
 import tarfile
 import zipfile
 from shutil import copytree, move, rmtree
+from asterism.file_helpers import is_dir_or_file
 
 import bagit
 import psutil
@@ -121,21 +122,6 @@ def get_fields_from_file(file_path):
 
     return fields
 
-def move_file_or_dir(src, dest):
-    try:
-        move(src, dest)
-    except Exception as e:
-        print(e)
-        return False
-
-
-def is_dir_or_file(file_path):
-    if os.path.isdir(file_path):
-        return True
-    if os.path.isfile(file_path):
-        return True
-    return False
-
 
 def all_paths_exist(list_of_paths):
     for p in list_of_paths:
@@ -161,11 +147,6 @@ def chown_path_to_root(file_path):
     if is_dir_or_file(file_path):
         root_uid = pwd.getpwnam("root").pw_uid
         os.chown(file_path, root_uid, root_uid)
-
-
-def make_tarfile(output_filename, source_dir):
-    with tarfile.open(output_filename, "w:gz") as tar:
-        tar.add(source_dir, arcname=os.path.basename(source_dir))
 
 
 def update_bag_info(bag_path, data):
