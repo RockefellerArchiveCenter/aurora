@@ -98,61 +98,6 @@ def tar_has_top_level_only(file_path):
     return top_dir
 
 
-def anon_extract_all(file_path, tmp_dir):
-    """determine which path type, return extraction results"""
-    # is it a dir
-    if os.path.isdir(file_path):
-        return dir_extract_all(file_path, tmp_dir)
-    else:
-        # is it a tar
-        if file_path.endswith("tar.gz") or file_path.endswith(".tar"):
-            return tar_extract_all(file_path, tmp_dir)
-
-        # is it a zip
-        if file_path.endswith(".zip"):
-            return zip_extract_all(file_path, tmp_dir)
-
-    return False
-
-
-def zip_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        zf = zipfile.ZipFile(file_path, "r")
-        zf.extractall(tmp_dir)
-        zf.close()
-        extracted = True
-    except Exception as e:
-        print(e)
-    return extracted
-
-
-def tar_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        tf = tarfile.open(file_path, "r:*")
-        tf.extractall(tmp_dir)
-        tf.close()
-        extracted = True
-    except Exception as e:
-        print(e)
-
-    return extracted
-
-
-def dir_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        # notice forward slash missing
-        if is_dir_or_file("{}{}".format(tmp_dir, file_path.split("/")[-1])):
-            rmtree("{}{}".format(tmp_dir, file_path.split("/")[-1]))
-        copytree(file_path, "{}{}".format(tmp_dir, file_path.split("/")[-1]))
-        extracted = True
-    except Exception as e:
-        print(e)
-    return extracted
-
-
 def get_fields_from_file(file_path):
     fields = {}
     try:

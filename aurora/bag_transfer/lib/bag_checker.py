@@ -1,6 +1,7 @@
 import glob
 import json
 from os.path import isfile
+from asterism.file_helpers import zip_extract_all, tar_extract_all, dir_extract_all
 
 import bagit
 import bagit_profile
@@ -26,13 +27,13 @@ class bagChecker:
 
     def _extract_archive(self):
         if self.archiveObj.machine_file_type == "TAR":
-            if not FH.tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         elif self.archiveObj.machine_file_type == "ZIP":
-            if not FH.zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         elif self.archiveObj.machine_file_type == "OTHER":
-            if not FH.dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         else:
             return False

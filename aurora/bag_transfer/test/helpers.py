@@ -3,6 +3,7 @@ import random
 import string
 from datetime import datetime
 from os import chown, listdir, path, rename
+from asterism.file_helpers import anon_extract_all
 
 from aurora import settings
 from bag_transfer.lib import files_helper as FH
@@ -206,7 +207,7 @@ def create_target_bags(target_str, test_bags_dir, org, username=None):
     index = 0
 
     for bags in target_bags:
-        FH.anon_extract_all(
+        anon_extract_all(
             path.join(test_bags_dir, bags), org.org_machine_upload_paths()[0]
         )
         # Renames extracted path -- add index suffix to prevent collision
