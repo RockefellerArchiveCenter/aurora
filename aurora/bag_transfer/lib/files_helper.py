@@ -67,19 +67,6 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     return files
 
 
-def get_dir_size(start_path):
-    """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-        for d in dirnames:
-            dp = os.path.join(dirpath, d)
-            total_size += os.path.getsize(dp)
-    return total_size if total_size else False
-
-
 def zip_has_top_level_only(file_path):
     items = []
     with zipfile.ZipFile(file_path, "r") as zfile:
