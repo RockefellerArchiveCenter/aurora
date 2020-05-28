@@ -189,23 +189,6 @@ def get_fields_from_file(file_path):
 
     return fields
 
-
-def remove_file_or_dir(file_path):
-    if os.path.isfile(file_path):
-        try:
-            os.remove(file_path)
-        except Exception as e:
-            print(e)
-            return False
-    elif os.path.isdir(file_path):
-        try:
-            rmtree(file_path)
-        except Exception as e:
-            print(e)
-            return False
-    return True
-
-
 def move_file_or_dir(src, dest):
     try:
         move(src, dest)

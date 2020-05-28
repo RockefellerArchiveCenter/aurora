@@ -1,6 +1,8 @@
 import json
 from os import mkdir
 from os.path import join
+from asterism.file_helpers import remove_file_or_dir
+
 
 import bag_transfer.lib.log_print as Pter
 from aurora import settings
@@ -60,7 +62,7 @@ class DiscoverTransfers(CronJobBase):
                         BAGLog.log_it(upload_list["auto_fail_code"], new_arc)
                         email.setup_message("TRANS_FAIL_VAL", new_arc)
                         email.send()
-                        FH.remove_file_or_dir(new_arc.machine_file_path)
+                        remove_file_or_dir(new_arc.machine_file_path)
 
                     else:
                         bag = bagChecker(new_arc)
@@ -82,7 +84,7 @@ class DiscoverTransfers(CronJobBase):
                                     new_arc.machine_file_identifier,
                                 ),
                             )
-                            FH.remove_file_or_dir(new_arc.machine_file_path)
+                            remove_file_or_dir(new_arc.machine_file_path)
                             new_arc.machine_file_path = "{}{}".format(
                                 settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier
                             )
@@ -96,10 +98,10 @@ class DiscoverTransfers(CronJobBase):
                             BAGLog.log_it(bag.ecode, new_arc)
                             email.setup_message("TRANS_FAIL_VAL", new_arc)
                             email.send()
-                            FH.remove_file_or_dir(new_arc.machine_file_path)
+                            remove_file_or_dir(new_arc.machine_file_path)
 
                     new_arc.save()
-                    FH.remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
+                    remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
                 except Exception as e:
                     print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
                     result = False
@@ -164,7 +166,7 @@ class DeliverTransfers(CronJobBase):
                     join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier),
                 )
 
-                FH.remove_file_or_dir(
+                remove_file_or_dir(
                     join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
                 )
 
