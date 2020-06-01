@@ -5,9 +5,10 @@ import shutil
 import tarfile
 import zipfile
 from pwd import getpwuid
+from asterism.file_helpers import remove_file_or_dir, get_dir_size, zip_extract_all, tar_extract_all, is_dir_or_file
+
 
 import bag_transfer.lib.log_print as Pter
-from asterism.file_helpers import remove_file_or_dir, get_dir_size, zip_extract_all, tar_extract_all, is_dir_or_file
 from bag_transfer.lib.files_helper import (all_paths_exist,
                                            files_in_unserialized, 
                                            open_files_list,
