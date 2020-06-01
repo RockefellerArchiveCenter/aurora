@@ -147,4 +147,3 @@ def chown_path_to_root(file_path):
     if is_dir_or_file(file_path):
         root_uid = pwd.getpwnam("root").pw_uid
         os.chown(file_path, root_uid, root_uid)
-

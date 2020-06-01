@@ -10,7 +10,7 @@ from asterism.file_helpers import remove_file_or_dir, get_dir_size, zip_extract_
 
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.lib.files_helper import (all_paths_exist,
-                                           files_in_unserialized, 
+                                           files_in_unserialized,
                                            open_files_list,
                                            tar_has_top_level_only,
                                            zip_has_top_level_only)
