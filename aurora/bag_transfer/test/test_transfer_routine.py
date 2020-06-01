@@ -1,6 +1,6 @@
 import random
-from asterism.file_helpers import remove_file_or_dir
 
+from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.test import helpers
 from django.test import TransactionTestCase

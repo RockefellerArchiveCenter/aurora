@@ -1,11 +1,12 @@
 import glob
 import json
 from os.path import isfile
-from asterism.file_helpers import zip_extract_all, tar_extract_all, dir_extract_all
 
 import bagit
 import bagit_profile
 import iso8601
+from asterism.file_helpers import (dir_extract_all, tar_extract_all,
+                                   zip_extract_all)
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog
 from django.conf import settings

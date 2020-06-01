@@ -1,7 +1,7 @@
 import os
 import random
-from asterism.file_helpers import remove_file_or_dir
 
+from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.bag_checker import bagChecker
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import Archives, BAGLog, Organization, User

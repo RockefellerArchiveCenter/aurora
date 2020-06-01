@@ -3,11 +3,9 @@ import pwd
 import re
 import tarfile
 import zipfile
-from shutil import copytree, move, rmtree
-from asterism.file_helpers import is_dir_or_file
 
-import bagit
 import psutil
+from asterism.file_helpers import is_dir_or_file
 
 
 def open_files_list():

@@ -1,11 +1,11 @@
 import json
 from os import mkdir
 from os.path import join
-from asterism.file_helpers import remove_file_or_dir, move_file_or_dir, make_tarfile
-from asterism.bagit_helpers import update_bag_info
-
 
 import bag_transfer.lib.log_print as Pter
+from asterism.bagit_helpers import update_bag_info
+from asterism.file_helpers import (make_tarfile, move_file_or_dir,
+                                   remove_file_or_dir)
 from aurora import settings
 from bag_transfer.api.serializers import ArchivesSerializer
 from bag_transfer.lib.bag_checker import bagChecker
