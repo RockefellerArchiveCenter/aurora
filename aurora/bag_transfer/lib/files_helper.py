@@ -148,10 +148,3 @@ def chown_path_to_root(file_path):
         root_uid = pwd.getpwnam("root").pw_uid
         os.chown(file_path, root_uid, root_uid)
 
-
-def update_bag_info(bag_path, data):
-    """Adds metadata to `bag-info.txt`"""
-    bag = bagit.Bag(bag_path)
-    for k, v in data.items():
-        bag.info[k] = v
-    bag.save()

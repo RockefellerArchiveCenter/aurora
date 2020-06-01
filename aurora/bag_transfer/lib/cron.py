@@ -2,12 +2,12 @@ import json
 from os import mkdir
 from os.path import join
 from asterism.file_helpers import remove_file_or_dir, move_file_or_dir, make_tarfile
+from asterism.bagit_helpers import update_bag_info
 
 
 import bag_transfer.lib.log_print as Pter
 from aurora import settings
 from bag_transfer.api.serializers import ArchivesSerializer
-from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.bag_checker import bagChecker
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.lib.transfer_routine import TransferRoutine
@@ -122,7 +122,7 @@ class DeliverTransfers(CronJobBase):
             process_status=Archives.ACCESSIONING_STARTED
         ):
             try:
-                FH.update_bag_info(
+                update_bag_info(
                     join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
                     {"Origin": "aurora"}
                 )
