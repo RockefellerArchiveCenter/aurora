@@ -15,7 +15,7 @@
       <div class="box box-primary">
         <div class="box-body">
           <div class="form-group {% if form.resource.errors %}has-error{% endif %}">
-            <label for="id_resource">Related Resource *</label>
+            <label for="resource_id">Related Resource *</label>
             <div id="resource_input">
               <input id="resource_id" class="form-control" type="text"></input>
               <p class="help-text">Enter an ID for a resource (for example <code>231</code>)</p>
@@ -24,7 +24,7 @@
                   <p class="help-block">{{error}}</p>
                   {% endfor %}
               {% endif %}
-              <button href="#" id="resource_find" class="btn btn-default">Find in ArchivesSpace</button>
+              <button type="submit" id="resource_find" class="btn btn-default">Find in ArchivesSpace</button>
             </div>
             <div id="resource_result" style="display: none;">
               <h3><span class="label label-default"><span id="resource_title">Resource name</span> <a href="#" id="resource_title_dismisss"><i class="fa fa-times"></i></a></span></h3>
@@ -73,7 +73,7 @@
     <div class="box-header with-border">
       <h2 class="box-title">Rights Statements</h2>
       <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-label="Collapse"><i class="fa fa-minus"></i></button>
+        <button type="button" href="#" class="btn btn-box-tool" data-widget="collapse" aria-label="Collapse"><i class="fa fa-minus"></i></button>
       </div>
     </div>
     <div class="box-body no-padding">
