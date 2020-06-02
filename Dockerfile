@@ -18,28 +18,25 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy and make Aurora scripts
-COPY scripts/RAC* /usr/local/bin/
-COPY import_sample_data.sh /usr/local/bin/import_sample_data
-RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
+COPY scripts/* /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
 
 # Setup SSH
-RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
-RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
+RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config && \
+    sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
+
+# Clamav configs and permissions
+RUN mkdir /var/run/clamav && \
+    chown clamav:clamav /var/run/clamav && \
+    chmod 750 /var/run/clamav && \
+    sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf && \
+    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
 
 # Update clamav databases
 RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
     wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
     wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
     chown clamav:clamav /var/lib/clamav/*.cvd
-
-# Permissions for clamav
-RUN mkdir /var/run/clamav && \
-    chown clamav:clamav /var/run/clamav && \
-    chmod 750 /var/run/clamav
-
-# Run clamav as root
-RUN sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
-RUN sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
 
 # Copy Aurora application files
 RUN mkdir -p /code/
