@@ -3,10 +3,9 @@ import pwd
 import re
 import tarfile
 import zipfile
-from shutil import copytree, move, rmtree
 
-import bagit
 import psutil
+from asterism.file_helpers import is_dir_or_file
 
 
 def open_files_list():
@@ -67,19 +66,6 @@ def files_in_unserialized(dirpath, CK_SUBDIRS=False):
     return files
 
 
-def get_dir_size(start_path):
-    """returns size of contents of dir https://stackoverflow.com/questions/1392413/calculating-a-directory-size-using-python"""
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-        for d in dirnames:
-            dp = os.path.join(dirpath, d)
-            total_size += os.path.getsize(dp)
-    return total_size if total_size else False
-
-
 def zip_has_top_level_only(file_path):
     items = []
     with zipfile.ZipFile(file_path, "r") as zfile:
@@ -111,61 +97,6 @@ def tar_has_top_level_only(file_path):
     return top_dir
 
 
-def anon_extract_all(file_path, tmp_dir):
-    """determine which path type, return extraction results"""
-    # is it a dir
-    if os.path.isdir(file_path):
-        return dir_extract_all(file_path, tmp_dir)
-    else:
-        # is it a tar
-        if file_path.endswith("tar.gz") or file_path.endswith(".tar"):
-            return tar_extract_all(file_path, tmp_dir)
-
-        # is it a zip
-        if file_path.endswith(".zip"):
-            return zip_extract_all(file_path, tmp_dir)
-
-    return False
-
-
-def zip_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        zf = zipfile.ZipFile(file_path, "r")
-        zf.extractall(tmp_dir)
-        zf.close()
-        extracted = True
-    except Exception as e:
-        print(e)
-    return extracted
-
-
-def tar_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        tf = tarfile.open(file_path, "r:*")
-        tf.extractall(tmp_dir)
-        tf.close()
-        extracted = True
-    except Exception as e:
-        print(e)
-
-    return extracted
-
-
-def dir_extract_all(file_path, tmp_dir):
-    extracted = False
-    try:
-        # notice forward slash missing
-        if is_dir_or_file("{}{}".format(tmp_dir, file_path.split("/")[-1])):
-            rmtree("{}{}".format(tmp_dir, file_path.split("/")[-1]))
-        copytree(file_path, "{}{}".format(tmp_dir, file_path.split("/")[-1]))
-        extracted = True
-    except Exception as e:
-        print(e)
-    return extracted
-
-
 def get_fields_from_file(file_path):
     fields = {}
     try:
@@ -188,38 +119,6 @@ def get_fields_from_file(file_path):
         print(e)
 
     return fields
-
-
-def remove_file_or_dir(file_path):
-    if os.path.isfile(file_path):
-        try:
-            os.remove(file_path)
-        except Exception as e:
-            print(e)
-            return False
-    elif os.path.isdir(file_path):
-        try:
-            rmtree(file_path)
-        except Exception as e:
-            print(e)
-            return False
-    return True
-
-
-def move_file_or_dir(src, dest):
-    try:
-        move(src, dest)
-    except Exception as e:
-        print(e)
-        return False
-
-
-def is_dir_or_file(file_path):
-    if os.path.isdir(file_path):
-        return True
-    if os.path.isfile(file_path):
-        return True
-    return False
 
 
 def all_paths_exist(list_of_paths):
@@ -246,16 +145,3 @@ def chown_path_to_root(file_path):
     if is_dir_or_file(file_path):
         root_uid = pwd.getpwnam("root").pw_uid
         os.chown(file_path, root_uid, root_uid)
-
-
-def make_tarfile(output_filename, source_dir):
-    with tarfile.open(output_filename, "w:gz") as tar:
-        tar.add(source_dir, arcname=os.path.basename(source_dir))
-
-
-def update_bag_info(bag_path, data):
-    """Adds metadata to `bag-info.txt`"""
-    bag = bagit.Bag(bag_path)
-    for k, v in data.items():
-        bag.info[k] = v
-    bag.save()

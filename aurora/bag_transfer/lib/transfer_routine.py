@@ -7,12 +7,13 @@ import zipfile
 from pwd import getpwuid
 
 import bag_transfer.lib.log_print as Pter
+from asterism.file_helpers import (get_dir_size, is_dir_or_file,
+                                   remove_file_or_dir, tar_extract_all,
+                                   zip_extract_all)
 from bag_transfer.lib.files_helper import (all_paths_exist,
-                                           files_in_unserialized, get_dir_size,
-                                           is_dir_or_file, open_files_list,
-                                           remove_file_or_dir, tar_extract_all,
+                                           files_in_unserialized,
+                                           open_files_list,
                                            tar_has_top_level_only,
-                                           zip_extract_all,
                                            zip_has_top_level_only)
 from bag_transfer.lib.virus_scanner import VirusScan
 from bag_transfer.models import BAGLog, Organization
