@@ -30,7 +30,7 @@
 							{% for form in manifests_allowed_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
-							<p class="help-block">Select allowed algorithm(s) for manifest files. If no value is selected any algorithm is valid.</p>
+							<p class="help-block">Select allowed algorithm(s) for manifest files. At least one value must be selected for bags to be valid.</p>
 						</div>
 					</div>
 					<div class="row">
@@ -41,7 +41,7 @@
 							{% for form in manifests_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
-							<p class="help-block">Select a required algorithm for manifest files. At least one value must be selected in order for bags to be valid.</p>
+							<p class="help-block">Select a required algorithm for manifest files. If no value is selected any algorithm is valid.</p>
 						</div>
 					</div>
 
@@ -53,7 +53,7 @@
 							{% for form in serialization_formset %}
 								{% include 'bagit_profiles/repeating_form.html' %}
 							{% endfor %}
-							<p class="help-block">If serialization of bags is allowed, add all serialization formats accepted. If no values are selected, the bag serialization format will not be checked.</p>
+							<p class="help-block">If serialization is allowed, add all formats accepted. If no values are selected, the serialization format will not be checked.</p>
 						</div>
 					</div>
 
