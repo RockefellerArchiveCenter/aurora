@@ -26,10 +26,9 @@ def set_is_staff(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Archives)
-@receiver(post_delete, sender=Archives)
 def dashboard_data(sender, instance, **kwargs):
     """
-    Updates dashboard data each time a transfer is saved or deleted, which
+    Updates dashboard data each time a transfer is saved, which
     avoids expensive data operations on the database.
     """
     today = date.today()
@@ -62,6 +61,56 @@ def dashboard_data(sender, instance, **kwargs):
                 BagInfoMetadata.objects.all().values_list("record_type", flat=True)
             ):
                 data = DashboardRecordTypeData.objects.get_or_create(
+                    organization=organization, label=label
+                )[0]
+                data.count = Archives.objects.filter(
+                    organization=organization, metadata__record_type=label
+                ).count()
+                data.save()
+
+
+@receiver(pre_delete, sender=Archives)
+def dashboard_check(sender, instance, **kwargs):
+    """
+    Updates dashboard data each time a transfer is deleted, which
+    avoids expensive data operations on the database.
+    """
+    today = date.today()
+    current = today - relativedelta(years=1)
+    if instance.process_status >= sender.TRANSFER_COMPLETED:
+        while current <= today:
+            for organization in Organization.objects.all():
+                if DashboardMonthData.objects.filter(
+                    month_label=current.strftime("%B"),
+                    sort_date=int(str(current.year) + str(current.month)),
+                    year=current.year,
+                    organization=organization,
+                ).exists():
+                    data = DashboardMonthData.objects.filter(
+                        month_label=current.strftime("%B"),
+                        sort_date=int(str(current.year) + str(current.month)),
+                        year=current.year,
+                        organization=organization,
+                    )[0]
+                    data.upload_count = Archives.objects.filter(
+                        organization=organization,
+                        machine_file_upload_time__year=current.year,
+                        machine_file_upload_time__month=current.month,
+                    ).count()
+                    data.upload_size = (
+                        sum(map(int, Archives.objects.filter(
+                            organization=organization,
+                            machine_file_upload_time__year=current.year,
+                            machine_file_upload_time__month=current.month,
+                        ).values_list("machine_file_size", flat=True),)) / 1000000000)
+                    data.save()
+            current += relativedelta(months=1)
+    if instance.process_status >= sender.VALIDATED:
+        for organization in Organization.objects.all():
+            for label in set(
+                BagInfoMetadata.objects.all().values_list("record_type", flat=True)
+            ):
+                data = DashboardRecordTypeData.objects.get(
                     organization=organization, label=label
                 )[0]
                 data.count = Archives.objects.filter(
