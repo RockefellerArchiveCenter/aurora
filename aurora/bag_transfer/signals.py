@@ -42,18 +42,7 @@ def dashboard_data(sender, instance, **kwargs):
                     year=current.year,
                     organization=organization,
                 )[0]
-                data.upload_count = Archives.objects.filter(
-                    organization=organization,
-                    machine_file_upload_time__year=current.year,
-                    machine_file_upload_time__month=current.month,
-                ).count()
-                data.upload_size = (
-                    sum(map(int, Archives.objects.filter(
-                        organization=organization,
-                        machine_file_upload_time__year=current.year,
-                        machine_file_upload_time__month=current.month,
-                    ).values_list("machine_file_size", flat=True),)) / 1000000000)
-                data.save()
+                set_uploads(current, data, organization)
             current += relativedelta(months=1)
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
@@ -92,18 +81,7 @@ def dashboard_check(sender, instance, **kwargs):
                         year=current.year,
                         organization=organization,
                     )[0]
-                    data.upload_count = Archives.objects.filter(
-                        organization=organization,
-                        machine_file_upload_time__year=current.year,
-                        machine_file_upload_time__month=current.month,
-                    ).count()
-                    data.upload_size = (
-                        sum(map(int, Archives.objects.filter(
-                            organization=organization,
-                            machine_file_upload_time__year=current.year,
-                            machine_file_upload_time__month=current.month,
-                        ).values_list("machine_file_size", flat=True),)) / 1000000000)
-                    data.save()
+                    set_uploads(current, data, organization)
             current += relativedelta(months=1)
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
@@ -117,6 +95,21 @@ def dashboard_check(sender, instance, **kwargs):
                     organization=organization, metadata__record_type=label
                 ).count()
                 data.save()
+
+
+def set_uploads(current, data, organization):
+    data.upload_count = Archives.objects.filter(
+        organization=organization,
+        machine_file_upload_time__year=current.year,
+        machine_file_upload_time__month=current.month,
+    ).count()
+    data.upload_size = (
+        sum(map(int, Archives.objects.filter(
+            organization=organization,
+            machine_file_upload_time__year=current.year,
+            machine_file_upload_time__month=current.month,
+        ).values_list("machine_file_size", flat=True),)) / 1000000000)
+    data.save()
 
 
 @receiver(post_save, sender=Archives)
