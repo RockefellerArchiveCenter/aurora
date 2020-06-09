@@ -44,18 +44,7 @@ def dashboard_data(sender, instance, **kwargs):
                 )[0]
                 set_uploads(current, data, organization)
             current += relativedelta(months=1)
-    if instance.process_status >= sender.VALIDATED:
-        for organization in Organization.objects.all():
-            for label in set(
-                BagInfoMetadata.objects.all().values_list("record_type", flat=True)
-            ):
-                data = DashboardRecordTypeData.objects.get_or_create(
-                    organization=organization, label=label
-                )[0]
-                data.count = Archives.objects.filter(
-                    organization=organization, metadata__record_type=label
-                ).count()
-                data.save()
+    set_count(sender, instance, organization)
 
 
 @receiver(pre_delete, sender=Archives)
@@ -83,18 +72,33 @@ def dashboard_check(sender, instance, **kwargs):
                     )[0]
                     set_uploads(current, data, organization)
             current += relativedelta(months=1)
+    set_count(sender, instance, organization)
+
+
+def set_count(sender, instance, organization):
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(
                 BagInfoMetadata.objects.all().values_list("record_type", flat=True)
             ):
-                data = DashboardRecordTypeData.objects.get(
+                if DashboardRecordTypeData.objects.get(
                     organization=organization, label=label
-                )[0]
-                data.count = Archives.objects.filter(
-                    organization=organization, metadata__record_type=label
-                ).count()
-                data.save()
+                ).exists():
+                    data = DashboardRecordTypeData.objects.get(
+                        organization=organization, label=label
+                    )[0]
+                    data.count = Archives.objects.filter(
+                        organization=organization, metadata__record_type=label
+                    ).count()
+                    data.save()
+                else:
+                    data = DashboardRecordTypeData.objects.get_or_create(
+                        organization=organization, label=label
+                    )[0]
+                    data.count = Archives.objects.filter(
+                        organization=organization, metadata__record_type=label
+                    ).count()
+                    data.save()
 
 
 def set_uploads(current, data, organization):
