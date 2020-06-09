@@ -6,8 +6,7 @@ from bag_transfer.lib.RAC_CMD import delete_system_group
 from bag_transfer.models import (Archives, BagInfoMetadata, DashboardMonthData,
                                  DashboardRecordTypeData, Organization, User)
 from dateutil.relativedelta import relativedelta
-from django.db.models.signals import (m2m_changed, post_delete, post_save,
-                                      pre_delete)
+from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
 
