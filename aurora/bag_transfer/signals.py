@@ -50,7 +50,7 @@ def add_dashboard_data(sender, instance, **kwargs):
 @receiver(post_delete, sender=Archives)
 def remove_dashboard_data(sender, instance, **kwargs):
     """
-    Updates dashboard data each time a transfer is deleted, which
+    Removes dashboard data each time a transfer is deleted, which
     avoids expensive data operations on the database.
     """
     today = date.today()
