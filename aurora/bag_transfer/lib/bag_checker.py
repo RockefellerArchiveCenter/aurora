@@ -76,27 +76,8 @@ class bagChecker:
                 )
                 return False
             else:
-
-                # RE IMPLEMENTING  validate() SINCE VALIDATION MESSAGES ARE PRINTED
-                # https://github.com/ruebot/bagit-profiles-validator/blob/master/bagit_profile.py
-                # line 76
-
-                try:
-                    profile.validate_bag_info(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
-                    return False
-                try:
-                    profile.validate_payload_manifests_allowed(self.bag)
-                    profile.validate_manifests_required(self.bag)
-                    profile.validate_tag_manifests_required(self.bag)
-                    profile.validate_tag_files_required(self.bag)
-                    profile.validate_allow_fetch(self.bag)
-                    profile.validate_accept_bagit_version(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Error validating BagIt Profile: {}".format(
-                        e.value
-                    )
+                if not profile.validate(self.bag):
+                    self.bag_exception = profile.report.errors
                     return False
                 return True
 
