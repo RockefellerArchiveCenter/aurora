@@ -94,7 +94,7 @@ class bagChecker:
                     profile.validate_allow_fetch(self.bag)
                     profile.validate_accept_bagit_version(self.bag)
                 except Exception as e:
-                    self.bag_exception = "Error: {}".format(
+                    self.bag_exception = "Error validating BagIt Profile: {}".format(
                         e.value
                     )
                     return False
