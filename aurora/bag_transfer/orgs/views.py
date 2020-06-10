@@ -255,7 +255,7 @@ class BagItProfileManageView(TemplateView):
                 "bag_info_formset": BagItProfileBagInfoFormset(
                     request.POST, prefix="bag_info"
                 ),
-                "manifests__allowed_formset": ManifestsAllowedFormset(
+                "manifests_allowed_formset": ManifestsAllowedFormset(
                     request.POST, prefix="manifests_allowed"
                 ),
                 "manifests_formset": ManifestsRequiredFormset(
