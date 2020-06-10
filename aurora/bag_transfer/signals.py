@@ -26,7 +26,7 @@ def set_is_staff(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Archives)
-def dashboard_data(sender, instance, **kwargs):
+def add_dashboard_data(sender, instance, **kwargs):
     """
     Updates dashboard data each time a transfer is saved, which
     avoids expensive data operations on the database.
