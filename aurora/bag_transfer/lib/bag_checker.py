@@ -5,6 +5,9 @@ from os.path import isfile
 import bagit
 import bagit_profile
 import iso8601
+from asterism.bagit_helpers import get_bag_info_fields
+from asterism.file_helpers import (dir_extract_all, tar_extract_all,
+                                   zip_extract_all)
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog
 from django.conf import settings
@@ -26,13 +29,13 @@ class bagChecker:
 
     def _extract_archive(self):
         if self.archiveObj.machine_file_type == "TAR":
-            if not FH.tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         elif self.archiveObj.machine_file_type == "ZIP":
-            if not FH.zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         elif self.archiveObj.machine_file_type == "OTHER":
-            if not FH.dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+            if not dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
                 return False
         else:
             return False
@@ -235,6 +238,4 @@ class bagChecker:
         if not self.bag.is_valid():
             return False
 
-        self.bag_info_data = FH.get_fields_from_file(
-            "{}/{}".format(self.archive_path, "bag-info.txt")
-        )
+        self.bag_info_data = get_bag_info_fields("{}".format(self.archive_path))

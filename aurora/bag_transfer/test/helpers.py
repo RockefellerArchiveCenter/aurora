@@ -4,16 +4,16 @@ import string
 from datetime import datetime
 from os import chown, listdir, path, rename
 
+from asterism.file_helpers import anon_extract_all
 from aurora import settings
-from bag_transfer.lib import files_helper as FH
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 Archives, BagItProfile, BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, BAGLogCodes,
-                                 LanguageCode, ManifestsAllowed,
-                                 ManifestsRequired, Organization,
-                                 RecordCreators, TagFilesRequired,
-                                 TagManifestsRequired, User)
+                                 Archives, BagInfoMetadata, BagItProfile,
+                                 BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, LanguageCode,
+                                 ManifestsAllowed, ManifestsRequired,
+                                 Organization, RecordCreators,
+                                 TagFilesRequired, TagManifestsRequired, User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -22,6 +22,7 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementStatute)
 from bag_transfer.test import setup as org_setup
 from django.contrib.auth.models import Group
+from django.utils.timezone import make_aware
 
 # General variables and setup routines
 
@@ -41,13 +42,12 @@ def random_date(year):
         return datetime.strptime("{} {}".format(random.randint(1, 366), year), "%j %Y")
     # accounts for leap year values
     except ValueError:
-
         random_date(year)
 
 
 def random_name(prefix, suffix):
     """Returns a random name."""
-    return "{} {} {}".format(prefix, random.choice(string.ascii_letters), suffix)
+    return "{} {} {}".format(prefix, random_string(5), suffix)
 
 
 ####################################
@@ -69,7 +69,6 @@ def create_test_record_types(record_types=None):
     for record_type in record_types:
         object = RecordType.objects.create(name=record_type)
         objects.append(object)
-        print("Test record type {record_type} created".format(record_type=object.name))
     return objects
 
 
@@ -88,9 +87,7 @@ def create_test_groups(names=None):
             group = Group(name=name)
             group.save()
             groups.append(group)
-            print("Test group {group} created".format(group=group.name))
         else:
-            print("Test group {group} already exists".format(group=name))
             group = Group.objects.get(name=name)
             groups.append(group)
     return groups
@@ -107,8 +104,7 @@ def create_test_orgs(org_count=1):
             break
         new_org_name = random_name(
             random.choice(org_setup.POTUS_NAMES),
-            random.choice(org_setup.COMPANY_SUFFIX),
-        )
+            random.choice(org_setup.COMPANY_SUFFIX))
         try:
             Organization.objects.get(name=new_org_name)
             continue
@@ -116,16 +112,9 @@ def create_test_orgs(org_count=1):
             pass
 
         test_org = Organization(
-            name=new_org_name, machine_name="org{}".format((len(generated_orgs) + 1))
-        )
+            name=new_org_name, machine_name="org{}".format((len(generated_orgs) + 1)))
         test_org.save()
         generated_orgs.append(test_org)
-
-        print(
-            "Test organization {} -- {} created".format(
-                test_org.name, test_org.machine_name
-            )
-        )
 
     return generated_orgs
 
@@ -135,69 +124,32 @@ def delete_test_orgs(orgs=[]):
         org.delete()
 
 
-def create_test_baglogcodes():
-    baglogcodes = (
-        ("ASAVE", "I"),
-        ("PBAG", "S"),
-        ("PBAGP", "S"),
-        ("GBERR", "BE"),
-        ("DTERR", "BE"),
-        ("MDERR", "BE"),
-        ("RBERR", "BE"),
-        ("BIERR", "BE"),
-    )
-    code_objects = []
-    for code in baglogcodes:
-        if not BAGLogCodes.objects.filter(code_short=code[0]).exists():
-            bag_log_code = BAGLogCodes(
-                code_short=code[0], code_type=code[1], code_desc=random_string(50),
-            )
-            bag_log_code.save()
-            code_objects.append(bag_log_code)
-    return code_objects
-
-
-def create_test_user(username=None, org=None):
+def create_test_user(username=None, password=None, org=None, groups=[], is_staff=False):
     """Creates test user given a username and organization.
     If no username is given, the default username supplied in settings is used.
     If no organization is given, an organization is randomly chosen.
     """
-    if username is None:
-        username = settings.TEST_USER["USERNAME"]
-    if org is None:
-        org = random.choice(Organization.objects.all())
-    test_user = User(
-        username=username, email="{}@example.org".format(username), organization=org
+    username = username if username else settings.TEST_USER["USERNAME"]
+    org = org if org else random.choice(Organization.objects.all())
+    test_user = User.objects.create_user(
+        username,
+        first_name=random_string(5),
+        last_name=random_string(10),
+        email="{}@example.org".format(username),
+        is_staff=is_staff,
+        organization=org,
     )
+    for grp in groups:
+        test_user.groups.add(grp)
+    if password:
+        test_user.set_password(password)
     test_user.save()
-    print("Test user {username} created".format(username=username))
     return test_user
-
-
-def create_test_archive(transfer, org):
-    """Creates Archive objects by running bags through TransferRoutine."""
-    machine_file_identifier = Archives().gen_identifier()
-    archive = Archives.initial_save(
-        org,
-        None,
-        transfer["file_path"],
-        transfer["file_size"],
-        transfer["file_modtime"],
-        machine_file_identifier,
-        transfer["file_type"],
-        transfer["bag_it_name"],
-    )
-
-    # updating the name since the bag info reflects ford
-    archive.organization.name = "Ford Foundation"
-    archive.organization.save()
-
-    return archive
 
 
 def create_target_bags(target_str, test_bags_dir, org, username=None):
     """Creates target bags to be picked up by a TransferRoutine based on a string.
-    # This allows processing of bags serialized in multiple formats at once."""
+    This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
@@ -206,7 +158,7 @@ def create_target_bags(target_str, test_bags_dir, org, username=None):
     index = 0
 
     for bags in target_bags:
-        FH.anon_extract_all(
+        anon_extract_all(
             path.join(test_bags_dir, bags), org.org_machine_upload_paths()[0]
         )
         # Renames extracted path -- add index suffix to prevent collision
@@ -318,6 +270,33 @@ def create_rights_granted(rights_statement=None, granted_count=1):
         rights_granted.save()
         all_rights_granted.append(rights_granted)
     return all_rights_granted
+
+
+def create_test_archives(organization=None, process_status=None, count=1):
+    archives = []
+    organization = organization if organization else random.choice(Organization.objects.all())
+    process_status = process_status if process_status else random.choice(Archives.processing_statuses)[0]
+    try:
+        user = random.choice(User.objects.filter(organization=organization))
+    except IndexError:
+        user = create_test_user(
+            username=random_string(10),
+            org=organization)
+    for x in range(count):
+        arc = Archives.objects.create(
+            organization=organization,
+            user_uploaded=user,
+            machine_file_path=random_string(20),
+            machine_file_size=random.randint(10, 999999),
+            machine_file_upload_time=make_aware(random_date(2019)),
+            machine_file_identifier=Archives.gen_identifier(),
+            machine_file_type=random.choice(Archives.machine_file_types)[0],
+            bag_it_name=random_string(20),
+            bag_it_valid=True,
+            process_status=process_status,
+        )
+        archives.append(arc)
+    return archives
 
 
 def create_test_bagitprofile(applies_to_organization=None):
@@ -434,6 +413,27 @@ def create_test_bagitprofilebaginfovalues(baginfo=None):
         bag_info_value.save()
         values.append(bag_info_value)
     return values
+
+
+def create_test_baginfometadatas(archive, organization=None, count=1):
+    metadatas = []
+    organization = organization if organization else random.choice(Organization.objects.all())
+    for x in range(count):
+        baginfo = BagInfoMetadata.objects.create(
+            archive=archive,
+            source_organization=organization,
+            external_identifier=random_string(20),
+            internal_sender_description=random_string(50),
+            title=random_string(15),
+            date_start=make_aware(random_date(1960)),
+            date_end=make_aware(random_date(1970)),
+            record_type=random.choice(org_setup.record_types),
+            bagging_date=make_aware(datetime.now()),
+            bag_count=1,
+            bag_group_identifier=random.randint(1, 5),
+            payload_oxum=random.randint(0, 100),
+            bagit_profile_identifier="http://www.example.com")
+        metadatas.append(baginfo)
 
 
 def create_test_record_creators(count=1):

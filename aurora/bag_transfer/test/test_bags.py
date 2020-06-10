@@ -1,30 +1,26 @@
 import os
 import random
 
+from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.bag_checker import bagChecker
-from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import Archives, BAGLog, Organization, User
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
 from django.conf import settings
-from django.test import Client, TransactionTestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 
-class BagTestCase(TransactionTestCase):
+class BagTestCase(TestCase):
     def setUp(self):
         self.orgs = helpers.create_test_orgs(org_count=TEST_ORG_COUNT)
-        self.baglogcodes = helpers.create_test_baglogcodes()
-        self.groups = helpers.create_test_groups(["managing_archivists"])
         self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"], org=random.choice(self.orgs)
-        )
-        for group in self.groups:
-            self.user.groups.add(group)
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER["PASSWORD"])
-        self.user.save()
+            username=settings.TEST_USER["USERNAME"],
+            password=settings.TEST_USER["PASSWORD"],
+            org=random.choice(self.orgs),
+            groups=helpers.create_test_groups(["managing_archivists"]),
+            is_staff=True)
         self.client = Client()
 
     def test_bags(self):
@@ -68,7 +64,17 @@ class BagTestCase(TransactionTestCase):
                 # END --  TEST RESULTS OF RUN ROUTINE
                 ###############
 
-                archive = helpers.create_test_archive(trans, self.orgs[0])
+                archive = Archives.initial_save(
+                    self.orgs[0],
+                    None,
+                    trans["file_path"],
+                    trans["file_size"],
+                    trans["file_modtime"],
+                    Archives().gen_identifier(),
+                    trans["file_type"],
+                    trans["bag_it_name"])
+                archive.organization.name = "Ford Foundation"
+                archive.organization.save()
 
                 # checks if this is unique which it should not already be in the system
                 self.assertIsNot(False, archive.machine_file_identifier)
@@ -82,8 +88,7 @@ class BagTestCase(TransactionTestCase):
 
                 # deleting path in processing and tmp dir
                 remove_file_or_dir(
-                    os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name)
-                )
+                    os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
                 remove_file_or_dir(archive.machine_file_path)
 
                 ###############
@@ -125,33 +130,25 @@ class BagTestCase(TransactionTestCase):
                 resp = self.client.get(
                     reverse(
                         "organization-detail",
-                        kwargs={"pk": random.choice(Organization.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(Organization.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "archives-detail",
-                        kwargs={"pk": random.choice(Archives.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(Archives.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "baglog-detail",
-                        kwargs={"pk": random.choice(BAGLog.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(BAGLog.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
                 resp = self.client.get(
                     reverse(
                         "user-detail",
-                        kwargs={"pk": random.choice(User.objects.all()).pk},
-                    )
-                )
+                        kwargs={"pk": random.choice(User.objects.all()).pk}))
                 self.assertEqual(resp.status_code, 200)
 
     def tearDown(self):

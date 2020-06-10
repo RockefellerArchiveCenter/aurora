@@ -5,7 +5,7 @@ from bag_transfer.rights.models import (RightsStatementCopyright,
                                         RightsStatementOther,
                                         RightsStatementStatute)
 
-POTUS_NAMES = ["Ford", "Obama", "Trump", "Bush", "Clinton"]
+POTUS_NAMES = ["Ford", "Obama", "Bush", "Clinton", "Roosevelt"]
 COMPANY_SUFFIX = ["Foundation", "Group", "Org"]
 TEST_ORG_COUNT = 3
 
@@ -66,7 +66,11 @@ user_data = {
     "email": "test@example.org",
 }
 
-org_data = {"active": True, "name": "Test Organization", "acquisition_type": "donation"}
+org_data = {
+    "active": True,
+    "name": "Test Organization",
+    "acquisition_type": "donation"
+}
 
 # Variables and setup routines for RightsStatements
 
