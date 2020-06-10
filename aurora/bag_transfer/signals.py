@@ -48,7 +48,7 @@ def add_dashboard_data(sender, instance, **kwargs):
 
 
 @receiver(post_delete, sender=Archives)
-def dashboard_check(sender, instance, **kwargs):
+def remove_dashboard_data(sender, instance, **kwargs):
     """
     Updates dashboard data each time a transfer is deleted, which
     avoids expensive data operations on the database.
