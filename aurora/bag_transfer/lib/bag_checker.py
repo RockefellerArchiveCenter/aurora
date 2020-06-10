@@ -88,47 +88,16 @@ class bagChecker:
                     return False
                 try:
                     profile.validate_payload_manifests_allowed(self.bag)
-                except Exception as e:
-                    self.bag_exception = "An unallowed manifest was found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
                     profile.validate_manifests_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required manifests not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
                     profile.validate_tag_manifests_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required tag manifests not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
                     profile.validate_tag_files_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required tag files not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
                     profile.validate_allow_fetch(self.bag)
-                except Exception as e:
-                    self.bag_exception = "fetch.txt is present but is not allowed: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
                     profile.validate_accept_bagit_version(self.bag)
                 except Exception as e:
-                    self.bag_exception = "Required BagIt version not found: {}".format(
+                    self.bag_exception = "Error: {}".format(
                         e.value
                     )
                     return False
-
                 return True
 
         return False
