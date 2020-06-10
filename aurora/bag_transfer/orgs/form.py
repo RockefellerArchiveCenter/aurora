@@ -207,6 +207,8 @@ ManifestsAllowedFormset = forms.inlineformset_factory(
     fields=("name",),
     extra=1,
     max_num=2,
+    min_num=1,
+    validate_min=True,
     form=ManifestsAllowedForm,
 )
 
