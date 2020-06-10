@@ -84,12 +84,22 @@ def set_count(sender, instance, organization):
             for label in set(
                 BagInfoMetadata.objects.all().values_list("record_type", flat=True)
             ):
-                data = DashboardRecordTypeData.objects.get_or_create(
+                if DashboardRecordTypeData.objects.filter(
                     organization=organization, label=label
-                )[0]
-                data.count = Archives.objects.filter(
-                    organization=organization, metadata__record_type=label
-                ).count()
+                ).exists():
+                    data = DashboardRecordTypeData.objects.filter(
+                        organization=organization, label=label
+                    )[0]
+                    data.count = Archives.objects.filter(
+                        organization=organization, metadata__record_type=label
+                    ).count()
+                else:
+                    data = DashboardRecordTypeData.objects.get_or_create(
+                        organization=organization, label=label
+                    )[0]
+                    data.count = Archives.objects.filter(
+                        organization=organization, metadata__record_type=label
+                    ).count()
                 data.save()
 
 
