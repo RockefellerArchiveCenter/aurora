@@ -6,7 +6,8 @@ from bag_transfer.lib.RAC_CMD import delete_system_group
 from bag_transfer.models import (Archives, BagInfoMetadata, DashboardMonthData,
                                  DashboardRecordTypeData, Organization, User)
 from dateutil.relativedelta import relativedelta
-from django.db.models.signals import m2m_changed, post_save, pre_delete
+from django.db.models.signals import (m2m_changed, pre_delete, post_delete,
+                                        post_save)
 from django.dispatch import receiver
 
 
@@ -46,7 +47,7 @@ def dashboard_data(sender, instance, **kwargs):
     set_count(sender, instance, organization)
 
 
-@receiver(pre_delete, sender=Archives)
+@receiver(post_delete, sender=Archives)
 def dashboard_check(sender, instance, **kwargs):
     """
     Updates dashboard data each time a transfer is deleted, which
@@ -75,6 +76,9 @@ def dashboard_check(sender, instance, **kwargs):
 
 
 def set_count(sender, instance, organization):
+    """
+    Updates dashboard data counts.
+    """
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(
@@ -89,7 +93,6 @@ def set_count(sender, instance, organization):
                     data.count = Archives.objects.filter(
                         organization=organization, metadata__record_type=label
                     ).count()
-                    data.save()
                 else:
                     data = DashboardRecordTypeData.objects.get_or_create(
                         organization=organization, label=label
@@ -97,10 +100,13 @@ def set_count(sender, instance, organization):
                     data.count = Archives.objects.filter(
                         organization=organization, metadata__record_type=label
                     ).count()
-                    data.save()
+                data.save()
 
 
 def set_uploads(current, data, organization):
+    """
+    Updates dashboard data upload information.
+    """
     data.upload_count = Archives.objects.filter(
         organization=organization,
         machine_file_upload_time__year=current.year,
