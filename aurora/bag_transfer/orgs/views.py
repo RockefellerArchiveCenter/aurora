@@ -278,7 +278,7 @@ class BagItProfileManageView(TemplateView):
         )
 
 
-class BagItProfileDetailView(DetailView):
+class BagItProfileDetailView(OrgReadViewMixin, DetailView):
     template_name = "bagit_profiles/detail.html"
     model = BagItProfile
 
