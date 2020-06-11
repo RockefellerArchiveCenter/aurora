@@ -96,7 +96,9 @@ class MainView(LoggedInMixinDefaults, TemplateView):
             current += relativedelta(months=1)
 
         for (n, label) in enumerate(
-            set(DashboardRecordTypeData.objects.all().values_list("label", flat=True))
+            set(DashboardRecordTypeData.objects.filter(
+                organization__in=org
+            ).values_list("label", flat=True))
         ):
             record_type_count = 0
             for count in DashboardRecordTypeData.objects.filter(
