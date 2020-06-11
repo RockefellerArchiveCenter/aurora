@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 
 
 class LoggedInMixinDefaults(LoginRequiredMixin):
-    login_url = "/login"
+    login_url = reverse_lazy("login")
 
 
 class ArchivistMixin(LoggedInMixinDefaults, UserPassesTestMixin):
