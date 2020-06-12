@@ -96,16 +96,19 @@ class MainView(LoggedInMixinDefaults, TemplateView):
             current += relativedelta(months=1)
 
         for (n, label) in enumerate(
-            set(DashboardRecordTypeData.objects.all().values_list("label", flat=True))
+            set(DashboardRecordTypeData.objects.filter(
+                organization__in=org
+            ).values_list("label", flat=True))
         ):
             record_type_count = 0
             for count in DashboardRecordTypeData.objects.filter(
                 label=label, organization__in=org
             ).values_list("count", flat=True):
                 record_type_count += count
-            data["record_types_by_year"].append(
-                {"label": label, "value": record_type_count, "color": colors[n]}
-            )
+            if record_type_count > 0:
+                data["record_types_by_year"].append(
+                    {"label": label, "value": record_type_count, "color": colors[n]}
+                )
 
         data["size_trend"] = round(
             (data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
