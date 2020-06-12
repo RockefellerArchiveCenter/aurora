@@ -105,9 +105,10 @@ class MainView(LoggedInMixinDefaults, TemplateView):
                 label=label, organization__in=org
             ).values_list("count", flat=True):
                 record_type_count += count
-            data["record_types_by_year"].append(
-                {"label": label, "value": record_type_count, "color": colors[n]}
-            )
+            if record_type_count > 0:
+                data["record_types_by_year"].append(
+                    {"label": label, "value": record_type_count, "color": colors[n]}
+                )
 
         data["size_trend"] = round(
             (data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
