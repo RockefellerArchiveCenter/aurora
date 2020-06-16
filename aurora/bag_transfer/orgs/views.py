@@ -137,30 +137,11 @@ class BagItProfileManageView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         instance = None
-        organization = Organization.objects.get(pk=self.kwargs.get("pk"))
         if self.kwargs.get("profile_pk"):
             instance = get_object_or_404(BagItProfile, pk=self.kwargs.get("profile_pk"))
         form = BagItProfileForm(request.POST, instance=instance)
         if form.is_valid():
-            if BagItProfile.objects.filter(
-                applies_to_organization=form.cleaned_data["applies_to_organization"],
-                contact_email=form.cleaned_data["contact_email"],
-                source_organization=form.cleaned_data["source_organization"],
-                version=form.cleaned_data["version"],
-                bagit_profile_identifier=form.cleaned_data["bagit_profile_identifier"],
-                external_description=form.cleaned_data["external_description"],
-                serialization=form.cleaned_data["serialization"],
-            ).exists():
-                bagit_profile = BagItProfile.objects.filter(
-                    applies_to_organization=form.cleaned_data["applies_to_organization"],
-                    contact_email=form.cleaned_data["contact_email"],
-                    source_organization=form.cleaned_data["source_organization"],
-                    version=form.cleaned_data["version"],
-                    bagit_profile_identifier=form.cleaned_data["bagit_profile_identifier"],
-                    external_description=form.cleaned_data["external_description"],
-                    serialization=form.cleaned_data["serialization"])[0]
-            else:
-                bagit_profile = form.save()
+            bagit_profile = instance if instance else form.save()
             bag_info_formset = BagItProfileBagInfoFormset(
                 request.POST, instance=bagit_profile, prefix="bag_info")
             manifests_allowed_formset = ManifestsAllowedFormset(
@@ -186,7 +167,6 @@ class BagItProfileManageView(TemplateView):
             ]
             for formset in forms_to_save:
                 if not formset.is_valid():
-                    print(formset.non_form_errors())
                     messages.error(
                         request,
                         "There was a problem with your submission. Please correct the error(s) below and try again.",
@@ -219,12 +199,9 @@ class BagItProfileManageView(TemplateView):
             bagit_profile.save()
             messages.success(
                 request,
-                "BagIt Profile for {} saved".format(
-                    bagit_profile.applies_to_organization.name
-                ),
+                "BagIt Profile for {} saved".format(bagit_profile.applies_to_organization.name),
             )
             return redirect("orgs:detail", bagit_profile.applies_to_organization.pk)
-        print(form.errors)
         messages.error(
             request,
             "There was a problem with your submission. Please correct the error(s) below and try again.",
@@ -234,7 +211,7 @@ class BagItProfileManageView(TemplateView):
             self.template_name,
             {
                 "form": BagItProfileForm(request.POST, instance=instance),
-                "organization": organization,
+                "organization": Organization.objects.get(pk=self.kwargs.get("pk")),
                 "bag_info_formset": BagItProfileBagInfoFormset(
                     request.POST, prefix="bag_info"),
                 "manifests_allowed_formset": ManifestsAllowedFormset(
