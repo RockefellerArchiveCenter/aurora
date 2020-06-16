@@ -6,7 +6,8 @@ from bag_transfer.lib.RAC_CMD import delete_system_group
 from bag_transfer.models import (Archives, BagInfoMetadata, DashboardMonthData,
                                  DashboardRecordTypeData, Organization, User)
 from dateutil.relativedelta import relativedelta
-from django.db.models.signals import m2m_changed, post_save, pre_delete
+from django.db.models.signals import (m2m_changed, post_delete, post_save,
+                                      pre_delete)
 from django.dispatch import receiver
 
 
@@ -25,10 +26,9 @@ def set_is_staff(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Archives)
-@receiver(pre_delete, sender=Archives)
-def dashboard_data(sender, instance, **kwargs):
+def add_dashboard_data(sender, instance, **kwargs):
     """
-    Updates dashboard data each time a transfer is saved or deleted, which
+    Adds dashboard data each time a transfer is saved, which
     avoids expensive data operations on the database.
     """
     today = date.today()
@@ -42,19 +42,43 @@ def dashboard_data(sender, instance, **kwargs):
                     year=current.year,
                     organization=organization,
                 )[0]
-                data.upload_count = Archives.objects.filter(
-                    organization=organization,
-                    machine_file_upload_time__year=current.year,
-                    machine_file_upload_time__month=current.month,
-                ).count()
-                data.upload_size = (
-                    sum(map(int, Archives.objects.filter(
-                        organization=organization,
-                        machine_file_upload_time__year=current.year,
-                        machine_file_upload_time__month=current.month,
-                    ).values_list("machine_file_size", flat=True),)) / 1000000000)
-                data.save()
+                set_uploads(current, data, organization)
             current += relativedelta(months=1)
+    set_count(sender, instance, organization)
+
+
+@receiver(post_delete, sender=Archives)
+def remove_dashboard_data(sender, instance, **kwargs):
+    """
+    Removes dashboard data each time a transfer is deleted, which
+    avoids expensive data operations on the database.
+    """
+    today = date.today()
+    current = today - relativedelta(years=1)
+    if instance.process_status >= sender.TRANSFER_COMPLETED:
+        while current <= today:
+            for organization in Organization.objects.all():
+                if DashboardMonthData.objects.filter(
+                    month_label=current.strftime("%B"),
+                    sort_date=int(str(current.year) + str(current.month)),
+                    year=current.year,
+                    organization=organization,
+                ).exists():
+                    data = DashboardMonthData.objects.filter(
+                        month_label=current.strftime("%B"),
+                        sort_date=int(str(current.year) + str(current.month)),
+                        year=current.year,
+                        organization=organization,
+                    )[0]
+                    set_uploads(current, data, organization)
+            current += relativedelta(months=1)
+    set_count(sender, instance, organization)
+
+
+def set_count(sender, instance, organization):
+    """
+    Updates dashboard data counts.
+    """
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(
@@ -67,6 +91,24 @@ def dashboard_data(sender, instance, **kwargs):
                     organization=organization, metadata__record_type=label
                 ).count()
                 data.save()
+
+
+def set_uploads(current, data, organization):
+    """
+    Updates dashboard data upload information.
+    """
+    data.upload_count = Archives.objects.filter(
+        organization=organization,
+        machine_file_upload_time__year=current.year,
+        machine_file_upload_time__month=current.month,
+    ).count()
+    data.upload_size = (
+        sum(map(int, Archives.objects.filter(
+            organization=organization,
+            machine_file_upload_time__year=current.year,
+            machine_file_upload_time__month=current.month,
+        ).values_list("machine_file_size", flat=True),)) / 1000000000)
+    data.save()
 
 
 @receiver(post_save, sender=Archives)

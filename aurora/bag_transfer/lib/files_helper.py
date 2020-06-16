@@ -1,6 +1,5 @@
 import os
 import pwd
-import re
 import tarfile
 import zipfile
 
@@ -95,30 +94,6 @@ def tar_has_top_level_only(file_path):
         if item.split("/")[0] != top_dir:
             return False
     return top_dir
-
-
-def get_fields_from_file(file_path):
-    fields = {}
-    try:
-        patterns = [r"(?P<key>[\w\-]+)", "(?P<val>.+)"]
-        with open(file_path, "r") as f:
-            for line in f.readlines():
-                line = line.strip("\n")
-
-                row_search = re.search(r":?(\s)?".join(patterns), line)
-                if row_search:
-                    key = row_search.group("key").replace("-", "_").strip()
-                    val = row_search.group("val").strip()
-                    if key in fields:
-                        listval = [fields[key]]
-                        listval.append(val)
-                        fields[key] = listval
-                    else:
-                        fields[key] = val
-    except Exception as e:
-        print(e)
-
-    return fields
 
 
 def all_paths_exist(list_of_paths):

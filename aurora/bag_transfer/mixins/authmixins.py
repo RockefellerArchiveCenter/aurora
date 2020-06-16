@@ -1,13 +1,11 @@
-from bag_transfer.accession.models import Accession
-from bag_transfer.models import Archives, Organization, User
-from bag_transfer.rights.models import RightsStatement
+from bag_transfer.models import BagItProfile, Organization, User
 from braces.views import (LoginRequiredMixin, SuperuserRequiredMixin,
                           UserPassesTestMixin)
 from django.urls import reverse_lazy
 
 
 class LoggedInMixinDefaults(LoginRequiredMixin):
-    login_url = "/app"
+    login_url = reverse_lazy("login")
 
 
 class ArchivistMixin(LoggedInMixinDefaults, UserPassesTestMixin):
@@ -38,66 +36,51 @@ class SysAdminMixin(LoggedInMixinDefaults, SuperuserRequiredMixin):
     authenticated_redirect_url = reverse_lazy("app_home")
 
 
-# UNUSED
-class SelfOrManagerMixin(LoggedInMixinDefaults, UserPassesTestMixin):
-    authenticated_redirect_url = reverse_lazy("app_home")
-
-    def test_func(self, user):
-        return (
-            user.is_superuser or user.in_group("managing_archivists") or self.kwargs.get("pk") == str(user.pk)
-        )
-
-
 class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
+    """Provides read-only access to objects associated with a user's organization.
+
+    Since most of Aurora's views provide a model attribute, we target the Organization
+    associated with the object to remove access to non-archivists users not in
+    that Organization.
+    """
+
     def test_func(self, user):
 
         if user.is_staff:
             return True
 
         organization = None
-        # Most views are using generics, which in return pass models, so we can hook those in and target the org to remove access to reg users not in org
+
         if self.request.method == "GET":
             if hasattr(self, "suffix"):
                 if self.suffix == "List":
                     return True
             if hasattr(self, "model"):
                 if self.model == User:
-                    # all staff validate to true above, should pass if == request.user
                     try:
-                        u = User.objects.get(pk=self.kwargs.get("pk"))
-                        if self.request.user == u:
+                        if User.objects.get(pk=self.kwargs.get("pk")) == self.user:
                             return True
                     except User.DoesNotExist as e:
                         print(e)
 
                 elif self.model == Organization:
                     try:
-                        org = Organization.objects.get(pk=self.kwargs.get("pk"))
-                        organization = org
+                        organization = Organization.objects.get(pk=self.kwargs.get("pk"))
                     except Organization.DoesNotExist as e:
                         print(e)
 
-                elif self.model == RightsStatement:
+                elif self.model == BagItProfile:
                     try:
-                        rights_statement = RightsStatement.objects.get(
-                            pk=self.kwargs.get("pk")
-                        )
-                        organization = rights_statement.organization
-                    except RightsStatement.DoesNotExist as e:
+                        profile = BagItProfile.objects.get(pk=self.kwargs.get("pk"))
+                        organization = profile.applies_to_organization
+                    except BagItProfile.DoesNotExist as e:
                         print(e)
 
-                elif self.model == Archives:
+                else:
                     try:
-                        archive = Archives.objects.get(pk=self.kwargs.get("pk"))
-                        organization = archive.organization
-                    except Archives.DoesNotExist as e:
-                        print(e)
-
-                elif self.model == Accession:
-                    try:
-                        accession = Accession.objects.get(pk=self.kwargs.get("pk"))
-                        organization = accession.organization
-                    except Accession.DoesNotExist as e:
+                        obj = self.model.objects.get(pk=self.kwargs.get("pk"))
+                        organization = obj.organization
+                    except self.model.DoesNotExist as e:
                         print(e)
 
                 if organization and self.request.user.organization == organization:

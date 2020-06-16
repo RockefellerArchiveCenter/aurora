@@ -1,3 +1,5 @@
+from socket import gaierror
+
 from bag_transfer.lib.RAC_CMD import set_server_password
 from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
@@ -9,6 +11,7 @@ from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
                                      UserPasswordResetForm,
                                      UserSetPasswordForm)
 from braces.views import AnonymousRequiredMixin
+from django.contrib import messages
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetCompleteView,
@@ -65,12 +68,15 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
         random password."""
         post = super(UsersCreateView, self).post(request, *args, **kwargs)
         form = PasswordResetForm({"email": request.POST.get("email")})
-        form.is_valid()
-        form.save(
-            request=self.request,
-            subject_template_name="users/password_initial_set_subject.txt",
-            email_template_name="users/password_initial_set_email.html",
-        )
+        if form.is_valid():
+            try:
+                form.save(
+                    request=self.request,
+                    subject_template_name="users/password_initial_set_subject.txt",
+                    email_template_name="users/password_initial_set_email.html",
+                )
+            except gaierror:
+                messages.error(request, "Unable to send email to new user because SMTP settings are not properly configured.")
         return post
 
 
