@@ -87,7 +87,6 @@ if len(orgs) == 0:
 
         print("Creating BagIt Profile for {}".format(new_org))
         profile = BagItProfile.objects.create(
-            applies_to_organization=new_org,
             source_organization=archive_org,
             external_description="Test BagIt Profile",
             contact_email="archive@example.org",
@@ -145,6 +144,7 @@ if len(orgs) == 0:
             BagItProfileBagInfoValues.objects.create(
                 bagit_profile_baginfo=record_type, name=name
             )
+        profile.save_to_org(new_org)
 
         print("Creating Rights Statements for {}".format(new_org))
         copyright_statement = RightsStatement.objects.create(
