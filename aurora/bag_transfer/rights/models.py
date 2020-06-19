@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime
 
 from bag_transfer.accession.models import Accession
@@ -89,11 +90,9 @@ class RightsStatement(models.Model):
             setattr(merge_to, dates["start"], sorted(start_dates)[0])
             setattr(merge_to, dates["end"], sorted(end_dates)[-1])
 
-        statements_by_type = {}
+        statements_by_type = defaultdict(list)
         merged_statements = []
         for statement in statement_list:
-            if not statement.rights_basis.lower() in statements_by_type:
-                statements_by_type[statement.rights_basis.lower()] = []
             statements_by_type[statement.rights_basis.lower()].append(statement)
         for statement_group in statements_by_type:
             merged_statement = statements_by_type[statement_group][0]
@@ -103,27 +102,14 @@ class RightsStatement(models.Model):
             else:
                 merged_rights_granted = []
                 rights_info_to_merge = []
-                rights_granted_groups = {}
+                rights_granted_groups = defaultdict(list)
 
                 for statement in statements_by_type[statement_group]:
                     rights_info_to_merge.append(statement.get_rights_info_object())
                     rights_granted_objects = statement.get_rights_granted_objects()
                     for rights_granted in rights_granted_objects:
-                        if (
-                            not "{}{}".format(
-                                rights_granted.act, rights_granted.restriction
-                            )
-                            in rights_granted_groups
-                        ):
-                            rights_granted_groups[
-                                "{}{}".format(
-                                    rights_granted.act, rights_granted.restriction
-                                )
-                            ] = []
                         rights_granted_groups[
-                            "{}{}".format(
-                                rights_granted.act, rights_granted.restriction
-                            )
+                            "{}{}".format(rights_granted.act, rights_granted.restriction)
                         ].append(rights_granted)
 
                 date_keys = merged_statement.get_date_keys()
