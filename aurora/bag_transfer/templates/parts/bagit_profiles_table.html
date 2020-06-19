@@ -1,4 +1,4 @@
-{% if org.bagit_profiles %}
+{% if org.bagit_profile %}
   <table class="table table-striped bagit-profile-table">
     <thead>
       <tr>
@@ -8,22 +8,20 @@
       </tr>
     </thead>
     <tbody>
-      {% for profile in org.bagit_profiles %}
       <tr rel="{{ profile.pk }}">
-        <td>{{profile.bagit_profile_identifier}} <span class="badge">Version {{profile.version}}</span></td>
-        <td>{{profile.external_description}}</td>
+        <td>{{org.bagit_profile.bagit_profile_identifier}} <span class="badge">Version {{org.bagit_profile.version}}</span></td>
+        <td>{{org.bagit_profile.external_description}}</td>
         <td class="text-right col-md-4">
-          <a href="{% url 'orgs:bagit-profiles-detail' pk=org.pk profile_pk=profile.pk %}" class="btn btn-primary btn-sm">View</a>
+          <a href="{% url 'orgs:bagit-profiles-detail' pk=org.pk %}" class="btn btn-primary btn-sm">View</a>
 
           {% if request.user.is_manager or request.user.is_superuser %}
-            <a href="{% url 'orgs:bagit-profiles-edit' pk=org.pk profile_pk=profile.pk %}" class="btn btn-warning btn-sm">Edit</a>
-            <a href="{% url 'orgs:bagit-profiles-api' org.pk profile.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="bagit-profile">Delete</a>
+            <a href="{% url 'orgs:bagit-profiles-edit' pk=org.pk %}" class="btn btn-warning btn-sm">Edit</a>
+            <a href="{% url 'orgs:bagit-profiles-api' org.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="bagit-profile">Delete</a>
           {% endif %}
         </td>
       </tr>
-      {% endfor %}
     </tbody>
   </table>
 {% endif %}
 
-<p class="has-no-bagit-profile-p" {% if org.bagit_profiles %}style="display:none"{% endif %}>{{org.name}} has no BagIt Profiles.</p>
+<p class="has-no-bagit-profile-p" {% if org.bagit_profile %}style="display:none"{% endif %}>{{org.name}} has no BagIt Profile.</p>
