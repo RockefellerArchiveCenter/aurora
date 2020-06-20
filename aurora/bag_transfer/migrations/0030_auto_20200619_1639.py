@@ -11,10 +11,6 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='bagitprofile',
-            name='applies_to_organization',
-        ),
         migrations.AddField(
             model_name='organization',
             name='bagit_profile',
