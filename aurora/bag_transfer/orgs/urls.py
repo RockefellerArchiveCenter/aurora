@@ -20,17 +20,17 @@ urlpatterns = [
         name="bagit-profiles-add",
     ),
     url(
-        r"^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/$",
+        r"^(?P<pk>\d+)/bagit_profile/$",
         BagItProfileDetailView.as_view(),
         name="bagit-profiles-detail",
     ),
     url(
-        r"^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/edit$",
+        r"^(?P<pk>\d+)/bagit_profile/edit$",
         BagItProfileManageView.as_view(),
         name="bagit-profiles-edit",
     ),
     url(
-        r"^(?P<pk>\d+)/bagit_profiles/(?P<profile_pk>\d+)/(?P<action>(delete))/$",
+        r"^(?P<pk>\d+)/bagit_profile/(?P<action>(delete))/$",
         BagItProfileAPIAdminView.as_view(),
         name="bagit-profiles-api",
     ),

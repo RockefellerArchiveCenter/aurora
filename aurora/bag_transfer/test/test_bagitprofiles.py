@@ -1,9 +1,9 @@
 import random
 
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 BagItProfile, BagItProfileBagInfo,
-                                 ManifestsAllowed, ManifestsRequired,
-                                 TagFilesRequired, TagManifestsRequired)
+                                 BagItProfileBagInfo, ManifestsAllowed,
+                                 ManifestsRequired, TagFilesRequired,
+                                 TagManifestsRequired)
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGINFO_FIELD_CHOICES
 from django.conf import settings
@@ -28,7 +28,7 @@ class BagItProfileTestCase(TestCase):
 
     def test_bagitprofiles(self):
         for org in self.orgs:
-            profile = helpers.create_test_bagitprofile(applies_to_organization=org)
+            profile = helpers.create_test_bagitprofile(organization=org)
             response = self.client.get(
                 reverse("bagitprofile-detail", kwargs={"pk": profile.pk}))
             self.assertEqual(response.status_code, 200)
@@ -61,36 +61,16 @@ class BagItProfileTestCase(TestCase):
 
         # Get bagit profiles for each org
         for org in self.orgs:
-            self.assertTrue(org.bagit_profiles)
+            self.assertTrue(org.bagit_profile)
 
         # Test GET views
-        profile = random.choice(self.bagitprofiles)
-        org = profile.applies_to_organization
+        org = random.choice(self.orgs)
 
-        response = self.client.get(
-            reverse("orgs:bagit-profiles-add", kwargs={"pk": self.orgs[0].pk})
-        )
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(
-            reverse(
-                "orgs:bagit-profiles-edit",
-                kwargs={"pk": org.pk, "profile_pk": profile.pk},
-            )
-        )
-        self.assertEqual(response.status_code, 200)
+        for view in ["orgs:bagit-profiles-add", "orgs:bagit-profiles-edit", "organization-bagit-profile"]:
+            response = self.client.get(reverse(view, kwargs={"pk": org.pk}))
+            self.assertEqual(response.status_code, 200, "Response error: {}".format(response))
 
-        response = self.client.get(
-            reverse("organization-bagit-profiles", kwargs={"pk": org.pk})
-        )
-        self.assertEqual(response.status_code, 200)
         response = self.client.get(reverse("bagitprofile-list"))
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get(
-            reverse(
-                "organization-bagit-profiles-detail",
-                kwargs={"pk": org.pk, "number": profile.pk},
-            )
-        )
         self.assertEqual(response.status_code, 200)
 
         # Creating new BagItProfile
@@ -100,7 +80,6 @@ class BagItProfileTestCase(TestCase):
             {
                 "contact_email": "archive@rockarch.org",
                 "source_organization": organization.pk,
-                "applies_to_organization": organization.pk,
                 "allow_fetch": random.choice([True, False]),
                 "external_description": helpers.random_string(100),
                 "serialization": random.choice(["forbidden", "required", "optional"]),
@@ -140,15 +119,13 @@ class BagItProfileTestCase(TestCase):
         self.assertEqual(new_request.status_code, 302, "Request was not redirected")
 
         # Updating BagItProfile
-        profile = BagItProfile.objects.last()
         update_request = self.client.post(
             reverse(
                 "orgs:bagit-profiles-edit",
-                kwargs={"pk": organization.pk, "profile_pk": profile.pk}),
+                kwargs={"pk": organization.pk}),
             {
                 "contact_email": "archive@rockarch.org",
                 "source_organization": organization.pk,
-                "applies_to_organization": organization.pk,
                 "allow_fetch": random.choice([True, False]),
                 "external_description": helpers.random_string(100),
                 "serialization": "optional",
@@ -199,7 +176,6 @@ class BagItProfileTestCase(TestCase):
                 "orgs:bagit-profiles-api",
                 kwargs={
                     "pk": organization.pk,
-                    "profile_pk": profile.pk,
                     "action": "delete",
                 },
             ),
@@ -214,7 +190,6 @@ class BagItProfileTestCase(TestCase):
                 "orgs:bagit-profiles-api",
                 kwargs={
                     "pk": organization.pk,
-                    "profile_pk": profile.pk,
                     "action": "delete",
                 },
             )
