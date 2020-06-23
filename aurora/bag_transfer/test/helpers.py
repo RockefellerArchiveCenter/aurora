@@ -299,14 +299,12 @@ def create_test_archives(organization=None, process_status=None, count=1):
     return archives
 
 
-def create_test_bagitprofile(applies_to_organization=None):
-    applies_to_organization = (
-        applies_to_organization
-        if applies_to_organization
+def create_test_bagitprofile(organization=None):
+    organization = (
+        organization if organization
         else random.choice(Organization.objects.all())
     )
     profile = BagItProfile(
-        applies_to_organization=applies_to_organization,
         source_organization=random.choice(Organization.objects.all()),
         external_description=random_string(150),
         version=1,
@@ -314,7 +312,7 @@ def create_test_bagitprofile(applies_to_organization=None):
         allow_fetch=random.choice([True, False]),
         serialization=random.choice(["forbidden", "required", "optional"]),
     )
-    profile.save()
+    profile.save_to_org(organization)
     return profile
 
 

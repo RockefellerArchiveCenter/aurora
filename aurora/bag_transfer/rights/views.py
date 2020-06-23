@@ -1,7 +1,7 @@
 from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.models import (BagItProfile, BagItProfileBagInfo,
+from bag_transfer.models import (BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, Organization)
 from bag_transfer.rights.forms import (CopyrightFormSet, LicenseFormSet,
                                        OtherFormSet, RightsForm,
@@ -31,9 +31,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
     def get_applies_to_type_choices(self, organization):
         values = BagItProfileBagInfoValues.objects.filter(
             bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(
-                bagit_profile__in=BagItProfile.objects.filter(
-                    applies_to_organization=organization
-                ),
+                bagit_profile=organization.bagit_profile,
                 field="record_type",
             )
         )

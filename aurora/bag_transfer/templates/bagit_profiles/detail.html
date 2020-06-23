@@ -2,8 +2,8 @@
 {% load tz %}
 
 {% block h1_title %}
-  BagIt Profile <small>{{object.applies_to_organization.name}}</small>
-  <a href="{% url 'orgs:detail' pk=object.applies_to_organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+  BagIt Profile <small>{{organization.name}}</small>
+  <a href="{% url 'orgs:detail' pk=organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
 {% endblock %}
 
 {% block content %}

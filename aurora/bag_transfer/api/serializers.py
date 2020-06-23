@@ -325,18 +325,16 @@ class BagItProfileSerializer(serializers.BaseSerializer):
 
 
 class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
+    organization = serializers.StringRelatedField(source="profile_organization")
+
     class Meta:
         model = BagItProfile
-        fields = ("url", "external_description", "version", "applies_to_organization")
+        fields = ("url", "external_description", "version", "organization")
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
-    bagit_profiles = serializers.HyperlinkedIdentityField(
-        read_only=True, view_name="organization-bagit-profiles"
-    )
     rights_statements = serializers.HyperlinkedIdentityField(
-        read_only=True, view_name="organization-rights-statements"
-    )
+        read_only=True, view_name="organization-rights-statements")
 
     class Meta:
         model = Organization
@@ -347,7 +345,7 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "machine_name",
             "acquisition_type",
-            "bagit_profiles",
+            "bagit_profile",
             "rights_statements",
         )
 

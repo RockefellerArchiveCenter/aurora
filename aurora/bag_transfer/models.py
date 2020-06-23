@@ -27,8 +27,9 @@ class Organization(models.Model):
         ("transfer", "Transfer"),
     )
     acquisition_type = models.CharField(
-        max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True
-    )
+        max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
+    bagit_profile = models.ForeignKey(
+        "BagItProfile", on_delete=models.SET_NULL, blank=True, null=True, related_name="profile_organization")
 
     class Meta:
         ordering = ["name"]
@@ -41,9 +42,6 @@ class Organization(models.Model):
 
     def rights_statements(self):
         return self.rightsstatement_set.filter(archive__isnull=True)
-
-    def bagit_profiles(self):
-        return BagItProfile.objects.filter(applies_to_organization=self)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by("username")
@@ -675,9 +673,6 @@ class BagInfoMetadata(models.Model):
 
 
 class BagItProfile(models.Model):
-    applies_to_organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, related_name="applies_to_organization"
-    )
     source_organization = models.ForeignKey(
         Organization, on_delete=models.CASCADE, related_name="source_organization"
     )
@@ -692,8 +687,12 @@ class BagItProfile(models.Model):
         ("optional", "optional"),
     )
     serialization = models.CharField(
-        choices=SERIALIZATION_CHOICES, max_length=25, default="optional"
-    )
+        choices=SERIALIZATION_CHOICES, max_length=25, default="optional")
+
+    def save_to_org(self, org):
+        self.save()
+        org.bagit_profile = self
+        org.save()
 
 
 class ManifestsAllowed(models.Model):

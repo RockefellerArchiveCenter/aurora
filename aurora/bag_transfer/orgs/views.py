@@ -91,16 +91,14 @@ class BagItProfileManageView(TemplateView):
     model = BagItProfile
 
     def get(self, request, *args, **kwargs):
-        applies_to_organization = Organization.objects.get(pk=self.kwargs.get("pk"))
         source_organization = self.request.user.organization
-        profile = None
-        if "profile_pk" in kwargs:
-            profile = get_object_or_404(BagItProfile, pk=self.kwargs.get("profile_pk"))
+        organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
+        profile = organization.bagit_profile
+        if profile:
             form = BagItProfileForm(instance=profile)
         else:
             form = BagItProfileForm(
                 initial={
-                    "applies_to_organization": applies_to_organization,
                     "source_organization": source_organization,
                     "contact_email": "archive@rockarch.org",
                 }
@@ -131,14 +129,13 @@ class BagItProfileManageView(TemplateView):
                 "tag_manifests_formset": tag_manifests_formset,
                 "tag_files_formset": tag_files_formset,
                 "meta_page_title": "BagIt Profile",
-                "organization": applies_to_organization,
+                "organization": organization,
             },
         )
 
     def post(self, request, *args, **kwargs):
-        instance = None
-        if self.kwargs.get("profile_pk"):
-            instance = get_object_or_404(BagItProfile, pk=self.kwargs.get("profile_pk"))
+        organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
+        instance = organization.bagit_profile
         form = BagItProfileForm(request.POST, instance=instance)
         if form.is_valid():
             bagit_profile = instance if instance else form.save()
@@ -175,7 +172,7 @@ class BagItProfileManageView(TemplateView):
                         request,
                         self.template_name,
                         {
-                            "organization": bagit_profile.applies_to_organization,
+                            "organization": organization,
                             "form": form,
                             "bag_info_formset": bag_info_formset,
                             "manifests_allowed_formset": manifests_allowed_formset,
@@ -196,12 +193,12 @@ class BagItProfileManageView(TemplateView):
                     kwargs={"pk": bagit_profile.id, "format": "json"},
                 )
             )
-            bagit_profile.save()
+            bagit_profile.save_to_org(organization)
             messages.success(
                 request,
-                "BagIt Profile for {} saved".format(bagit_profile.applies_to_organization.name),
+                "BagIt Profile for {} saved".format(organization.name),
             )
-            return redirect("orgs:detail", bagit_profile.applies_to_organization.pk)
+            return redirect("orgs:detail", organization.pk)
         messages.error(
             request,
             "There was a problem with your submission. Please correct the error(s) below and try again.",
@@ -236,7 +233,13 @@ class BagItProfileDetailView(OrgReadViewMixin, DetailView):
     model = BagItProfile
 
     def get_object(self):
-        return BagItProfile.objects.get(id=self.kwargs["profile_pk"])
+        org = Organization.objects.get(pk=self.kwargs.get("pk"))
+        return org.bagit_profile
+
+    def get_context_data(self, *args, **kwargs):
+        data = super(BagItProfileDetailView, self).get_context_data(*args, **kwargs)
+        data["organization"] = Organization.objects.get(pk=self.kwargs.get("pk"))
+        return data
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
@@ -246,9 +249,9 @@ class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, Templa
         resp = {"success": 0}
 
         if "action" in self.kwargs:
-            obj = get_object_or_404(BagItProfile, pk=context["profile_pk"])
+            organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
             if self.kwargs["action"] == "delete":
-                obj.delete()
+                organization.bagit_profile.delete()
                 resp["success"] = 1
 
         return self.render_to_json_response(resp, **kwargs)

@@ -31,17 +31,9 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         return queryset
 
     @action(detail=True)
-    def bagit_profiles(self, request, *args, **kwargs):
+    def bagit_profile(self, request, *args, **kwargs):
         org = self.get_object()
-        bagit_profiles = BagItProfile.objects.filter(applies_to_organization=org)
-        serializer = BagItProfileSerializer(
-            bagit_profiles, context={"request": request}, many=True
-        )
-        return Response(serializer.data)
-
-    @action(detail=True, url_path="bagit_profiles/(?P<number>[0-9]+)")
-    def bagit_profiles_detail(self, request, number=None, *args, **kwargs):
-        bagit_profile = BagItProfile.objects.get(id=number)
+        bagit_profile = org.bagit_profile
         serializer = BagItProfileSerializer(bagit_profile, context={"request": request})
         return Response(serializer.data)
 
