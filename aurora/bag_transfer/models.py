@@ -697,8 +697,8 @@ class BagItProfile(models.Model):
 
 
 class ManifestsAllowed(models.Model):
-    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    MANIFESTS_ALLOWED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
+    name = models.CharField(choices=MANIFESTS_ALLOWED_CHOICES, max_length=20)
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_allowed")
 
 
