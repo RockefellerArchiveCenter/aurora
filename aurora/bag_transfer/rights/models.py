@@ -68,27 +68,30 @@ class RightsStatement(models.Model):
         )
         return data
 
-    def get_date_keys(self):
+    def get_date_keys(self, periods=False):
         if self.rights_basis == "Other":
             start_date_key = "other_rights_applicable_start_date"
             end_date_key = "other_rights_applicable_end_date"
+            start_date_period_key = "other_rights_start_date_period"
+            end_date_period_key = "other_rights_end_date_period"
         else:
-            start_date_key = "{}_applicable_start_date".format(
-                self.rights_basis.lower()
-            )
+            start_date_key = "{}_applicable_start_date".format(self.rights_basis.lower())
             end_date_key = "{}_applicable_end_date".format(self.rights_basis.lower())
-        return {"start": start_date_key, "end": end_date_key}
+            start_date_period_key = "{}_start_date_period".format(self.rights_basis.lower())
+            end_date_period_key = "{}_end_date_period".format(self.rights_basis.lower())
+        keys = (start_date_key, start_date_period_key, end_date_key, end_date_period_key) if periods else (start_date_key, end_date_key)
+        return keys
 
     @staticmethod
     def merge_rights(statement_list):
-        def merge_dates(merge_list, dates, merge_to):
+        def merge_dates(merge_list, start_date_key, end_date_key, merge_to):
             start_dates = []
             end_dates = []
             for merge_item in merge_list:
-                start_dates.append(getattr(merge_item, dates["start"]))
-                end_dates.append(getattr(merge_item, dates["end"]))
-            setattr(merge_to, dates["start"], sorted(start_dates)[0])
-            setattr(merge_to, dates["end"], sorted(end_dates)[-1])
+                start_dates.append(getattr(merge_item, start_date_key))
+                end_dates.append(getattr(merge_item, end_date_key))
+            setattr(merge_to, start_date_key, sorted(start_dates)[0])
+            setattr(merge_to, end_date_key, sorted(end_dates)[-1])
 
         statements_by_type = defaultdict(list)
         merged_statements = []
@@ -112,14 +115,15 @@ class RightsStatement(models.Model):
                             "{}{}".format(rights_granted.act, rights_granted.restriction)
                         ].append(rights_granted)
 
-                date_keys = merged_statement.get_date_keys()
-                merge_dates(rights_info_to_merge, date_keys, merged_rights_info)
+                start_date_key, end_date_key = merged_statement.get_date_keys()
+                merge_dates(rights_info_to_merge, start_date_key, end_date_key, merged_rights_info)
 
                 for granted_group in rights_granted_groups:
                     merged_group = rights_granted_groups[granted_group][0]
                     merge_dates(
                         rights_granted_groups[granted_group],
-                        {"start": "start_date", "end": "end_date"},
+                        "start_date",
+                        "end_date",
                         merged_group,
                     )
                     merged_rights_granted.append(merged_group)

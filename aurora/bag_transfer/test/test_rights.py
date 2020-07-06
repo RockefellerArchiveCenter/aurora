@@ -39,7 +39,8 @@ class RightsTestCase(TestCase):
 
         # Assign rights statements to archives
         for archive in self.archives:
-            archive.assign_rights()
+            assign = archive.assign_rights()
+            self.assertTrue(assign)
 
         # Rights statements are cloned when assigned, so we should have more of them now
         assigned_length = len(RightsStatement.objects.all())
