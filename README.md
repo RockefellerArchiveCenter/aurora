@@ -38,12 +38,13 @@ $ docker-compose up
 
 #### Installation Notes for Windows Users
 
-Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
-
-To avoid line ending conflicts, clone the repo to Windows using `core.autocrlf`
+By default, when cloning to a Windows machine, git will convert line endings to DOS format, which will cause a variety of issues in the Docker container. To avoid these problems, clone the repo to Windows using `core.autocrlf`
 ```
 $ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
 ```
+
+Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
+
 When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory.
 
 Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
