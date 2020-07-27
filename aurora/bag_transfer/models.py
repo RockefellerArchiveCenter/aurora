@@ -489,6 +489,18 @@ class Archives(models.Model):
 
     def assign_rights(self):
         """Assigns rights to an Archive."""
+
+        def update_date(obj, date_key, period_key, bag_date):
+            if not getattr(obj, date_key):
+                if getattr(obj, period_key):
+                    period = getattr(obj, period_key)
+                else:
+                    period = 0
+                setattr(
+                    obj,
+                    date_key,
+                    bag_date + relativedelta(years=period))
+
         try:
             bag_data = self.get_bag_data()
             RightsStatement = apps.get_model("bag_transfer", "RightsStatement")
@@ -506,66 +518,21 @@ class Archives(models.Model):
                 statement.save()
 
                 """Assign dates to rights basis and save."""
-                if statement.rights_basis == "Other":
-                    start_date_key = "other_rights_applicable_start_date"
-                    end_date_key = "other_rights_applicable_end_date"
-                    start_date_period_key = "other_rights_start_date_period"
-                    end_date_period_key = "other_rights_end_date_period"
-                else:
-                    start_date_key = "{}_applicable_start_date".format(
-                        statement.rights_basis.lower()
-                    )
-                    end_date_key = "{}_applicable_end_date".format(
-                        statement.rights_basis.lower()
-                    )
-                    start_date_period_key = "{}_start_date_period".format(
-                        statement.rights_basis.lower()
-                    )
-                    end_date_period_key = "{}_end_date_period".format(
-                        statement.rights_basis.lower()
-                    )
-                if not getattr(rights_info, start_date_key):
-                    if getattr(rights_info, start_date_period_key):
-                        period = getattr(rights_info, start_date_period_key)
-                    else:
-                        period = 0
-                    setattr(
-                        rights_info,
-                        start_date_key,
-                        bag_data["date_start"] + relativedelta(years=period),
-                    )
-                if not getattr(rights_info, end_date_key):
-                    if getattr(rights_info, end_date_period_key):
-                        period = getattr(rights_info, end_date_period_key)
-                    else:
-                        period = 0
-                    setattr(
-                        rights_info,
-                        end_date_key,
-                        bag_data["date_end"] + relativedelta(years=period),
-                    )
+                start_date_key, start_date_period_key, end_date_key, end_date_period_key = statement.get_date_keys(periods=True)
+                for date_key, period_key, bag_data_key in [
+                        (start_date_key, start_date_period_key, "date_start"),
+                        (end_date_key, end_date_period_key, "date_end")]:
+                    update_date(rights_info, date_key, period_key, bag_data[bag_data_key])
                 rights_info.pk = None
                 rights_info.rights_statement = statement
                 rights_info.save()
 
                 """Assign dates to rights granted and save."""
                 for granted in rights_granted:
-                    if not granted.start_date:
-                        if getattr(granted, "start_date_period"):
-                            period = getattr(granted, "start_date_period")
-                        else:
-                            period = 0
-                        granted.start_date = bag_data["date_start"] + relativedelta(
-                            years=period
-                        )
-                    if not granted.end_date:
-                        if getattr(granted, "end_date_period"):
-                            period = getattr(granted, "end_date_period")
-                        else:
-                            period = 0
-                        granted.end_date = bag_data["date_end"] + relativedelta(
-                            years=period
-                        )
+                    for date_key, period_key, bag_data_key in [
+                            ("start_date", "start_date_period", "date_start"),
+                            ("end_date", "end_date_period", "date_end")]:
+                        update_date(granted, date_key, period_key, bag_data[bag_data_key])
                     granted.pk = None
                     granted.rights_statement = statement
                     granted.save()
@@ -573,8 +540,6 @@ class Archives(models.Model):
         except Exception as e:
             print("Error saving rights statement: {}".format(str(e)))
             return False
-        else:
-            return True
 
 
 class BAGLogCodes(models.Model):
