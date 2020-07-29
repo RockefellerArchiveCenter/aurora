@@ -5,7 +5,7 @@ title:  "Rockefeller Archive Center Aurora User Documentation"
 
 Aurora is a web application that receives, virus checks, and validates transfers of digital archival records, and allows archivists to appraise and accession those records.
 
-For technical documentation including how to install Aurora, see the README in the master branch of the aurora repository on the [RAC's GitHub site](https://github.com/RockefellerArchiveCenter).
+For technical documentation including how to install Aurora, see the README in the base branch of the aurora repository on the [RAC's GitHub site](https://github.com/RockefellerArchiveCenter).
 
 ## Viewing transfers
 
@@ -146,4 +146,4 @@ In addition to the permissions of **All Archivists**, System Administrators have
 
 Aurora comes with a RESTful API, built using the Django Rest Framework. Users can interact with the API using a command-line client, but the application also includes a browsable API interface and the JSON API schema.
 
-For more information, see the [README](https://github.com/RockefellerArchiveCenter/aurora/blob/master/README.md) in Aurora's GitHub repository.
+For more information, see the [README](https://github.com/RockefellerArchiveCenter/aurora/blob/base/README.md) in Aurora's GitHub repository.
