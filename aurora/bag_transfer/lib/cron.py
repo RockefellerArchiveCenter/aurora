@@ -118,8 +118,8 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         result = True
         Pter.cron_open(self.code)
-        if not isdir(settings.STORAGE_ROOT_DIR):
-            mkdir(settings.STORAGE_ROOT_DIR)
+        if not isdir(settings.DELIVERY_QUEUE_DIR):
+            mkdir(settings.DELIVERY_QUEUE_DIR)
         for archive in Archives.objects.filter(
             process_status=Archives.ACCESSIONING_STARTED
         ):
