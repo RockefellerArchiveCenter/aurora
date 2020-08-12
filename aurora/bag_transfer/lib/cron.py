@@ -1,6 +1,6 @@
 import json
-from os import isdir, mkdir
-from os.path import join
+from os import mkdir
+from os.path import isdir, join
 
 import bag_transfer.lib.log_print as Pter
 from asterism.bagit_helpers import update_bag_info
