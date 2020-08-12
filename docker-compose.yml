@@ -17,6 +17,7 @@ services:
       - ~/.pe-shared/aurora-ursamajor:/delivery
     ports:
       - "8000:8000"
+      - "22:22"
     depends_on:
       - db
 

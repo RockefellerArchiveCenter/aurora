@@ -21,10 +21,6 @@ RUN apt-get update \
 COPY scripts/* /usr/local/bin/
 RUN chmod +x /usr/local/bin/*
 
-# Setup SSH
-RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config && \
-    sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
-
 # Clamav configs and permissions
 RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
@@ -47,6 +43,7 @@ RUN mkdir -p /data/
 # Install Python modules
 RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 
-EXPOSE 8000 3310
+EXPOSE 8000
+EXPOSE 22
 
 WORKDIR /code/aurora
