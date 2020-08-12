@@ -61,12 +61,6 @@ Open up a new terminal window and navigate to the root of the application, then 
 $ docker-compose exec web import_sample_data
 ```
 
-If you're using the Docker container and would like to upload a bag you've made, you can do that by navigating to the uploads root located on your local machine at `~/.pe-shared/aurora-upload/` and moving the bag into the `/upload/` directory of the desired organization. To process the transfers, run
-
-```
-$ docker-compose exec web python manage.py runcrons
-```
-
 ### Data Persistence
 
 The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
