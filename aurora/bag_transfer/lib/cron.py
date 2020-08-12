@@ -1,5 +1,5 @@
 import json
-from os import mkdir
+from os import isdir, mkdir
 from os.path import join
 
 import bag_transfer.lib.log_print as Pter
@@ -118,6 +118,8 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         result = True
         Pter.cron_open(self.code)
+        if not isdir(settings.STORAGE_ROOT_DIR):
+            mkdir(settings.STORAGE_ROOT_DIR)
         for archive in Archives.objects.filter(
             process_status=Archives.ACCESSIONING_STARTED
         ):
