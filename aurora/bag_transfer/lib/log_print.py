@@ -8,11 +8,13 @@ def plines(lst, WRAPPER=0, tab=0, pref="", line_after=False):
 
     if WRAPPER:
         if WRAPPER == 1:
-            lst = [long_wrapper_str] + lst + [long_wrapper_str]
+            lst = [long_wrapper_str] + lst
         elif WRAPPER == 2:
             lst = [medium_wrapper_str] + lst
         elif WRAPPER == 3:
             lst = lst + [medium_wrapper_str]
+        if WRAPPER == 4:
+            lst = lst + [long_wrapper_str]
 
     for line in lst:
         if pref:
@@ -30,8 +32,4 @@ def cron_open(cron_code):
 
 
 def cron_close(cron_code):
-    plines(["{} cron end".format(cron_code).upper(), datetime.datetime.now()], 1)
-
-
-def spacer():
-    print("\n")
+    plines(["\n{} cron end".format(cron_code).upper(), datetime.datetime.now()], 4, line_after=True)
