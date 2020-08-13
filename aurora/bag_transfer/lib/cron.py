@@ -1,6 +1,6 @@
 import json
 from os import mkdir
-from os.path import join
+from os.path import isdir, join
 
 import bag_transfer.lib.log_print as Pter
 from asterism.bagit_helpers import update_bag_info
@@ -118,57 +118,36 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         result = True
         Pter.cron_open(self.code)
-        for archive in Archives.objects.filter(
-            process_status=Archives.ACCESSIONING_STARTED
-        ):
+        if not isdir(settings.DELIVERY_QUEUE_DIR):
+            mkdir(settings.DELIVERY_QUEUE_DIR)
+        for archive in Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED):
             try:
                 update_bag_info(
                     join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
-                    {"Origin": "aurora"}
-                )
+                    {"Origin": "aurora"})
                 tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
                 make_tarfile(
-                    join(settings.STORAGE_ROOT_DIR, tar_filename),
                     join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
-                )
+                    join(settings.STORAGE_ROOT_DIR, tar_filename))
 
-                mkdir(
-                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
-                )
+                mkdir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
                 move_file_or_dir(
                     join(settings.STORAGE_ROOT_DIR, tar_filename),
-                    join(
-                        settings.DELIVERY_QUEUE_DIR,
-                        archive.machine_file_identifier,
-                        tar_filename,
-                    ),
-                )
+                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier, tar_filename))
 
-                archive_json = ArchivesSerializer(
-                    archive, context={"request": None}
-                ).data
-                with open(
-                    join(
+                archive_json = ArchivesSerializer(archive, context={"request": None}).data
+                with open(join(
                         settings.DELIVERY_QUEUE_DIR,
                         archive.machine_file_identifier,
-                        "{}.json".format(archive.machine_file_identifier),
-                    ),
-                    "w",
-                ) as f:
+                        "{}.json".format(archive.machine_file_identifier)), "w") as f:
                     json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
 
                 make_tarfile(
-                    join(
-                        settings.DELIVERY_QUEUE_DIR,
-                        "{}.tar.gz".format(archive.machine_file_identifier),
-                    ),
                     join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier),
-                )
+                    join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(archive.machine_file_identifier)))
 
-                remove_file_or_dir(
-                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
-                )
+                remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier))
 
                 archive.process_status = Archives.DELIVERED
                 print(archive.machine_file_identifier)
