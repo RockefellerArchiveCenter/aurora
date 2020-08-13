@@ -22,7 +22,7 @@ class DiscoverTransfers(CronJobBase):
     code = "transfers.discover_transfers"
 
     def do(self):
-        result = False
+        result = True
         Pter.cron_open(self.code)
         BAGLog.log_it("CSTR")
 
@@ -102,9 +102,9 @@ class DiscoverTransfers(CronJobBase):
 
                     new_arc.save()
                     remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
-                    result = True
                 except Exception as e:
                     print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
+                    result = False
         Pter.cron_close(self.code)
         return result
 
@@ -116,7 +116,7 @@ class DeliverTransfers(CronJobBase):
     code = "transfers.deliver_transfers"
 
     def do(self):
-        result = False
+        result = True
         Pter.cron_open(self.code)
         if not isdir(settings.DELIVERY_QUEUE_DIR):
             mkdir(settings.DELIVERY_QUEUE_DIR)
@@ -175,9 +175,9 @@ class DeliverTransfers(CronJobBase):
                 archive.process_status = Archives.DELIVERED
                 print(archive.machine_file_identifier)
                 archive.save()
-                result = True
             except Exception as e:
                 print("Error delivering transfer {}: {}".format(archive, str(e)))
+                result = False
 
         Pter.cron_close(self.code)
         return result
