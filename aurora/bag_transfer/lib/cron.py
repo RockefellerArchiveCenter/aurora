@@ -1,6 +1,6 @@
 import json
 from os import mkdir
-from os.path import join
+from os.path import isdir, join
 
 import bag_transfer.lib.log_print as Pter
 from asterism.bagit_helpers import update_bag_info
@@ -118,6 +118,8 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         result = True
         Pter.cron_open(self.code)
+        if not isdir(settings.DELIVERY_QUEUE_DIR):
+            mkdir(settings.DELIVERY_QUEUE_DIR)
         for archive in Archives.objects.filter(
             process_status=Archives.ACCESSIONING_STARTED
         ):

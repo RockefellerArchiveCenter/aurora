@@ -1,6 +1,6 @@
 # Aurora
 
-[![Build Status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=master)](https://travis-ci.org/RockefellerArchiveCenter/aurora)
+[![Build Status](https://travis-ci.org/RockefellerArchiveCenter/aurora.svg?branch=base)](https://travis-ci.org/RockefellerArchiveCenter/aurora)
 ![GitHub (pre-)release](https://img.shields.io/github/release/RockefellerArchiveCenter/aurora/all.svg)
 
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
@@ -59,12 +59,6 @@ Open up a new terminal window and navigate to the root of the application, then 
 
 ```
 $ docker-compose exec web import_sample_data
-```
-
-If you're using the Docker container and would like to upload a bag you've made, you can do that by navigating to the uploads root located on your local machine at `~/.pe-shared/aurora-upload/` and moving the bag into the `/upload/` directory of the desired organization. To process the transfers, run
-
-```
-$ docker-compose exec web python manage.py runcrons
 ```
 
 ### Data Persistence
@@ -133,7 +127,7 @@ Aurora is an open source project and we welcome contributions! If you want to fi
 
 1. File an issue in this repository. This will provide a location to discuss proposed implementations of fixes or enhancements, and can then be tied to a subsequent pull request.
 2. If you have an idea of how to fix the bug (or make the improvements), fork the repository and work in your own branch. When you are done, push the branch back to this repository and set up a pull request. Automated unit tests are run on all pull requests. Any new code should have unit test coverage, documentation (if necessary), and should conform to the Python PEP8 style guidelines.
-3. After some back and forth between you and core committers (or individuals who have privileges to commit to the master branch of this repository), your code will probably be merged, perhaps with some minor changes.
+3. After some back and forth between you and core committers (or individuals who have privileges to commit to the base branch of this repository), your code will probably be merged, perhaps with some minor changes.
 
 
 ## License
