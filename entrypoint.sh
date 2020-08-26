@@ -2,6 +2,9 @@
 
 /code/wait-for-it.sh db:5432 --
 
+# Start SSH
+/usr/sbin/sshd
+
 # Start clamav services
 /etc/init.d/clamav-daemon start
 /etc/init.d/clamav-freshclam start
