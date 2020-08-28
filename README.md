@@ -61,6 +61,15 @@ Open up a new terminal window and navigate to the root of the application, then 
 $ docker-compose exec web import_sample_data
 ```
 
+### Transferring Your Own Bags
+
+If you'd like to transfer your own bags, you can do that by SFTPing them into the local container:
+- Protocol: `SFTP`
+- Host name: `localhost`
+- Port number: `22`
+- Username: A username associated with an existing user account in Aurora (see below for default accounts)
+- Password: The password associated with the user account above
+
 ### Data Persistence
 
 The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
@@ -78,6 +87,8 @@ By default, Aurora comes with five user accounts:
 |manager|password|Managing Archivist|
 
 See the Aurora User Documentation for more information about permissions associated with each user role.
+
+Note that in the Docker container, all user passwords are reset to "password" each time the container is restarted. This behavior can be changed by editing `setup_objects.py`, but note that this change will impact your ability to SFTP bags into the container.
 
 ## Transferring digital records
 
