@@ -20,6 +20,12 @@ python manage.py migrate
 echo "Setting up organizations and users"
 python manage.py shell < ../setup_objects.py
 
+# Start SSH
+if [[ -z "${TRAVIS_CI}" ]]; then
+  echo "starting sshd"
+  /usr/sbin/sshd -f /etc/ssh2/sshd_config
+fi
+
 #Start server
 echo "Starting server"
 python manage.py runserver 0.0.0.0:8000
