@@ -35,8 +35,8 @@ RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
     chown clamav:clamav /var/lib/clamav/*.cvd
 
 
-# Make directory needed by SSH
-RUN mkdir /run/sshd
+# Set up SSH
+RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
 
 # Copy Aurora application files
 RUN mkdir -p /code/

@@ -219,6 +219,7 @@ else:
     for user in User.objects.all():
         if add_user(user.username):
             add2grp(user.organization.machine_name, user.username)
+            set_server_password(user.username, "password")
 
 # Terminate any idle processes, which cause problems later.
 open = [

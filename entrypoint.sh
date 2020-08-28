@@ -2,9 +2,6 @@
 
 /code/wait-for-it.sh db:5432 --
 
-# Start SSH
-/usr/sbin/sshd
-
 # Start clamav services
 /etc/init.d/clamav-daemon start
 /etc/init.d/clamav-freshclam start
@@ -22,6 +19,10 @@ python manage.py migrate
 # Create initial organizations and users
 echo "Setting up organizations and users"
 python manage.py shell < ../setup_objects.py
+
+# Start SSH
+echo "starting sshd"
+/usr/sbin/sshd -f /etc/ssh2/sshd_config
 
 #Start server
 echo "Starting server"
