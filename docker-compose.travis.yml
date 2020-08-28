@@ -1,0 +1,23 @@
+version: '3'
+
+services:
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+    volumes:
+      - auroradb:/var/lib/mysql
+  web:
+    build: .
+    entrypoint: /code/entrypoint.sh
+    volumes:
+      - .:/code
+      - storage:/data1
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  auroradb:
+  storage:
