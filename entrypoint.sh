@@ -21,8 +21,10 @@ echo "Setting up organizations and users"
 python manage.py shell < ../setup_objects.py
 
 # Start SSH
-echo "starting sshd"
-/usr/sbin/sshd -f /etc/ssh2/sshd_config
+if [[ -z "${TRAVIS_CI}" ]]; then
+  echo "starting sshd"
+  /usr/sbin/sshd -f /etc/ssh2/sshd_config
+fi
 
 #Start server
 echo "Starting server"
