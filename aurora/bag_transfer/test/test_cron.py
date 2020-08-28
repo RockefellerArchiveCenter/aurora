@@ -1,7 +1,9 @@
 import os
 import random
+from unittest.mock import patch
 
 import bagit
+from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import Archives
 from bag_transfer.test import helpers
@@ -20,14 +22,19 @@ class CronTestCase(TestCase):
             groups=helpers.create_test_groups(['managing_archivists']),
             is_staff=True)
         self.client = Client()
+        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
+            if os.path.isdir(d):
+                remove_file_or_dir(d)
 
     def test_cron(self):
         self.discover_bags()
         self.deliver_bags()
 
-    def discover_bags(self):
-        for ref in BAGS_REF:
-            helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)
+    @patch("bag_transfer.lib.bag_checker.bagChecker.bag_passed_all")
+    def discover_bags(self, mock_bag_check):
+        bag_name, _ = BAGS_REF[0]
+        helpers.create_target_bags(bag_name, settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)
+        mock_bag_check.return_value = True
         discovered = DiscoverTransfers().do()
         self.assertIsNot(False, discovered)
 
@@ -41,10 +48,10 @@ class CronTestCase(TestCase):
         self.assertEqual(
             len(Archives.objects.filter(process_status=Archives.DELIVERED)),
             len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
-        for bag_path in os.listdir(settings.DELIVERY_QUEUE_DIR):
-            bag = bagit.Bag(os.path.join(settings.DELIVERY_QUEUE_DIR, bag_path))
-            self.assertTrue("Origin" in bag.bag_info)
-            self.assertEqual(bag.bag_info["Origin"], "aurora")
+        for bag_path in os.listdir(settings.STORAGE_ROOT_DIR):
+            bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))
+            self.assertTrue("Origin" in bag.info)
+            self.assertEqual(bag.info["Origin"], "aurora")
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

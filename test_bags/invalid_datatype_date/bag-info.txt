@@ -1,5 +1,5 @@
 Bag-Software-Agent: bagit.py <http://github.com/libraryofcongress/bagit-python>
-BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/aurora/master/test_bags/test_profile.json
+BagIt-Profile-Identifier: https://raw.githubusercontent.com/RockefellerArchiveCenter/aurora/base/test_bags/test_profile.json
 Bagging-Date: 2017-11-04T14:57:10.324823
 Date-End: June 22, 2002
 Date-Start: 2000-05-14
