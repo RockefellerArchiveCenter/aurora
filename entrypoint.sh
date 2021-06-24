@@ -3,8 +3,8 @@
 /code/wait-for-it.sh db:5432 --
 
 # Start clamav services
-/etc/init.d/clamav-daemon start
-/etc/init.d/clamav-freshclam start
+freshclam
+clamd
 
 # Create config.py if it doesn't exist
 if [ ! -f aurora/config.py ]; then
