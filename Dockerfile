@@ -26,12 +26,13 @@ RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav && \
     sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf && \
-    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
+    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf && \
+    freshclam
 
 # Set up SSH
 RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
 
-# Copy Aurora application files
+# Install Python dependencies
 RUN mkdir -p /code/
 COPY requirements.txt /code
 
