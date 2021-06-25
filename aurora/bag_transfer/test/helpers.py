@@ -6,14 +6,16 @@ from os import chown, listdir, path, rename
 
 from asterism.file_helpers import anon_extract_all
 from aurora import settings
+from bag_transfer.accession.models import Accession
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  Archives, BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, LanguageCode,
-                                 ManifestsAllowed, ManifestsRequired,
-                                 Organization, RecordCreators,
-                                 TagFilesRequired, TagManifestsRequired, User)
+                                 BagItProfileBagInfoValues, BAGLog,
+                                 BAGLogCodes, LanguageCode, ManifestsAllowed,
+                                 ManifestsRequired, Organization,
+                                 RecordCreators, TagFilesRequired,
+                                 TagManifestsRequired, User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -185,7 +187,7 @@ def run_transfer_routine():
 def create_rights_statement(record_type=None, org=None, rights_basis=None):
     """Creates a rights statement given a record type, organization and rights basis.
     If any one of these values are not given, random values are assigned."""
-    if len(RecordType.objects.all()) < 1:
+    if len(RecordType.objects.all()) == 0:
         create_test_record_types()
     record_type = (
         record_type if record_type else random.choice(RecordType.objects.all())
@@ -300,6 +302,11 @@ def create_test_archives(organization=None, process_status=None, count=1):
         )
         archives.append(arc)
     return archives
+
+
+def create_test_baglogs(count=1):
+    return [BAGLog.objects.create(
+        code=random.choice(BAGLogCodes.objects.all())) for x in range(count)]
 
 
 def create_test_bagitprofile(organization=None):
@@ -455,6 +462,30 @@ def create_test_languages(count=1):
         language.save()
         languages.append(language)
     return languages
+
+
+def create_test_accessions(creator=None, count=1):
+    accessions = []
+    creator = creator if creator else create_test_record_creators()[0]
+    language = create_test_languages()[0]
+    for x in range(count):
+        accession = Accession.objects.create(
+            use_restrictions=random_string(100),
+            access_restrictions=random_string(100),
+            resource="http://example.org",
+            description=random_string(150),
+            end_date=make_aware(random_date(1990)),
+            extent_size="17275340",
+            acquisition_type=random.choice(["donation", "deposit", "gift"]),
+            title=random_string(255),
+            accession_number="2018.184",
+            start_date=make_aware(random_date(1960)),
+            extent_files="14",
+            appraisal_note=random_string(150),
+            language=language)
+        accession.creators.add(creator)
+        accessions.append(accession)
+    return accessions
 
 
 def get_accession_data(creator=None):

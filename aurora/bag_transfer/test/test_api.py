@@ -1,4 +1,3 @@
-import random
 from unittest.mock import patch
 
 from aurora import settings
@@ -16,19 +15,31 @@ class APITest(TestCase):
         self.process_status = Archives.ACCESSIONING_STARTED
         self.archivesspace_identifier = "/repositories/2/archival_objects/3"
         self.archivesspace_parent_identifier = "/repositories/2/archival_objects/4"
-        self.orgs = helpers.create_test_orgs(org_count=1)
+        self.org = helpers.create_test_orgs(org_count=1)[0]
+        profile = helpers.create_test_bagitprofile(self.org)
+        baginfo = helpers.create_test_bagitprofilebaginfo(bagitprofile=profile)
+        for x in range(5):
+            helpers.create_test_bagitprofilebaginfovalues(baginfo)
+        helpers.create_test_accessions()
+        rights_statement = helpers.create_rights_statement(org=self.org)
+        helpers.create_rights_info(rights_statement)
+        helpers.create_test_baglogs()
         helpers.create_test_archives(
-            organization=self.orgs[0],
+            organization=self.org,
             process_status=Archives.ACCEPTED,
             count=10)
         self.user = helpers.create_test_user(
             username=settings.TEST_USER["USERNAME"],
             password=settings.TEST_USER["PASSWORD"],
-            org=random.choice(self.orgs),
+            org=self.org,
             is_staff=True)
 
+    def assert_status_code(self, url, status_code):
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status_code, "Wrong HTTP status code, expecting {}".format(status_code))
+
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
-    def update_transfer(self, mock_cleanup):
+    def test_update_transfer(self, mock_cleanup):
         for archive in Archives.objects.all():
             request = self.factory.get(
                 reverse("archives-detail", kwargs={"pk": archive.pk}), format="json")
@@ -55,18 +66,26 @@ class APITest(TestCase):
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
 
-    def schema_response(self):
-        schema = self.client.get(reverse("schema"))
-        self.assertEqual(schema.status_code, 200, "Wrong HTTP code")
+    def test_schema_response(self):
+        self.assert_status_code(reverse("schema"), 200)
 
-    def health_check_response(self):
-        status = self.client.get(reverse('api_health_ping'))
-        self.assertEqual(status.status_code, 200, "Wrong HTTP code")
+    def test_health_check_response(self):
+        self.assert_status_code(reverse("api_health_ping"), 200)
 
-    def test_api(self):
-        self.update_transfer()
-        self.schema_response()
-        self.health_check_response()
+    def test_action_endpoints(self):
+        self.client.login(
+            username=settings.TEST_USER["USERNAME"],
+            password=settings.TEST_USER["PASSWORD"])
+        org = self.org.pk
+        self.assert_status_code(reverse("organization-bagit-profile", kwargs={"pk": org}), 200)
+        self.assert_status_code(reverse("organization-rights-statements", kwargs={"pk": org}), 200)
+        self.assert_status_code(reverse("user-current"), 200)
 
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
+    def test_list_views(self):
+        self.client.login(
+            username=settings.TEST_USER["USERNAME"],
+            password=settings.TEST_USER["PASSWORD"])
+        self.assert_status_code(reverse("accession-list"), 200)
+        self.assert_status_code(reverse("baglog-list"), 200)
+        self.assert_status_code(reverse("organization-list"), 200)
+        self.assert_status_code(reverse("user-list"), 200)
