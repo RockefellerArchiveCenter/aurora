@@ -104,15 +104,8 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
             form.process_status = Accession.CREATED
             accession = form.save()
             creators_formset.save()
-            merged_rights_statements = RightsStatement.merge_rights(rights_statements)
-            for statement in merged_rights_statements:
-                statement.accession = accession
-                statement.save()
-            for transfer in transfers_list:
-                BAGLog.log_it("BACC", transfer)
-                transfer.process_status = Archives.ACCESSIONING_STARTED
-                transfer.accession = accession
-                transfer.save()
+            self.update_accession_rights(RightsStatement.merge_rights(rights_statements), accession)
+            self.update_accession_transfers(transfers_list, accession)
             messages.success(request, " Accession created successfully!")
             if settings.DELIVERY_URL:
                 try:
@@ -134,7 +127,6 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
                     accession.save()
                     messages.success(request, "Accession data delivered.")
                 except Exception as e:
-                    print(e)
                     messages.error(
                         request, "Error delivering accession data: {}".format(e)
                     )
@@ -165,64 +157,17 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
             rights_statements = (
                 RightsStatement.objects.filter(archive__in=id_list)
                 .annotate(rights_group=F("rights_basis"))
-                .order_by("rights_group")
-            )
-            # should this get the source_organization from bag_data instead? Need to coordinate with data in other views
+                .order_by("rights_group"))
             organization = transfers_list[0].organization
-            notes = {"appraisal": []}
-            dates = {"start": [], "end": []}
-            creators_list = []
-            descriptions_list = []
-            languages_list = []
-            extent_files = 0
-            extent_size = 0
-            for transfer in transfers_list:
-                bag_data = transfer.get_bag_data()
-                extent_size = extent_size + int(
-                    bag_data.get("payload_oxum", "0.0").split(".")[0]
-                )
-                extent_files = extent_files + int(
-                    bag_data.get("payload_oxum", "0.0").split(".")[1]
-                )
-                dates["start"].append(bag_data.get("date_start", ""))
-                dates["end"].append(bag_data.get("date_end", ""))
-                notes["appraisal"].append(bag_data.get("appraisal_note", ""))
-                descriptions_list.append(
-                    bag_data.get("internal_sender_description", "")
-                )
-                for language in bag_data.get("language", []):
-                    languages_list.append(language)
-                creators_list += transfer.get_records_creators()
-            for statement in rights_statements:
-                rights_info = statement.get_rights_info_object()
-                rights_granted = statement.get_rights_granted_objects()
-                if not statement.rights_basis.lower() in notes:
-                    notes[statement.rights_basis.lower()] = []
-                notes[statement.rights_basis.lower()].append(
-                    next(
-                        value
-                        for key, value in rights_info.__dict__.items()
-                        if "_note" in key.lower()
-                    )
-                )
-                for grant in rights_granted:
-                    notes[statement.rights_basis.lower()].append(
-                        grant.rights_granted_note
-                    )
-            record_creators = list(set(creators_list))
-            languages_list = list(set(languages_list))
-            language = LanguageCode.objects.get_or_create(code="und")[0]
-            if len(languages_list) == 1:
-                LanguageCode.objects.get_or_create(code=languages_list[0])[0]
-            if len(languages_list) > 1:
-                language = LanguageCode.objects.get_or_create(code="mul")[0]
-            title = "{} {}".format(organization, bag_data.get("record_type", ""))
-            if len(record_creators) > 0:
-                title = "{}, {} {}".format(
-                    organization,
-                    ", ".join([creator.name for creator in record_creators]),
-                    bag_data.get("record_type", ""),
-                )
+            creators_list = list(set([c for t in transfers_list for c in t.get_records_creators()]))
+            notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type = self.grouped_transfer_data(transfers_list)
+            notes.update(self.rights_statement_notes(rights_statements))
+            language = self.parse_language(languages_list)
+            title = self.parse_title(
+                organization,
+                record_type,
+                ", ".join([creator.name for creator in creators_list]))
+
             form = AccessionForm(
                 initial={
                     "title": title,
@@ -239,11 +184,11 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
                     "appraisal_note": " ".join(set(notes.get("appraisal", []))),
                     "organization": organization,
                     "language": language,
-                    "creators": record_creators,
+                    "creators": creators_list,
                 }
             )
             creators_formset = CreatorsFormSet(
-                queryset=RecordCreators.objects.filter(name__in=record_creators)
+                queryset=RecordCreators.objects.filter(name__in=creators_list)
             )
             return render(
                 request,
@@ -256,6 +201,26 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
                     "rights_statements": rights_statements,
                 },
             )
+
+    def grouped_transfer_data(self, transfers_list):
+        notes = {"appraisal": []}
+        dates = {"start": [], "end": []}
+        descriptions_list = []
+        languages_list = []
+        extent_files = 0
+        extent_size = 0
+        for transfer in transfers_list:
+            bag_data = transfer.get_bag_data()
+            extent_size = extent_size + int(bag_data.get("payload_oxum", "0.0").split(".")[0])
+            extent_files = extent_files + int(bag_data.get("payload_oxum", "0.0").split(".")[1])
+            dates["start"].append(bag_data.get("date_start", ""))
+            dates["end"].append(bag_data.get("date_end", ""))
+            notes["appraisal"].append(bag_data.get("appraisal_note", ""))
+            descriptions_list.append(bag_data.get("internal_sender_description", ""))
+            languages_list += [l for l in bag_data.get("language", [])]
+        languages_list = list(set(languages_list))
+        record_type = bag_data.get("record_type", "")
+        return notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type
 
     def handle_ajax_request(self, request):
         """Handles JavaScript AJAX requests."""
@@ -276,6 +241,46 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
             except Exception as e:
                 rdata["error"] = str(e)
         return self.render_to_json_response(rdata)
+
+    def parse_language(self, languages_list):
+        if len(languages_list) == 1:
+            language = LanguageCode.objects.get_or_create(code=languages_list[0])[0]
+        elif len(languages_list) > 1:
+            language = LanguageCode.objects.get_or_create(code="mul")[0]
+        else:
+            language = LanguageCode.objects.get_or_create(code="und")[0]
+        return language
+
+    def parse_title(self, organization, record_type, creators_list):
+        return ("{}, {} {}".format(organization, creators_list, record_type)
+                if len(creators_list) > 0 else "{} {}".format(organization, record_type))
+
+    def rights_statement_notes(self, rights_statements):
+        notes = {}
+        for statement in rights_statements:
+            rights_info = statement.get_rights_info_object()
+            rights_granted = statement.get_rights_granted_objects()
+            if not statement.rights_basis.lower() in notes:
+                notes[statement.rights_basis.lower()] = []
+            notes[statement.rights_basis.lower()].append(
+                next(value for key, value in rights_info.__dict__.items()
+                     if "_note" in key.lower()))
+            for grant in rights_granted:
+                notes[statement.rights_basis.lower()].append(
+                    grant.rights_granted_note)
+        return notes
+
+    def update_accession_rights(self, merged_rights_statements, accession):
+        for statement in merged_rights_statements:
+            statement.accession = accession
+            statement.save()
+
+    def update_accession_transfers(self, transfers_list, accession):
+        for transfer in transfers_list:
+            BAGLog.log_it("BACC", transfer)
+            transfer.process_status = Archives.ACCESSIONING_STARTED
+            transfer.accession = accession
+            transfer.save()
 
 
 class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
