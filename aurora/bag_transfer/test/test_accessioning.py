@@ -5,34 +5,23 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
-from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
+from bag_transfer.models import (Archives, BAGLog, LanguageCode,
+                                 RecordCreators, User)
 from bag_transfer.test import helpers
-from django.conf import settings
-from django.test import Client, TestCase
+from django.test import TransactionTestCase
 from django.urls import reverse
 
 
-class AccessioningTestCase(TestCase):
+class AccessioningTestCase(TransactionTestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.archives = helpers.create_test_archives(
-            organization=self.orgs[0], process_status=Archives.ACCEPTED, count=5)
+        self.client.force_login(User.objects.get(username="admin"))
+        self.to_accession = Archives.objects.filter(process_status__lt=Archives.ACCEPTED)
 
     def test_views(self):
         """Tests views to ensure exceptions are raised appropriately"""
-        self.client = Client()
-        groups = helpers.create_test_groups(["accessioning_archivists"])
-        helpers.create_test_record_creators(count=3)
-        helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"],
-            org=random.choice(self.orgs),
-            groups=groups,
-            is_staff=True,
-            password=settings.TEST_USER["PASSWORD"])
-        self.client.login(
-            username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"])
-        transfer_ids = [str(a.id) for a in self.archives]
+        transfer_ids = [str(a.id) for a in self.to_accession]
         self.list_view(",".join(transfer_ids))
         self.create_view(transfer_ids)
         self.detail_view()
@@ -41,19 +30,16 @@ class AccessioningTestCase(TestCase):
 
     def test_grouped_transfer_data(self):
         """Tests the grouping of transfer data."""
-        # TODO: get_bag_data is not fetching data from the transfers created
-        for archive in self.archives:
-            helpers.create_test_baginfometadatas(archive, organization=archive.organization)
-        notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type = AccessionCreateView().grouped_transfer_data(self.archives)
-        self.assertEqual(len(notes["appraisal"]), 5)
+        notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type = AccessionCreateView().grouped_transfer_data(self.to_accession)
+        self.assertEqual(len(notes["appraisal"]), len(self.to_accession))
         self.assertTrue([isinstance(n, str) for n in notes["appraisal"]])
-        self.assertEqual(len(dates["start"]), 5)
+        self.assertEqual(len(dates["start"]), len(self.to_accession))
         self.assertTrue([isinstance(d, datetime) for d in dates["start"]])
-        self.assertEqual(len(dates["end"]), 5)
+        self.assertEqual(len(dates["end"]), len(self.to_accession))
         self.assertTrue([isinstance(d, datetime) for d in dates["end"]])
-        self.assertEqual(len(descriptions_list), 5)
+        self.assertEqual(len(descriptions_list), len(self.to_accession))
         self.assertTrue([isinstance(d, str) for d in descriptions_list])
-        self.assertEqual(languages_list, ["mul"])
+        self.assertEqual(set(languages_list), set(["eng", "spa"]))
         self.assertTrue(isinstance(extent_files, int))
         self.assertTrue(isinstance(extent_size, int))
         self.assertTrue(isinstance(record_type, str))
@@ -142,10 +128,7 @@ class AccessioningTestCase(TestCase):
 
     def list_view(self, id_list):
         response = self.assert_status_code("get", reverse("accession:list"), None, 200)
-        transfer_group = response.context["uploads"][0].transfer_group
-        for upload in response.context["uploads"]:
-            self.assertEqual(upload.transfer_group, transfer_group)
-        self.assertEqual(len(response.context["uploads"]), len(self.archives))
+        self.assertEqual(len(response.context["uploads"]), 4)
 
     @patch("requests.post")
     def create_view(self, id_list, mock_post):
@@ -176,7 +159,3 @@ class AccessioningTestCase(TestCase):
         """Assert Accessions detail view returns correct response code."""
         accession = random.choice(Accession.objects.all())
         self.assert_status_code("get", reverse("accession:detail", kwargs={"pk": accession.pk}), None, 200)
-
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
-        Accession.objects.all().delete()

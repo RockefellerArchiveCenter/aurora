@@ -1,38 +1,17 @@
+import json
 from unittest.mock import patch
 
-from aurora import settings
-from bag_transfer.api.views import ArchivesViewSet
-from bag_transfer.models import Archives
-from bag_transfer.test import helpers
-from django.test import TestCase
+from bag_transfer.models import Archives, Organization, User
+from django.test import TransactionTestCase
 from django.urls import reverse
-from rest_framework.test import APIRequestFactory
 
 
-class APITest(TestCase):
+class APITest(TransactionTestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.factory = APIRequestFactory()
-        self.process_status = Archives.ACCESSIONING_STARTED
-        self.archivesspace_identifier = "/repositories/2/archival_objects/3"
-        self.archivesspace_parent_identifier = "/repositories/2/archival_objects/4"
-        self.org = helpers.create_test_orgs(org_count=1)[0]
-        profile = helpers.create_test_bagitprofile(self.org)
-        baginfo = helpers.create_test_bagitprofilebaginfo(bagitprofile=profile)
-        for x in range(5):
-            helpers.create_test_bagitprofilebaginfovalues(baginfo)
-        helpers.create_test_accessions()
-        rights_statement = helpers.create_rights_statement(org=self.org)
-        helpers.create_rights_info(rights_statement)
-        helpers.create_test_baglogs()
-        helpers.create_test_archives(
-            organization=self.org,
-            process_status=Archives.ACCEPTED,
-            count=10)
-        self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"],
-            org=self.org,
-            is_staff=True)
+        self.user = User.objects.get(username="admin")
+        self.client.force_login(self.user)
 
     def assert_status_code(self, url, status_code):
         response = self.client.get(url)
@@ -40,29 +19,25 @@ class APITest(TestCase):
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
-        for archive in Archives.objects.all():
-            request = self.factory.get(
-                reverse("archives-detail", kwargs={"pk": archive.pk}), format="json")
-            request.user = self.user
-            new_transfer = ArchivesViewSet.as_view(
-                actions={"get": "retrieve"})(request, pk=archive.pk).data
-            for field in ["process_status", "archivesspace_identifier", "archivesspace_parent_identifier"]:
-                new_transfer[field] = getattr(self, field)
+        """Asserts bad data can be updated."""
+        new_values = {
+            "process_status": Archives.ACCESSIONING_STARTED,
+            "archivesspace_identifier": "/repositories/2/archival_objects/3",
+            "archivesspace_parent_identifier": "/repositories/2/archival_objects/4"
+        }
 
-            request = self.factory.put(
+        for archive in Archives.objects.all():
+            archive_data = self.client.get(
+                reverse("archives-detail", kwargs={"pk": archive.pk}), format="json").json()
+            for field in new_values:
+                archive_data[field] = new_values[field]
+
+            updated = self.client.put(
                 reverse("archives-detail", kwargs={"pk": archive.pk}),
-                data=new_transfer,
-                format="json")
-            request.user = self.user
-            response = ArchivesViewSet.as_view(
-                actions={"put": "update"})(request, pk=archive.pk)
-            self.assertEqual(response.status_code, 200, "Wrong HTTP status code")
-            for field in ["process_status", "archivesspace_identifier", "archivesspace_parent_identifier"]:
-                self.assertEqual(
-                    response.data[field],
-                    getattr(self, field),
-                    "{} status not updated".format(field),
-                )
+                data=json.dumps(archive_data),
+                content_type="application/json")
+            for field in new_values:
+                self.assertEqual(updated.data[field], new_values[field], "{} not updated".format(field))
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
 
@@ -73,18 +48,14 @@ class APITest(TestCase):
         self.assert_status_code(reverse("api_health_ping"), 200)
 
     def test_action_endpoints(self):
-        self.client.login(
-            username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"])
-        org = self.org.pk
+        """Asserts custom action endpoints return expected status code."""
+        org = Organization.objects.get(name="Donor Organization").pk
         self.assert_status_code(reverse("organization-bagit-profile", kwargs={"pk": org}), 200)
         self.assert_status_code(reverse("organization-rights-statements", kwargs={"pk": org}), 200)
         self.assert_status_code(reverse("user-current"), 200)
 
     def test_list_views(self):
-        self.client.login(
-            username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"])
+        """Asserts list endpoints return expected response."""
         self.assert_status_code(reverse("accession-list"), 200)
         self.assert_status_code(reverse("baglog-list"), 200)
         self.assert_status_code(reverse("organization-list"), 200)
