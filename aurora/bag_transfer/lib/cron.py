@@ -78,7 +78,7 @@ class DiscoverTransfers(CronJobBase):
                             email.setup_message("TRANS_PASS_ALL", new_arc)
                             email.send()
                             move_file_or_dir(
-                                "/data/tmp/{}".format(new_arc.bag_it_name),
+                                join(settings.TRANSFER_EXTRACT_TMP, new_arc.bag_it_name),
                                 "{}{}".format(
                                     settings.STORAGE_ROOT_DIR,
                                     new_arc.machine_file_identifier,
@@ -101,7 +101,7 @@ class DiscoverTransfers(CronJobBase):
                             remove_file_or_dir(new_arc.machine_file_path)
 
                     new_arc.save()
-                    remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
+                    remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, new_arc.bag_it_name))
                 except Exception as e:
                     print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
                     result = False
