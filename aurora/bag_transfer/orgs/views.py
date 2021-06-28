@@ -243,6 +243,7 @@ class BagItProfileDetailView(OrgReadViewMixin, DetailView):
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
+
     def render_to_response(self, context, **kwargs):
         if not self.request.is_ajax():
             raise Http404
