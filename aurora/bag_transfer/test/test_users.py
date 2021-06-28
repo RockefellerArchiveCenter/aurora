@@ -3,16 +3,21 @@ import random
 from bag_transfer.models import Organization, User
 from bag_transfer.test import helpers, setup
 from django.conf import settings
-from django.test import Client, TestCase
+from django.test import TestCase
 from django.urls import reverse
 
 org_count = 1
 
 
-class UserOrgTestCase(TestCase):
+class UserTestCase(TestCase):
     def setUp(self):
-        self.client = Client()
         self.orgs = helpers.create_test_orgs(org_count=org_count)
+        self.client.force_login(User.objects.get(username="admin"))
+
+    def assert_status_code(self, method, url, data, status_code):
+        response = getattr(self.client, method)(url, data)
+        self.assertEqual(response.status_code, status_code)
+        return response
 
     def create_users(self):
         for group, username in [("donor", "donor"),
@@ -68,34 +73,6 @@ class UserOrgTestCase(TestCase):
         response = self.client.post(
             reverse("users:edit", kwargs={"pk": random.choice(User.objects.all()).pk}),
             user_data)
-        self.assertTrue(response.status_code, 200)
-
-    def test_orgs(self):
-        helpers.create_test_user(
-            username="manager",
-            password=settings.TEST_USER["PASSWORD"],
-            org=random.choice(self.orgs),
-            groups=helpers.create_test_groups(["managing_archivists"]),
-            is_staff=True)
-        self.client.login(
-            username="manager", password=settings.TEST_USER["PASSWORD"])
-        response = self.client.get(reverse("orgs:list"))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context["object_list"]), org_count)
-        for view in ["orgs:detail", "orgs:edit"]:
-            response = self.client.get(
-                reverse(view, kwargs={"pk": random.choice(self.orgs).pk}))
-            self.assertEqual(response.status_code, 200)
-
-        org_data = setup.org_data
-        org_data["name"] = "New Test Organization"
-        response = self.client.post(reverse("orgs:add"), org_data)
-        self.assertTrue(response.status_code, 200)
-
-        # make org inactive
-        org_data["active"] = False
-        response = self.client.post(
-            reverse("orgs:edit", kwargs={"pk": random.choice(self.orgs).pk}), org_data)
         self.assertTrue(response.status_code, 200)
 
     def test_users(self):
