@@ -2,11 +2,11 @@ import random
 from unittest.mock import patch
 
 from bag_transfer.models import Organization, User
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class UserTestCase(TransactionTestCase):
+class UserTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -21,7 +21,6 @@ class UserTestCase(TransactionTestCase):
         """Test user model methods."""
         self.has_privs()
         self.in_group()
-        self.is_archivist()
         self.is_user_active()
         self.permissions_by_group()
         self.save_test()
@@ -29,9 +28,9 @@ class UserTestCase(TransactionTestCase):
     def has_privs(self):
         for username, assert_true, assert_false, privs in [
                 ("donor", [], ["is_archivist", "can_appraise", "is_manager"], None),
-                ("manager", ["is_archivist", "can_appraise", "is_manager"], [], "MANAGING"),
-                ("accessioner", ["is_archivist"], ["can_appraise", "is_manager"], "ACCESSIONER"),
-                ("appraiser", ["is_archivist", "can_appraise"], ["is_manager"], "APPRAISER")]:
+                ("manager", ["can_accession", "can_appraise", "is_manager"], [], "MANAGING"),
+                ("accessioner", ["can_accession"], ["can_appraise", "is_manager"], "ACCESSIONER"),
+                ("appraiser", ["can_appraise"], ["is_manager", "can_accession"], "APPRAISER")]:
             user = User.objects.get(username=username)
             for meth in assert_true:
                 self.assertTrue(
@@ -53,12 +52,6 @@ class UserTestCase(TransactionTestCase):
         user = random.choice(User.objects.filter(groups__name=group))
         self.assertTrue(user.in_group(group))
         self.assertFalse(user.in_group("foo"))
-
-    def is_archivist(self):
-        archivist = random.choice(User.objects.filter(is_staff=True))
-        non_archivist = random.choice(User.objects.filter(is_staff=False))
-        self.assertTrue(archivist.is_archivist())
-        self.assertFalse(non_archivist.is_archivist())
 
     def is_user_active(self):
         user = random.choice(User.objects.filter(is_active=True))
