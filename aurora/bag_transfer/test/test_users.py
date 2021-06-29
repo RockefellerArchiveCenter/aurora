@@ -12,7 +12,6 @@ org_count = 1
 class UserTestCase(TestCase):
     def setUp(self):
         self.orgs = helpers.create_test_orgs(org_count=org_count)
-        self.client.force_login(User.objects.get(username="admin"))
 
     def assert_status_code(self, method, url, data, status_code):
         response = getattr(self.client, method)(url, data)
