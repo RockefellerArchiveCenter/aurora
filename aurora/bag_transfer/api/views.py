@@ -57,8 +57,6 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return BagItProfileListSerializer
-        if self.action == "retrieve":
-            return BagItProfileSerializer
         return BagItProfileSerializer
 
 
@@ -139,7 +137,7 @@ class AccessionViewSet(
     """Endpoint for Accessions"""
 
     def get_queryset(self):
-        queryset = Accession.objects.all()
+        queryset = Accession.objects.all().order_by("-created")
         if not self.request.user.is_archivist():
             queryset = queryset.filter(organization=self.request.user.organization)
         process_status = self.request.GET.get("process_status", "")

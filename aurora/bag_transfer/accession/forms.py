@@ -51,7 +51,7 @@ CreatorsFormSet = forms.modelformset_factory(
     fields=("name", "type"),
     extra=0,
     widgets={
-        "name": forms.widgets.TextInput(attrs={"class": "form-control col-sm-8", "disabled": "True"}),
+        "name": forms.widgets.TextInput(attrs={"class": "form-control col-sm-8"}),
         "type": forms.widgets.Select(attrs={"class": "form-control"}),
     },
 )
