@@ -1,0 +1,6296 @@
+[
+{
+    "model": "bag_transfer.organization",
+    "pk": 1,
+    "fields": {
+        "is_active": true,
+        "name": "Archival Repository",
+        "machine_name": "archivalrepository",
+        "created_time": "2021-06-27T17:09:46.235Z",
+        "modified_time": "2021-06-27T17:09:46.303Z",
+        "acquisition_type": "donation",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.organization",
+    "pk": 2,
+    "fields": {
+        "is_active": true,
+        "name": "Donor Organization",
+        "machine_name": "donororganization",
+        "created_time": "2021-06-27T17:09:46.450Z",
+        "modified_time": "2021-06-27T17:09:46.529Z",
+        "acquisition_type": "deposit",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.user",
+    "pk": 1,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$Jy3vTze5FyJh$6UN3MghjXijMvoNEYD/ALmbPYDWyqJbZ6a7VIAXM9GI=",
+        "last_login": "2021-06-27T17:10:42.485Z",
+        "is_superuser": true,
+        "username": "admin",
+        "first_name": "System",
+        "last_name": "Administrator",
+        "email": "admin@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2021-06-27T17:09:46.601Z",
+        "organization": 1,
+        "is_machine_account": true,
+        "is_org_admin": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "bag_transfer.user",
+    "pk": 2,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$g3AlAjmm7Rwp$hU/TJ2/du9a9Qg6tv2lFrTHEOePVZcsLX9F9ZUsS4rA=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "donor",
+        "first_name": "Donor",
+        "last_name": "Representative",
+        "email": "donor@example.org",
+        "is_staff": false,
+        "is_active": true,
+        "date_joined": "2021-06-27T17:09:46.966Z",
+        "organization": 2,
+        "is_machine_account": true,
+        "is_org_admin": false,
+        "groups": [],
+        "user_permissions": []
+    }
+},
+{
+    "model": "bag_transfer.user",
+    "pk": 3,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$mpD64FeSNxEX$i4n6pf6zGHr/WykHbcsOm0kfpXTjz5CtaoPx4MnMEJQ=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "manager",
+        "first_name": "Managing",
+        "last_name": "Archivist",
+        "email": "manager@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2021-06-27T17:09:47.253Z",
+        "organization": 1,
+        "is_machine_account": true,
+        "is_org_admin": false,
+        "groups": [
+            1
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "bag_transfer.user",
+    "pk": 4,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$fMOWMF98PBCD$ZRvdfuJVditWHkAiUQ4Fq7bHy+Ok/Xg5QMtn8W1Dhqs=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "appraiser",
+        "first_name": "Appraisal",
+        "last_name": "Archivist",
+        "email": "appraiser@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2021-06-27T17:09:47.556Z",
+        "organization": 1,
+        "is_machine_account": true,
+        "is_org_admin": false,
+        "groups": [
+            2
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "bag_transfer.user",
+    "pk": 5,
+    "fields": {
+        "password": "pbkdf2_sha256$150000$5qAXugNoQAQm$a2xh95cnTIPzPVv9gNEN7TRPc0rzvTlh2psfM7AH7gw=",
+        "last_login": null,
+        "is_superuser": false,
+        "username": "accessioner",
+        "first_name": "Accessioning",
+        "last_name": "Archivist",
+        "email": "accessioner@example.org",
+        "is_staff": true,
+        "is_active": true,
+        "date_joined": "2021-06-27T17:09:47.860Z",
+        "organization": 1,
+        "is_machine_account": true,
+        "is_org_admin": false,
+        "groups": [
+            3
+        ],
+        "user_permissions": []
+    }
+},
+{
+    "model": "bag_transfer.recordcreators",
+    "pk": 1,
+    "fields": {
+        "name": "Custard Pie Appreciation Consortium",
+        "type": "organization"
+    }
+},
+{
+    "model": "bag_transfer.recordcreators",
+    "pk": 2,
+    "fields": {
+        "name": "Desperate Dan Appreciation Society",
+        "type": "organization"
+    }
+},
+{
+    "model": "bag_transfer.recordcreators",
+    "pk": 3,
+    "fields": {
+        "name": "Office of Important Affairs",
+        "type": ""
+    }
+},
+{
+    "model": "bag_transfer.recordcreators",
+    "pk": 4,
+    "fields": {
+        "name": "Communications staff",
+        "type": ""
+    }
+},
+{
+    "model": "bag_transfer.recordcreators",
+    "pk": 5,
+    "fields": {
+        "name": "Office of Important Affairs adminstrators",
+        "type": "organization"
+    }
+},
+{
+    "model": "bag_transfer.languagecode",
+    "pk": 1,
+    "fields": {
+        "code": "eng"
+    }
+},
+{
+    "model": "bag_transfer.languagecode",
+    "pk": 2,
+    "fields": {
+        "code": "spa"
+    }
+},
+{
+    "model": "bag_transfer.languagecode",
+    "pk": 3,
+    "fields": {
+        "code": "und"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 1,
+    "fields": {
+        "accession": 3,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d21c72bb-6381-4768-819f-fb460bed14fa",
+        "machine_file_size": "256727",
+        "machine_file_upload_time": "2021-06-27T17:14:09.940Z",
+        "machine_file_identifier": "d21c72bb-6381-4768-819f-fb460bed14fa",
+        "machine_file_type": "TAR",
+        "bag_it_name": "grants3",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3  data/.DS_Store\n1dc6c6acd7ac393fadac55e618e4600390e65f305c6b99e868b46ae21aab5ca2  data/2010 PRD 206 FF.pdf\nfe53e5128803b060c6310458c67a0debb3975624054c3f29eccaa3ac6c38ce8c  data/2010 PRD 206 FN.pdf\naa5878b7c14b4349169cdb1a9127e065301530926d1842efef64e06765bd80f2  data/DACS_Finding Aid Template.docx\nf782c7e2dcbcffd277979a05f26bf824f48e9a72328300a88ff70c428953f019  data/Gantt_milestones_year2.png\ne752c3c13c5ef8b4ad85808286b6ff0584934ebf1b478551197b69915906fc65  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 80,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:19.069Z",
+        "modified_time": "2021-06-27T18:46:01.168Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 2,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d8d279d6-9f8e-48f3-864c-6d765397dc24",
+        "machine_file_size": "8601986",
+        "machine_file_upload_time": "2021-06-27T17:14:08.626Z",
+        "machine_file_identifier": "d8d279d6-9f8e-48f3-864c-6d765397dc24",
+        "machine_file_type": "OTHER",
+        "bag_it_name": "admin",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:23.659Z",
+        "modified_time": "2021-06-27T17:15:24.174Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 3,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/25b86165-331a-440c-ac2e-3b8a646282ea",
+        "machine_file_size": "48702",
+        "machine_file_upload_time": "2021-06-27T17:14:09.521Z",
+        "machine_file_identifier": "25b86165-331a-440c-ac2e-3b8a646282ea",
+        "machine_file_type": "OTHER",
+        "bag_it_name": "comms",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d659a1be5b30b983d2c0f41e90c4cbbe43ee6a21bcf8191f0aeb328957a5dc78  data/Important Document.docx\n499e56f9b9f4c31eb0f141143febdfad5fcd27218f4c56bca9bbb220ff7dd3f1  data/hinted vs unhinted.txt\nc37d2cfba99c396b93f8a4c83dadc64bf54e365bd5378af0aa6f8e29c33dea9e  data/install-mac.txt\n5d2864aacdf05c7f54244db918befb60183852d687785ba13a18b75b6e8c248e  data/install-win.txt\nfacde7bee8f375e3f8142fc01baa5e6e32b18c1fd4599533f171817eb30f5069  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:24.421Z",
+        "modified_time": "2021-06-27T17:15:24.791Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 4,
+    "fields": {
+        "accession": 1,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/28d44fb3-7cce-44dd-839c-3c1bfcff1f4b",
+        "machine_file_size": "256494",
+        "machine_file_upload_time": "2021-06-27T17:14:08.634Z",
+        "machine_file_identifier": "28d44fb3-7cce-44dd-839c-3c1bfcff1f4b",
+        "machine_file_type": "TAR",
+        "bag_it_name": "admin3",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3  data/.DS_Store\n1dc6c6acd7ac393fadac55e618e4600390e65f305c6b99e868b46ae21aab5ca2  data/2010 PRD 206 FF.pdf\nfe53e5128803b060c6310458c67a0debb3975624054c3f29eccaa3ac6c38ce8c  data/2010 PRD 206 FN.pdf\naa5878b7c14b4349169cdb1a9127e065301530926d1842efef64e06765bd80f2  data/DACS_Finding Aid Template.docx\nf782c7e2dcbcffd277979a05f26bf824f48e9a72328300a88ff70c428953f019  data/Gantt_milestones_year2.png\ne752c3c13c5ef8b4ad85808286b6ff0584934ebf1b478551197b69915906fc65  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 80,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:25.038Z",
+        "modified_time": "2021-06-27T18:45:03.909Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 5,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/a4456709-efd9-4399-bd95-57ce2bab4eda",
+        "machine_file_size": "256460",
+        "machine_file_upload_time": "2021-06-27T17:14:08.941Z",
+        "machine_file_identifier": "a4456709-efd9-4399-bd95-57ce2bab4eda",
+        "machine_file_type": "TAR",
+        "bag_it_name": "annual2",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3  data/.DS_Store\n1dc6c6acd7ac393fadac55e618e4600390e65f305c6b99e868b46ae21aab5ca2  data/2010 PRD 206 FF.pdf\nfe53e5128803b060c6310458c67a0debb3975624054c3f29eccaa3ac6c38ce8c  data/2010 PRD 206 FN.pdf\naa5878b7c14b4349169cdb1a9127e065301530926d1842efef64e06765bd80f2  data/DACS_Finding Aid Template.docx\nf782c7e2dcbcffd277979a05f26bf824f48e9a72328300a88ff70c428953f019  data/Gantt_milestones_year2.png\ne752c3c13c5ef8b4ad85808286b6ff0584934ebf1b478551197b69915906fc65  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:25.660Z",
+        "modified_time": "2021-06-27T17:15:26.030Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 6,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/5ecefb69-b7bd-4599-be88-06e3826878a1",
+        "machine_file_size": "8602018",
+        "machine_file_upload_time": "2021-06-27T17:14:09.751Z",
+        "machine_file_identifier": "5ecefb69-b7bd-4599-be88-06e3826878a1",
+        "machine_file_type": "ZIP",
+        "bag_it_name": "comms4",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 70,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:26.289Z",
+        "modified_time": "2021-06-27T18:40:20.430Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 7,
+    "fields": {
+        "accession": 2,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/66a19383-2d40-4bbf-906b-6c75fbedca04",
+        "machine_file_size": "107781",
+        "machine_file_upload_time": "2021-06-27T17:14:09.936Z",
+        "machine_file_identifier": "66a19383-2d40-4bbf-906b-6c75fbedca04",
+        "machine_file_type": "TAR",
+        "bag_it_name": "grants2",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d659a1be5b30b983d2c0f41e90c4cbbe43ee6a21bcf8191f0aeb328957a5dc78  data/Important Document.docx\n499e56f9b9f4c31eb0f141143febdfad5fcd27218f4c56bca9bbb220ff7dd3f1  data/hinted vs unhinted.txt\nc37d2cfba99c396b93f8a4c83dadc64bf54e365bd5378af0aa6f8e29c33dea9e  data/install-mac.txt\n5d2864aacdf05c7f54244db918befb60183852d687785ba13a18b75b6e8c248e  data/install-win.txt\nfacde7bee8f375e3f8142fc01baa5e6e32b18c1fd4599533f171817eb30f5069  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 80,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:27.055Z",
+        "modified_time": "2021-06-27T18:45:22.199Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 8,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/aac0b764-b151-4fb1-994b-3a62818a3ae3",
+        "machine_file_size": "7730533",
+        "machine_file_upload_time": "2021-06-27T17:14:09.930Z",
+        "machine_file_identifier": "aac0b764-b151-4fb1-994b-3a62818a3ae3",
+        "machine_file_type": "OTHER",
+        "bag_it_name": "grants",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "1770ef8af984ca96b37d2d19da74aa8924abe97dbe68558f7f565ab41ca3d793  data/Project Electron Milestones.png\n50b17b0cb820625a3f0caaba8e95ecbd401631b943c72d6c8e00bf45bc61c302  data/Project Electron Year Two Gantt.png\n269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab  data/demo.docx\nc1cc91fe83aae24ab0aa0703fee87919bd8cc6baf0e581c48c8204b5d3a5a170  data/hGrant_Spec.pdf\n2e01adf8d272c5954b7cba592dc5458dbce684324eaa4960bbc6044e32394676  data/idealware_gms_trends_4.21.16.pdf\n93efae05e86d7c43e323239b17e9fb3fff7cff0f6cb3a7bb3f9606b2b8e1a71b  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:27.769Z",
+        "modified_time": "2021-06-27T17:15:28.256Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 9,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/80ea3a03-ae23-4ab0-bb43-f0ac3a543c9a",
+        "machine_file_size": "7730266",
+        "machine_file_upload_time": "2021-06-27T17:14:08.934Z",
+        "machine_file_identifier": "80ea3a03-ae23-4ab0-bb43-f0ac3a543c9a",
+        "machine_file_type": "OTHER",
+        "bag_it_name": "annual",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "1770ef8af984ca96b37d2d19da74aa8924abe97dbe68558f7f565ab41ca3d793  data/Project Electron Milestones.png\n50b17b0cb820625a3f0caaba8e95ecbd401631b943c72d6c8e00bf45bc61c302  data/Project Electron Year Two Gantt.png\n269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab  data/demo.docx\nc1cc91fe83aae24ab0aa0703fee87919bd8cc6baf0e581c48c8204b5d3a5a170  data/hGrant_Spec.pdf\n2e01adf8d272c5954b7cba592dc5458dbce684324eaa4960bbc6044e32394676  data/idealware_gms_trends_4.21.16.pdf\n93efae05e86d7c43e323239b17e9fb3fff7cff0f6cb3a7bb3f9606b2b8e1a71b  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:28.527Z",
+        "modified_time": "2021-06-27T17:15:28.971Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 10,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d5ea11b8-5af2-4942-aab4-7724996d7f62",
+        "machine_file_size": "7730259",
+        "machine_file_upload_time": "2021-06-27T17:14:09.228Z",
+        "machine_file_identifier": "d5ea11b8-5af2-4942-aab4-7724996d7f62",
+        "machine_file_type": "OTHER",
+        "bag_it_name": "board",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "1770ef8af984ca96b37d2d19da74aa8924abe97dbe68558f7f565ab41ca3d793  data/Project Electron Milestones.png\n50b17b0cb820625a3f0caaba8e95ecbd401631b943c72d6c8e00bf45bc61c302  data/Project Electron Year Two Gantt.png\n269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab  data/demo.docx\nc1cc91fe83aae24ab0aa0703fee87919bd8cc6baf0e581c48c8204b5d3a5a170  data/hGrant_Spec.pdf\n2e01adf8d272c5954b7cba592dc5458dbce684324eaa4960bbc6044e32394676  data/idealware_gms_trends_4.21.16.pdf\n93efae05e86d7c43e323239b17e9fb3fff7cff0f6cb3a7bb3f9606b2b8e1a71b  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:29.267Z",
+        "modified_time": "2021-06-27T17:15:29.709Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 11,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d33689c0-55fd-4aa5-b5e8-2f1bfc738e3b",
+        "machine_file_size": "7730367",
+        "machine_file_upload_time": "2021-06-27T17:14:09.610Z",
+        "machine_file_identifier": "d33689c0-55fd-4aa5-b5e8-2f1bfc738e3b",
+        "machine_file_type": "TAR",
+        "bag_it_name": "comms3",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "1770ef8af984ca96b37d2d19da74aa8924abe97dbe68558f7f565ab41ca3d793  data/Project Electron Milestones.png\n50b17b0cb820625a3f0caaba8e95ecbd401631b943c72d6c8e00bf45bc61c302  data/Project Electron Year Two Gantt.png\n269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab  data/demo.docx\nc1cc91fe83aae24ab0aa0703fee87919bd8cc6baf0e581c48c8204b5d3a5a170  data/hGrant_Spec.pdf\n2e01adf8d272c5954b7cba592dc5458dbce684324eaa4960bbc6044e32394676  data/idealware_gms_trends_4.21.16.pdf\n93efae05e86d7c43e323239b17e9fb3fff7cff0f6cb3a7bb3f9606b2b8e1a71b  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 70,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:29.998Z",
+        "modified_time": "2021-06-27T18:40:22.450Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 12,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/7d97a814-e4f7-4175-9373-9713a1f4ce68",
+        "machine_file_size": "48657",
+        "machine_file_upload_time": "2021-06-27T17:14:08.944Z",
+        "machine_file_identifier": "7d97a814-e4f7-4175-9373-9713a1f4ce68",
+        "machine_file_type": "TAR",
+        "bag_it_name": "annual3",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d659a1be5b30b983d2c0f41e90c4cbbe43ee6a21bcf8191f0aeb328957a5dc78  data/Important Document.docx\n499e56f9b9f4c31eb0f141143febdfad5fcd27218f4c56bca9bbb220ff7dd3f1  data/hinted vs unhinted.txt\nc37d2cfba99c396b93f8a4c83dadc64bf54e365bd5378af0aa6f8e29c33dea9e  data/install-mac.txt\n5d2864aacdf05c7f54244db918befb60183852d687785ba13a18b75b6e8c248e  data/install-win.txt\nfacde7bee8f375e3f8142fc01baa5e6e32b18c1fd4599533f171817eb30f5069  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:30.822Z",
+        "modified_time": "2021-06-27T17:15:31.195Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 13,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/bed56969-72d0-479e-ba79-484d1ee68c52",
+        "machine_file_size": "256503",
+        "machine_file_upload_time": "2021-06-27T17:14:09.529Z",
+        "machine_file_identifier": "bed56969-72d0-479e-ba79-484d1ee68c52",
+        "machine_file_type": "TAR",
+        "bag_it_name": "comms2",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3  data/.DS_Store\n1dc6c6acd7ac393fadac55e618e4600390e65f305c6b99e868b46ae21aab5ca2  data/2010 PRD 206 FF.pdf\nfe53e5128803b060c6310458c67a0debb3975624054c3f29eccaa3ac6c38ce8c  data/2010 PRD 206 FN.pdf\naa5878b7c14b4349169cdb1a9127e065301530926d1842efef64e06765bd80f2  data/DACS_Finding Aid Template.docx\nf782c7e2dcbcffd277979a05f26bf824f48e9a72328300a88ff70c428953f019  data/Gantt_milestones_year2.png\ne752c3c13c5ef8b4ad85808286b6ff0584934ebf1b478551197b69915906fc65  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 60,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:31.454Z",
+        "modified_time": "2021-06-27T18:40:39.269Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 14,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/e36671cb-0b38-4691-b596-00fc6281eb05",
+        "machine_file_size": "48726",
+        "machine_file_upload_time": "2021-06-27T17:14:08.631Z",
+        "machine_file_identifier": "e36671cb-0b38-4691-b596-00fc6281eb05",
+        "machine_file_type": "TAR",
+        "bag_it_name": "admin2",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d659a1be5b30b983d2c0f41e90c4cbbe43ee6a21bcf8191f0aeb328957a5dc78  data/Important Document.docx\n499e56f9b9f4c31eb0f141143febdfad5fcd27218f4c56bca9bbb220ff7dd3f1  data/hinted vs unhinted.txt\nc37d2cfba99c396b93f8a4c83dadc64bf54e365bd5378af0aa6f8e29c33dea9e  data/install-mac.txt\n5d2864aacdf05c7f54244db918befb60183852d687785ba13a18b75b6e8c248e  data/install-win.txt\nfacde7bee8f375e3f8142fc01baa5e6e32b18c1fd4599533f171817eb30f5069  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:32.082Z",
+        "modified_time": "2021-06-27T17:15:32.570Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 15,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d520be78-05a4-4f72-bbe8-8f74861517a9",
+        "machine_file_size": "8601910",
+        "machine_file_upload_time": "2021-06-27T17:14:09.339Z",
+        "machine_file_identifier": "d520be78-05a4-4f72-bbe8-8f74861517a9",
+        "machine_file_type": "TAR",
+        "bag_it_name": "board2",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:32.889Z",
+        "modified_time": "2021-06-27T17:15:33.402Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 16,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/1f89ed25-ef39-4125-8ca2-fd07811d80a0",
+        "machine_file_size": "256479",
+        "machine_file_upload_time": "2021-06-27T17:14:09.446Z",
+        "machine_file_identifier": "1f89ed25-ef39-4125-8ca2-fd07811d80a0",
+        "machine_file_type": "ZIP",
+        "bag_it_name": "board4",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "d65165279105ca6773180500688df4bdc69a2c7b771752f0a46ef120b7fd8ec3  data/.DS_Store\n1dc6c6acd7ac393fadac55e618e4600390e65f305c6b99e868b46ae21aab5ca2  data/2010 PRD 206 FF.pdf\nfe53e5128803b060c6310458c67a0debb3975624054c3f29eccaa3ac6c38ce8c  data/2010 PRD 206 FN.pdf\naa5878b7c14b4349169cdb1a9127e065301530926d1842efef64e06765bd80f2  data/DACS_Finding Aid Template.docx\nf782c7e2dcbcffd277979a05f26bf824f48e9a72328300a88ff70c428953f019  data/Gantt_milestones_year2.png\ne752c3c13c5ef8b4ad85808286b6ff0584934ebf1b478551197b69915906fc65  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 70,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:33.685Z",
+        "modified_time": "2021-06-27T18:40:46.470Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 17,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/1d13eb65-f42e-488b-af75-e0da86a6268c",
+        "machine_file_size": "8601910",
+        "machine_file_upload_time": "2021-06-27T17:14:09.441Z",
+        "machine_file_identifier": "1d13eb65-f42e-488b-af75-e0da86a6268c",
+        "machine_file_type": "TAR",
+        "bag_it_name": "board3",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 70,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:34.326Z",
+        "modified_time": "2021-06-27T18:40:48.084Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 18,
+    "fields": {
+        "accession": null,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/d0635bed-1e1c-47f8-9475-0cfd7d10aa3e",
+        "machine_file_size": "8601917",
+        "machine_file_upload_time": "2021-06-27T17:14:09.056Z",
+        "machine_file_identifier": "d0635bed-1e1c-47f8-9475-0cfd7d10aa3e",
+        "machine_file_type": "ZIP",
+        "bag_it_name": "annual4",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 40,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:35.049Z",
+        "modified_time": "2021-06-27T17:15:35.509Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 19,
+    "fields": {
+        "accession": 3,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/16200353-f739-47a8-86ad-aa6ba036e60e",
+        "machine_file_size": "8602184",
+        "machine_file_upload_time": "2021-06-27T17:14:10.040Z",
+        "machine_file_identifier": "16200353-f739-47a8-86ad-aa6ba036e60e",
+        "machine_file_type": "ZIP",
+        "bag_it_name": "grants4",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "03594d4bb653013a6dda7549dd626d2908a889d9673473eb15835e04f2fff801  data/For Good Measure.pptx\n71e6f4bff39549691332af9bcc953267e80684888d04d411c91a357d6f023a64  data/LICENSE.txt\n",
+        "additional_error_info": null,
+        "process_status": 80,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:35.816Z",
+        "modified_time": "2021-06-27T18:46:01.459Z"
+    }
+},
+{
+    "model": "bag_transfer.archives",
+    "pk": 20,
+    "fields": {
+        "accession": 1,
+        "organization": 2,
+        "user_uploaded": 2,
+        "machine_file_path": "/data1/a3147437-2eeb-4acb-af96-91eec4fd9a06",
+        "machine_file_size": "7730300",
+        "machine_file_upload_time": "2021-06-27T17:14:08.764Z",
+        "machine_file_identifier": "a3147437-2eeb-4acb-af96-91eec4fd9a06",
+        "machine_file_type": "ZIP",
+        "bag_it_name": "admin4",
+        "bag_it_valid": true,
+        "appraisal_note": null,
+        "manifest": "1770ef8af984ca96b37d2d19da74aa8924abe97dbe68558f7f565ab41ca3d793  data/Project Electron Milestones.png\n50b17b0cb820625a3f0caaba8e95ecbd401631b943c72d6c8e00bf45bc61c302  data/Project Electron Year Two Gantt.png\n269329fc7ae54b3f289b3ac52efde387edc2e566ef9a48d637e841022c7e0eab  data/demo.docx\nc1cc91fe83aae24ab0aa0703fee87919bd8cc6baf0e581c48c8204b5d3a5a170  data/hGrant_Spec.pdf\n2e01adf8d272c5954b7cba592dc5458dbce684324eaa4960bbc6044e32394676  data/idealware_gms_trends_4.21.16.pdf\n93efae05e86d7c43e323239b17e9fb3fff7cff0f6cb3a7bb3f9606b2b8e1a71b  data/metadata.json\n",
+        "additional_error_info": null,
+        "process_status": 80,
+        "archivesspace_identifier": null,
+        "archivesspace_parent_identifier": null,
+        "created_time": "2021-06-27T17:15:36.577Z",
+        "modified_time": "2021-06-27T18:45:04.247Z"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 1,
+    "fields": {
+        "code_short": "BACC",
+        "code_type": "I",
+        "code_desc": "Transfer accessioned",
+        "next_action": "Transfer sent to archival storage"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 2,
+    "fields": {
+        "code_short": "BREJ",
+        "code_type": "I",
+        "code_desc": "Transfer rejected by appraisal archivist",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 3,
+    "fields": {
+        "code_short": "BACPT",
+        "code_type": "I",
+        "code_desc": "Transfer accepted by appraisal archivist",
+        "next_action": "Transfer staged for accessioning"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 4,
+    "fields": {
+        "code_short": "FSERR",
+        "code_type": "BR",
+        "code_desc": "Transfer is too large",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 5,
+    "fields": {
+        "code_short": "VIRUS",
+        "code_type": "BR",
+        "code_desc": "Virus found in transfer",
+        "next_action": "Transfer deleted, system administrators notified"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 6,
+    "fields": {
+        "code_short": "VCONN",
+        "code_type": "GE",
+        "code_desc": "Could not connect to virus scanner",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 7,
+    "fields": {
+        "code_short": "DTERR",
+        "code_type": "BE",
+        "code_desc": "Transfer didn't pass datatype specs",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 8,
+    "fields": {
+        "code_short": "MDERR",
+        "code_type": "BE",
+        "code_desc": "Optional metadata file is present but is not valid json",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 9,
+    "fields": {
+        "code_short": "BIERR",
+        "code_type": "BE",
+        "code_desc": "Error saving bag-info metadata",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 10,
+    "fields": {
+        "code_short": "RSERR",
+        "code_type": "BE",
+        "code_desc": "Could not assign rights to transfer",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 11,
+    "fields": {
+        "code_short": "PBAGP",
+        "code_type": "S",
+        "code_desc": "Transfer passed BagIt Profile and datatype validation",
+        "next_action": "Transfer staged for appraisal"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 12,
+    "fields": {
+        "code_short": "PBAG",
+        "code_type": "S",
+        "code_desc": "Transfer passed BagIt validation",
+        "next_action": "Transfer staged for BagIt Profile validation"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 13,
+    "fields": {
+        "code_short": "RBERR",
+        "code_type": "BE",
+        "code_desc": "Transfer failed BagIt Profile validation",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 14,
+    "fields": {
+        "code_short": "GBERR",
+        "code_type": "BE",
+        "code_desc": "Transfer failed BagIt validation",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 15,
+    "fields": {
+        "code_short": "EXERR",
+        "code_type": "BE",
+        "code_desc": "Problem extracting serialized transfer",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 16,
+    "fields": {
+        "code_short": "BDIR",
+        "code_type": "BE",
+        "code_desc": "Unrecognized transfer type",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 17,
+    "fields": {
+        "code_short": "BZIP2",
+        "code_type": "BE",
+        "code_desc": "ZIP file has more than one top level directory",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 18,
+    "fields": {
+        "code_short": "BZIP",
+        "code_type": "BE",
+        "code_desc": "Invalid ZIP file",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 19,
+    "fields": {
+        "code_short": "BTAR2",
+        "code_type": "BE",
+        "code_desc": "TAR file has more than one top level directory",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 20,
+    "fields": {
+        "code_short": "BTAR",
+        "code_type": "BE",
+        "code_desc": "Invalid TAR file",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 21,
+    "fields": {
+        "code_short": "BFNM",
+        "code_type": "BE",
+        "code_desc": "Tranfer has invalid filename",
+        "next_action": "Transfer deleted"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 22,
+    "fields": {
+        "code_short": "NORG",
+        "code_type": "GE",
+        "code_desc": "No organization",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 23,
+    "fields": {
+        "code_short": "DEXT",
+        "code_type": "GE",
+        "code_desc": "File does not exist anymore",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 24,
+    "fields": {
+        "code_short": "APASS",
+        "code_type": "S",
+        "code_desc": "Transfer passed all validation",
+        "next_action": "Transfer staged for appraisal"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 25,
+    "fields": {
+        "code_short": "ASAVE",
+        "code_type": "S",
+        "code_desc": "Transfer saved",
+        "next_action": "Transfer staged for BagIt validation"
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 26,
+    "fields": {
+        "code_short": "CEND",
+        "code_type": "I",
+        "code_desc": "Cron job ended",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 27,
+    "fields": {
+        "code_short": "CSTR",
+        "code_type": "I",
+        "code_desc": "Cron job started",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 1,
+    "fields": {
+        "code": 27,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.610Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 2,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.629Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 3,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.635Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 4,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.640Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 5,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.644Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 6,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.649Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 7,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.653Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 8,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.658Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 9,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.663Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 10,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.668Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 11,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.674Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 12,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.680Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 13,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.685Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 14,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.695Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 15,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.700Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 16,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.706Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 17,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.711Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 18,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.719Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 19,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.725Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 20,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.731Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 21,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.735Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 22,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.744Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 23,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.749Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 24,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.754Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 25,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.756Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 26,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.764Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 27,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.769Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 28,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.775Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 29,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.779Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 30,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.785Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 31,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.790Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 32,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.796Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 33,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.800Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 34,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.805Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 35,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.809Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 36,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.816Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 37,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.820Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 38,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.826Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 39,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.831Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 40,
+    "fields": {
+        "code": 6,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.838Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 41,
+    "fields": {
+        "code": 23,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:11:28.844Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 42,
+    "fields": {
+        "code": 27,
+        "archive": null,
+        "log_info": null,
+        "created_time": "2021-06-27T17:14:12.071Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 43,
+    "fields": {
+        "code": 25,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:19.407Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 44,
+    "fields": {
+        "code": 12,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:19.430Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 45,
+    "fields": {
+        "code": 11,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:20.591Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 46,
+    "fields": {
+        "code": 24,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:20.595Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 47,
+    "fields": {
+        "code": 25,
+        "archive": 2,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:23.887Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 48,
+    "fields": {
+        "code": 12,
+        "archive": 2,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:23.978Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 49,
+    "fields": {
+        "code": 11,
+        "archive": 2,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.126Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 50,
+    "fields": {
+        "code": 24,
+        "archive": 2,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.131Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 51,
+    "fields": {
+        "code": 25,
+        "archive": 3,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.633Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 52,
+    "fields": {
+        "code": 12,
+        "archive": 3,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.645Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 53,
+    "fields": {
+        "code": 11,
+        "archive": 3,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.758Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 54,
+    "fields": {
+        "code": 24,
+        "archive": 3,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:24.763Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 55,
+    "fields": {
+        "code": 25,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.249Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 56,
+    "fields": {
+        "code": 12,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.264Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 57,
+    "fields": {
+        "code": 11,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.369Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 58,
+    "fields": {
+        "code": 24,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.373Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 59,
+    "fields": {
+        "code": 25,
+        "archive": 5,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.881Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 60,
+    "fields": {
+        "code": 12,
+        "archive": 5,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.896Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 61,
+    "fields": {
+        "code": 11,
+        "archive": 5,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:25.993Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 62,
+    "fields": {
+        "code": 24,
+        "archive": 5,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:26.000Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 63,
+    "fields": {
+        "code": 25,
+        "archive": 6,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:26.496Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 64,
+    "fields": {
+        "code": 12,
+        "archive": 6,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:26.598Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 65,
+    "fields": {
+        "code": 11,
+        "archive": 6,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:26.710Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 66,
+    "fields": {
+        "code": 24,
+        "archive": 6,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:26.715Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 67,
+    "fields": {
+        "code": 25,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:27.299Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 68,
+    "fields": {
+        "code": 12,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:27.314Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 69,
+    "fields": {
+        "code": 11,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:27.428Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 70,
+    "fields": {
+        "code": 24,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:27.433Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 71,
+    "fields": {
+        "code": 25,
+        "archive": 8,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.008Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 72,
+    "fields": {
+        "code": 12,
+        "archive": 8,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.096Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 73,
+    "fields": {
+        "code": 11,
+        "archive": 8,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.208Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 74,
+    "fields": {
+        "code": 24,
+        "archive": 8,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.212Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 75,
+    "fields": {
+        "code": 25,
+        "archive": 9,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.744Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 76,
+    "fields": {
+        "code": 12,
+        "archive": 9,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.825Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 77,
+    "fields": {
+        "code": 11,
+        "archive": 9,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.918Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 78,
+    "fields": {
+        "code": 24,
+        "archive": 9,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:28.923Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 79,
+    "fields": {
+        "code": 25,
+        "archive": 10,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:29.488Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 80,
+    "fields": {
+        "code": 12,
+        "archive": 10,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:29.572Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 81,
+    "fields": {
+        "code": 11,
+        "archive": 10,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:29.668Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 82,
+    "fields": {
+        "code": 24,
+        "archive": 10,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:29.672Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 83,
+    "fields": {
+        "code": 25,
+        "archive": 11,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:30.248Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 84,
+    "fields": {
+        "code": 12,
+        "archive": 11,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:30.375Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 85,
+    "fields": {
+        "code": 11,
+        "archive": 11,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:30.480Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 86,
+    "fields": {
+        "code": 24,
+        "archive": 11,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:30.485Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 87,
+    "fields": {
+        "code": 25,
+        "archive": 12,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.050Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 88,
+    "fields": {
+        "code": 12,
+        "archive": 12,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.062Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 89,
+    "fields": {
+        "code": 11,
+        "archive": 12,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.164Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 90,
+    "fields": {
+        "code": 24,
+        "archive": 12,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.169Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 91,
+    "fields": {
+        "code": 25,
+        "archive": 13,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.668Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 92,
+    "fields": {
+        "code": 12,
+        "archive": 13,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.682Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 93,
+    "fields": {
+        "code": 11,
+        "archive": 13,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.777Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 94,
+    "fields": {
+        "code": 24,
+        "archive": 13,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:31.781Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 95,
+    "fields": {
+        "code": 25,
+        "archive": 14,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:32.401Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 96,
+    "fields": {
+        "code": 12,
+        "archive": 14,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:32.413Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 97,
+    "fields": {
+        "code": 11,
+        "archive": 14,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:32.534Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 98,
+    "fields": {
+        "code": 24,
+        "archive": 14,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:32.538Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 99,
+    "fields": {
+        "code": 25,
+        "archive": 15,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.122Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 100,
+    "fields": {
+        "code": 12,
+        "archive": 15,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.213Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 101,
+    "fields": {
+        "code": 11,
+        "archive": 15,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.315Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 102,
+    "fields": {
+        "code": 24,
+        "archive": 15,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.319Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 103,
+    "fields": {
+        "code": 25,
+        "archive": 16,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.898Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 104,
+    "fields": {
+        "code": 12,
+        "archive": 16,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:33.910Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 105,
+    "fields": {
+        "code": 11,
+        "archive": 16,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.008Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 106,
+    "fields": {
+        "code": 24,
+        "archive": 16,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.013Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 107,
+    "fields": {
+        "code": 25,
+        "archive": 17,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.540Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 108,
+    "fields": {
+        "code": 12,
+        "archive": 17,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.645Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 109,
+    "fields": {
+        "code": 11,
+        "archive": 17,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.736Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 110,
+    "fields": {
+        "code": 24,
+        "archive": 17,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:34.740Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 111,
+    "fields": {
+        "code": 25,
+        "archive": 18,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:35.261Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 112,
+    "fields": {
+        "code": 12,
+        "archive": 18,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:35.363Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 113,
+    "fields": {
+        "code": 11,
+        "archive": 18,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:35.456Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 114,
+    "fields": {
+        "code": 24,
+        "archive": 18,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:35.460Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 115,
+    "fields": {
+        "code": 25,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.025Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 116,
+    "fields": {
+        "code": 12,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.130Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 117,
+    "fields": {
+        "code": 11,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.232Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 118,
+    "fields": {
+        "code": 24,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.236Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 119,
+    "fields": {
+        "code": 25,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.786Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 120,
+    "fields": {
+        "code": 12,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.877Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 121,
+    "fields": {
+        "code": 11,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.965Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 122,
+    "fields": {
+        "code": 24,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T17:15:36.969Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 123,
+    "fields": {
+        "code": 3,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:10.253Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 124,
+    "fields": {
+        "code": 3,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:12.359Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 125,
+    "fields": {
+        "code": 3,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:14.174Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 126,
+    "fields": {
+        "code": 3,
+        "archive": 6,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:20.425Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 127,
+    "fields": {
+        "code": 3,
+        "archive": 11,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:22.447Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 128,
+    "fields": {
+        "code": 2,
+        "archive": 13,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:39.165Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 129,
+    "fields": {
+        "code": 3,
+        "archive": 16,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:46.467Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 130,
+    "fields": {
+        "code": 3,
+        "archive": 17,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:48.081Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 131,
+    "fields": {
+        "code": 3,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:52.326Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 132,
+    "fields": {
+        "code": 3,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T18:40:54.044Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 133,
+    "fields": {
+        "code": 1,
+        "archive": 4,
+        "log_info": null,
+        "created_time": "2021-06-27T18:45:03.907Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 134,
+    "fields": {
+        "code": 1,
+        "archive": 20,
+        "log_info": null,
+        "created_time": "2021-06-27T18:45:04.245Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 135,
+    "fields": {
+        "code": 1,
+        "archive": 7,
+        "log_info": null,
+        "created_time": "2021-06-27T18:45:22.196Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 136,
+    "fields": {
+        "code": 1,
+        "archive": 1,
+        "log_info": null,
+        "created_time": "2021-06-27T18:46:01.165Z"
+    }
+},
+{
+    "model": "bag_transfer.baglog",
+    "pk": 137,
+    "fields": {
+        "code": 1,
+        "archive": 19,
+        "log_info": null,
+        "created_time": "2021-06-27T18:46:01.456Z"
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 1,
+    "fields": {
+        "archive": 1,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:09:01.446465",
+        "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "title": "Grant to the Village Green Preservation Society",
+        "date_start": "2000-05-14T00:00:00Z",
+        "date_end": "2002-06-22T00:00:00Z",
+        "record_type": "grant records",
+        "bagging_date": "2017-12-11T20:09:01.446Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "249376.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            1,
+            2
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 2,
+    "fields": {
+        "archive": 2,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:15:32.652164",
+        "internal_sender_description": "Administrative records for the Office of Important Affairs",
+        "title": "OIA Administrative records",
+        "date_start": "1982-05-14T00:00:00Z",
+        "date_end": "1989-06-17T00:00:00Z",
+        "record_type": "administrative records",
+        "bagging_date": "2017-12-11T20:15:32.652Z",
+        "bag_count": "1 of 2",
+        "bag_group_identifier": "19820514",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 3,
+    "fields": {
+        "archive": 3,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:26:04.201734",
+        "internal_sender_description": "Communications and publications from the foundation's communications department",
+        "title": "Press Releases",
+        "date_start": "1982-07-06T00:00:00Z",
+        "date_end": "2001-06-30T00:00:00Z",
+        "record_type": "communications and publications",
+        "bagging_date": "2017-12-11T20:26:04.201Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "41838.5",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            4
+        ],
+        "language": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 4,
+    "fields": {
+        "archive": 4,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:16:29.250116",
+        "internal_sender_description": "Administrative records for the Office of Important Affairs",
+        "title": "OIA Administrative records",
+        "date_start": "1999-05-14T00:00:00Z",
+        "date_end": "2004-06-17T00:00:00Z",
+        "record_type": "administrative records",
+        "bagging_date": "2017-12-11T20:16:29.250Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "249376.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            5
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 5,
+    "fields": {
+        "archive": 5,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:18:59.616956",
+        "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
+        "title": "Annual Reports",
+        "date_start": "2002-07-01T00:00:00Z",
+        "date_end": "2003-06-30T00:00:00Z",
+        "record_type": "annual reports",
+        "bagging_date": "2017-12-11T20:18:59.616Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "249376.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 6,
+    "fields": {
+        "archive": 6,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:27:17.079146",
+        "internal_sender_description": "Communications and publications from the foundation's communications department",
+        "title": "Clippings of interest",
+        "date_start": "1982-07-06T00:00:00Z",
+        "date_end": "1999-06-30T00:00:00Z",
+        "record_type": "communications and publications",
+        "bagging_date": "2017-12-11T20:27:17.079Z",
+        "bag_count": "2 of 2",
+        "bag_group_identifier": "19820706",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            4
+        ],
+        "language": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 7,
+    "fields": {
+        "archive": 7,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:10:49.171065",
+        "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "title": "Grant to the Village Green Preservation Society",
+        "date_start": "1994-05-14T00:00:00Z",
+        "date_end": "1999-06-22T00:00:00Z",
+        "record_type": "grant records",
+        "bagging_date": "2017-12-11T20:10:49.171Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "41838.5",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            2
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 8,
+    "fields": {
+        "archive": 8,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:10:28.813474",
+        "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "title": "Grant to the Village Green Preservation Society",
+        "date_start": "1994-05-14T00:00:00Z",
+        "date_end": "1999-06-22T00:00:00Z",
+        "record_type": "grant records",
+        "bagging_date": "2017-12-11T20:10:28.813Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "7723143.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            1,
+            2
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 9,
+    "fields": {
+        "archive": 9,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:18:47.349913",
+        "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
+        "title": "Annual Reports",
+        "date_start": "2001-07-01T00:00:00Z",
+        "date_end": "2002-06-30T00:00:00Z",
+        "record_type": "annual reports",
+        "bagging_date": "2017-12-11T20:18:47.349Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "7723143.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 10,
+    "fields": {
+        "archive": 10,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:22:48.542586",
+        "internal_sender_description": "Board materials from the foundation's board meetings.",
+        "title": "Board Books",
+        "date_start": "2008-07-01T00:00:00Z",
+        "date_end": "2010-06-30T00:00:00Z",
+        "record_type": "board materials",
+        "bagging_date": "2017-12-11T20:22:48.542Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "7723143.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 11,
+    "fields": {
+        "archive": 11,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:27:09.460064",
+        "internal_sender_description": "Communications and publications from the foundation's communications department",
+        "title": "Clippings of interest",
+        "date_start": "1982-07-06T00:00:00Z",
+        "date_end": "1999-06-30T00:00:00Z",
+        "record_type": "communications and publications",
+        "bagging_date": "2017-12-11T20:27:09.460Z",
+        "bag_count": "1 of 2",
+        "bag_group_identifier": "19820706",
+        "payload_oxum": "7723143.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            4
+        ],
+        "language": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 12,
+    "fields": {
+        "archive": 12,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:19:25.105527",
+        "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
+        "title": "Annual Reports",
+        "date_start": "2006-07-01T00:00:00Z",
+        "date_end": "2007-06-30T00:00:00Z",
+        "record_type": "annual reports",
+        "bagging_date": "2017-12-11T20:19:25.105Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "41838.5",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 13,
+    "fields": {
+        "archive": 13,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:26:23.983048",
+        "internal_sender_description": "Communications and publications from the foundation's communications department",
+        "title": "Photo shoots",
+        "date_start": "1982-07-06T00:00:00Z",
+        "date_end": "2001-06-30T00:00:00Z",
+        "record_type": "communications and publications",
+        "bagging_date": "2017-12-11T20:26:23.983Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "249376.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            4
+        ],
+        "language": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 14,
+    "fields": {
+        "archive": 14,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:15:40.727574",
+        "internal_sender_description": "Administrative records for the Office of Important Affairs",
+        "title": "OIA Administrative records",
+        "date_start": "1982-05-14T00:00:00Z",
+        "date_end": "1989-06-17T00:00:00Z",
+        "record_type": "administrative records",
+        "bagging_date": "2017-12-11T20:15:40.727Z",
+        "bag_count": "2 of 2",
+        "bag_group_identifier": "19820514",
+        "payload_oxum": "41838.5",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 15,
+    "fields": {
+        "archive": 15,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:23:09.494423",
+        "internal_sender_description": "Board materials from the foundation's board meetings.",
+        "title": "Board Books",
+        "date_start": "1998-07-06T00:00:00Z",
+        "date_end": "1999-06-30T00:00:00Z",
+        "record_type": "board materials",
+        "bagging_date": "2017-12-11T20:23:09.494Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 16,
+    "fields": {
+        "archive": 16,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:24:10.772070",
+        "internal_sender_description": "Board materials from the foundation's board meetings.",
+        "title": "Supporting records for Board meetings",
+        "date_start": "1982-07-06T00:00:00Z",
+        "date_end": "2001-06-30T00:00:00Z",
+        "record_type": "board materials",
+        "bagging_date": "2017-12-11T20:24:10.772Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "249376.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 17,
+    "fields": {
+        "archive": 17,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:23:09.494423",
+        "internal_sender_description": "Board materials from the foundation's board meetings.",
+        "title": "Board Books",
+        "date_start": "1998-07-06T00:00:00Z",
+        "date_end": "1999-06-30T00:00:00Z",
+        "record_type": "board materials",
+        "bagging_date": "2017-12-11T20:23:09.494Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 18,
+    "fields": {
+        "archive": 18,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:19:40.210341",
+        "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
+        "title": "Annual Reports",
+        "date_start": "2008-07-01T00:00:00Z",
+        "date_end": "2010-06-30T00:00:00Z",
+        "record_type": "annual reports",
+        "bagging_date": "2017-12-11T20:19:40.210Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            3
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 19,
+    "fields": {
+        "archive": 19,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:09:48.238148",
+        "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "title": "Grant to the Village Green Preservation Society",
+        "date_start": "2003-05-14T00:00:00Z",
+        "date_end": "2005-06-22T00:00:00Z",
+        "record_type": "grant records",
+        "bagging_date": "2017-12-11T20:09:48.238Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "8595832.2",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            1,
+            2
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.baginfometadata",
+    "pk": 20,
+    "fields": {
+        "archive": 20,
+        "source_organization": 2,
+        "external_identifier": "records-2017-12-11T20:16:48.166539",
+        "internal_sender_description": "Administrative records for the Office of Important Affairs",
+        "title": "OIA Administrative records",
+        "date_start": "2005-05-14T00:00:00Z",
+        "date_end": "2006-06-17T00:00:00Z",
+        "record_type": "administrative records",
+        "bagging_date": "2017-12-11T20:16:48.166Z",
+        "bag_count": "",
+        "bag_group_identifier": "",
+        "payload_oxum": "7723143.6",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "origin": "aurora",
+        "record_creators": [
+            5
+        ],
+        "language": [
+            1
+        ]
+    }
+},
+{
+    "model": "bag_transfer.bagitprofile",
+    "pk": 1,
+    "fields": {
+        "source_organization": 1,
+        "external_description": "Test BagIt Profile",
+        "version": "0.0",
+        "bagit_profile_identifier": "",
+        "contact_email": "archive@example.org",
+        "allow_fetch": false,
+        "serialization": "optional"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofile",
+    "pk": 2,
+    "fields": {
+        "source_organization": 1,
+        "external_description": "Test BagIt Profile",
+        "version": "0.0",
+        "bagit_profile_identifier": "",
+        "contact_email": "archive@example.org",
+        "allow_fetch": false,
+        "serialization": "optional"
+    }
+},
+{
+    "model": "bag_transfer.manifestsallowed",
+    "pk": 1,
+    "fields": {
+        "name": "sha256",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.manifestsallowed",
+    "pk": 2,
+    "fields": {
+        "name": "sha512",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.manifestsallowed",
+    "pk": 3,
+    "fields": {
+        "name": "sha256",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.manifestsallowed",
+    "pk": 4,
+    "fields": {
+        "name": "sha512",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 1,
+    "fields": {
+        "name": "application/zip",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 2,
+    "fields": {
+        "name": "application/x-tar",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 3,
+    "fields": {
+        "name": "application/x-gzip",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 4,
+    "fields": {
+        "name": "application/zip",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 5,
+    "fields": {
+        "name": "application/x-tar",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.acceptserialization",
+    "pk": 6,
+    "fields": {
+        "name": "application/x-gzip",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.acceptbagitversion",
+    "pk": 1,
+    "fields": {
+        "name": "0.97",
+        "bagit_profile": 1
+    }
+},
+{
+    "model": "bag_transfer.acceptbagitversion",
+    "pk": 2,
+    "fields": {
+        "name": "0.97",
+        "bagit_profile": 2
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 1,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "external_identifier",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 2,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "internal_sender_description",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 3,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "title",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 4,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "date_start",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 5,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "date_end",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 6,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "bagging_date",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 7,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "payload_oxum",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 8,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "source_organization",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 9,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "record_type",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 10,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "record_creators",
+        "required": true,
+        "repeatable": true
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 11,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "language",
+        "required": true,
+        "repeatable": true
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 12,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "bag_count",
+        "required": false,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 13,
+    "fields": {
+        "bagit_profile": 1,
+        "field": "bag_group_identifier",
+        "required": false,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 14,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "external_identifier",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 15,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "internal_sender_description",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 16,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "title",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 17,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "date_start",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 18,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "date_end",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 19,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "bagging_date",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 20,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "payload_oxum",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 21,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "source_organization",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 22,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "record_type",
+        "required": true,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 23,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "record_creators",
+        "required": true,
+        "repeatable": true
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 24,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "language",
+        "required": true,
+        "repeatable": true
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 25,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "bag_count",
+        "required": false,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfo",
+    "pk": 26,
+    "fields": {
+        "bagit_profile": 2,
+        "field": "bag_group_identifier",
+        "required": false,
+        "repeatable": false
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 1,
+    "fields": {
+        "bagit_profile_baginfo": 8,
+        "name": "Archival Repository"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 2,
+    "fields": {
+        "bagit_profile_baginfo": 9,
+        "name": "administrative records"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 3,
+    "fields": {
+        "bagit_profile_baginfo": 9,
+        "name": "board materials"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 4,
+    "fields": {
+        "bagit_profile_baginfo": 9,
+        "name": "grant records"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 5,
+    "fields": {
+        "bagit_profile_baginfo": 9,
+        "name": "communications and publications"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 6,
+    "fields": {
+        "bagit_profile_baginfo": 9,
+        "name": "annual reports"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 7,
+    "fields": {
+        "bagit_profile_baginfo": 21,
+        "name": "Donor Organization"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 8,
+    "fields": {
+        "bagit_profile_baginfo": 22,
+        "name": "administrative records"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 9,
+    "fields": {
+        "bagit_profile_baginfo": 22,
+        "name": "board materials"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 10,
+    "fields": {
+        "bagit_profile_baginfo": 22,
+        "name": "grant records"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 11,
+    "fields": {
+        "bagit_profile_baginfo": 22,
+        "name": "communications and publications"
+    }
+},
+{
+    "model": "bag_transfer.bagitprofilebaginfovalues",
+    "pk": 12,
+    "fields": {
+        "bagit_profile_baginfo": 22,
+        "name": "annual reports"
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 1,
+    "fields": {
+        "year": 2020,
+        "month_label": "June",
+        "sort_date": 20206,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 2,
+    "fields": {
+        "year": 2020,
+        "month_label": "June",
+        "sort_date": 20206,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 3,
+    "fields": {
+        "year": 2020,
+        "month_label": "July",
+        "sort_date": 20207,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 4,
+    "fields": {
+        "year": 2020,
+        "month_label": "July",
+        "sort_date": 20207,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 5,
+    "fields": {
+        "year": 2020,
+        "month_label": "August",
+        "sort_date": 20208,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 6,
+    "fields": {
+        "year": 2020,
+        "month_label": "August",
+        "sort_date": 20208,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 7,
+    "fields": {
+        "year": 2020,
+        "month_label": "September",
+        "sort_date": 20209,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 8,
+    "fields": {
+        "year": 2020,
+        "month_label": "September",
+        "sort_date": 20209,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 9,
+    "fields": {
+        "year": 2020,
+        "month_label": "October",
+        "sort_date": 202010,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 10,
+    "fields": {
+        "year": 2020,
+        "month_label": "October",
+        "sort_date": 202010,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 11,
+    "fields": {
+        "year": 2020,
+        "month_label": "November",
+        "sort_date": 202011,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 12,
+    "fields": {
+        "year": 2020,
+        "month_label": "November",
+        "sort_date": 202011,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 13,
+    "fields": {
+        "year": 2020,
+        "month_label": "December",
+        "sort_date": 202012,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 14,
+    "fields": {
+        "year": 2020,
+        "month_label": "December",
+        "sort_date": 202012,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 15,
+    "fields": {
+        "year": 2021,
+        "month_label": "January",
+        "sort_date": 20211,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 16,
+    "fields": {
+        "year": 2021,
+        "month_label": "January",
+        "sort_date": 20211,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 17,
+    "fields": {
+        "year": 2021,
+        "month_label": "February",
+        "sort_date": 20212,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 18,
+    "fields": {
+        "year": 2021,
+        "month_label": "February",
+        "sort_date": 20212,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 19,
+    "fields": {
+        "year": 2021,
+        "month_label": "March",
+        "sort_date": 20213,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 20,
+    "fields": {
+        "year": 2021,
+        "month_label": "March",
+        "sort_date": 20213,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 21,
+    "fields": {
+        "year": 2021,
+        "month_label": "April",
+        "sort_date": 20214,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 22,
+    "fields": {
+        "year": 2021,
+        "month_label": "April",
+        "sort_date": 20214,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 23,
+    "fields": {
+        "year": 2021,
+        "month_label": "May",
+        "sort_date": 20215,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 24,
+    "fields": {
+        "year": 2021,
+        "month_label": "May",
+        "sort_date": 20215,
+        "organization": 2,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 25,
+    "fields": {
+        "year": 2021,
+        "month_label": "June",
+        "sort_date": 20216,
+        "organization": 1,
+        "upload_count": 0,
+        "upload_size": 0.0
+    }
+},
+{
+    "model": "bag_transfer.dashboardmonthdata",
+    "pk": 26,
+    "fields": {
+        "year": 2021,
+        "month_label": "June",
+        "sort_date": 20216,
+        "organization": 2,
+        "upload_count": 20,
+        "upload_size": 0.091800179
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 1,
+    "fields": {
+        "organization": 1,
+        "label": "grant records",
+        "count": 0
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 2,
+    "fields": {
+        "organization": 2,
+        "label": "grant records",
+        "count": 4
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 3,
+    "fields": {
+        "organization": 1,
+        "label": "administrative records",
+        "count": 0
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 4,
+    "fields": {
+        "organization": 2,
+        "label": "administrative records",
+        "count": 4
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 5,
+    "fields": {
+        "organization": 1,
+        "label": "communications and publications",
+        "count": 0
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 6,
+    "fields": {
+        "organization": 2,
+        "label": "communications and publications",
+        "count": 4
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 7,
+    "fields": {
+        "organization": 1,
+        "label": "annual reports",
+        "count": 0
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 8,
+    "fields": {
+        "organization": 2,
+        "label": "annual reports",
+        "count": 4
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 9,
+    "fields": {
+        "organization": 1,
+        "label": "board materials",
+        "count": 0
+    }
+},
+{
+    "model": "bag_transfer.dashboardrecordtypedata",
+    "pk": 10,
+    "fields": {
+        "organization": 2,
+        "label": "board materials",
+        "count": 4
+    }
+},
+{
+    "model": "bag_transfer.accession",
+    "pk": 1,
+    "fields": {
+        "title": "Donor Organization, Office of Important Affairs adminstrators administrative records",
+        "accession_number": null,
+        "accession_date": "2021-06-27T18:45:03.842Z",
+        "start_date": "1999-05-13T04:00:00Z",
+        "end_date": "2006-06-16T04:00:00Z",
+        "extent_files": 12,
+        "extent_size": 7972519,
+        "description": "Administrative records for the Office of Important Affairs",
+        "access_restrictions": "Records are open for research after expiration of embargo period. Records embargoed for 10 years after date of creation.",
+        "use_restrictions": "Records under copyright may not be republished without permission from the copyright holder. Work for hire, under copyright until 40 years after creation.",
+        "resource": "/repositories/2/resources/123",
+        "acquisition_type": "deposit",
+        "appraisal_note": "",
+        "organization": 2,
+        "language": 3,
+        "created": "2021-06-27T18:45:03.842Z",
+        "last_modified": "2021-06-27T18:45:03.842Z",
+        "process_status": 10,
+        "archivesspace_identifier": null,
+        "creators": [
+            5
+        ]
+    }
+},
+{
+    "model": "bag_transfer.accession",
+    "pk": 2,
+    "fields": {
+        "title": "Donor Organization, Desperate Dan Appreciation Society grant records",
+        "accession_number": null,
+        "accession_date": "2021-06-27T18:45:22.136Z",
+        "start_date": "1994-05-13T04:00:00Z",
+        "end_date": "1999-06-21T04:00:00Z",
+        "extent_files": 5,
+        "extent_size": 41838,
+        "description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "access_restrictions": "Records are open for research after expiration of embargo period. Records embargoed for 10 years after date of creation.",
+        "use_restrictions": "Records under copyright may not be republished without permission from the copyright holder. Work for hire, under copyright until 40 years after creation.",
+        "resource": "/repositories/2/resources/123",
+        "acquisition_type": "deposit",
+        "appraisal_note": "",
+        "organization": 2,
+        "language": 3,
+        "created": "2021-06-27T18:45:22.136Z",
+        "last_modified": "2021-06-27T18:45:22.136Z",
+        "process_status": 10,
+        "archivesspace_identifier": null,
+        "creators": [
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.accession",
+    "pk": 3,
+    "fields": {
+        "title": "Donor Organization, Custard Pie Appreciation Consortium, Desperate Dan Appreciation Society grant records",
+        "accession_number": null,
+        "accession_date": "2021-06-27T18:46:01.098Z",
+        "start_date": "2000-05-13T04:00:00Z",
+        "end_date": "2005-06-21T04:00:00Z",
+        "extent_files": 8,
+        "extent_size": 8845208,
+        "description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
+        "access_restrictions": "Records are open for research after expiration of embargo period. Records embargoed for 10 years after date of creation.",
+        "use_restrictions": "Records under copyright may not be republished without permission from the copyright holder. Work for hire, under copyright until 40 years after creation.",
+        "resource": "/repositories/2/resources/123",
+        "acquisition_type": "deposit",
+        "appraisal_note": "",
+        "organization": 2,
+        "language": 3,
+        "created": "2021-06-27T18:46:01.098Z",
+        "last_modified": "2021-06-27T18:46:01.098Z",
+        "process_status": 10,
+        "archivesspace_identifier": null,
+        "creators": [
+            1,
+            2
+        ]
+    }
+},
+{
+    "model": "bag_transfer.recordtype",
+    "pk": 1,
+    "fields": {
+        "name": "administrative records"
+    }
+},
+{
+    "model": "bag_transfer.recordtype",
+    "pk": 2,
+    "fields": {
+        "name": "board materials"
+    }
+},
+{
+    "model": "bag_transfer.recordtype",
+    "pk": 3,
+    "fields": {
+        "name": "grant records"
+    }
+},
+{
+    "model": "bag_transfer.recordtype",
+    "pk": 4,
+    "fields": {
+        "name": "communications and publications"
+    }
+},
+{
+    "model": "bag_transfer.recordtype",
+    "pk": 5,
+    "fields": {
+        "name": "annual reports"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 1,
+    "fields": {
+        "organization": 1,
+        "archive": null,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": [
+            1,
+            5,
+            2,
+            4,
+            3
+        ]
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 2,
+    "fields": {
+        "organization": 1,
+        "archive": null,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": [
+            1,
+            5,
+            2,
+            4,
+            3
+        ]
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 3,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": [
+            1,
+            5,
+            2,
+            4,
+            3
+        ]
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 4,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": [
+            1,
+            5,
+            2,
+            4,
+            3
+        ]
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 5,
+    "fields": {
+        "organization": 2,
+        "archive": 1,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 6,
+    "fields": {
+        "organization": 2,
+        "archive": 1,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 7,
+    "fields": {
+        "organization": 2,
+        "archive": 2,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 8,
+    "fields": {
+        "organization": 2,
+        "archive": 2,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 9,
+    "fields": {
+        "organization": 2,
+        "archive": 3,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 10,
+    "fields": {
+        "organization": 2,
+        "archive": 3,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 11,
+    "fields": {
+        "organization": 2,
+        "archive": 4,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 12,
+    "fields": {
+        "organization": 2,
+        "archive": 4,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 13,
+    "fields": {
+        "organization": 2,
+        "archive": 5,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 14,
+    "fields": {
+        "organization": 2,
+        "archive": 5,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 15,
+    "fields": {
+        "organization": 2,
+        "archive": 6,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 16,
+    "fields": {
+        "organization": 2,
+        "archive": 6,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 17,
+    "fields": {
+        "organization": 2,
+        "archive": 7,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 18,
+    "fields": {
+        "organization": 2,
+        "archive": 7,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 19,
+    "fields": {
+        "organization": 2,
+        "archive": 8,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 20,
+    "fields": {
+        "organization": 2,
+        "archive": 8,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 21,
+    "fields": {
+        "organization": 2,
+        "archive": 9,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 22,
+    "fields": {
+        "organization": 2,
+        "archive": 9,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 23,
+    "fields": {
+        "organization": 2,
+        "archive": 10,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 24,
+    "fields": {
+        "organization": 2,
+        "archive": 10,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 25,
+    "fields": {
+        "organization": 2,
+        "archive": 11,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 26,
+    "fields": {
+        "organization": 2,
+        "archive": 11,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 27,
+    "fields": {
+        "organization": 2,
+        "archive": 12,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 28,
+    "fields": {
+        "organization": 2,
+        "archive": 12,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 29,
+    "fields": {
+        "organization": 2,
+        "archive": 13,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 30,
+    "fields": {
+        "organization": 2,
+        "archive": 13,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 31,
+    "fields": {
+        "organization": 2,
+        "archive": 14,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 32,
+    "fields": {
+        "organization": 2,
+        "archive": 14,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 33,
+    "fields": {
+        "organization": 2,
+        "archive": 15,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 34,
+    "fields": {
+        "organization": 2,
+        "archive": 15,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 35,
+    "fields": {
+        "organization": 2,
+        "archive": 16,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 36,
+    "fields": {
+        "organization": 2,
+        "archive": 16,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 37,
+    "fields": {
+        "organization": 2,
+        "archive": 17,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 38,
+    "fields": {
+        "organization": 2,
+        "archive": 17,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 39,
+    "fields": {
+        "organization": 2,
+        "archive": 18,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 40,
+    "fields": {
+        "organization": 2,
+        "archive": 18,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 41,
+    "fields": {
+        "organization": 2,
+        "archive": 19,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 42,
+    "fields": {
+        "organization": 2,
+        "archive": 19,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 43,
+    "fields": {
+        "organization": 2,
+        "archive": 20,
+        "accession": null,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 44,
+    "fields": {
+        "organization": 2,
+        "archive": 20,
+        "accession": null,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 45,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 1,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 46,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 1,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 47,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 2,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 48,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 2,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 49,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 3,
+        "rights_basis": "Copyright",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatement",
+    "pk": 50,
+    "fields": {
+        "organization": 2,
+        "archive": null,
+        "accession": 3,
+        "rights_basis": "Other",
+        "applies_to_type": []
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 1,
+    "fields": {
+        "rights_statement": 1,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": null,
+        "copyright_applicable_end_date": null,
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 2,
+    "fields": {
+        "rights_statement": 3,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": null,
+        "copyright_applicable_end_date": null,
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 3,
+    "fields": {
+        "rights_statement": 5,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2000-05-13",
+        "copyright_applicable_end_date": "2042-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 4,
+    "fields": {
+        "rights_statement": 7,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-05-13",
+        "copyright_applicable_end_date": "2029-06-16",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 5,
+    "fields": {
+        "rights_statement": 9,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-07-05",
+        "copyright_applicable_end_date": "2041-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 6,
+    "fields": {
+        "rights_statement": 11,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1999-05-13",
+        "copyright_applicable_end_date": "2044-06-16",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 7,
+    "fields": {
+        "rights_statement": 13,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2002-06-30",
+        "copyright_applicable_end_date": "2043-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 8,
+    "fields": {
+        "rights_statement": 15,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-07-05",
+        "copyright_applicable_end_date": "2039-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 9,
+    "fields": {
+        "rights_statement": 17,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1994-05-13",
+        "copyright_applicable_end_date": "2039-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 10,
+    "fields": {
+        "rights_statement": 19,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1994-05-13",
+        "copyright_applicable_end_date": "2039-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 11,
+    "fields": {
+        "rights_statement": 21,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2001-06-30",
+        "copyright_applicable_end_date": "2042-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 12,
+    "fields": {
+        "rights_statement": 23,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2008-06-30",
+        "copyright_applicable_end_date": "2050-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 13,
+    "fields": {
+        "rights_statement": 25,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-07-05",
+        "copyright_applicable_end_date": "2039-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 14,
+    "fields": {
+        "rights_statement": 27,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2006-06-30",
+        "copyright_applicable_end_date": "2047-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 15,
+    "fields": {
+        "rights_statement": 29,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-07-05",
+        "copyright_applicable_end_date": "2041-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 16,
+    "fields": {
+        "rights_statement": 31,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-05-13",
+        "copyright_applicable_end_date": "2029-06-16",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 17,
+    "fields": {
+        "rights_statement": 33,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1998-07-05",
+        "copyright_applicable_end_date": "2039-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 18,
+    "fields": {
+        "rights_statement": 35,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1982-07-05",
+        "copyright_applicable_end_date": "2041-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 19,
+    "fields": {
+        "rights_statement": 37,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1998-07-05",
+        "copyright_applicable_end_date": "2039-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 20,
+    "fields": {
+        "rights_statement": 39,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2008-06-30",
+        "copyright_applicable_end_date": "2050-06-29",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 21,
+    "fields": {
+        "rights_statement": 41,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2003-05-13",
+        "copyright_applicable_end_date": "2045-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 22,
+    "fields": {
+        "rights_statement": 43,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2005-05-13",
+        "copyright_applicable_end_date": "2046-06-16",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 23,
+    "fields": {
+        "rights_statement": 45,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1999-05-13",
+        "copyright_applicable_end_date": "2046-06-16",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 24,
+    "fields": {
+        "rights_statement": 47,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "1994-05-13",
+        "copyright_applicable_end_date": "2039-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementcopyright",
+    "pk": 25,
+    "fields": {
+        "rights_statement": 49,
+        "copyright_status": "copyrighted",
+        "copyright_jurisdiction": "us",
+        "copyright_status_determination_date": "2021-06-27",
+        "copyright_applicable_start_date": "2000-05-13",
+        "copyright_applicable_end_date": "2045-06-21",
+        "copyright_start_date_period": null,
+        "copyright_end_date_period": 40,
+        "copyright_end_date_open": false,
+        "copyright_note": "Work for hire, under copyright until 40 years after creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 1,
+    "fields": {
+        "rights_statement": 1,
+        "act": "publish",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 2,
+    "fields": {
+        "rights_statement": 2,
+        "act": "disseminate",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 3,
+    "fields": {
+        "rights_statement": 2,
+        "act": "disseminate",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 4,
+    "fields": {
+        "rights_statement": 3,
+        "act": "publish",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 5,
+    "fields": {
+        "rights_statement": 4,
+        "act": "disseminate",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 6,
+    "fields": {
+        "rights_statement": 4,
+        "act": "disseminate",
+        "start_date": null,
+        "end_date": null,
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 7,
+    "fields": {
+        "rights_statement": 5,
+        "act": "publish",
+        "start_date": "2000-05-13",
+        "end_date": "2042-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 8,
+    "fields": {
+        "rights_statement": 6,
+        "act": "disseminate",
+        "start_date": "2010-05-13",
+        "end_date": "2002-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 9,
+    "fields": {
+        "rights_statement": 6,
+        "act": "disseminate",
+        "start_date": "2000-05-13",
+        "end_date": "2012-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 10,
+    "fields": {
+        "rights_statement": 7,
+        "act": "publish",
+        "start_date": "1982-05-13",
+        "end_date": "2029-06-16",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 11,
+    "fields": {
+        "rights_statement": 8,
+        "act": "disseminate",
+        "start_date": "1992-05-13",
+        "end_date": "1989-06-16",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 12,
+    "fields": {
+        "rights_statement": 8,
+        "act": "disseminate",
+        "start_date": "1982-05-13",
+        "end_date": "1999-06-16",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 13,
+    "fields": {
+        "rights_statement": 9,
+        "act": "publish",
+        "start_date": "1982-07-05",
+        "end_date": "2041-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 14,
+    "fields": {
+        "rights_statement": 10,
+        "act": "disseminate",
+        "start_date": "1992-07-05",
+        "end_date": "2001-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 15,
+    "fields": {
+        "rights_statement": 10,
+        "act": "disseminate",
+        "start_date": "1982-07-05",
+        "end_date": "2011-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 16,
+    "fields": {
+        "rights_statement": 11,
+        "act": "publish",
+        "start_date": "1999-05-13",
+        "end_date": "2044-06-16",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 17,
+    "fields": {
+        "rights_statement": 12,
+        "act": "disseminate",
+        "start_date": "2009-05-13",
+        "end_date": "2004-06-16",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 18,
+    "fields": {
+        "rights_statement": 12,
+        "act": "disseminate",
+        "start_date": "1999-05-13",
+        "end_date": "2014-06-16",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 19,
+    "fields": {
+        "rights_statement": 13,
+        "act": "publish",
+        "start_date": "2002-06-30",
+        "end_date": "2043-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 20,
+    "fields": {
+        "rights_statement": 14,
+        "act": "disseminate",
+        "start_date": "2012-06-30",
+        "end_date": "2003-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 21,
+    "fields": {
+        "rights_statement": 14,
+        "act": "disseminate",
+        "start_date": "2002-06-30",
+        "end_date": "2013-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 22,
+    "fields": {
+        "rights_statement": 15,
+        "act": "publish",
+        "start_date": "1982-07-05",
+        "end_date": "2039-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 23,
+    "fields": {
+        "rights_statement": 16,
+        "act": "disseminate",
+        "start_date": "1992-07-05",
+        "end_date": "1999-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 24,
+    "fields": {
+        "rights_statement": 16,
+        "act": "disseminate",
+        "start_date": "1982-07-05",
+        "end_date": "2009-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 25,
+    "fields": {
+        "rights_statement": 17,
+        "act": "publish",
+        "start_date": "1994-05-13",
+        "end_date": "2039-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 26,
+    "fields": {
+        "rights_statement": 18,
+        "act": "disseminate",
+        "start_date": "2004-05-13",
+        "end_date": "1999-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 27,
+    "fields": {
+        "rights_statement": 18,
+        "act": "disseminate",
+        "start_date": "1994-05-13",
+        "end_date": "2009-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 28,
+    "fields": {
+        "rights_statement": 19,
+        "act": "publish",
+        "start_date": "1994-05-13",
+        "end_date": "2039-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 29,
+    "fields": {
+        "rights_statement": 20,
+        "act": "disseminate",
+        "start_date": "2004-05-13",
+        "end_date": "1999-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 30,
+    "fields": {
+        "rights_statement": 20,
+        "act": "disseminate",
+        "start_date": "1994-05-13",
+        "end_date": "2009-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 31,
+    "fields": {
+        "rights_statement": 21,
+        "act": "publish",
+        "start_date": "2001-06-30",
+        "end_date": "2042-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 32,
+    "fields": {
+        "rights_statement": 22,
+        "act": "disseminate",
+        "start_date": "2011-06-30",
+        "end_date": "2002-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 33,
+    "fields": {
+        "rights_statement": 22,
+        "act": "disseminate",
+        "start_date": "2001-06-30",
+        "end_date": "2012-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 34,
+    "fields": {
+        "rights_statement": 23,
+        "act": "publish",
+        "start_date": "2008-06-30",
+        "end_date": "2050-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 35,
+    "fields": {
+        "rights_statement": 24,
+        "act": "disseminate",
+        "start_date": "2018-06-30",
+        "end_date": "2010-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 36,
+    "fields": {
+        "rights_statement": 24,
+        "act": "disseminate",
+        "start_date": "2008-06-30",
+        "end_date": "2020-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 37,
+    "fields": {
+        "rights_statement": 25,
+        "act": "publish",
+        "start_date": "1982-07-05",
+        "end_date": "2039-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 38,
+    "fields": {
+        "rights_statement": 26,
+        "act": "disseminate",
+        "start_date": "1992-07-05",
+        "end_date": "1999-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 39,
+    "fields": {
+        "rights_statement": 26,
+        "act": "disseminate",
+        "start_date": "1982-07-05",
+        "end_date": "2009-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 40,
+    "fields": {
+        "rights_statement": 27,
+        "act": "publish",
+        "start_date": "2006-06-30",
+        "end_date": "2047-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 41,
+    "fields": {
+        "rights_statement": 28,
+        "act": "disseminate",
+        "start_date": "2016-06-30",
+        "end_date": "2007-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 42,
+    "fields": {
+        "rights_statement": 28,
+        "act": "disseminate",
+        "start_date": "2006-06-30",
+        "end_date": "2017-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 43,
+    "fields": {
+        "rights_statement": 29,
+        "act": "publish",
+        "start_date": "1982-07-05",
+        "end_date": "2041-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 44,
+    "fields": {
+        "rights_statement": 30,
+        "act": "disseminate",
+        "start_date": "1992-07-05",
+        "end_date": "2001-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 45,
+    "fields": {
+        "rights_statement": 30,
+        "act": "disseminate",
+        "start_date": "1982-07-05",
+        "end_date": "2011-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 46,
+    "fields": {
+        "rights_statement": 31,
+        "act": "publish",
+        "start_date": "1982-05-13",
+        "end_date": "2029-06-16",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 47,
+    "fields": {
+        "rights_statement": 32,
+        "act": "disseminate",
+        "start_date": "1992-05-13",
+        "end_date": "1989-06-16",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 48,
+    "fields": {
+        "rights_statement": 32,
+        "act": "disseminate",
+        "start_date": "1982-05-13",
+        "end_date": "1999-06-16",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 49,
+    "fields": {
+        "rights_statement": 33,
+        "act": "publish",
+        "start_date": "1998-07-05",
+        "end_date": "2039-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 50,
+    "fields": {
+        "rights_statement": 34,
+        "act": "disseminate",
+        "start_date": "2008-07-05",
+        "end_date": "1999-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 51,
+    "fields": {
+        "rights_statement": 34,
+        "act": "disseminate",
+        "start_date": "1998-07-05",
+        "end_date": "2009-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 52,
+    "fields": {
+        "rights_statement": 35,
+        "act": "publish",
+        "start_date": "1982-07-05",
+        "end_date": "2041-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 53,
+    "fields": {
+        "rights_statement": 36,
+        "act": "disseminate",
+        "start_date": "1992-07-05",
+        "end_date": "2001-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 54,
+    "fields": {
+        "rights_statement": 36,
+        "act": "disseminate",
+        "start_date": "1982-07-05",
+        "end_date": "2011-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 55,
+    "fields": {
+        "rights_statement": 37,
+        "act": "publish",
+        "start_date": "1998-07-05",
+        "end_date": "2039-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 56,
+    "fields": {
+        "rights_statement": 38,
+        "act": "disseminate",
+        "start_date": "2008-07-05",
+        "end_date": "1999-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 57,
+    "fields": {
+        "rights_statement": 38,
+        "act": "disseminate",
+        "start_date": "1998-07-05",
+        "end_date": "2009-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 58,
+    "fields": {
+        "rights_statement": 39,
+        "act": "publish",
+        "start_date": "2008-06-30",
+        "end_date": "2050-06-29",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 59,
+    "fields": {
+        "rights_statement": 40,
+        "act": "disseminate",
+        "start_date": "2018-06-30",
+        "end_date": "2010-06-29",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 60,
+    "fields": {
+        "rights_statement": 40,
+        "act": "disseminate",
+        "start_date": "2008-06-30",
+        "end_date": "2020-06-29",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 61,
+    "fields": {
+        "rights_statement": 41,
+        "act": "publish",
+        "start_date": "2003-05-13",
+        "end_date": "2045-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 62,
+    "fields": {
+        "rights_statement": 42,
+        "act": "disseminate",
+        "start_date": "2013-05-13",
+        "end_date": "2005-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 63,
+    "fields": {
+        "rights_statement": 42,
+        "act": "disseminate",
+        "start_date": "2003-05-13",
+        "end_date": "2015-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 64,
+    "fields": {
+        "rights_statement": 43,
+        "act": "publish",
+        "start_date": "2005-05-13",
+        "end_date": "2046-06-16",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 65,
+    "fields": {
+        "rights_statement": 44,
+        "act": "disseminate",
+        "start_date": "2015-05-13",
+        "end_date": "2006-06-16",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 66,
+    "fields": {
+        "rights_statement": 44,
+        "act": "disseminate",
+        "start_date": "2005-05-13",
+        "end_date": "2016-06-16",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 67,
+    "fields": {
+        "rights_statement": 45,
+        "act": "publish",
+        "start_date": "1999-05-13",
+        "end_date": "2046-06-16",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 68,
+    "fields": {
+        "rights_statement": 46,
+        "act": "disseminate",
+        "start_date": "2009-05-13",
+        "end_date": "2006-06-16",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 69,
+    "fields": {
+        "rights_statement": 46,
+        "act": "disseminate",
+        "start_date": "1999-05-13",
+        "end_date": "2016-06-16",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 70,
+    "fields": {
+        "rights_statement": 47,
+        "act": "publish",
+        "start_date": "1994-05-13",
+        "end_date": "2039-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 71,
+    "fields": {
+        "rights_statement": 48,
+        "act": "disseminate",
+        "start_date": "2004-05-13",
+        "end_date": "1999-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 72,
+    "fields": {
+        "rights_statement": 48,
+        "act": "disseminate",
+        "start_date": "1994-05-13",
+        "end_date": "2009-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 73,
+    "fields": {
+        "rights_statement": 49,
+        "act": "publish",
+        "start_date": "2000-05-13",
+        "end_date": "2045-06-21",
+        "start_date_period": null,
+        "end_date_period": 40,
+        "end_date_open": false,
+        "rights_granted_note": "Records under copyright may not be republished without permission from the copyright holder.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 74,
+    "fields": {
+        "rights_statement": 50,
+        "act": "disseminate",
+        "start_date": "2010-05-13",
+        "end_date": "2005-06-21",
+        "start_date_period": 10,
+        "end_date_period": null,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "allow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementrightsgranted",
+    "pk": 75,
+    "fields": {
+        "rights_statement": 50,
+        "act": "disseminate",
+        "start_date": "2000-05-13",
+        "end_date": "2015-06-21",
+        "start_date_period": null,
+        "end_date_period": 10,
+        "end_date_open": false,
+        "rights_granted_note": "Records are open for research after expiration of embargo period.",
+        "restriction": "disallow"
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 1,
+    "fields": {
+        "rights_statement": 2,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": null,
+        "other_rights_applicable_end_date": null,
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 2,
+    "fields": {
+        "rights_statement": 4,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": null,
+        "other_rights_applicable_end_date": null,
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 3,
+    "fields": {
+        "rights_statement": 6,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2000-05-13",
+        "other_rights_applicable_end_date": "2012-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 4,
+    "fields": {
+        "rights_statement": 8,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-05-13",
+        "other_rights_applicable_end_date": "1999-06-16",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 5,
+    "fields": {
+        "rights_statement": 10,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-07-05",
+        "other_rights_applicable_end_date": "2011-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 6,
+    "fields": {
+        "rights_statement": 12,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1999-05-13",
+        "other_rights_applicable_end_date": "2014-06-16",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 7,
+    "fields": {
+        "rights_statement": 14,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2002-06-30",
+        "other_rights_applicable_end_date": "2013-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 8,
+    "fields": {
+        "rights_statement": 16,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-07-05",
+        "other_rights_applicable_end_date": "2009-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 9,
+    "fields": {
+        "rights_statement": 18,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1994-05-13",
+        "other_rights_applicable_end_date": "2009-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 10,
+    "fields": {
+        "rights_statement": 20,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1994-05-13",
+        "other_rights_applicable_end_date": "2009-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 11,
+    "fields": {
+        "rights_statement": 22,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2001-06-30",
+        "other_rights_applicable_end_date": "2012-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 12,
+    "fields": {
+        "rights_statement": 24,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2008-06-30",
+        "other_rights_applicable_end_date": "2020-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 13,
+    "fields": {
+        "rights_statement": 26,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-07-05",
+        "other_rights_applicable_end_date": "2009-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 14,
+    "fields": {
+        "rights_statement": 28,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2006-06-30",
+        "other_rights_applicable_end_date": "2017-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 15,
+    "fields": {
+        "rights_statement": 30,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-07-05",
+        "other_rights_applicable_end_date": "2011-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 16,
+    "fields": {
+        "rights_statement": 32,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-05-13",
+        "other_rights_applicable_end_date": "1999-06-16",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 17,
+    "fields": {
+        "rights_statement": 34,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1998-07-05",
+        "other_rights_applicable_end_date": "2009-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 18,
+    "fields": {
+        "rights_statement": 36,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1982-07-05",
+        "other_rights_applicable_end_date": "2011-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 19,
+    "fields": {
+        "rights_statement": 38,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1998-07-05",
+        "other_rights_applicable_end_date": "2009-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 20,
+    "fields": {
+        "rights_statement": 40,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2008-06-30",
+        "other_rights_applicable_end_date": "2020-06-29",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 21,
+    "fields": {
+        "rights_statement": 42,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2003-05-13",
+        "other_rights_applicable_end_date": "2015-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 22,
+    "fields": {
+        "rights_statement": 44,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2005-05-13",
+        "other_rights_applicable_end_date": "2016-06-16",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 23,
+    "fields": {
+        "rights_statement": 46,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1999-05-13",
+        "other_rights_applicable_end_date": "2016-06-16",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 24,
+    "fields": {
+        "rights_statement": 48,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "1994-05-13",
+        "other_rights_applicable_end_date": "2009-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+},
+{
+    "model": "bag_transfer.rightsstatementother",
+    "pk": 25,
+    "fields": {
+        "rights_statement": 50,
+        "other_rights_basis": "Donor",
+        "other_rights_applicable_start_date": "2000-05-13",
+        "other_rights_applicable_end_date": "2015-06-21",
+        "other_rights_start_date_period": null,
+        "other_rights_end_date_period": 10,
+        "other_rights_end_date_open": false,
+        "other_rights_note": "Records embargoed for 10 years after date of creation."
+    }
+}
+]

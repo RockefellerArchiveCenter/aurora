@@ -26,26 +26,22 @@ RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav && \
     sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf && \
-    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
-
-# Update clamav databases
-RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
-    wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
-    wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
-    chown clamav:clamav /var/lib/clamav/*.cvd
-
+    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf && \
+    freshclam
 
 # Set up SSH
 RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
 
-# Copy Aurora application files
+# Install Python dependencies
 RUN mkdir -p /code/
-COPY . /code
+COPY requirements.txt /code
 
 RUN mkdir -p /data/
 
 # Install Python modules
 RUN pip install --upgrade pip && pip install -r /code/requirements.txt
+
+COPY . /code
 
 EXPOSE 8000
 EXPOSE 22
