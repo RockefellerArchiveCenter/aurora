@@ -1,81 +1,67 @@
 import random
 
-from bag_transfer.models import Archives
+from bag_transfer.models import Archives, User
 from bag_transfer.test import helpers
-from django.conf import settings
-from django.test import Client, TestCase
+from django.test import TransactionTestCase
 from django.urls import reverse
 
 
-class AppraisalTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.archives = helpers.create_test_archives(
-            organization=self.orgs[0],
-            process_status=Archives.VALIDATED,
-            count=10)
-        self.groups = helpers.create_test_groups(["appraisal_archivists"])
-        self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"],
-            password=settings.TEST_USER["PASSWORD"],
-            org=random.choice(self.orgs),
-            is_staff=True,
-            groups=self.groups)
-        self.client.login(
-            username=self.user.username, password=settings.TEST_USER["PASSWORD"])
+class AppraisalTestCase(TransactionTestCase):
+    fixtures = ["complete.json"]
 
-    def list_views(self):
+    def setUp(self):
+        self.to_appraise = Archives.objects.filter(process_status=Archives.VALIDATED)
+        self.client.force_login(User.objects.get(username="admin"))
+
+    def assert_successful_ajax_request(self, url, data):
+        request = self.client.get(url, data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json()["success"], 1)
+        return request
+
+    def test_list_view(self):
         response = self.client.get(reverse("appraise:list"))
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context["uploads_count"], len(self.archives))
+        self.assertEqual(response.context["uploads_count"], len(self.to_appraise))
 
-    def accept_or_reject(self):
+    def test_accept_or_reject(self):
         """Tests accept or reject decisions."""
-        for decision in [1, 0]:
-            archive = random.choice(Archives.objects.all())
-            request = self.client.get(
+        for decision, expected_status in [(1, Archives.ACCEPTED), (0, Archives.REJECTED)]:
+            archive = random.choice(Archives.objects.filter(process_status=Archives.VALIDATED))
+            self.assert_successful_ajax_request(
                 reverse("appraise:list"),
                 {
                     "req_form": "appraise",
                     "req_type": "decision",
                     "upload_id": archive.pk,
                     "appraisal_decision": decision,
-                },
-                HTTP_X_REQUESTED_WITH="XMLHttpRequest",)
-            self.assertEqual(request.status_code, 200)
-            self.assertEqual(request.json()["success"], 1)
+                })
+            archive.refresh_from_db()
+            self.assertEqual(archive.process_status, expected_status)
 
-    def appraisal_note(self):
+    def test_detail(self):
+        """Ensures detail responses are returned"""
+        for archive in Archives.objects.filter(process_status=Archives.VALIDATED):
+            request = self.assert_successful_ajax_request(
+                reverse("appraise:list"),
+                {
+                    "req_form": "detail",
+                    "upload_id": archive.pk,
+                })
+            self.assertEqual(request.json()["object"], archive.pk)
+
+    def test_appraisal_note(self):
         """Tests submission and editing of appraisal note."""
         archive = random.choice(
             Archives.objects.filter(process_status=Archives.VALIDATED))
         note_text = helpers.random_string(30)
-        for req_type in ["submit", "edit"]:
-            request = self.client.get(
-                reverse("appraise:list"),
-                {
+        for req_type in ["submit", "edit", "delete"]:
+            self.assert_successful_ajax_request(
+                reverse("appraise:list"), {
                     "req_form": "appraise",
                     "req_type": req_type,
                     "upload_id": archive.pk,
                     "appraisal_note": note_text,
-                },
-                HTTP_X_REQUESTED_WITH="XMLHttpRequest",)
-            self.assertEqual(request.json()["success"], 1)
+                })
             updated = Archives.objects.get(pk=archive.pk)
-            self.assertEqual(updated.appraisal_note, note_text)
-            if request.json().get("appraisal_note"):
-                self.assertEqual(request.json()["appraisal_note"], note_text)
-
-    def list_count(self):
-        response = self.client.get(reverse("appraise:list"))
-        self.assertEqual(response.context["uploads_count"], len(self.archives) - 2)
-
-    def test_appraisal(self):
-        self.list_views()
-        self.accept_or_reject()
-        self.appraisal_note()
-        self.list_count()
-
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
+            self.assertEqual(updated.appraisal_note, None if req_type == "delete" else note_text)
