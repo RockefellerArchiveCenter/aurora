@@ -203,6 +203,7 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
             )
 
     def grouped_transfer_data(self, transfers_list):
+        """Returns grouped data from all transfers in an accession."""
         notes = {"appraisal": []}
         dates = {"start": [], "end": []}
         descriptions_list = []
@@ -243,6 +244,9 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
         return self.render_to_json_response(rdata)
 
     def parse_language(self, languages_list):
+        """Parses a single language from a list of language codes, and a returns
+        a LanguageCode object matching that code.
+        """
         if len(languages_list) == 1:
             language = LanguageCode.objects.get_or_create(code=languages_list[0])[0]
         elif len(languages_list) > 1:
@@ -252,10 +256,12 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
         return language
 
     def parse_title(self, organization, record_type, creators_list):
+        """Creates a title for the accession."""
         return ("{}, {} {}".format(organization, creators_list, record_type)
                 if len(creators_list) > 0 else "{} {}".format(organization, record_type))
 
     def rights_statement_notes(self, rights_statements):
+        """Combines notes from rights statements associated with transfers in an accession."""
         notes = {}
         for statement in rights_statements:
             rights_info = statement.get_rights_info_object()
@@ -271,11 +277,13 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
         return notes
 
     def update_accession_rights(self, merged_rights_statements, accession):
+        """Associates a list of rights statements with an accession."""
         for statement in merged_rights_statements:
             statement.accession = accession
             statement.save()
 
     def update_accession_transfers(self, transfers_list, accession):
+        """Associates a list of transfers with an accession and updates their status."""
         for transfer in transfers_list:
             BAGLog.log_it("BACC", transfer)
             transfer.process_status = Archives.ACCESSIONING_STARTED
