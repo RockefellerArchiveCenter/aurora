@@ -54,15 +54,11 @@ class Organization(models.Model):
 
     def org_machine_upload_paths(self):
         """Returns a list containing the organizations' upload and processing paths."""
+        root_dir = "/".join([settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name])
         return [
-            "{}{}/upload/".format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name),
-            "{}{}/processing/".format(
-                settings.TRANSFER_UPLOADS_ROOT, self.machine_name
-            ),
+            "{}/upload/".format(root_dir, self.machine_name),
+            "{}/processing/".format(root_dir, self.machine_name),
         ]
-
-    def org_root_dir(self):
-        return "%s%s".format(settings.TRANSFER_UPLOADS_ROOT, self.machine_name)
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to the default save function."""
