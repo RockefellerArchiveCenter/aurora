@@ -2,7 +2,7 @@ from uuid import uuid4
 
 import iso8601
 from bag_transfer.lib import RAC_CMD
-from dateutil.relativedelta import relativedelta
+from dateutil import relativedelta, tz
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -107,7 +107,7 @@ class User(AbstractUser):
     ACCESSIONER_GROUPS = ["accessioning_archivists", "managing_archivists"]
     MANAGER_GROUPS = ["managing_archivists"]
 
-    organization = models.ForeignKey(Organization, null=True, blank=False, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, null=True, blank=False, on_delete=models.CASCADE, related_name="users")
     is_machine_account = models.BooleanField(default=True)
     is_org_admin = models.BooleanField(default=False)
     AbstractUser._meta.get_field("email").blank = False
@@ -239,10 +239,9 @@ class Archives(models.Model):
     )
 
     accession = models.ForeignKey(
-        "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL
-    )
+        "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="transfers")
-    user_uploaded = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user_uploaded = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="transfers")
     machine_file_path = models.CharField(max_length=255)
     machine_file_size = models.CharField(max_length=30)
     machine_file_upload_time = models.DateTimeField()
@@ -253,13 +252,9 @@ class Archives(models.Model):
     appraisal_note = models.TextField(blank=True, null=True)
     manifest = models.TextField(blank=True, null=True)
     additional_error_info = models.CharField(max_length=255, null=True, blank=True)
-    process_status = models.PositiveSmallIntegerField(
-        choices=processing_statuses, default=TRANSFER_COMPLETED
-    )
+    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=TRANSFER_COMPLETED)
     archivesspace_identifier = models.CharField(max_length=255, null=True, blank=True)
-    archivesspace_parent_identifier = models.CharField(
-        max_length=255, null=True, blank=True
-    )
+    archivesspace_parent_identifier = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -495,7 +490,7 @@ class Archives(models.Model):
                 setattr(
                     obj,
                     date_key,
-                    bag_date + relativedelta(years=period))
+                    bag_date + relativedelta.relativedelta(years=period))
 
         try:
             bag_data = self.get_bag_data()
@@ -536,6 +531,10 @@ class Archives(models.Model):
         except Exception as e:
             print("Error saving rights statement: {}".format(str(e)))
             return False
+
+    @property
+    def upload_time_display(self):
+        return self.machine_file_upload_time.astimezone(tz.tzlocal()).strftime("%b %e, %Y %I:%M:%S %p")
 
 
 class BAGLogCodes(models.Model):
