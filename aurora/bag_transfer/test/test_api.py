@@ -1,12 +1,13 @@
 import json
 from unittest.mock import patch
 
-from bag_transfer.models import Archives, Organization, User
-from django.test import TransactionTestCase
+from bag_transfer.accession.models import Accession
+from bag_transfer.models import Archives, BAGLog, Organization, User
+from django.test import TestCase
 from django.urls import reverse
 
 
-class APITest(TransactionTestCase):
+class APITest(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -56,7 +57,15 @@ class APITest(TransactionTestCase):
 
     def test_list_views(self):
         """Asserts list endpoints return expected response."""
-        self.assert_status_code(reverse("accession-list"), 200)
-        self.assert_status_code(reverse("baglog-list"), 200)
-        self.assert_status_code(reverse("organization-list"), 200)
-        self.assert_status_code(reverse("user-list"), 200)
+        for view in ["archives-list", "accession-list", "baglog-list", "organization-list", "user-list"]:
+            self.assert_status_code(reverse(view), 200)
+
+    def test_detail_views(self):
+        for view, model_cls in [
+                ("archives-detail", Archives),
+                ("accession-detail", Accession),
+                ("baglog-detail", BAGLog),
+                ("organization-detail", Organization),
+                ("user-detail", User)]:
+            for obj in model_cls.objects.all():
+                self.assert_status_code(reverse(view, kwargs={"pk": obj.pk}), 200)
