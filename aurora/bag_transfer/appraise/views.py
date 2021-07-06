@@ -128,12 +128,12 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
         json_data = []
         for transfer in qs:
             creators = ""
-            bag_info_data = transfer.get_bag_data()
+            bag_info_data = transfer.bag_data
             if bag_info_data:
                 creators = ("<br/>").join(bag_info_data.get("record_creators"))
             json_data.append(
                 [
-                    transfer.bag_or_failed_name(),
+                    transfer.bag_or_failed_name,
                     transfer.organization.name,
                     creators,
                     bag_info_data.get("record_type"),

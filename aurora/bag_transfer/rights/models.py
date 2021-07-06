@@ -19,10 +19,9 @@ class RecordType(models.Model):
 
 
 class RightsStatement(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="rights_statements")
     archive = models.ForeignKey(
-        Archives, null=True, blank=True, on_delete=models.CASCADE
-    )
+        Archives, null=True, blank=True, on_delete=models.CASCADE, related_name="rights_statements")
     accession = models.ForeignKey(
         Accession,
         null=True,

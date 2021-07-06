@@ -171,10 +171,10 @@ class TransferDataView(CSVResponseMixin, View):
             self.organization = get_object_or_404(Organization, pk=self.request.user.organization.pk)
             transfers.filter(organization=self.organization)
         for transfer in transfers.order_by("-created_time"):
-            bag_info_data = transfer.get_bag_data()
+            bag_info_data = transfer.bag_data
             data.append(
                 (
-                    transfer.bag_or_failed_name(),
+                    transfer.bag_or_failed_name,
                     transfer.machine_file_identifier,
                     self.process_status_display(transfer.process_status),
                     self.get_dates(bag_info_data),
@@ -255,9 +255,9 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     def prepare_results(self, qs):
         json_data = []
         for transfer in qs:
-            bag_info_data = transfer.get_bag_data()
+            bag_info_data = transfer.bag_data
             transfer_data = [
-                transfer.bag_or_failed_name(),
+                transfer.bag_or_failed_name,
                 transfer.machine_file_identifier,
                 self.process_status_tag(transfer.process_status),
                 self.get_dates(bag_info_data),
@@ -280,5 +280,5 @@ class TransferDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context["meta_page_title"] = self.object.bag_or_failed_name
-        context["metadata"] = sorted(self.object.get_bag_data().items())
+        context["metadata"] = sorted(self.object.bag_data.items())
         return context
