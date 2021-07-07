@@ -72,11 +72,8 @@ class RightsStatement(models.Model):
     def merge_rights(statement_list):
         """Merges a list of rights statements by rights basis and act."""
         def merge_dates(merge_list, start_date_key, end_date_key, merge_to):
-            start_dates = []
-            end_dates = []
-            for merge_item in merge_list:
-                start_dates.append(getattr(merge_item, start_date_key))
-                end_dates.append(getattr(merge_item, end_date_key))
+            start_dates = [getattr(obj, start_date_key) for obj in merge_list if getattr(obj, start_date_key)]
+            end_dates = [getattr(obj, end_date_key) for obj in merge_list if getattr(obj, end_date_key)]
             setattr(merge_to, start_date_key, sorted(start_dates)[0])
             setattr(merge_to, end_date_key, sorted(end_dates)[-1])
 
