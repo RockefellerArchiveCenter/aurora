@@ -202,7 +202,7 @@
     "pk": 1,
     "fields": {
         "accession": 3,
-        "organization": 2,
+        "organization": 1,
         "user_uploaded": 2,
         "machine_file_path": "/data1/d21c72bb-6381-4768-819f-fb460bed14fa",
         "machine_file_size": "256727",
