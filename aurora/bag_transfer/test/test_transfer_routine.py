@@ -23,8 +23,59 @@ class TransferRoutineTestCase(TestCase):
 
         # builds content dict
 
-    def test_run_routine(self):
-        pass
+    # def test_run_routine(self):
+    #
+    #     test_on_bagchecker = [r[0] for r in setup.BAGS_REF if len(r) > 2 and r[2]]
+    #     test_on_transfer_routine = [r[0] for r in setup.BAGS_REF if len(r) > 3 and r[3]]
+    #
+    #     for ref in setup.BAGS_REF:
+    #
+    #         helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0])
+    #         tr = TransferRoutine()
+    #         self.assertTrue(tr.setup_routine(), "Transfer routine did not set up properly")
+    #         self.assertTrue(isinstance(tr.run_routine(), dict), "Expected transfer routine to produce a dict, got {} instead".format(tr.run_routine()))
+    #
+    #         for trans in tr.transfers:
+    #             if not trans["file_name"].startswith(ref[0]):
+    #                 continue
+    #             if ref[0] == "valid_bag":
+    #                 self.assertFalse(trans["auto_fail"])
+    #             else:
+    #                 if ref[0] in test_on_transfer_routine:
+    #                     self.assertTrue(trans["auto_fail"])
+    #                     self.assertEqual(ref[1], trans["auto_fail_code"])
+    #
+    #             archive = Archives.initial_save(
+    #                 self.orgs[0],
+    #                 None,
+    #                 trans["file_path"],
+    #                 trans["file_size"],
+    #                 trans["file_modtime"],
+    #                 Archives().gen_identifier(),
+    #                 trans["file_type"],
+    #                 trans["bag_it_name"])
+    #             archive.organization.name = "Ford Foundation"
+    #             archive.organization.save()
+    #
+    #             self.assertIsNot(False, archive.machine_file_identifier, "Expected bag identifier to exist")
+    #
+    #             if trans["auto_fail"]:
+    #                 continue
+    #
+    #             bag = bagChecker(archive)
+    #             passed_all_results = bag.bag_passed_all()
+    #
+    #             if ref[0] in ["valid_bag", "no_metadata_file"]:
+    #                 self.assertTrue(passed_all_results, "Bag unexpectedly invalid")
+    #             else:
+    #                 self.assertFalse(passed_all_results, "Bag unexpectedly valid")
+    #                 if ref[0] in test_on_bagchecker:
+    #                     self.assertEqual(ref[1], bag.ecode)
+    #
+    #             # deleting path in processing and tmp dir
+    #             remove_file_or_dir(
+    #                 os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
+    #             remove_file_or_dir(archive.machine_file_path)
 
     def tearDown(self):
         helpers.delete_test_orgs(self.orgs)

@@ -40,16 +40,16 @@ class DiscoverTransfers(CronJobBase):
 
                     email.to = [user.email]
 
-                    new_arc = Archives.initial_save(
-                        org,
-                        user,
-                        upload_list["file_path"],
-                        upload_list["file_size"],
-                        upload_list["file_modtime"],
-                        machine_file_identifier,
-                        upload_list["file_type"],
-                        upload_list["bag_it_name"],
-                    )
+                    new_arc = Archives.objects.create(
+                        organization=org,
+                        user_uploaded=user,
+                        machine_file_path=upload_list["file_path"],
+                        machine_file_size=upload_list["file_size"],
+                        machine_file_upload_time=upload_list["file_modtime"],
+                        machine_file_identifier=machine_file_identifier,
+                        machine_file_type=upload_list["file_type"],
+                        bag_it_name=upload_list["bag_it_name"],
+                        process_status=Archives.TRANSFER_COMPLETED)
 
                     BAGLog.log_it("ASAVE", new_arc)
                     print(
@@ -57,7 +57,7 @@ class DiscoverTransfers(CronJobBase):
                     )
 
                     if upload_list["auto_fail"]:
-                        new_arc.setup_save(upload_list)
+                        new_arc.add_autofail_information(upload_list)
                         new_arc.process_status = Archives.INVALID
                         BAGLog.log_it(upload_list["auto_fail_code"], new_arc)
                         email.setup_message("TRANS_FAIL_VAL", new_arc)

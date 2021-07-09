@@ -2,7 +2,7 @@ from uuid import uuid4
 
 import iso8601
 from bag_transfer.lib import RAC_CMD
-from dateutil.relativedelta import relativedelta
+from dateutil import relativedelta, tz
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
@@ -64,9 +64,7 @@ class Organization(models.Model):
         """Adds additional behaviors to the default save function."""
         if self.pk is None:
             """Save new Organization instances."""
-            self.machine_name = "".join(
-                c for c in self.name.lower() if c.isalnum()
-            ).rstrip()
+            self.machine_name = "".join(c for c in self.name.lower() if c.isalnum()).rstrip()
             RAC_CMD.add_org(self.machine_name)
         else:
             orig = Organization.objects.get(pk=self.pk)
@@ -107,7 +105,7 @@ class User(AbstractUser):
     ACCESSIONER_GROUPS = ["accessioning_archivists", "managing_archivists"]
     MANAGER_GROUPS = ["managing_archivists"]
 
-    organization = models.ForeignKey(Organization, null=True, blank=False, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, null=True, blank=False, on_delete=models.CASCADE, related_name="users")
     is_machine_account = models.BooleanField(default=True)
     is_org_admin = models.BooleanField(default=False)
     AbstractUser._meta.get_field("email").blank = False
@@ -239,10 +237,9 @@ class Archives(models.Model):
     )
 
     accession = models.ForeignKey(
-        "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL
-    )
+        "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="transfers")
-    user_uploaded = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    user_uploaded = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="transfers")
     machine_file_path = models.CharField(max_length=255)
     machine_file_size = models.CharField(max_length=30)
     machine_file_upload_time = models.DateTimeField()
@@ -253,13 +250,9 @@ class Archives(models.Model):
     appraisal_note = models.TextField(blank=True, null=True)
     manifest = models.TextField(blank=True, null=True)
     additional_error_info = models.CharField(max_length=255, null=True, blank=True)
-    process_status = models.PositiveSmallIntegerField(
-        choices=processing_statuses, default=TRANSFER_COMPLETED
-    )
+    process_status = models.PositiveSmallIntegerField(choices=processing_statuses, default=TRANSFER_COMPLETED)
     archivesspace_identifier = models.CharField(max_length=255, null=True, blank=True)
-    archivesspace_parent_identifier = models.CharField(
-        max_length=255, null=True, blank=True
-    )
+    archivesspace_parent_identifier = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
 
@@ -267,24 +260,7 @@ class Archives(models.Model):
         ordering = ["machine_file_upload_time"]
 
     def __str__(self):
-        return "{}: {}".format(self.pk, self.bag_or_failed_name())
-
-    def bag_or_failed_name(self):
-        """Returns a title string for the bag. Useful if you don't know whether
-        or not the bag is valid."""
-        if self.bag_it_valid:
-            bag_info_data = self.get_bag_data()
-            return (
-                "{} ({})".format(
-                    bag_info_data.get("title"), bag_info_data.get("external_identifier")
-                )
-                if bag_info_data.get("external_identifier")
-                else bag_info_data.get("title")
-            )
-        return self.machine_file_path.split("/")[-1]
-
-    def rights_statements(self):
-        return self.rightsstatement_set.all()
+        return "{}: {}".format(self.pk, self.bag_or_failed_name)
 
     @staticmethod
     def gen_identifier():
@@ -294,140 +270,103 @@ class Archives(models.Model):
             Archives.gen_identifier()
         return iden
 
-    @classmethod
-    def initial_save(
-        cls,
-        org,
-        user,
-        file_path,
-        file_size,
-        file_modtime,
-        identifier,
-        file_type,
-        bag_it_name,
-    ):
-        """Adds default value to enable save."""
-        archive = cls(
-            organization=org,
-            user_uploaded=user,
-            machine_file_path=file_path,
-            machine_file_size=file_size,
-            machine_file_upload_time=file_modtime,
-            machine_file_identifier=identifier,
-            machine_file_type=file_type,
-            bag_it_name=bag_it_name,
-            process_status=cls.TRANSFER_COMPLETED,
-        )
-        archive.save()
-        return archive
-
-    def get_error_codes(self):
+    @property
+    def bag_or_failed_name(self):
+        """Returns a title string for the bag. Useful if you don't know whether
+        or not the bag is valid."""
         if self.bag_it_valid:
-            return ""
-        return [b.code.code_desc for b in self.get_errors()]
+            bag_info_data = self.bag_data
+            return (
+                "{} ({})".format(
+                    bag_info_data.get("title"), bag_info_data.get("external_identifier"))
+                if bag_info_data.get("external_identifier")
+                else bag_info_data.get("title"))
+        return self.machine_file_path.split("/")[-1]
 
-    def get_errors(self):
-        """Returns errors for an Archive."""
-        if self.bag_it_valid:
-            return None
-        return [
-            b
-            for b in BAGLog.objects.filter(archive=self).exclude(
-                code__code_short__in=["ASAVE", "PBAG"]
-            )
-        ]
+    @property
+    def errors(self):
+        """Returns BagLog error objects for an Archive."""
+        return None if self.bag_it_valid else [
+            b for b in BAGLog.objects.filter(archive=self, code__code_type__in=["BE", "GE"])]
 
-    def get_bag_validations(self):
-        """Returns all validations (BagIt, BagIt Profile) for an Archive."""
-        if not self.bag_it_valid:
-            return False
-        items = BAGLog.objects.filter(
-            archive=self, code__code_short__in=["PBAG", "PBAGP"]
-        )
-        if not items or len(items) < 2:
-            return False
-        data = {}
-        for item in items:
-            data[item.code.code_short] = item.created_time
-        return data
+    @property
+    def bag_data(self):
+        """Returns a dict containing bag-info.txt data for an Archive."""
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        excluded_fields = ["id", "pk", "archive"]
+        mtm_fields = ["record_creators", "language"]
+        field_names = list(set([field.name for field in BagInfoMetadata._meta.get_fields()]) - set(excluded_fields))
+        values = {}
+        for field_name in sorted(field_names):
+            if field_name in mtm_fields:
+                objects = getattr(bag_data, field_name, None)
+                if objects:
+                    values[field_name] = sorted([str(o) for o in objects.all()])
+            else:
+                field_value = getattr(bag_data, field_name, None)
+                if field_value:
+                    values[field_name] = getattr(bag_data, field_name, None)
+        return values
 
-    def get_bag_failure(self, last_only=True):
-        """Returns list of bag failures."""
-        if self.bag_it_valid:
-            return False
-        flist = [
-            "BE",
-        ]
-        get_error_obj = BAGLog.objects.filter(archive=self, code__code_type__in=flist)
-        if not get_error_obj:
-            return False
-        return get_error_obj[0] if last_only else get_error_obj
+    @property
+    def records_creators(self):
+        """Returns a list of creators associated with an Archive."""
+        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        return list(bag_data.record_creators.all()) if bag_data else []
 
-    def get_additional_errors(self):
+    @property
+    def additional_errors(self):
         """Returns additional error information"""
         errs = []
-        codes = []
-        failures = self.get_bag_failure(last_only=False)
-        for fails in failures:
-            codes.append(fails.code.code_short)
-
-        if "BZIP2" in codes or "BTAR2" in codes:
-            errs.append("Transfer contained more than one top level directory")
-
-        if self.additional_error_info:
-            errs.append(self.additional_error_info)
+        failures = self.failures
+        if failures:
+            failure_codes = [f.code.code_short for f in failures]
+            if any(directory_failure in failure_codes for directory_failure in ["BZIP2", "BTAR2"]):
+                errs.append("Transfer contained more than one top level directory")
+            if self.additional_error_info:
+                errs.append(self.additional_error_info)
         return errs
 
-    def get_transfer_logs(self):
-        return BAGLog.objects.filter(archive=self)
+    @property
+    def last_failure(self):
+        """Returns the most recent bag failure"""
+        return self.failures[0] if self.failures else None
 
-    def setup_save(self, obj):
-        """Builds additional info where it is required."""
+    @property
+    def failures(self):
+        """Returns list of bag failures."""
+        if self.bag_it_valid:
+            return None
+        error_objects = BAGLog.objects.filter(archive=self, code__code_type__in=["BE"])
+        return error_objects if error_objects else None
 
+    @property
+    def upload_time_display(self):
+        return self.machine_file_upload_time.astimezone(tz.tzlocal()).strftime("%b %e, %Y %I:%M:%S %p")
+
+    def add_autofail_information(self, obj):
+        """Builds additional information for autofailed transfers."""
         if obj["auto_fail_code"] == "VIRUS":
-            # IF CONTAINS a VIRUS, BUILD additional info
-            self.additional_error_info = "Virus found in: {}".format(
-                [k for k in obj["virus_scanresult"]][0]
-            )
+            self.additional_error_info = "Virus found in: {}".format([k for k in obj["virus_scanresult"]][0])
         elif obj["auto_fail_code"] == "FSERR":
-            self.additional_error_info = "Bag size ({}) is larger then maximum allow size ({})".format(
-                obj["file_size"], (settings.TRANSFER_FILESIZE_MAX * 1000)
-            )
+            self.additional_error_info = "Bag size ({}) is larger than maximum allowed size ({})".format(
+                obj["file_size"], (settings.TRANSFER_FILESIZE_MAX * 1000))
 
-    def save_mtm_fields(self, cls, field, model_field, metadata):
-        """Handle saving of many-to-many fields."""
-        obj_list = []
-        if field in metadata:
-            if isinstance(metadata[field], list):
-                for f in metadata[field]:
-                    new_obj = cls.objects.get_or_create(**{model_field: f})[0]
-                    obj_list.append(new_obj)
-            elif metadata[field].strip():
-                new_obj = cls.objects.get_or_create(**{model_field: metadata[field]})[0]
-                obj_list.append(new_obj)
-        return obj_list
+    def get_or_create_mtm_objects(self, cls, model_field, field_data):
+        """Gets or creates a list of objects to be saved in a many-to-many field."""
+        field_as_list = field_data if isinstance(field_data, list) else [field_data.strip()]
+        return [cls.objects.get_or_create(**{model_field: f})[0] for f in field_as_list]
 
     def save_bag_data(self, metadata):
         """Saves data from a bag-info.txt file, passed as a dict."""
         if not metadata:
             return False
-
         try:
-            creators_list = self.save_mtm_fields(
-                RecordCreators, "Record_Creators", "name", metadata
-            )
-            language_list = self.save_mtm_fields(
-                LanguageCode, "Language", "code", metadata
-            )
-            item = BagInfoMetadata(
+            bag_data = BagInfoMetadata(
                 archive=self,
-                source_organization=Organization.objects.get(
-                    name=metadata["Source_Organization"]
-                ),
+                source_organization=Organization.objects.get(name=metadata["Source_Organization"]),
                 external_identifier=metadata.get("External_Identifier", ""),
-                internal_sender_description=metadata.get(
-                    "Internal_Sender_Description", ""
-                ),
+                internal_sender_description=metadata.get("Internal_Sender_Description", ""),
                 title=metadata.get("Title", ""),
                 date_start=iso8601.parse_date(metadata.get("Date_Start", "")),
                 date_end=iso8601.parse_date(metadata.get("Date_End", "")),
@@ -436,77 +375,36 @@ class Archives(models.Model):
                 bag_count=metadata.get("Bag_Count", ""),
                 bag_group_identifier=metadata.get("Bag_Group_Identifier", ""),
                 payload_oxum=metadata.get("Payload_Oxum", ""),
-                bagit_profile_identifier=metadata.get("BagIt_Profile_Identifier", ""),
-            )
-            item.save()
-            for c in creators_list:
-                item.record_creators.add(c)
-            for l in language_list:
-                item.language.add(l)
-            item.save()
+                bagit_profile_identifier=metadata.get("BagIt_Profile_Identifier", ""))
+            bag_data.save()
+            creators_list = self.get_or_create_mtm_objects(RecordCreators, "name", metadata.get("Record_Creators", []))
+            language_list = self.get_or_create_mtm_objects(LanguageCode, "code", metadata.get("Language", []))
+            bag_data.record_creators.add(*creators_list)
+            bag_data.language.add(*language_list)
+            bag_data.save()
         except Exception as e:
             print("Error saving bag data: {}".format(str(e)))
             return False
         else:
-            return True
-
-    def get_bag_data(self):
-        """Returns a dict containing bag-info.txt data for an Archive."""
-        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
-        excluded_fields = ["id", "pk", "archive"]
-        mtm_fields = ["record_creators", "language"]
-        field_names = [
-            field.name
-            for field in BagInfoMetadata._meta.get_fields()
-            if field.name not in excluded_fields
-        ]
-        values = {}
-        for field_name in sorted(field_names):
-            if field_name in mtm_fields:
-                strings = []
-                objects = getattr(bag_data, field_name, None)
-                if objects:
-                    for creator in objects.all():
-                        strings.append(str(creator))
-                    values[field_name] = sorted(strings)
-            else:
-                field_value = getattr(bag_data, field_name, None)
-                if field_value:
-                    values[field_name] = getattr(bag_data, field_name, None)
-        return values
-
-    def get_records_creators(self):
-        """Returns a list of creators associated with an Archive."""
-        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
-        creators = []
-        if bag_data:
-            creators = list(bag_data.record_creators.all())
-        return creators
+            return bag_data
 
     def assign_rights(self):
         """Assigns rights to an Archive."""
 
         def update_date(obj, date_key, period_key, bag_date):
             if not getattr(obj, date_key):
-                if getattr(obj, period_key):
-                    period = getattr(obj, period_key)
-                else:
-                    period = 0
-                setattr(
-                    obj,
-                    date_key,
-                    bag_date + relativedelta(years=period))
+                period = getattr(obj, period_key) if getattr(obj, period_key) else 0
+                setattr(obj, date_key, bag_date + relativedelta.relativedelta(years=period))
 
         try:
-            bag_data = self.get_bag_data()
+            bag_data = self.bag_data
             RightsStatement = apps.get_model("bag_transfer", "RightsStatement")
             rights_statements = RightsStatement.objects.filter(
                 organization=self.organization,
                 applies_to_type__name=bag_data["record_type"],
-                archive__isnull=True,
-            )
+                archive__isnull=True)
             for statement in rights_statements:
-                """Close and save new rights statement."""
+                """Clone and save new rights statement."""
                 rights_info = statement.get_rights_info_object()
                 rights_granted = statement.get_rights_granted_objects()
                 statement.pk = None
@@ -585,12 +483,8 @@ class BAGLog(models.Model):
         ordering = ["-created_time"]
 
     def __str__(self):
-        val = "-- : {}".format(self.code.code_desc)
-        if self.archive:
-            val = "{} : {}".format(
-                self.archive.bag_or_failed_name(), self.code.code_desc
-            )
-        return val
+        return "{} : {}".format(
+            self.archive.bag_or_failed_name, self.code.code_desc) if self.archive else "-- : {}".format(self.code.code_desc)
 
     @classmethod
     def log_it(cls, code, archive=None):

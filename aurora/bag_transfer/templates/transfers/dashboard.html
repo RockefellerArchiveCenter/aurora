@@ -127,7 +127,7 @@
         </div>
         <div class="box-body">
           {% for user in org.users %}
-          <p>{{user.username}} <span class="pull-right">{{user.uploads}}</span></p>
+          <p>{{user.username}} <span class="pull-right">{{user.transfers.count}}</span></p>
           {% endfor %}
         </div>
       </div>

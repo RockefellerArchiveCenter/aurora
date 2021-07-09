@@ -93,7 +93,7 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
             user_uploaded=context["object"],
         ).order_by("-created_time")[:9]
         for archive in archives:
-            archive.bag_info_data = archive.get_bag_data()
+            archive.bag_info_data = archive.bag_data
             context["uploads"].append(archive)
         context["uploads_count"] = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
