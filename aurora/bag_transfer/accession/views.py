@@ -159,7 +159,7 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
                 .annotate(rights_group=F("rights_basis"))
                 .order_by("rights_group"))
             organization = transfers_list[0].organization
-            creators_list = list(set([c for t in transfers_list for c in t.get_records_creators()]))
+            creators_list = list(set([c for t in transfers_list for c in t.records_creators]))
             notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type = self.grouped_transfer_data(transfers_list)
             notes.update(self.rights_statement_notes(rights_statements))
             language = self.parse_language(languages_list)
@@ -211,7 +211,7 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
         extent_files = 0
         extent_size = 0
         for transfer in transfers_list:
-            bag_data = transfer.get_bag_data()
+            bag_data = transfer.bag_data
             extent_size = extent_size + int(bag_data.get("payload_oxum", "0.0").split(".")[0])
             extent_files = extent_files + int(bag_data.get("payload_oxum", "0.0").split(".")[1])
             dates["start"].append(bag_data.get("date_start", ""))

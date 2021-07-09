@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from bag_transfer.transfers.views import MainView
+from bag_transfer.transfers.views import DashboardView
 from bag_transfer.users.views import (SplashView,
                                       UserPasswordResetCompleteView,
                                       UserPasswordResetConfirmView,
@@ -25,7 +25,7 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     url(r"^admin/", admin.site.urls),
-    url(r"^app/$", MainView.as_view(), name="app_home"),
+    url(r"^app/$", DashboardView.as_view(), name="app_home"),
     url(
         r"^app/transfers/",
         include("bag_transfer.transfers.urls", namespace="transfers"),
@@ -61,7 +61,7 @@ urlpatterns = [
     ),
     url(r"^app/appraise/", include("bag_transfer.appraise.urls", namespace="appraise")),
     url(r"^app/rights/", include("bag_transfer.rights.urls", namespace="rights")),
-    url(r"^$", SplashView.as_view()),
+    url(r"^$", SplashView.as_view(), name="splash"),
     url(
         r"^login/$",
         auth_views.LoginView.as_view(template_name="users/login.html"),

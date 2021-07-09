@@ -172,3 +172,25 @@ ASPACE = CF.ASPACE
 
 # Google Analytics configs
 GTM_ID = CF.GTM_ID
+
+# List of colors used in dashboard for record types
+RECORD_TYPE_COLORS = [
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+]

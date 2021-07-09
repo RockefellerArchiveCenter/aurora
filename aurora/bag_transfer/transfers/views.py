@@ -1,12 +1,12 @@
 from datetime import date
 
+from aurora import settings
 from bag_transfer.lib.view_helpers import file_size, label_class
 from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
 from bag_transfer.models import (Archives, DashboardMonthData,
                                  DashboardRecordTypeData, Organization, User)
-from dateutil import tz
 from dateutil.relativedelta import relativedelta
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404, render
@@ -14,147 +14,101 @@ from django.views.generic import DetailView, TemplateView, View
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
-class MainView(LoggedInMixinDefaults, TemplateView):
+class DashboardView(LoggedInMixinDefaults, TemplateView):
     template_name = "transfers/main.html"
 
-    def get_org_data(self, org, org_name, users):
-        data = {}
-        data["name"] = org_name
-        data["users"] = []
-        data["user_uploads"] = []
-        for user in users:
-            user.uploads = Archives.objects.filter(
-                user_uploaded=user, process_status__gte=Archives.TRANSFER_COMPLETED
-            ).count()
-            data["users"].append(user)
-        data["uploads"] = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED, organization__in=org
-        ).order_by("-created_time")[:15]
-        data["uploads_count"] = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED, organization__in=org
-        ).count()
-        data["validated_count"] = Archives.objects.filter(
-            process_status__gte=Archives.VALIDATED, organization__in=org
-        ).count()
-        data["accepted_count"] = Archives.objects.filter(
-            process_status__gte=Archives.ACCEPTED, organization__in=org
-        ).count()
-        data["accessioned_count"] = Archives.objects.filter(
-            process_status__gte=Archives.ACCESSIONING_COMPLETE, organization__in=org
-        ).count()
-        data["month_labels"] = []
-        data["upload_count_by_month"] = []
-        data["upload_count_by_year"] = 0
-        data["upload_size_by_month"] = []
-        data["upload_size_by_year"] = 0
-        data["record_types_by_year"] = []
-
+    def org_uploads_by_month(self, orgs):
+        """Compiles monthly upload data for a list of organizations."""
+        data = {
+            "month_labels": [],
+            "upload_count_by_month": [],
+            "upload_count_by_year": 0,
+            "upload_size_by_month": [],
+            "upload_size_by_year": 0,
+            "record_types_by_year": [],
+        }
         today = date.today()
-        current = today - relativedelta(years=1)
-        colors = [
-            "#f56954",
-            "#00a65a",
-            "#f39c12",
-            "#00c0ef",
-            "#3c8dbc",
-            "#d2d6de",
-            "#f56954",
-            "#00a65a",
-            "#f39c12",
-            "#00c0ef",
-            "#3c8dbc",
-            "#d2d6de",
-            "#f56954",
-            "#00a65a",
-            "#f39c12",
-            "#00c0ef",
-            "#3c8dbc",
-            "#d2d6de",
-        ]
-
-        while current <= today:
-            sort_date = int(str(current.year) + str(current.month))
+        prev_year = today - relativedelta(years=1)
+        while prev_year <= today:
+            sort_date = int(str(prev_year.year) + str(prev_year.month))
             if DashboardMonthData.objects.filter(
-                organization__in=org, sort_date=sort_date
+                organization__in=orgs, sort_date=sort_date
             ).exists():
-                upload_count = 0
-                upload_size = 0
-                for month_data in DashboardMonthData.objects.filter(
-                    organization__in=org, sort_date=sort_date
-                ):
-                    upload_count += month_data.upload_count
-                    upload_size += month_data.upload_size
-                data["month_labels"].append(str(month_data.month_label))
+                month_datas = DashboardMonthData.objects.filter(organization__in=orgs, sort_date=sort_date)
+                upload_count = sum(month.upload_count for month in month_datas)
+                upload_size = sum(month.upload_size for month in month_datas)
+                data["month_labels"].append(str(month_datas[0].month_label))
                 data["upload_count_by_month"].append(upload_count)
                 data["upload_count_by_year"] += upload_count
                 data["upload_size_by_month"].append(upload_size)
                 data["upload_size_by_year"] += upload_size
             else:
-                data["month_labels"].append(current.strftime("%B"))
+                data["month_labels"].append(prev_year.strftime("%B"))
                 data["upload_count_by_month"].append(0)
                 data["upload_size_by_month"].append(0)
-            current += relativedelta(months=1)
+            prev_year += relativedelta(months=1)
 
-        for (n, label) in enumerate(
-            set(DashboardRecordTypeData.objects.filter(
-                organization__in=org
-            ).values_list("label", flat=True))
-        ):
+        for (n, label) in enumerate(set(DashboardRecordTypeData.objects.filter(organization__in=orgs).values_list("label", flat=True))):
             record_type_count = 0
-            for count in DashboardRecordTypeData.objects.filter(
-                label=label, organization__in=org
-            ).values_list("count", flat=True):
+            for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=orgs).values_list("count", flat=True):
                 record_type_count += count
             if record_type_count > 0:
                 data["record_types_by_year"].append(
-                    {"label": label, "value": record_type_count, "color": colors[n]}
-                )
+                    {"label": label, "value": record_type_count, "color": settings.RECORD_TYPE_COLORS[n]})
+        return data
 
-        data["size_trend"] = round(
-            (data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
-        data["count_trend"] = round(
-            (data["upload_count_by_month"][-1] - (data["upload_count_by_year"] / 12)) / 100, 2,)
+    def compile_data(self, orgs, org_name, users):
+        """Compiles dashboard data for a list of organizations.
 
+        Args:
+            orgs (Queryset): list of organizations
+            org_name (str): a label for the list of organizations
+            users (Queryset): list of users associated with the organizations
+        """
+        org_uploads = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED, organization__in=orgs)
+        data = {
+            "name": org_name,
+            "users": users,
+            "uploads": org_uploads.order_by("-created_time")[:15],
+            "uploads_count": org_uploads.count(),
+            "validated_count": org_uploads.filter(process_status__gte=Archives.VALIDATED).count(),
+            "accepted_count": org_uploads.filter(process_status__gte=Archives.ACCEPTED).count(),
+            "accessioned_count": org_uploads.filter(process_status__gte=Archives.ACCESSIONING_COMPLETE).count(),
+        }
+        data.update(self.org_uploads_by_month(orgs))
+        data["size_trend"] = round((data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
+        data["count_trend"] = round((data["upload_count_by_month"][-1] - (data["upload_count_by_year"] / 12)) / 100, 2,)
         return data
 
     def get_context_data(self, **kwargs):
-        context = super(MainView, self).get_context_data(**kwargs)
+        context = super(DashboardView, self).get_context_data(**kwargs)
         context["data"] = {}
         context["meta_page_title"] = "Dashboard"
         context["sorted_org_list"] = []
 
         organizations = (
-            Organization.objects.all() if (self.request.user.is_archivist()) else Organization.objects.filter(id=self.request.user.organization.pk)
-        )
+            Organization.objects.all() if (self.request.user.is_archivist()) else
+            Organization.objects.filter(id=self.request.user.organization.pk))
 
         if self.request.user.is_archivist():
-            all_orgs_data = self.get_org_data(
-                organizations, "All Organizations", User.objects.all()
-            )
-            context["data"]["all_orgs"] = {}
-            context["data"]["all_orgs"].update(all_orgs_data)
+            all_orgs_data = self.compile_data(organizations, "All Organizations", User.objects.all())
+            context["data"]["all_orgs"] = all_orgs_data
             context["sorted_org_list"].append(["all_orgs", "All Organizations"])
 
-        user_data = self.get_org_data(
+        user_data = self.compile_data(
             Organization.objects.filter(id=self.request.user.organization.pk),
             "My Transfers",
-            User.objects.filter(id=self.request.user.pk),
-        )
-        context["data"][self.request.user] = {}
-        context["data"][self.request.user].update(user_data)
+            User.objects.filter(id=self.request.user.pk))
+        context["data"][self.request.user] = user_data
         context["sorted_org_list"].append([self.request.user.username, "My Transfers"])
 
         for organization in organizations:
-            org_data = self.get_org_data(
+            org_data = self.compile_data(
                 Organization.objects.filter(id=organization.pk),
                 organization.name,
-                User.objects.filter(organization=organization),
-            )
-            context["data"][organization.machine_name] = {}
-            context["data"][organization.machine_name].update(org_data)
-            context["sorted_org_list"].append(
-                [organization.machine_name, organization.name]
-            )
+                User.objects.filter(organization=organization))
+            context["data"][organization.machine_name] = org_data
+            context["sorted_org_list"].append([organization.machine_name, organization.name])
 
         return context
 
@@ -163,36 +117,40 @@ class TransfersView(LoggedInMixinDefaults, View):
     template_name = "orgs/transfers.html"
 
     def get(self, request, *args, **kwargs):
-        organization = (
+        organizations = (
             Organization.objects.all()
             if (self.request.user.is_archivist())
             else Organization.objects.filter(id=self.request.user.organization.pk)
         )
+        transfers = Archives.objects.filter(
+            process_status__gte=Archives.TRANSFER_COMPLETED,
+            organization__in=organizations)
         return render(
             request,
             self.template_name,
             {
                 "meta_page_title": "Transfers",
-                "org_uploads_count": Archives.objects.filter(
-                    process_status__gte=Archives.TRANSFER_COMPLETED,
-                    organization__in=organization,
-                ).count(),
-                "user_uploads_count": Archives.objects.filter(
-                    process_status__gte=Archives.TRANSFER_COMPLETED,
-                    organization__in=organization,
-                    user_uploaded=request.user,
-                ).count(),
+                "org_uploads_count": transfers.count(),
+                "user_uploads_count": transfers.filter(user_uploaded=request.user).count(),
             },
         )
 
 
-class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
-    model = Organization
+class TransferDataView(CSVResponseMixin, View):
+    model = Archives
 
     def process_status_display(self, status):
         for s in Archives.processing_statuses:
             if s[0] == status:
                 return s[1]
+
+    def get_dates(self, bag_info_data):
+        return "{} - {}".format(
+            bag_info_data.get("date_start").strftime("%b %e, %Y"),
+            bag_info_data.get("date_end").strftime("%b %e, %Y")) if bag_info_data else ""
+
+    def get_creators(self, bag_info_data):
+        return (", ").join(bag_info_data.get("record_creators")) if bag_info_data else ""
 
     def get(self, request, *args, **kwargs):
         data = [
@@ -208,41 +166,23 @@ class TransferDataView(CSVResponseMixin, OrgReadViewMixin, View):
                 "Upload Time",
             )
         ]
-        if self.request.user.is_archivist:
-            transfers = Archives.objects.filter(
-                process_status__gte=Archives.TRANSFER_COMPLETED
-            ).order_by("-created_time")
-        else:
-            self.organization = get_object_or_404(Organization, pk=self.kwargs["pk"])
-            transfers = Archives.objects.filter(
-                process_status__gte=Archives.TRANSFER_COMPLETED,
-                organization=self.organization,
-            ).order_by("-created_time")
-        for transfer in transfers:
-            dates = ""
-            creators = ""
-            upload_time = transfer.machine_file_upload_time.astimezone(
-                tz.tzlocal()
-            ).strftime("%b %e, %Y %I:%M:%S %p")
-            bag_info_data = transfer.get_bag_data()
-            if bag_info_data:
-                dates = "{} - {}".format(
-                    bag_info_data.get("date_start").strftime("%b %e, %Y"),
-                    bag_info_data.get("date_end").strftime("%b %e, %Y"),
-                )
-                creators = (", ").join(bag_info_data.get("record_creators"))
-
+        transfers = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED)
+        if not self.request.user.is_archivist():
+            self.organization = get_object_or_404(Organization, pk=self.request.user.organization.pk)
+            transfers.filter(organization=self.organization)
+        for transfer in transfers.order_by("-created_time"):
+            bag_info_data = transfer.bag_data
             data.append(
                 (
-                    transfer.bag_or_failed_name(),
+                    transfer.bag_or_failed_name,
                     transfer.machine_file_identifier,
                     self.process_status_display(transfer.process_status),
-                    dates,
+                    self.get_dates(bag_info_data),
                     transfer.organization.name,
-                    creators,
+                    self.get_creators(bag_info_data),
                     bag_info_data.get("record_type"),
                     file_size(int(transfer.machine_file_size)),
-                    upload_time,
+                    transfer.upload_time_display,
                 )
             )
         return self.render_to_csv(data)
@@ -279,9 +219,9 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         return self.FILTER_ICONTAINS
 
     def process_status_display(self, status):
-        for s in Archives.processing_statuses:
-            if s[0] == status:
-                return s[1]
+        for integer, label in Archives.processing_statuses:
+            if integer == status:
+                return label
 
     def process_status_tag(self, status):
         percentage = int(round(status / Archives.ACCESSIONING_COMPLETE * 100))
@@ -290,70 +230,46 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 </div>".format(
             label=self.process_status_display(status),
             label_class=label_class(status),
-            percentage=percentage,
-        )
+            percentage=percentage)
 
     def get_initial_queryset(self):
-        organization = (
+        organizations = (
             Organization.objects.all()
             if (self.request.user.is_archivist())
-            else Organization.objects.filter(id=self.request.user.organization.pk)
-        )
-        if self.request.GET.get("q", None) == "user":
-            return Archives.objects.filter(
-                process_status__gte=Archives.TRANSFER_COMPLETED,
-                organization__in=organization,
-                user_uploaded=self.request.user,
-            ).annotate(title=Concat("metadata__title", "bag_it_name"))
-        return Archives.objects.filter(
+            else Organization.objects.filter(id=self.request.user.organization.pk))
+        qs = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
-            organization__in=organization,
-        ).annotate(title=Concat("metadata__title", "bag_it_name"))
+            organization__in=organizations).annotate(title=Concat("metadata__title", "bag_it_name"))
+        if self.request.GET.get("q") == "user":
+            qs.filter(user_uploaded=self.request.user)
+        return qs
+
+    def get_dates(self, bag_info_data):
+        return "{} - {}".format(
+            bag_info_data.get("date_start").strftime("%b %e, %Y"),
+            bag_info_data.get("date_end").strftime("%b %e, %Y")) if bag_info_data else ""
+
+    def get_creators(self, bag_info_data):
+        return ("<br/>").join(bag_info_data.get("record_creators")) if bag_info_data else ""
 
     def prepare_results(self, qs):
         json_data = []
         for transfer in qs:
-            dates = ""
-            creators = ""
-            upload_time = transfer.machine_file_upload_time.astimezone(
-                tz.tzlocal()
-            ).strftime("%b %e, %Y %I:%M:%S %p")
-            bag_info_data = transfer.get_bag_data()
-            if bag_info_data:
-                dates = "{} - {}".format(
-                    bag_info_data.get("date_start").strftime("%b %e, %Y"),
-                    bag_info_data.get("date_end").strftime("%b %e, %Y"),
-                )
-                creators = ("<br/>").join(bag_info_data.get("record_creators"))
+            bag_info_data = transfer.bag_data
+            transfer_data = [
+                transfer.bag_or_failed_name,
+                transfer.machine_file_identifier,
+                self.process_status_tag(transfer.process_status),
+                self.get_dates(bag_info_data),
+                self.get_creators(bag_info_data),
+                bag_info_data.get("record_type"),
+                file_size(int(transfer.machine_file_size)),
+                transfer.upload_time_display,
+                "/app/transfers/{}".format(transfer.pk),
+            ]
             if self.request.user.is_archivist():
-                json_data.append(
-                    [
-                        transfer.bag_or_failed_name(),
-                        transfer.machine_file_identifier,
-                        self.process_status_tag(transfer.process_status),
-                        dates,
-                        transfer.organization.name,
-                        creators,
-                        bag_info_data.get("record_type"),
-                        file_size(int(transfer.machine_file_size)),
-                        upload_time,
-                        "/app/transfers/{}".format(transfer.pk),
-                    ]
-                )
-            else:
-                json_data.append(
-                    [
-                        transfer.bag_or_failed_name(),
-                        transfer.machine_file_identifier,
-                        self.process_status_tag(transfer.process_status),
-                        dates,
-                        creators,
-                        bag_info_data.get("record_type"),
-                        file_size(int(transfer.machine_file_size)),
-                        upload_time,
-                        "/app/transfers/{}".format(transfer.pk),
-                    ]
-                )
+                transfer_data.insert(4, transfer.organization.name)
+            json_data.append(transfer_data)
         return json_data
 
 
@@ -364,5 +280,5 @@ class TransferDetailView(OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(DetailView, self).get_context_data(**kwargs)
         context["meta_page_title"] = self.object.bag_or_failed_name
-        context["metadata"] = sorted(self.object.get_bag_data().items())
+        context["metadata"] = sorted(self.object.bag_data.items())
         return context
