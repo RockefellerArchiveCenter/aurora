@@ -85,8 +85,7 @@ class AccessioningTestCase(TransactionTestCase):
         return response
 
     @patch("bag_transfer.lib.clients.ArchivesSpaceClient.get_resource")
-    @patch("bag_transfer.lib.clients.ArchivesSpaceClient.authorize")
-    def ajax_add_view(self, mock_authorize, mock_as):
+    def ajax_add_view(self, mock_as):
         mock_as.return_value = {"title": "foo", "id_0": "1", "uri": "foobar"}
         response = self.client.get(
             reverse("accession:add"),
