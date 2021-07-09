@@ -176,7 +176,7 @@ class TransferRoutine(object):
             # get directory
             for d in obj["dirs"]:
                 # check files in directory are on list
-                for fls in files_in_unserialized(d, True):
+                for fls in files_in_unserialized(d):
                     if fls in open_files:
                         rm_list.append((org, 1, d))
             return rm_list
