@@ -33,24 +33,23 @@ class TransferRoutine(object):
             self.run_routine()
 
     def setup_routine(self):
-        self.has_setup_err = False
+        """Sets up the transfer routine.
 
-        # pull active organizations
+        Ensures there is at least one active organization with the expected
+        directories, and builds a dictionary of bags to process.
+        """
+        self.has_setup_err = False
         if not self.has_active_organizations():
             self.has_setup_err = True
             Pter.plines(["No active organizations in database"])
             return False
 
-        # do active orgs dirs exist (processing / upload)
         self.verify_organizations_paths()
-
-        # are there active orgs left?
         if not self.active_organizations:
             self.has_setup_err = True
             Pter.plines(["No active organizations that are set up correctly"])
             return False
 
-        # build contents dictionary of all files / dirs in active org uploads
         self.build_contents_dictionary()
         if not self.routine_contents_dictionary:
             Pter.plines(["No files discovered in uploads directory"])
@@ -133,7 +132,7 @@ class TransferRoutine(object):
     def build_contents_dictionary(self):
         org_dir_contents = {}
         for org in self.active_organizations:
-            upload_dir = org.org_machine_upload_paths()[0]
+            upload_dir, _ = org.org_machine_upload_paths()
             dir_content = os.listdir(upload_dir)
             if dir_content:
                 for item in dir_content:
@@ -181,20 +180,20 @@ class TransferRoutine(object):
                         rm_list.append((org, 1, d))
             return rm_list
 
-    def _dump_from_routine_contents(self, cObj):
+    def _dump_from_routine_contents(self, active_paths):
         """Removes items from processing list"""
-        for obj in cObj:
-            if obj[1] == 0 and os.path.isfile(obj[2]):
-                self.routine_contents_dictionary[obj[0]]["files"] = [
+        for org, isdir, fpath in active_paths:
+            if isdir == 0 and os.path.isfile(fpath):
+                self.routine_contents_dictionary[org]["files"] = [
                     x
-                    for x in self.routine_contents_dictionary[obj[0]]["files"]
-                    if x != obj[2]
+                    for x in self.routine_contents_dictionary[org]["files"]
+                    if x != fpath
                 ]
-            elif obj[1] == 1 and os.path.isdir(obj[2]):
-                self.routine_contents_dictionary[obj[0]]["dirs"] = [
+            elif isdir == 1 and os.path.isdir(fpath):
+                self.routine_contents_dictionary[org]["dirs"] = [
                     x
-                    for x in self.routine_contents_dictionary[obj[0]]["dirs"]
-                    if x != obj[2]
+                    for x in self.routine_contents_dictionary[org]["dirs"]
+                    if x != fpath
                 ]
 
     #####################

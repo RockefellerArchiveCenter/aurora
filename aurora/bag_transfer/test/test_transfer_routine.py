@@ -1,27 +1,29 @@
+import os
 import random
+import shutil
 
 from asterism.file_helpers import remove_file_or_dir
+from aurora import settings
 from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.models import Archives, DashboardMonthData, Organization
 from bag_transfer.test import helpers
 from django.test import TestCase
 
 
 class TransferRoutineTestCase(TestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.orgs = helpers.create_test_orgs(org_count=3)
+        Archives.objects.all().delete()
+        DashboardMonthData.objects.all().delete()
+        self.reset_org_dirs(Organization.objects.all())
 
     def test_setup_routine(self):
-        self.TR = TransferRoutine()
-
-        # has active orgs
+        self.routine = TransferRoutine()
         self.sub_test_db_has_active_orgs()
-
-        # verify orgs upload paths exist and if 1 doesn't then drop for active dict
         self.sub_test_verify_organizations_paths()
-
-        # still have active orgs
-
-        # builds content dict
+        self.sub_test_no_orgs_with_dirs()
+        self.sub_test_contents_dictionary()
 
     # def test_run_routine(self):
     #
@@ -77,29 +79,68 @@ class TransferRoutineTestCase(TestCase):
     #                 os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
     #             remove_file_or_dir(archive.machine_file_path)
 
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
-
     def sub_test_db_has_active_orgs(self):
-        self.change_all_orgs_in_list_status(
-            self.orgs, False
-        )  # turns all test orgs inactive
-        self.assertFalse(self.TR.setup_routine())  # test setup catches inactives
-        self.assertTrue(self.TR.has_setup_err)  # 2nd check that it was an error
-        self.change_all_orgs_in_list_status(self.orgs, True)  # reverts back to True
+        """Asserts TransferRoutine setup handles inactive organizations."""
+        self.change_all_orgs_in_list_status(Organization.objects.all(), False)
+        self.assertFalse(
+            self.routine.setup_routine(),
+            "Expected TransferRoutine setup to return False because there are no active orgs")
+        self.assertTrue(
+            self.routine.has_setup_err,
+            "Expected TransferRoutine.has_setup_err to be true because there are no active orgs")
+        self.change_all_orgs_in_list_status(Organization.objects.all(), True)
 
     def sub_test_verify_organizations_paths(self):
-        """removes directory from an org and check to see if item removed from active orgs"""
-        self.TR.has_active_organizations()  # resets the active orgs
-        original_active_count = len(self.TR.active_organizations)
-        last_org = self.TR.active_organizations[0]
+        """Asserts that TransferRoutine setup checks for organization directories."""
+        self.routine.has_active_organizations()
+        original_active_count = len(self.routine.active_organizations)
+        last_org = self.routine.active_organizations[0]
         last_org_upload_paths = last_org.org_machine_upload_paths()
         random_index = random.randrange(0, len(last_org_upload_paths))
         remove_file_or_dir(last_org_upload_paths[random_index])
-        self.TR.verify_organizations_paths()
-        self.assertNotEqual(original_active_count, len(self.TR.active_organizations))
+        self.routine.verify_organizations_paths()
+        self.assertEqual(
+            original_active_count - 1, len(self.routine.active_organizations),
+            "Expected one organization to have been removed from TransferRoutine.active_organizations")
+        self.reset_org_dirs(last_org)
+
+    def sub_test_no_orgs_with_dirs(self):
+        self.change_all_orgs_in_list_status(Organization.objects.all(), True)
+        self.delete_org_dirs(Organization.objects.all())
+        self.assertFalse(
+            self.routine.setup_routine(),
+            "Expected TransferRoutine setup to fail because there are no orgs with directories")
+        self.assertTrue(
+            self.routine.has_setup_err,
+            "Expected TransferRoutine.has_setup_err to be true because there are no orgs with directories")
+        self.create_org_dirs(Organization.objects.all())
+
+    def sub_test_contents_dictionary(self):
+        """Asserts the TransferRoutine contents dictionary is correctly set up."""
+        self.assertFalse(self.routine.setup_routine(), "Expected TransferRoutine setup to fail because there are no transfers in the transfer directory")
+        organization = random.choice(Organization.objects.filter(is_active=True))
+        helpers.create_target_bags("valid_bag", settings.TEST_BAGS_DIR, organization)
+        self.assertTrue(self.routine.setup_routine(), "Expected TransferRoutine setup to succeed.")
+        self.reset_org_dirs(Organization.objects.all())
 
     def change_all_orgs_in_list_status(self, orgs={}, Status=False):
+        """Helper function to change the status of organizations."""
         for org in orgs:
             org.is_active = Status
             org.save()
+
+    def reset_org_dirs(self, org_list):
+        self.delete_org_dirs(org_list)
+        self.create_org_dirs(org_list)
+
+    def delete_org_dirs(self, org_list):
+        for org in org_list:
+            for dir in org.org_machine_upload_paths():
+                if os.path.exists(dir):
+                    shutil.rmtree(dir)
+
+    def create_org_dirs(self, org_list):
+        for org in org_list:
+            for dir in org.org_machine_upload_paths():
+                if not os.path.exists(dir):
+                    os.makedirs(dir)
