@@ -3,11 +3,11 @@ from unittest.mock import patch
 
 from bag_transfer.models import Organization, User
 from bag_transfer.test import helpers
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class OrgTestCase(TransactionTestCase):
+class OrgTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):

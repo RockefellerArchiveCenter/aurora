@@ -61,7 +61,7 @@ urlpatterns = [
     ),
     url(r"^app/appraise/", include("bag_transfer.appraise.urls", namespace="appraise")),
     url(r"^app/rights/", include("bag_transfer.rights.urls", namespace="rights")),
-    url(r"^$", SplashView.as_view()),
+    url(r"^$", SplashView.as_view(), name="splash"),
     url(
         r"^login/$",
         auth_views.LoginView.as_view(template_name="users/login.html"),
