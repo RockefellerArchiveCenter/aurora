@@ -14,7 +14,7 @@ from django.conf import settings
 from iso639 import languages
 
 
-class bagChecker:
+class BagChecker:
     def __init__(self, archiveObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP

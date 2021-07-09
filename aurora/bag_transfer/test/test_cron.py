@@ -30,7 +30,7 @@ class CronTestCase(TestCase):
         self.discover_bags()
         self.deliver_bags()
 
-    @patch("bag_transfer.lib.bag_checker.bagChecker.bag_passed_all")
+    @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
     def discover_bags(self, mock_bag_check):
         bag_name, _ = BAGS_REF[0]
         helpers.create_target_bags(bag_name, settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)

@@ -25,7 +25,7 @@ class TransferRoutineTestCase(TestCase):
 
     # def test_run_routine(self):
     #
-    #     test_on_bagchecker = [r[0] for r in setup.BAGS_REF if len(r) > 2 and r[2]]
+    #     test_on_BagChecker = [r[0] for r in setup.BAGS_REF if len(r) > 2 and r[2]]
     #     test_on_transfer_routine = [r[0] for r in setup.BAGS_REF if len(r) > 3 and r[3]]
     #
     #     for ref in setup.BAGS_REF:
@@ -62,14 +62,14 @@ class TransferRoutineTestCase(TestCase):
     #             if trans["auto_fail"]:
     #                 continue
     #
-    #             bag = bagChecker(archive)
+    #             bag = BagChecker(archive)
     #             passed_all_results = bag.bag_passed_all()
     #
     #             if ref[0] in ["valid_bag", "no_metadata_file"]:
     #                 self.assertTrue(passed_all_results, "Bag unexpectedly invalid")
     #             else:
     #                 self.assertFalse(passed_all_results, "Bag unexpectedly valid")
-    #                 if ref[0] in test_on_bagchecker:
+    #                 if ref[0] in test_on_BagChecker:
     #                     self.assertEqual(ref[1], bag.ecode)
     #
     #             # deleting path in processing and tmp dir
