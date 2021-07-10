@@ -364,7 +364,7 @@ class Archives(models.Model):
         try:
             bag_data = BagInfoMetadata(
                 archive=self,
-                source_organization=Organization.objects.get(name=metadata["Source_Organization"]),
+                source_organization=self.organization,
                 external_identifier=metadata.get("External_Identifier", ""),
                 internal_sender_description=metadata.get("Internal_Sender_Description", ""),
                 title=metadata.get("Title", ""),
