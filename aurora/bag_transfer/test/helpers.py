@@ -2,9 +2,9 @@ import pwd
 import random
 import string
 from datetime import datetime
-from os import chown, listdir, path, rename
+from os import chown, listdir, path
 
-from asterism.file_helpers import anon_extract_all
+from asterism.file_helpers import copy_file_or_dir
 from aurora import settings
 from bag_transfer.accession.models import Accession
 from bag_transfer.lib.transfer_routine import TransferRoutine
@@ -149,31 +149,18 @@ def create_test_user(username=None, password=None, org=None, groups=[], is_staff
     return test_user
 
 
-def create_target_bags(target_str, test_bags_dir, org, username=None):
+def create_target_bags(target_str, test_bags_dir, org, username="root"):
     """Creates target bags to be picked up by a TransferRoutine based on a string.
     This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
         return False
-
-    index = 0
-
-    for bags in target_bags:
-        anon_extract_all(
-            path.join(test_bags_dir, bags), org.org_machine_upload_paths()[0]
-        )
-        # Renames extracted path -- add index suffix to prevent collision
-        created_path = path.join(org.org_machine_upload_paths()[0], bags.split(".")[0])
-        new_path = "{}{}".format(created_path, index)
-        rename(created_path, new_path)
-        index += 1
-
-        # chowning path
-        uid = pwd.getpwnam(username).pw_uid if username else pwd.getpwnam("root").pw_uid
-        chown(new_path, uid, -1)
+    for bag_name in target_bags:
+        new_path = path.join(org.org_machine_upload_paths()[0], bag_name)
+        copy_file_or_dir(path.join(test_bags_dir, bag_name), new_path)
+        chown(new_path, pwd.getpwnam(username).pw_uid, -1)
         moved_bags.append(new_path)
-
     return moved_bags
 
 
