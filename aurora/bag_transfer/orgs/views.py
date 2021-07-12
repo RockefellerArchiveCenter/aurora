@@ -164,7 +164,6 @@ class BagItProfileManageView(PageTitleMixin, TemplateView):
                             "version_formset": version_formset,
                             "tag_manifests_formset": tag_manifests_formset,
                             "tag_files_formset": tag_files_formset,
-                            "meta_page_title": "BagIt Profile",
                         },
                     )
             for formset in forms_to_save:
@@ -206,7 +205,6 @@ class BagItProfileManageView(PageTitleMixin, TemplateView):
                     request.POST, prefix="tag_manifests"),
                 "tag_files_formset": TagFilesRequiredFormset(
                     request.POST, prefix="tag_files"),
-                "meta_page_title": "BagIt Profile",
             },
         )
 

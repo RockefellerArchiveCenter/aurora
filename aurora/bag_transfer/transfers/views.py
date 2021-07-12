@@ -15,8 +15,9 @@ from django.views.generic import DetailView, TemplateView, View
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
-class DashboardView(LoggedInMixinDefaults, TemplateView):
+class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
     template_name = "transfers/main.html"
+    page_title = "Dashboard"
 
     def org_uploads_by_month(self, orgs):
         """Compiles monthly upload data for a list of organizations."""
@@ -84,7 +85,6 @@ class DashboardView(LoggedInMixinDefaults, TemplateView):
     def get_context_data(self, **kwargs):
         context = super(DashboardView, self).get_context_data(**kwargs)
         context["data"] = {}
-        context["meta_page_title"] = "Dashboard"
         context["sorted_org_list"] = []
 
         organizations = (
