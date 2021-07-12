@@ -38,8 +38,6 @@ Transfers
 
 		$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
         $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-				$.fn.dataTable.tables( {visible: true, api: true} ).columns.width = 200;
-				console.log("done");
     } );
 
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
