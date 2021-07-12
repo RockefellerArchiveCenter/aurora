@@ -35,6 +35,13 @@ Transfers
 {% block extra_js %}
 <script type="text/javascript">
   $(document).ready(function() {
+
+		$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
+				$.fn.dataTable.tables( {visible: true, api: true} ).columns.width = 200;
+				console.log("done");
+    } );
+
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     $('#org_transfers').DataTable({
 			'createdRow': function(row, data, dataIndex) {
@@ -42,7 +49,7 @@ Transfers
 					$(row).addClass('pointer-row');
 					$(row).attr('tabindex', 0)
   		},
-      'order'       : [[{% if request.user.is_archivist %}7{% else %}6{% endif %}, 'desc']],
+      'order'       : [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
 			'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
@@ -60,17 +67,17 @@ Transfers
     })
 		$('#user_transfers').DataTable({
 			'createdRow': function(row, data, dataIndex) {
-				$(row).attr('data-url', data[{% if request.user.is_archivist %}8{% else %}7{% endif %}]);
+				$(row).attr('data-url', data[{% if request.user.is_archivist %}9{% else %}8	{% endif %}]);
 				$(row).addClass('pointer-row');
   		},
-			'order'       : [[{% if request.user.is_archivist %}7{% else %}6{% endif %}, 'desc']],
+			'order'       : [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
 			'stateSave'   : true,
       'paging'      : true,
       'lengthChange': false,
       'searching'   : true,
       'ordering'    : true,
       'info'        : true,
-      'autoWidth'   : true,
+      'autoWidth'   : false,
       'pageLength'  : 25,
 			'processing': true,
       'serverSide': true,
