@@ -3,18 +3,20 @@ cache: pip
 services:
   - docker
 env:
+  CONTAINER: web
   global:
     - TRAVIS_CI: true
 before_install:
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose -f docker-compose.travis.yml up -d
 install:
-    - ./wait-for-it.sh web:8000 -- docker-compose exec web pip install coverage pre-commit
-    - docker-compose exec web pre-commit install
+  - ./wait-for-it.sh web:8000 -- docker-compose exec $CONTAINER pip install coverage pre-commit
+  - docker-compose exec $CONTAINER pre-commit install
 script:
-  - docker-compose exec web pre-commit run --all-files --show-diff-on-failure
-  - docker-compose exec web coverage run manage.py test
+  - docker-compose exec $CONTAINER pre-commit run --all-files --show-diff-on-failure
+  - docker-compose exec $CONTAINER coverage run manage.py test
 after_script:
-  - docker-compose exec web coverage report -m
+  - docker-compose exec $CONTAINER coverage report -m
 notifications:
   email: false
