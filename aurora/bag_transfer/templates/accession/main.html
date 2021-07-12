@@ -2,7 +2,7 @@
 
 {% block h1_title %}
   {% regroup uploads by transfer_group as upload_groups %}
-  Accessioning Queue <small>{{upload_groups|length}} accessions</small>
+  {{page_title}} <small>{{upload_groups|length}} accessions</small>
 {% endblock %}
 
 {% block content %}

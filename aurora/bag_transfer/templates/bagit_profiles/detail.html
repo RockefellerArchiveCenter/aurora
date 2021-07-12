@@ -2,7 +2,7 @@
 {% load tz %}
 
 {% block h1_title %}
-  BagIt Profile <small>{{organization.name}}</small>
+  {{page_title}} <small>{{organization.name}}</small>
   <a href="{% url 'orgs:detail' pk=organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
 {% endblock %}
 

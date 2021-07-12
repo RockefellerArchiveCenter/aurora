@@ -5,11 +5,12 @@ from bag_transfer.lib.view_helpers import file_size, label_class
 from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import (Archives, DashboardMonthData,
                                  DashboardRecordTypeData, Organization, User)
 from dateutil.relativedelta import relativedelta
 from django.db.models.functions import Concat
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, TemplateView, View
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -113,27 +114,22 @@ class DashboardView(LoggedInMixinDefaults, TemplateView):
         return context
 
 
-class TransfersView(LoggedInMixinDefaults, View):
+class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
+    page_title = "Transfers"
     template_name = "orgs/transfers.html"
 
-    def get(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         organizations = (
             Organization.objects.all()
             if (self.request.user.is_archivist())
-            else Organization.objects.filter(id=self.request.user.organization.pk)
-        )
+            else Organization.objects.filter(id=self.request.user.organization.pk))
         transfers = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
             organization__in=organizations)
-        return render(
-            request,
-            self.template_name,
-            {
-                "meta_page_title": "Transfers",
-                "org_uploads_count": transfers.count(),
-                "user_uploads_count": transfers.filter(user_uploaded=request.user).count(),
-            },
-        )
+        context["org_uploads_count"] = transfers.count()
+        context["user_uploads_count"] = transfers.filter(user_uploaded=self.request.user).count()
+        return context
 
 
 class TransferDataView(CSVResponseMixin, View):
@@ -273,12 +269,9 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         return json_data
 
 
-class TransferDetailView(OrgReadViewMixin, DetailView):
+class TransferDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "transfers/detail.html"
     model = Archives
 
-    def get_context_data(self, **kwargs):
-        context = super(DetailView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = self.object.bag_or_failed_name
-        context["metadata"] = sorted(self.object.bag_data.items())
-        return context
+    def get_page_title(self, context):
+        return context["object"].bag_or_failed_name
