@@ -8,7 +8,7 @@ from asterism.file_helpers import (make_tarfile, move_file_or_dir,
                                    remove_file_or_dir)
 from aurora import settings
 from bag_transfer.api.serializers import ArchivesSerializer
-from bag_transfer.lib.bag_checker import bagChecker
+from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import Archives, BAGLog, Organization, User
@@ -52,9 +52,7 @@ class DiscoverTransfers(CronJobBase):
                         process_status=Archives.TRANSFER_COMPLETED)
 
                     BAGLog.log_it("ASAVE", new_arc)
-                    print(
-                        "\nValidating transfer {}".format(new_arc.machine_file_identifier)
-                    )
+                    print("\nValidating transfer {}".format(new_arc.machine_file_identifier))
 
                     if upload_list["auto_fail"]:
                         new_arc.add_autofail_information(upload_list)
@@ -65,13 +63,9 @@ class DiscoverTransfers(CronJobBase):
                         remove_file_or_dir(new_arc.machine_file_path)
 
                     else:
-                        bag = bagChecker(new_arc)
+                        bag = BagChecker(new_arc)
                         if bag.bag_passed_all():
-                            print(
-                                "Transfer {} is valid".format(
-                                    new_arc.machine_file_identifier
-                                )
-                            )
+                            print("Transfer {} is valid".format(new_arc.machine_file_identifier))
                             new_arc.process_status = Archives.VALIDATED
                             new_arc.bag_it_valid = True
                             BAGLog.log_it("APASS", new_arc)
@@ -89,11 +83,7 @@ class DiscoverTransfers(CronJobBase):
                                 settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier
                             )
                         else:
-                            print(
-                                "Transfer {} is invalid".format(
-                                    new_arc.machine_file_identifier
-                                )
-                            )
+                            print("Transfer {} is invalid".format(new_arc.machine_file_identifier))
                             new_arc.process_status = Archives.INVALID
                             BAGLog.log_it(bag.ecode, new_arc)
                             email.setup_message("TRANS_FAIL_VAL", new_arc)

@@ -1,6 +1,6 @@
 import glob
 import json
-from os.path import isfile
+from os.path import isfile, join
 
 import bagit
 import bagit_profile
@@ -14,14 +14,14 @@ from django.conf import settings
 from iso639 import languages
 
 
-class bagChecker:
+class BagChecker:
     def __init__(self, archiveObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP
         self.bag_dates_to_validate = ["Date_Start", "Date_End", "Bagging_Date"]
         self.archiveObj = archiveObj
         self.archive_extracted = self._extract_archive()
-        self.archive_path = "{}{}".format(self.tmp_path, self.archiveObj.bag_it_name)
+        self.archive_path = join(self.tmp_path, self.archiveObj.bag_it_name)
         self.ecode = ""
         self.bag = {}
         self.bag_info_data = {}
@@ -42,6 +42,7 @@ class bagChecker:
         return True
 
     def _is_generic_bag(self):
+        """Basic BagIt validation."""
         try:
             self.bag = bagit.Bag(self.archive_path)
             self.bag.validate()
@@ -52,7 +53,7 @@ class bagChecker:
             self.bag_exception = "Error during BagIt validation: {}".format(e)
             return False
         else:
-            for filename in glob.glob("{}/manifest-*.txt".format(self.archive_path)):
+            for filename in glob.glob(join(self.archive_path, "manifest-*.txt")):
                 with open(filename, "r") as manifest_file:
                     self.archiveObj.manifest = manifest_file.read()
             self._retrieve_bag_info_key_val()  # run now to prevent multiple calls below
@@ -65,15 +66,11 @@ class bagChecker:
             self.bag_exception = "No BagIt Profile to validate against"
             return False
         else:
-
             try:
-                profile = bagit_profile.Profile(
-                    self.bag_info_data["BagIt_Profile_Identifier"]
-                )
+                profile = bagit_profile.Profile(self.bag_info_data["BagIt_Profile_Identifier"])
             except BaseException:
                 self.bag_exception = "Cannot retrieve BagIt Profile from URL {}".format(
-                    self.bag_info_data["BagIt_Profile_Identifier"]
-                )
+                    self.bag_info_data["BagIt_Profile_Identifier"])
                 return False
             else:
                 if not profile.validate(self.bag):
@@ -113,7 +110,7 @@ class bagChecker:
     def _has_valid_metadata_file(self):
         """checks if the metadata file path and is json is correct if exist"""
 
-        metadata_file = "/".join([str(self.bag), "data", "metadata.json"])
+        metadata_file = join(str(self.bag), "data", "metadata.json")
 
         if not isfile(metadata_file):
             return True
@@ -133,7 +130,6 @@ class bagChecker:
             return self.bag_failed()
 
         if not self.bag_info_data:
-            # log internal error here
             return self.bag_failed()
 
         BAGLog.log_it("PBAG", self.archiveObj)
@@ -177,4 +173,4 @@ class bagChecker:
         if not self.bag.is_valid():
             return False
 
-        self.bag_info_data = get_bag_info_fields("{}".format(self.archive_path))
+        self.bag_info_data = get_bag_info_fields(self.archive_path)
