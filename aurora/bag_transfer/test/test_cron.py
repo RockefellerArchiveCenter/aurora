@@ -1,42 +1,52 @@
 import os
 import random
+import shutil
 from unittest.mock import patch
 
 import bagit
 from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
-from bag_transfer.models import Archives
+from bag_transfer.models import (Archives, DashboardMonthData, Organization,
+                                 User)
 from bag_transfer.test import helpers
 from bag_transfer.test.setup import BAGS_REF
 from django.conf import settings
-from django.test import Client, TestCase
+from django.test import TestCase
 
 
 class CronTestCase(TestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.user = helpers.create_test_user(
-            username=settings.TEST_USER['USERNAME'],
-            password=settings.TEST_USER['PASSWORD'],
-            org=random.choice(self.orgs),
-            groups=helpers.create_test_groups(['managing_archivists']),
-            is_staff=True)
-        self.client = Client()
+        """
+        Delete existing Archive and DashboardMonthData objects and remove any
+        stray objects from the organization upload directory.
+        """
+        Archives.objects.all().delete()
+        DashboardMonthData.objects.all().delete()
+        self.org = random.choice(Organization.objects.all())
         for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
             if os.path.isdir(d):
                 remove_file_or_dir(d)
+        for d in self.org.org_machine_upload_paths():
+            if os.path.exists(d):
+                shutil.rmtree(d)
+                os.makedirs(d)
 
     def test_cron(self):
         self.discover_bags()
         self.deliver_bags()
 
-    @patch("bag_transfer.lib.bag_checker.bagChecker.bag_passed_all")
-    def discover_bags(self, mock_bag_check):
+    @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
+    def discover_bags(self, mock_passed_all):
         bag_name, _ = BAGS_REF[0]
-        helpers.create_target_bags(bag_name, settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)
-        mock_bag_check.return_value = True
-        discovered = DiscoverTransfers().do()
-        self.assertIsNot(False, discovered)
+        for bag_passed_all in [True, False]:
+            self.bags = helpers.create_target_bags(
+                bag_name, settings.TEST_BAGS_DIR,
+                self.org, username=random.choice(User.objects.filter(organization=self.org)).username)
+            mock_passed_all.return_value = bag_passed_all
+            discovered = DiscoverTransfers().do()
+            self.assertIsNot(False, discovered)
 
     def deliver_bags(self):
         for archive in Archives.objects.filter(process_status=Archives.VALIDATED):
@@ -54,4 +64,6 @@ class CronTestCase(TestCase):
             self.assertEqual(bag.info["Origin"], "aurora")
 
     def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
+        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
+            if os.path.isdir(d):
+                remove_file_or_dir(d)
