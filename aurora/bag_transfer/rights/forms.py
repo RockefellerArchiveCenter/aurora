@@ -297,7 +297,7 @@ class RightsLicenseForm(RightsBasisForm):
             "license_note",
         )
         labels = {
-            "license_terms": "Licence Terms",
+            "license_terms": "License Terms",
             "license_applicable_start_date": "Start Date",
             "license_applicable_end_date": "End Date",
             "license_start_date_period": "Years After Start Date",

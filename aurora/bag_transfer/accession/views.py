@@ -264,8 +264,8 @@ class AccessionCreateView(AccessioningArchivistMixin, JSONResponseMixin, View):
         """Combines notes from rights statements associated with transfers in an accession."""
         notes = {}
         for statement in rights_statements:
-            rights_info = statement.get_rights_info_object()
-            rights_granted = statement.get_rights_granted_objects()
+            rights_info = statement.rights_info
+            rights_granted = statement.rights_granted.all()
             if not statement.rights_basis.lower() in notes:
                 notes[statement.rights_basis.lower()] = []
             notes[statement.rights_basis.lower()].append(
