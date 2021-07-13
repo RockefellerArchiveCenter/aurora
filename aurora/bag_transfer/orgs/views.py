@@ -29,11 +29,6 @@ class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMess
     fields = ["name", "acquisition_type"]
     success_message = "New Organization Saved!"
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["acquisition_types"] = Organization.ACQUISITION_TYPE_CHOICES
-        return context
-
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.pk})
 
@@ -68,11 +63,6 @@ class OrganizationEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessag
 
     def get_page_title(self, context):
         return "Edit {}".format(context["object"].name)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["acquisition_types"] = Organization.ACQUISITION_TYPE_CHOICES
-        return context
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.pk})
@@ -217,11 +207,6 @@ class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     def get_object(self):
         org = Organization.objects.get(pk=self.kwargs.get("pk"))
         return org.bagit_profile
-
-    def get_context_data(self, *args, **kwargs):
-        data = super().get_context_data(*args, **kwargs)
-        data["organization"] = Organization.objects.get(pk=self.kwargs.get("pk"))
-        return data
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
