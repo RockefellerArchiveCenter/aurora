@@ -19,68 +19,56 @@ def open_files_list():
     return path_list
 
 
-def files_in_unserialized(dirpath, CK_SUBDIRS=False):
+def files_in_unserialized(dirpath):
+    """Returns a list of files in infinitely recursing subdirectories."""
     files = []
+    dirpaths = []
+    to_check = [dirpath]
+    checked_dirs = []
 
-    if CK_SUBDIRS:
-        dirpaths = []
-        to_check = [dirpath]
-        checked_dirs = []
+    while True:
+        if not to_check:
+            break
+        live_dir = to_check[0]
 
-        # build list from all files in Infinite sub dirs
-        while True:
+        for path in os.listdir(live_dir):
+            fullpath = "{}/{}".format(live_dir, path)
+            if os.path.isdir(fullpath):
+                dirpaths.append(fullpath)
 
-            # resolve new dir to check
-            if not to_check:
-                break
-            live_dir = to_check[0]
+                if fullpath not in checked_dirs:
+                    to_check.append(fullpath)
 
-            for path in os.listdir(live_dir):
-                fullpath = "{}/{}".format(live_dir, path)
-                if os.path.isdir(fullpath):
-                    dirpaths.append(fullpath)
+        checked_dirs.append(live_dir)
+        if live_dir in to_check:
+            to_check = [x for x in to_check if x != live_dir]
 
-                    if fullpath not in checked_dirs:
-                        to_check.append(fullpath)
-
-            checked_dirs.append(live_dir)
-            if live_dir in to_check:
-                to_check = [x for x in to_check if x != live_dir]
-
-        # check all dirs -- can narrow to /data since payload requirement or not
-        if dirpaths:
-            for dire in dirpaths:
-                d = os.listdir(dire)
-                if d:
-                    for contents in d:
-                        fullpath = "{}/{}".format(dire, contents)
-                        if os.path.isfile(fullpath):
-                            files.append(fullpath)
-
-    else:
-        for f1 in os.listdir(dirpath):
-            if os.path.isfile(f1):
-                files.append(f1)
-
+    # check all dirs -- can narrow to /data since payload requirement or not
+    if dirpaths:
+        for dire in dirpaths:
+            d = os.listdir(dire)
+            if d:
+                for contents in d:
+                    fullpath = "{}/{}".format(dire, contents)
+                    if os.path.isfile(fullpath):
+                        files.append(fullpath)
     return files
 
 
 def zip_has_top_level_only(file_path):
+    """Checks to see whether a ZIP file has a single top-level directory."""
     items = []
     with zipfile.ZipFile(file_path, "r") as zfile:
-
         items = zfile.namelist()
-
     top_dir = items[0].split("/")[0]
-
     for item in items[1:]:
         if item.split("/")[0] != top_dir:
             return False
-
     return top_dir
 
 
 def tar_has_top_level_only(file_path):
+    """Checks to see whether a TAR file has a single top-level directory."""
     items = []
     with tarfile.open(file_path, "r:*") as tfile:
         items = tfile.getnames()
@@ -97,18 +85,15 @@ def tar_has_top_level_only(file_path):
 
 
 def all_paths_exist(list_of_paths):
-    for p in list_of_paths:
-        if not is_dir_or_file(p):
-            return False
-    return True
+    """Checks whether or not all paths in a list exist."""
+    return all([is_dir_or_file(p) for p in list_of_paths])
 
 
-def get_file_contents(f):
-    """returns contents of file as str"""
-
+def get_file_contents(filepath):
+    """Returns the contents of a file as a string."""
     data = ""
     try:
-        with open(f, "r") as open_file:
+        with open(filepath, "r") as open_file:
             data = open_file.read()
     except Exception as e:
         print(e)

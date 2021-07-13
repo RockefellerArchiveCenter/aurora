@@ -364,7 +364,7 @@ class Archives(models.Model):
         try:
             bag_data = BagInfoMetadata(
                 archive=self,
-                source_organization=Organization.objects.get(name=metadata["Source_Organization"]),
+                source_organization=self.organization,
                 external_identifier=metadata.get("External_Identifier", ""),
                 internal_sender_description=metadata.get("Internal_Sender_Description", ""),
                 title=metadata.get("Title", ""),
@@ -405,8 +405,8 @@ class Archives(models.Model):
                 archive__isnull=True)
             for statement in rights_statements:
                 """Clone and save new rights statement."""
-                rights_info = statement.get_rights_info_object()
-                rights_granted = statement.get_rights_granted_objects()
+                rights_info = statement.rights_info
+                rights_granted = statement.rights_granted.all()
                 statement.pk = None
                 statement.archive = self
                 statement.save()

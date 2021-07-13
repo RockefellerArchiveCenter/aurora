@@ -85,7 +85,7 @@ rights_bases = ["Copyright", "Statute", "License", "Other"]
 basis_data = [
     {
         "rights_basis": "Copyright",
-        "applies_to_type": [12],
+        "applies_to_type": [2],
         "rightsstatementcopyright_set-INITIAL_FORMS": 0,
         "rightsstatementcopyright_set-TOTAL_FORMS": 1,
         "rightsstatementcopyright_set-0-copyright_note": "Test note",
@@ -94,7 +94,7 @@ basis_data = [
     },
     {
         "rights_basis": "Statute",
-        "applies_to_type": [12],
+        "applies_to_type": [2],
         "rightsstatementstatute_set-INITIAL_FORMS": 0,
         "rightsstatementstatute_set-TOTAL_FORMS": 1,
         "rightsstatementstatute_set-0-statute_note": "Test note",
@@ -103,14 +103,14 @@ basis_data = [
     },
     {
         "rights_basis": "License",
-        "applies_to_type": [12],
+        "applies_to_type": [2],
         "rightsstatementlicense_set-INITIAL_FORMS": 0,
         "rightsstatementlicense_set-TOTAL_FORMS": 1,
         "rightsstatementlicense_set-0-license_note": "Test note",
     },
     {
         "rights_basis": "Other",
-        "applies_to_type": [12],
+        "applies_to_type": [2],
         "rightsstatementother_set-INITIAL_FORMS": 0,
         "rightsstatementother_set-TOTAL_FORMS": 1,
         "rightsstatementother_set-0-other_rights_note": "Test note",
@@ -118,15 +118,15 @@ basis_data = [
     },
 ]
 grant_data = {
-    "rightsstatementrightsgranted_set-TOTAL_FORMS": 1,
-    "rightsstatementrightsgranted_set-INITIAL_FORMS": 0,
-    "rightsstatementrightsgranted_set-0-act": random.choice(
+    "rights_granted-TOTAL_FORMS": 1,
+    "rights_granted-INITIAL_FORMS": 0,
+    "rights_granted-0-act": random.choice(
         ["publish", "disseminate", "replicate", "migrate", "modify", "use", "delete"]
     ),
-    "rightsstatementrightsgranted_set-0-restriction": random.choice(
+    "rights_granted-0-restriction": random.choice(
         ["allow", "disallow", "conditional"]
     ),
-    "rightsstatementrightsgranted_set-0-rights_granted_note": "Grant note",
+    "rights_granted-0-rights_granted_note": "Grant note",
 }
 
 

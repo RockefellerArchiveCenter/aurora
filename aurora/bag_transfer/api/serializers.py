@@ -40,17 +40,13 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
 
 
 class RightsStatementSerializer(serializers.ModelSerializer):
-    rights_granted = RightsStatementRightsGrantedSerializer(
-        source="rightsstatementrightsgranted_set", many=True
-    )
+    rights_granted = RightsStatementRightsGrantedSerializer(many=True)
     rights_basis = serializers.StringRelatedField()
     start_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
     note = serializers.SerializerMethodField()
     jurisdiction = serializers.SerializerMethodField(allow_null=True, required=False)
-    determination_date = serializers.SerializerMethodField(
-        allow_null=True, required=False
-    )
+    determination_date = serializers.SerializerMethodField(allow_null=True, required=False)
     status = serializers.SerializerMethodField(allow_null=True, required=False)
     terms = serializers.SerializerMethodField(allow_null=True, required=False)
     citation = serializers.SerializerMethodField(allow_null=True, required=False)

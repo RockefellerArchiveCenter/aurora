@@ -91,7 +91,7 @@ class ArchivesViewSet(
     def update(self, request, pk=None, *args, **kwargs):
         try:
             identifier = request.data.get("identifier")
-            CleanupRoutine(identifier).run()
+            CleanupRoutine().run(identifier)
             return super(ArchivesViewSet, self).update(request, *args, **kwargs)
         except Exception as e:
             return Response({"detail": str(e)}, status=500)

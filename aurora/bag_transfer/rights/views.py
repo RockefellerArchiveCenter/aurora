@@ -1,3 +1,5 @@
+from operator import itemgetter
+
 from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
@@ -32,14 +34,12 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         values = BagItProfileBagInfoValues.objects.filter(
             bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(
                 bagit_profile=organization.bagit_profile,
-                field="record_type",
-            )
-        )
+                field="record_type"))
         applies_to_type_choices = []
         for v in values:
             record_type = RecordType.objects.get_or_create(name=v.name)[0]
             applies_to_type_choices.append((record_type.pk, record_type.name))
-        return sorted(applies_to_type_choices, key=lambda tup: tup[1])
+        return sorted(applies_to_type_choices, key=itemgetter(1))
 
     def get(self, request, *args, **kwargs):
         if self.kwargs.get("pk"):
@@ -51,8 +51,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             basis_form = RightsForm(
                 applies_to_type_choices=applies_to_type_choices,
                 instance=rights_statement,
-                organization=organization,
-            )
+                organization=organization)
             granted_formset = RightsGrantedFormSet(instance=rights_statement)
             return render(
                 request,
@@ -69,8 +68,7 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             basis_form = RightsForm(
                 applies_to_type_choices=applies_to_type_choices,
-                organization=organization,
-            )
+                organization=organization)
             return render(
                 request,
                 self.template_name,
@@ -94,13 +92,11 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             form = RightsForm(
                 request.POST,
                 applies_to_type_choices=applies_to_type_choices,
-                organization=organization,
-            )
+                organization=organization)
             if not form.is_valid():
                 messages.error(
                     request,
-                    "There was a problem with your submission. Please correct the error(s) below and try again.",
-                )
+                    "There was a problem with your submission. Please correct the error(s) below and try again.")
                 return render(
                     request,
                     self.template_name,
@@ -122,20 +118,17 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
         formset_data = self.get_formset(rights_statement.rights_basis)
         basis_formset = formset_data["class"](request.POST, instance=rights_statement)
         rights_granted_formset = RightsGrantedFormSet(
-            request.POST, instance=rights_statement
-        )
+            request.POST, instance=rights_statement)
 
         for formset in [rights_granted_formset, basis_formset]:
             if not formset.is_valid():
                 messages.error(
                     request,
-                    "There was a problem with your submission. Please correct the error(s) below and try again.",
-                )
+                    "There was a problem with your submission. Please correct the error(s) below and try again.")
                 form = RightsForm(
                     request.POST,
                     applies_to_type_choices=applies_to_type_choices,
-                    organization=organization,
-                )
+                    organization=organization)
                 return render(
                     request,
                     self.template_name,
@@ -181,9 +174,7 @@ class RightsDetailView(OrgReadViewMixin, DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super(RightsDetailView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "{} PREMIS rights statement".format(
-            self.object.organization
-        )
-        context["rights_basis_info"] = self.object.get_rights_info_object
-        context["rights_granted_info"] = self.object.get_rights_granted_objects
+        context["meta_page_title"] = "{} PREMIS rights statement".format(self.object.organization)
+        context["rights_basis_info"] = self.object.rights_info
+        context["rights_granted_info"] = self.object.rights_granted.all()
         return context

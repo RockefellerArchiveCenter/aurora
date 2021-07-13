@@ -1,3 +1,4 @@
+ArchivesSnake==0.9.1
 asterism==0.5.2
 attrs==19.3.0
 bagit==1.7.0
