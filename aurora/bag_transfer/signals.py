@@ -21,7 +21,10 @@ def delete_organization(sender, instance, **kwargs):
 @receiver(m2m_changed, sender=User.groups.through)
 def set_is_staff(sender, instance, **kwargs):
     """Ensure `is_staff` attribute is correctly set when User instances are saved."""
-    instance.is_staff = True if (any(name in ["managing_archivists", "accessioning_archivists", "appraisal_archivists", ] for name in instance.groups.values_list("name", flat=True)) or (instance.is_superuser)) else False
+    is_staff_user = (
+        (any(name in ["managing_archivists", "accessioning_archivists", "appraisal_archivists"]
+             for name in instance.groups.values_list("name", flat=True)) or (instance.is_superuser)))
+    instance.is_staff = is_staff_user
     instance.save()
 
 
@@ -40,8 +43,7 @@ def add_dashboard_data(sender, instance, **kwargs):
                     month_label=current.strftime("%B"),
                     sort_date=int(str(current.year) + str(current.month)),
                     year=current.year,
-                    organization=organization,
-                )[0]
+                    organization=organization)[0]
                 set_uploads(current, data, organization)
             current += relativedelta(months=1)
     set_count(sender, instance, organization)
@@ -59,17 +61,15 @@ def remove_dashboard_data(sender, instance, **kwargs):
         while current <= today:
             for organization in Organization.objects.all():
                 if DashboardMonthData.objects.filter(
-                    month_label=current.strftime("%B"),
-                    sort_date=int(str(current.year) + str(current.month)),
-                    year=current.year,
-                    organization=organization,
-                ).exists():
+                        month_label=current.strftime("%B"),
+                        sort_date=int(str(current.year) + str(current.month)),
+                        year=current.year,
+                        organization=organization).exists():
                     data = DashboardMonthData.objects.filter(
                         month_label=current.strftime("%B"),
                         sort_date=int(str(current.year) + str(current.month)),
                         year=current.year,
-                        organization=organization,
-                    )[0]
+                        organization=organization)[0]
                     set_uploads(current, data, organization)
             current += relativedelta(months=1)
     set_count(sender, instance, organization)
@@ -82,14 +82,11 @@ def set_count(sender, instance, organization):
     if instance.process_status >= sender.VALIDATED:
         for organization in Organization.objects.all():
             for label in set(
-                BagInfoMetadata.objects.all().values_list("record_type", flat=True)
-            ):
+                    BagInfoMetadata.objects.all().values_list("record_type", flat=True)):
                 data = DashboardRecordTypeData.objects.get_or_create(
-                    organization=organization, label=label
-                )[0]
+                    organization=organization, label=label)[0]
                 data.count = Archives.objects.filter(
-                    organization=organization, metadata__record_type=label
-                ).count()
+                    organization=organization, metadata__record_type=label).count()
                 data.save()
 
 
@@ -120,8 +117,7 @@ def update_accession_status(sender, instance, **kwargs):
     if instance.process_status == Archives.ACCESSIONING_COMPLETE:
         accession = instance.accession
         last_update = sorted(
-            set([t.process_status for t in accession.accession_transfers.all()])
-        )[0]
+            set([t.process_status for t in accession.accession_transfers.all()]))[0]
         if last_update == Archives.ACCESSIONING_COMPLETE:
             accession.process_status = Accession.COMPLETE
             accession.save()
