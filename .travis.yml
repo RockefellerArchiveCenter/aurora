@@ -1,30 +1,22 @@
 language: python
+cache: pip
 services:
   - docker
 env:
+  CONTAINER: web
   global:
-    - DOCKER_COMPOSE_VERSION: 1.18.0
     - TRAVIS_CI: true
 before_install:
-  - sudo rm /usr/local/bin/docker-compose
-  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
-  - chmod +x docker-compose
-  - sudo mv docker-compose /usr/local/bin
   - cp aurora/aurora/config.py.example aurora/aurora/config.py
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose -f docker-compose.travis.yml up -d
-  - sleep 60s
-  - docker-compose exec web pip install coverage pre-commit
-  - docker-compose exec web pre-commit install
-install: true
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
+install:
+  - ./wait-for-it.sh web:8000 -- docker-compose exec $CONTAINER pip install coverage pre-commit
+  - docker-compose exec $CONTAINER pre-commit install
 script:
-  - docker-compose exec web pre-commit run --all-files --show-diff-on-failure
-  - docker-compose exec web coverage run manage.py test
+  - docker-compose exec $CONTAINER pre-commit run --all-files --show-diff-on-failure
+  - docker-compose exec $CONTAINER coverage run manage.py test
 after_script:
-  - docker-compose exec web coverage xml
-  - cd aurora && ../cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - docker-compose exec $CONTAINER coverage report -m
 notifications:
   email: false
