@@ -8,7 +8,7 @@ from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (Archives, DashboardMonthData, Organization,
                                  User)
-from bag_transfer.test import helpers, setup
+from bag_transfer.test import helpers
 from django.test import TestCase
 
 
@@ -30,12 +30,12 @@ class TransferRoutineTestCase(TestCase):
 
     def test_run_routine(self):
         """Asserts TransferRoutine handles valid and invalid bags."""
-        test_on_BagChecker = [r[0] for r in setup.BAGS_REF if len(r) > 2 and r[2]]
-        test_on_transfer_routine = [r[0] for r in setup.BAGS_REF if len(r) > 3 and r[3]]
+        test_on_BagChecker = [r[0] for r in helpers.BAGS_REF if len(r) > 2 and r[2]]
+        test_on_transfer_routine = [r[0] for r in helpers.BAGS_REF if len(r) > 3 and r[3]]
         org = random.choice(Organization.objects.all())
         user = random.choice(User.objects.filter(organization=org))
 
-        for prefix, error, *rest in setup.BAGS_REF:
+        for prefix, error, *rest in helpers.BAGS_REF:
 
             helpers.create_target_bags(
                 prefix, settings.TEST_BAGS_DIR, org, user.username)

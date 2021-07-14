@@ -71,8 +71,8 @@ class AccessioningTestCase(TransactionTestCase):
         rights_basis_list = ["Copyright", "Statute", "License", "Other"]
         rights_statements = [helpers.create_rights_statement(rights_basis=basis) for basis in rights_basis_list]
         for statement in rights_statements:
-            helpers.create_rights_info(statement)
-            helpers.create_rights_granted(statement)
+            helpers.create_test_rights_info(statement)
+            helpers.create_test_rights_granted(statement)
         notes = AccessionCreateView().rights_statement_notes(rights_statements)
         for basis in rights_basis_list:
             key = basis.lower()

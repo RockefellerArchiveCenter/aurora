@@ -2,7 +2,7 @@ import random
 
 from bag_transfer.models import BagItProfile, Organization, User
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import BAGINFO_FIELD_CHOICES
+from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES
 from django.test import TransactionTestCase
 from django.urls import reverse
 

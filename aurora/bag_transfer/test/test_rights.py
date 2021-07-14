@@ -6,7 +6,7 @@ from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementLicense,
                                         RightsStatementOther,
                                         RightsStatementStatute)
-from bag_transfer.test import setup
+from bag_transfer.test.helpers import RIGHTS_BASIS_DATA, RIGHTS_GRANTED_DATA
 from django.test import TestCase
 from django.urls import reverse
 
@@ -73,9 +73,9 @@ class RightsTestCase(TestCase):
         """Tests creation and update of rights statement views, as well as error handling"""
         # Creating new RightsStatements
         post_organization = random.choice(Organization.objects.all())
-        new_basis_data = random.choice(setup.basis_data)
+        new_basis_data = random.choice(RIGHTS_BASIS_DATA)
         new_basis_data["organization"] = post_organization.pk
-        new_basis_data.update(setup.grant_data)
+        new_basis_data.update(RIGHTS_GRANTED_DATA)
         previous_length = len(RightsStatement.objects.all())
         self.assert_status_code(
             "post",
