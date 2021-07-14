@@ -2,7 +2,8 @@ import json
 from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import Archives, BAGLog, Organization, User
+from bag_transfer.models import (Archives, BAGLog, DashboardMonthData,
+                                 Organization, User)
 from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
@@ -10,6 +11,10 @@ from django.urls import reverse
 
 class APITest(TestMixin, TestCase):
     fixtures = ["complete.json"]
+
+    def setUp(self):
+        super().setUp()
+        DashboardMonthData.objects.all().delete()
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
@@ -29,8 +34,9 @@ class APITest(TestMixin, TestCase):
                 reverse("archives-detail", kwargs={"pk": archive.pk}),
                 data=json.dumps(archive_data),
                 content_type="application/json")
+            self.assertEqual(updated.status_code, 200, updated.data)
             for field in new_values:
-                self.assertEqual(updated.data[field], new_values[field], "{} not updated".format(field))
+                self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
 
