@@ -2,29 +2,25 @@ import random
 
 from bag_transfer.models import BagItProfile, Organization, User
 from bag_transfer.test import helpers
-from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES
+from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES, TestMixins
 from django.test import TestCase
 from django.urls import reverse
 
 
-class BagItProfileTestCase(TestCase):
+class BagItProfileTestCase(TestMixins, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         self.client.force_login(User.objects.get(username="admin"))
 
-    def assert_status_code(self, method, url, data, status_code):
-        response = getattr(self.client, method)(url, data)
-        self.assertEqual(response.status_code, status_code)
-
     def test_views(self):
         org = Organization.objects.get(name="Donor Organization")
         for view in ["orgs:bagit-profiles-add", "orgs:bagit-profiles-edit", "organization-bagit-profile"]:
-            self.assert_status_code("get", reverse(view, kwargs={"pk": org.pk}), None, 200)
-        self.assert_status_code("get", reverse("bagitprofile-list"), None, 200)
+            self.assert_status_code("get", reverse(view, kwargs={"pk": org.pk}), 200)
+        self.assert_status_code("get", reverse("bagitprofile-list"), 200)
         org.bagit_profile = None
         org.save()
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-edit", kwargs={"pk": org.pk}), None, 200)
+        self.assert_status_code("get", reverse("orgs:bagit-profiles-edit", kwargs={"pk": org.pk}), 200)
 
         data = {
             "contact_email": "archive@rockarch.org",
@@ -65,7 +61,7 @@ class BagItProfileTestCase(TestCase):
         }
         self.assert_status_code(
             "post", reverse("orgs:bagit-profiles-add", kwargs={"pk": org.pk}),
-            data, 302)
+            302, data=data)
         org.refresh_from_db()
         self.assertIsNot(None, org.bagit_profile, "BagIt profile was not assigned to organization")
 
@@ -73,25 +69,24 @@ class BagItProfileTestCase(TestCase):
         data["external_description"] = external_description
         self.assert_status_code(
             "post", reverse("orgs:bagit-profiles-add", kwargs={"pk": org.pk}),
-            data, 302)
+            302, data=data)
         self.assertIsNot(None, org.bagit_profile, "BagIt profile not assigned to organization")
         org.refresh_from_db()
         self.assertEqual(org.bagit_profile.external_description, external_description, "External Description was not updated")
 
-        delete_request = self.client.get(
+        delete_request = self.assert_status_code(
+            "get",
             reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}),
-            {}, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
-        self.assertEqual(delete_request.status_code, 200)
+            200, data={}, ajax=True)
         self.assertEqual(delete_request.json()["success"], 1)
         org.refresh_from_db()
         self.assertEqual(None, org.bagit_profile, "BagIt Profile not deleted")
 
         self.assert_status_code(
-            "get", reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}),
-            None, 404)
+            "get", reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}), 404)
 
         profile = random.choice(BagItProfile.objects.all())
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.pk}), None, 200)
+        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.pk}), 200)
 
     def test_save_to_org(self):
         """Asserts that the `save_to_org` method works as intended"""

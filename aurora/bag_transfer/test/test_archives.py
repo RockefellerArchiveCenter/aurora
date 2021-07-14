@@ -5,27 +5,24 @@ from bag_transfer.models import (Archives, BagInfoMetadata, BAGLog,
                                  BAGLogCodes, LanguageCode, Organization,
                                  RecordCreators, User)
 from bag_transfer.rights.models import RightsStatement
+from bag_transfer.test.helpers import TestMixins
 from django.test import TestCase
 from django.urls import reverse
 
 
-class BagTestCase(TestCase):
+class BagTestCase(TestMixins, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         self.client.force_login(User.objects.get(username="admin"))
 
-    def assert_status_code(self, url, status_code):
-        resp = self.client.get(url)
-        self.assertEqual(resp.status_code, status_code, "Unexpected status code {} for url {}".format(resp.status_code, url))
-
     def assert_all_views(self, organization=None):
         archives = Archives.objects.filter(organization=organization) if organization else Archives.objects.all()
         for view in ["transfers:list", "transfers:data", "transfers:datatable", "app_home"]:
-            self.assert_status_code(reverse(view), 200)
+            self.assert_status_code("get", reverse(view), 200)
         for arc in archives:
-            self.assert_status_code(reverse("transfers:detail", kwargs={"pk": arc.pk}), 200)
-        self.assert_status_code("{}?q=user".format(reverse("transfers:datatable")), 200)
+            self.assert_status_code("get", reverse("transfers:detail", kwargs={"pk": arc.pk}), 200)
+        self.assert_status_code("get", "{}?q=user".format(reverse("transfers:datatable")), 200)
 
     def test_views(self):
         """Asserts views return expected responses for admin and donor users."""

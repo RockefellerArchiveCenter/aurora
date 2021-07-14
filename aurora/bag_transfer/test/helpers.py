@@ -12,6 +12,7 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted,
                                         RightsStatementStatute)
+from django.test import TestCase
 from django.utils.timezone import make_aware
 
 BAGS_REF = (
@@ -313,3 +314,17 @@ def get_accession_form_data(creator=None):
         "form-0-type": "organization",
     }
     return accession_data
+
+
+class TestMixin(TestCase):
+
+    def assert_status_code(self, method, url, status_code, data=None, ajax=False):
+        """Asserts that a request returns the expected HTTP status_code."""
+        if ajax:
+            response = getattr(self.client, method)(url, data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        else:
+            response = getattr(self.client, method)(url, data)
+        self.assertEqual(
+            response.status_code, status_code,
+            "Unexpected status code {} for url {}".format(response.status_code, url))
+        return response

@@ -7,35 +7,29 @@ from django.test import TestCase
 from django.urls import reverse
 
 
-class OrgTestCase(TestCase):
+class OrgTestCase(helpers.TestMixins, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         self.client.force_login(User.objects.get(username="admin"))
 
-    def assert_status_code(self, method, url, data, status_code):
-        response = getattr(self.client, method)(url, data)
-        self.assertEqual(response.status_code, status_code)
-        return response
-
     @patch("bag_transfer.lib.RAC_CMD.add_org")
     def test_org_views(self, mock_add_org):
-        list = self.assert_status_code("get", reverse("orgs:list"), None, 200)
+        list = self.assert_status_code("get", reverse("orgs:list"), 200)
         self.assertEqual(len(list.context["object_list"]), len(Organization.objects.all()))
         for view in ["orgs:detail", "orgs:edit"]:
             self.assert_status_code(
-                "get", reverse(view, kwargs={"pk": Organization.objects.get(name="Donor Organization").pk}),
-                None, 200)
+                "get", reverse(view, kwargs={"pk": Organization.objects.get(name="Donor Organization").pk}), 200)
 
         org_data = {
             "active": True,
             "name": "Test Organization",
             "acquisition_type": "donation"
         }
-        self.assert_status_code("get", reverse("orgs:add"), None, 200)
-        self.assert_status_code("post", reverse("orgs:add"), org_data, 302)
+        self.assert_status_code("get", reverse("orgs:add"), 200)
+        self.assert_status_code("post", reverse("orgs:add"), 302, data=org_data)
         org_data["active"] = False
-        self.assert_status_code("post", reverse("orgs:add"), org_data, 200)
+        self.assert_status_code("post", reverse("orgs:add"), 200, data=org_data)
         mock_add_org.assert_called_once()
 
     def test_org_model_methods(self):

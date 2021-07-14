@@ -3,20 +3,17 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import Archives, BAGLog, Organization, User
+from bag_transfer.test.helpers import TestMixins
 from django.test import TestCase
 from django.urls import reverse
 
 
-class APITest(TestCase):
+class APITest(TestMixins, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         self.user = User.objects.get(username="admin")
         self.client.force_login(self.user)
-
-    def assert_status_code(self, url, status_code):
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status_code, "Wrong HTTP status code, expecting {}".format(status_code))
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
@@ -43,22 +40,22 @@ class APITest(TestCase):
             mock_cleanup.reset_mock()
 
     def test_schema_response(self):
-        self.assert_status_code(reverse("schema"), 200)
+        self.assert_status_code("get", reverse("schema"), 200)
 
     def test_health_check_response(self):
-        self.assert_status_code(reverse("api_health_ping"), 200)
+        self.assert_status_code("get", reverse("api_health_ping"), 200)
 
     def test_action_endpoints(self):
         """Asserts custom action endpoints return expected status code."""
         org = Organization.objects.get(name="Donor Organization").pk
-        self.assert_status_code(reverse("organization-bagit-profile", kwargs={"pk": org}), 200)
-        self.assert_status_code(reverse("organization-rights-statements", kwargs={"pk": org}), 200)
-        self.assert_status_code(reverse("user-current"), 200)
+        self.assert_status_code("get", reverse("organization-bagit-profile", kwargs={"pk": org}), 200)
+        self.assert_status_code("get", reverse("organization-rights-statements", kwargs={"pk": org}), 200)
+        self.assert_status_code("get", reverse("user-current"), 200)
 
     def test_list_views(self):
         """Asserts list endpoints return expected response."""
         for view in ["archives-list", "accession-list", "baglog-list", "organization-list", "user-list"]:
-            self.assert_status_code(reverse(view), 200)
+            self.assert_status_code("get", reverse(view), 200)
 
     def test_detail_views(self):
         for view, model_cls in [
@@ -68,4 +65,4 @@ class APITest(TestCase):
                 ("organization-detail", Organization),
                 ("user-detail", User)]:
             for obj in model_cls.objects.all():
-                self.assert_status_code(reverse(view, kwargs={"pk": obj.pk}), 200)
+                self.assert_status_code("get", reverse(view, kwargs={"pk": obj.pk}), 200)

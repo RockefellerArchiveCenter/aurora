@@ -2,20 +2,16 @@ import random
 from unittest.mock import patch
 
 from bag_transfer.models import Organization, User
+from bag_transfer.test.helpers import TestMixins
 from django.test import TestCase
 from django.urls import reverse
 
 
-class UserTestCase(TestCase):
+class UserTestCase(TestMixins, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         self.client.force_login(User.objects.get(username="admin"))
-
-    def assert_status_code(self, method, url, data, status_code):
-        response = getattr(self.client, method)(url, data)
-        self.assertEqual(response.status_code, status_code)
-        return response
 
     def test_user_model_methods(self):
         """Test user model methods."""
@@ -95,9 +91,9 @@ class UserTestCase(TestCase):
         """Ensures correct HTTP status codes are received for views."""
         for view in ["users:detail", "users:edit"]:
             self.assert_status_code(
-                "get", reverse(view, kwargs={"pk": random.choice(User.objects.filter(transfers__isnull=False)).pk}), None, 200)
+                "get", reverse(view, kwargs={"pk": random.choice(User.objects.filter(transfers__isnull=False)).pk}), 200)
         for view in ["users:add", "users:list", "users:password-change"]:
-            self.assert_status_code("get", reverse(view), None, 200)
+            self.assert_status_code("get", reverse(view), 200)
 
         user_data = {
             "is_active": True,
@@ -106,12 +102,12 @@ class UserTestCase(TestCase):
             "email": "test@example.org",
             "organization": random.choice(Organization.objects.all()).pk
         }
-        self.assert_status_code("post", reverse("users:add"), user_data, 200)
+        self.assert_status_code("post", reverse("users:add"), 200, data=user_data)
         user_data["active"] = False
         self.assert_status_code(
-            "post", reverse("users:edit", kwargs={"pk": random.choice(User.objects.all()).pk}), user_data, 200)
+            "post", reverse("users:edit", kwargs={"pk": random.choice(User.objects.all()).pk}), 200, data=user_data)
 
         # ensure logged out users are redirected to splash page
         self.client.logout()
-        response = self.assert_status_code("get", reverse("splash"), None, 302)
+        response = self.assert_status_code("get", reverse("splash"), 302)
         self.assertTrue(response.url.startswith(reverse("login")))
