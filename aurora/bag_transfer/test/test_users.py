@@ -2,16 +2,13 @@ import random
 from unittest.mock import patch
 
 from bag_transfer.models import Organization, User
-from bag_transfer.test.helpers import TestMixins
+from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
 
 
-class UserTestCase(TestMixins, TestCase):
+class UserTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
 
     def test_user_model_methods(self):
         """Test user model methods."""

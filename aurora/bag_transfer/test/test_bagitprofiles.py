@@ -1,17 +1,14 @@
 import random
 
-from bag_transfer.models import BagItProfile, Organization, User
+from bag_transfer.models import BagItProfile, Organization
 from bag_transfer.test import helpers
-from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES, TestMixins
+from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES, TestMixin
 from django.test import TestCase
 from django.urls import reverse
 
 
-class BagItProfileTestCase(TestMixins, TestCase):
+class BagItProfileTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
 
     def test_views(self):
         org = Organization.objects.get(name="Donor Organization")

@@ -1,22 +1,19 @@
 import random
 
-from bag_transfer.models import Organization, User
+from bag_transfer.models import Organization
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
                                         RightsStatementOther,
                                         RightsStatementStatute)
 from bag_transfer.test.helpers import (RIGHTS_BASIS_DATA, RIGHTS_GRANTED_DATA,
-                                       TestMixins)
+                                       TestMixin)
 from django.test import TestCase
 from django.urls import reverse
 
 
-class RightsTestCase(TestMixins, TestCase):
+class RightsTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
 
     def test_model_methods(self):
         self.rights_info()

@@ -5,7 +5,8 @@ from datetime import datetime
 from os import chown, listdir, path
 
 from asterism.file_helpers import copy_file_or_dir
-from bag_transfer.models import LanguageCode, Organization, RecordCreators
+from bag_transfer.models import (LanguageCode, Organization, RecordCreators,
+                                 User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -317,6 +318,9 @@ def get_accession_form_data(creator=None):
 
 
 class TestMixin(TestCase):
+
+    def setUp(self):
+        self.client.force_login(User.objects.get(username="admin"))
 
     def assert_status_code(self, method, url, status_code, data=None, ajax=False):
         """Asserts that a request returns the expected HTTP status_code."""

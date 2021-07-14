@@ -3,17 +3,13 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import Archives, BAGLog, Organization, User
-from bag_transfer.test.helpers import TestMixins
+from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
 
 
-class APITest(TestMixins, TestCase):
+class APITest(TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.user = User.objects.get(username="admin")
-        self.client.force_login(self.user)
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):

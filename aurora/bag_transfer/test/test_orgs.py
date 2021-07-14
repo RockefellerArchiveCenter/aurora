@@ -1,17 +1,14 @@
 import random
 from unittest.mock import patch
 
-from bag_transfer.models import Organization, User
+from bag_transfer.models import Organization
 from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
 
 
-class OrgTestCase(helpers.TestMixins, TestCase):
+class OrgTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
 
     @patch("bag_transfer.lib.RAC_CMD.add_org")
     def test_org_views(self, mock_add_org):

@@ -5,16 +5,13 @@ from bag_transfer.models import (Archives, BagInfoMetadata, BAGLog,
                                  BAGLogCodes, LanguageCode, Organization,
                                  RecordCreators, User)
 from bag_transfer.rights.models import RightsStatement
-from bag_transfer.test.helpers import TestMixins
+from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
 
 
-class BagTestCase(TestMixins, TestCase):
+class BagTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
 
     def assert_all_views(self, organization=None):
         archives = Archives.objects.filter(organization=organization) if organization else Archives.objects.all()

@@ -5,8 +5,7 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
-from bag_transfer.models import (Archives, BAGLog, LanguageCode,
-                                 RecordCreators, User)
+from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
 from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
@@ -16,7 +15,7 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
+        super().setUp()
         self.to_accession = Archives.objects.filter(process_status__lt=Archives.ACCEPTED)
 
     def test_views(self):
