@@ -8,11 +8,11 @@ from bag_transfer.accession.views import AccessionCreateView
 from bag_transfer.models import (Archives, BAGLog, LanguageCode,
                                  RecordCreators, User)
 from bag_transfer.test import helpers
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class AccessioningTestCase(TransactionTestCase):
+class AccessioningTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):

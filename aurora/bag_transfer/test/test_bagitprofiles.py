@@ -3,11 +3,11 @@ import random
 from bag_transfer.models import BagItProfile, Organization, User
 from bag_transfer.test import helpers
 from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class BagItProfileTestCase(TransactionTestCase):
+class BagItProfileTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):

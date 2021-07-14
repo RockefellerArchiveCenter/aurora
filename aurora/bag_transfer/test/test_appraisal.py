@@ -1,15 +1,16 @@
 import random
 
-from bag_transfer.models import Archives, User
+from bag_transfer.models import Archives, DashboardMonthData, User
 from bag_transfer.test import helpers
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class AppraisalTestCase(TransactionTestCase):
+class AppraisalTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
+        DashboardMonthData.objects.all().delete()
         self.to_appraise = Archives.objects.filter(process_status=Archives.VALIDATED)
         self.client.force_login(User.objects.get(username="admin"))
 
