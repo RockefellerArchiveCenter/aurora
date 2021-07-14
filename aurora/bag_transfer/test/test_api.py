@@ -23,8 +23,7 @@ class APITest(TestMixin, TestCase):
         for archive in Archives.objects.all():
             archive_data = self.client.get(
                 reverse("archives-detail", kwargs={"pk": archive.pk}), format="json").json()
-            for field in new_values:
-                archive_data[field] = new_values[field]
+            archive_data.update(new_values)
 
             updated = self.client.put(
                 reverse("archives-detail", kwargs={"pk": archive.pk}),
