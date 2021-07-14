@@ -4743,7 +4743,7 @@
     "pk": 1,
     "fields": {
         "rights_statement": 46,
-        "license_terms": "",
+        "license_terms": "License terms",
         "license_applicable_start_date": null,
         "license_applicable_end_date": null,
         "license_start_date_period": 5,
