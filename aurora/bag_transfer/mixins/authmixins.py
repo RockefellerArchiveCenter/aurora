@@ -60,28 +60,28 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
                     try:
                         if User.objects.get(pk=self.kwargs.get("pk")) == self.user:
                             return True
-                    except User.DoesNotExist as e:
-                        print(e)
+                    except User.DoesNotExist:
+                        return False
 
                 elif self.model == Organization:
                     try:
                         organization = Organization.objects.get(pk=self.kwargs.get("pk"))
-                    except Organization.DoesNotExist as e:
-                        print(e)
+                    except Organization.DoesNotExist:
+                        return False
 
                 elif self.model == BagItProfile:
                     try:
                         profile = BagItProfile.objects.get(pk=self.kwargs.get("pk"))
                         organization = Organization.objects.get(bagit_profile=profile)
-                    except BagItProfile.DoesNotExist as e:
-                        print(e)
+                    except BagItProfile.DoesNotExist:
+                        return False
 
                 else:
                     try:
                         obj = self.model.objects.get(pk=self.kwargs.get("pk"))
                         organization = obj.organization
-                    except self.model.DoesNotExist as e:
-                        print(e)
+                    except self.model.DoesNotExist:
+                        return False
 
                 if organization and self.request.user.organization == organization:
                     return True

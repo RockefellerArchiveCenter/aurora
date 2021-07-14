@@ -5,18 +5,17 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
-from bag_transfer.models import (Archives, BAGLog, LanguageCode,
-                                 RecordCreators, User)
+from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
 from bag_transfer.test import helpers
-from django.test import TransactionTestCase
+from django.test import TestCase
 from django.urls import reverse
 
 
-class AccessioningTestCase(TransactionTestCase):
+class AccessioningTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
-        self.client.force_login(User.objects.get(username="admin"))
+        super().setUp()
         self.to_accession = Archives.objects.filter(process_status__lt=Archives.ACCEPTED)
 
     def test_views(self):
@@ -71,36 +70,27 @@ class AccessioningTestCase(TransactionTestCase):
         rights_basis_list = ["Copyright", "Statute", "License", "Other"]
         rights_statements = [helpers.create_rights_statement(rights_basis=basis) for basis in rights_basis_list]
         for statement in rights_statements:
-            helpers.create_rights_info(statement)
-            helpers.create_rights_granted(statement)
+            helpers.create_test_rights_info(statement)
+            helpers.create_test_rights_granted(statement)
         notes = AccessionCreateView().rights_statement_notes(rights_statements)
         for basis in rights_basis_list:
             key = basis.lower()
             self.assertEqual(len(notes[key]), 2)
             self.assertTrue(isinstance(n, str) for n in notes[key])
 
-    def assert_status_code(self, method, url, data, status_code):
-        response = getattr(self.client, method)(url, data)
-        self.assertEqual(response.status_code, status_code, "Wrong HTTP status code, expected {}".format(status_code))
-        return response
-
     @patch("bag_transfer.lib.clients.ArchivesSpaceClient.get_resource")
     def ajax_add_view(self, mock_as):
         mock_as.return_value = {"title": "foo", "id_0": "1", "uri": "foobar"}
-        response = self.client.get(
-            reverse("accession:add"),
-            {"resource_id": 1},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.assert_status_code(
+            "get", reverse("accession:add"), 200, data={"resource_id": 1}, ajax=True)
         data = json.loads(response.content)
         self.assertEqual(data["success"], 1)
         self.assertEqual(data["title"], "foo (1)")
         self.assertEqual(data["uri"], "foobar")
 
         mock_as.side_effect = Exception("mock exception")
-        response = self.client.get(
-            reverse("accession:add"),
-            {"resource_id": 1},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        response = self.assert_status_code(
+            "get", reverse("accession:add"), 200, data={"resource_id": 1}, ajax=True)
         data = json.loads(response.content)
         self.assertEqual(data["success"], 0)
 
@@ -109,36 +99,31 @@ class AccessioningTestCase(TransactionTestCase):
         """Tests the AJAX logic branch of accession list view."""
         mock_post.status_code = 200
         accession = random.choice(Accession.objects.all())
-        list_response = self.client.get(
-            reverse("accession:list"),
-            {"accession_id": accession.pk},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        list_response = self.assert_status_code(
+            "get", reverse("accession:list"), 200, data={"accession_id": accession.pk}, ajax=True)
         accession.refresh_from_db()  # refresh to pick up changes
         self.assertEqual(json.loads(list_response.content)["success"], 1)
         self.assertEqual(accession.process_status, Accession.DELIVERED)
 
         accession_id = 10000
-        response = self.client.get(
-            reverse("accession:list"),
-            {"accession_id": accession_id},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest")
-        self.assertEqual(list_response.status_code, 200)
+        response = self.assert_status_code(
+            "get", reverse("accession:list"), 200, data={"accession_id": accession_id}, ajax=True)
         self.assertEqual(json.loads(response.content)["success"], 0)
 
     def list_view(self, id_list):
-        response = self.assert_status_code("get", reverse("accession:list"), None, 200)
+        response = self.assert_status_code("get", reverse("accession:list"), 200)
         self.assertEqual(len(response.context["uploads"]), 4)
 
     @patch("requests.post")
     def create_view(self, id_list, mock_post):
         """Assert add view handles data and exceptions correctly."""
-        self.assert_status_code("get", reverse("accession:add"), {"transfers": ",".join(id_list)}, 200)
+        self.assert_status_code("get", reverse("accession:add"), 200, data={"transfers": ",".join(id_list)})
 
         mock_post.status_code = 200
         joined_list = ",".join(id_list)
         accession_data = helpers.get_accession_form_data(
             creator=random.choice(RecordCreators.objects.all()))
-        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), accession_data, 302)
+        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 302, data=accession_data)
         for acc in Accession.objects.all():
             self.assertTrue(acc.process_status >= Accession.CREATED)
         for arc_id in id_list:
@@ -149,12 +134,12 @@ class AccessioningTestCase(TransactionTestCase):
                 len(BAGLog.objects.filter(archive=archive, code__code_short="BACC")), 1)
 
         mock_post.side_effect = Exception("mock exception")  # have secondary POST throw exception
-        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), accession_data, 302)
+        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 302, data=accession_data)
 
         del accession_data["title"]  # try to submit invalid data
-        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), accession_data, 200)
+        self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 200, data=accession_data)
 
     def detail_view(self):
         """Assert Accessions detail view returns correct response code."""
         accession = random.choice(Accession.objects.all())
-        self.assert_status_code("get", reverse("accession:detail", kwargs={"pk": accession.pk}), None, 200)
+        self.assert_status_code("get", reverse("accession:detail", kwargs={"pk": accession.pk}), 200)

@@ -9,7 +9,7 @@ from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (Archives, DashboardMonthData, Organization,
                                  User)
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import BAGS_REF
+from bag_transfer.test.helpers import BAGS_REF
 from django.conf import settings
 from django.test import TestCase
 
