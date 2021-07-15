@@ -3,6 +3,7 @@ from operator import itemgetter
 from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import (BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, Organization)
 from bag_transfer.rights.forms import (CopyrightFormSet, LicenseFormSet,
@@ -15,10 +16,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import CreateView, DetailView, TemplateView
 
 
-class RightsManageView(ManagingArchivistMixin, CreateView):
+class RightsManageView(PageTitleMixin, ManagingArchivistMixin, CreateView):
     template_name = "rights/manage.html"
     model = RightsStatement
     form_class = RightsForm
+
+    def get_page_title(self, context):
+        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create New Rights Statement"
 
     def get_formset(self, rights_basis):
         if rights_basis == "Copyright":
@@ -41,7 +45,8 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
             applies_to_type_choices.append((record_type.pk, record_type.name))
         return sorted(applies_to_type_choices, key=itemgetter(1))
 
-    def get(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         if self.kwargs.get("pk"):
             rights_statement = RightsStatement.objects.get(pk=self.kwargs.get("pk"))
             organization = rights_statement.organization
@@ -52,36 +57,22 @@ class RightsManageView(ManagingArchivistMixin, CreateView):
                 applies_to_type_choices=applies_to_type_choices,
                 instance=rights_statement,
                 organization=organization)
-            granted_formset = RightsGrantedFormSet(instance=rights_statement)
-            return render(
-                request,
-                self.template_name,
-                {
-                    "organization": organization,
-                    formset_data["key"]: formset,
-                    "basis_form": basis_form,
-                    "granted_formset": granted_formset,
-                },
-            )
+            context[formset_data["key"]] = formset
+            context["granted_formset"] = RightsGrantedFormSet(instance=rights_statement)
         else:
             organization = Organization.objects.get(pk=self.request.GET.get("org"))
             applies_to_type_choices = self.get_applies_to_type_choices(organization)
             basis_form = RightsForm(
                 applies_to_type_choices=applies_to_type_choices,
                 organization=organization)
-            return render(
-                request,
-                self.template_name,
-                {
-                    "copyright_form": CopyrightFormSet(),
-                    "license_form": LicenseFormSet(),
-                    "statute_form": StatuteFormSet(),
-                    "other_form": OtherFormSet(),
-                    "organization": organization,
-                    "basis_form": basis_form,
-                    "granted_formset": RightsGrantedFormSet(),
-                },
-            )
+            context["copyright_form"] = CopyrightFormSet()
+            context["license_form"] = LicenseFormSet()
+            context["statute_form"] = StatuteFormSet()
+            context["other_form"] = OtherFormSet()
+            context["granted_formset"]: RightsGrantedFormSet()
+        context["basis_form"] = basis_form
+        context["organization"] = organization
+        return context
 
     def post(self, request, *args, **kwargs):
         applies_to_type = request.POST.getlist("applies_to_type")
@@ -168,13 +159,7 @@ class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView
         return self.render_to_json_response(resp, **kwargs)
 
 
-class RightsDetailView(OrgReadViewMixin, DetailView):
+class RightsDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "rights/detail.html"
+    page_title = "Rights Statement"
     model = RightsStatement
-
-    def get_context_data(self, *args, **kwargs):
-        context = super(RightsDetailView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "{} PREMIS rights statement".format(self.object.organization)
-        context["rights_basis_info"] = self.object.rights_info
-        context["rights_granted_info"] = self.object.rights_granted.all()
-        return context

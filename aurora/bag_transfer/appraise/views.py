@@ -2,15 +2,17 @@ from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.mixins.authmixins import ArchivistMixin
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import Archives, BAGLog
 from dateutil import tz
-from django.shortcuts import render
-from django.views import View
+from django.views.generic import ListView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
-class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
+class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
     template_name = "appraise/main.html"
+    page_title = "Appraisal Queue"
+    model = Archives
 
     def handle_note_request(self, request, upload, rdata):
         if request.GET.get("req_type") == "edit":
@@ -34,6 +36,11 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                 email.to = [upload.user_uploaded.email]
                 email.setup_message("TRANS_REJECT", upload)
                 email.send()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["uploads_count"] = len(Archives.objects.filter(process_status=Archives.VALIDATED).order_by("created_time"))
+        return context
 
     def get(self, request, *args, **kwargs):
         if request.is_ajax():
@@ -62,19 +69,7 @@ class AppraiseView(ArchivistMixin, JSONResponseMixin, View):
                     rdata["success"] = 1
 
             return self.render_to_json_response(rdata)
-
-        return render(
-            request,
-            self.template_name,
-            {
-                "meta_page_title": "Appraisal Queue",
-                "uploads_count": len(
-                    Archives.objects.filter(process_status=Archives.VALIDATED).order_by(
-                        "created_time"
-                    )
-                ),
-            },
-        )
+        return super().get(self, request, *args, **kwargs)
 
 
 class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):

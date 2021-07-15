@@ -4,6 +4,7 @@ from bag_transfer.lib.RAC_CMD import set_server_password
 from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
+from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import Archives, Organization, User
 from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
                                      RACSuperUserUpdateForm,
@@ -19,7 +20,7 @@ from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
 from django.contrib.messages.views import SuccessMessageMixin
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import (CreateView, DetailView, ListView,
                                   TemplateView, UpdateView)
@@ -30,35 +31,24 @@ class SplashView(AnonymousRequiredMixin, TemplateView):
         return redirect("login")
 
 
-class UsersListView(ArchivistMixin, SuccessMessageMixin, ListView):
+class UsersListView(PageTitleMixin, ArchivistMixin, SuccessMessageMixin, ListView):
     template_name = "users/list.html"
+    page_title = "Users"
     model = User
 
-    def get(self, request, *args, **kwargs):
-        users_list = [{"org": {}, "users": []}]
-        users_list[0]["org"] = {"pass": "pass"}
-        users_list[0]["users"] = User.objects.all().order_by("username")
-        org_users_list = [{"org": {}, "users": []}]
-        org_users_list = Organization.users_by_org()
-
-        return render(
-            request,
-            self.template_name,
-            {
-                "meta_page_title": "Users",
-                "users_list": users_list,
-                "org_users_list": org_users_list,
-            },
-        )
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["users_list"] = [{"users": User.objects.all().order_by("username")}]
+        context["org_users_list"] = Organization.users_by_org()
+        return context
 
 
-class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
+class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = "users/update.html"
+    page_title = "Create New User"
     model = User
     success_message = "New User Saved!"
-
-    def get_form_class(self):
-        return OrgUserCreateForm
+    form_class = OrgUserCreateForm
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.object.pk})
@@ -80,13 +70,13 @@ class UsersCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
         return post
 
 
-class UsersDetailView(OrgReadViewMixin, DetailView):
+class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "users/detail.html"
+    page_title = "User Profile"
     model = User
 
     def get_context_data(self, **kwargs):
         context = super(UsersDetailView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = self.object.username
         context["uploads"] = []
         archives = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
@@ -102,7 +92,7 @@ class UsersDetailView(OrgReadViewMixin, DetailView):
         return context
 
 
-class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
+class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = "users/update.html"
     model = User
     success_message = "Your changes have been saved!"
@@ -110,26 +100,19 @@ class UsersEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     def get_form_class(self):
         return RACSuperUserUpdateForm if self.object.is_staff else OrgUserUpdateForm
 
-    def get_context_data(self, **kwargs):
-        context = super(UsersEditView, self).get_context_data(**kwargs)
-        context["page_title"] = "Edit {}".format(self.object.username)
-        context["meta_page_title"] = "Edit {}".format(self.object.username)
-        return context
+    def get_page_title(self, context):
+        return "Edit {}".format(self.object.username)
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.object.pk})
 
 
-class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
+class UserPasswordChangeView(PageTitleMixin, SuccessMessageMixin, PasswordChangeView):
     template_name = "users/password_change.html"
+    page_title = "Change Password"
     model = User
     success_message = "New password saved."
     form_class = UserPasswordChangeForm
-
-    def get_context_data(self, **kwargs):
-        context = super(UserPasswordChangeView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "Change Password"
-        return context
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.request.user.pk})
@@ -140,17 +123,20 @@ class UserPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
         return result
 
 
-class UserPasswordResetView(AnonymousRequiredMixin, PasswordResetView):
+class UserPasswordResetView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetView):
     template_name = "users/password_reset_form.html"
+    page_title = "Reset Password"
     form_class = UserPasswordResetForm
 
 
-class UserPasswordResetDoneView(AnonymousRequiredMixin, PasswordResetDoneView):
+class UserPasswordResetDoneView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetDoneView):
     template_name = "users/password_reset_done.html"
+    page_title = "Password Reset Email Sent"
 
 
-class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmView):
+class UserPasswordResetConfirmView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetConfirmView):
     template_name = "users/password_reset_confirm.html"
+    page_title = "Confirm Password"
     form_class = UserSetPasswordForm
 
     def form_valid(self, form):
@@ -159,5 +145,6 @@ class UserPasswordResetConfirmView(AnonymousRequiredMixin, PasswordResetConfirmV
         return results
 
 
-class UserPasswordResetCompleteView(AnonymousRequiredMixin, PasswordResetCompleteView):
+class UserPasswordResetCompleteView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetCompleteView):
     template_name = "users/password_reset_complete.html"
+    page_title = "Password Reset Complete"

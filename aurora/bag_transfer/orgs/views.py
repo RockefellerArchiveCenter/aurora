@@ -4,6 +4,7 @@ from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import Archives, BagItProfile, Organization
 from bag_transfer.orgs.form import (AcceptBagItVersionFormset,
                                     AcceptSerializationFormset,
@@ -21,29 +22,24 @@ from django.views.generic import (CreateView, DetailView, ListView,
                                   TemplateView, UpdateView)
 
 
-class OrganizationCreateView(ManagingArchivistMixin, SuccessMessageMixin, CreateView):
+class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = "orgs/create.html"
+    page_title = "Add an Organization"
     model = Organization
     fields = ["name", "acquisition_type"]
     success_message = "New Organization Saved!"
-
-    def get_context_data(self, **kwargs):
-        context = super(CreateView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "Add Organization"
-        context["acquisition_types"] = Organization.ACQUISITION_TYPE_CHOICES
-        return context
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.pk})
 
 
-class OrganizationDetailView(OrgReadViewMixin, DetailView):
+class OrganizationDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "orgs/detail.html"
+    page_title = "Organization Profile"
     model = Organization
 
     def get_context_data(self, **kwargs):
-        context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = self.object.name
+        context = super().get_context_data(**kwargs)
         context["uploads"] = []
         archives = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
@@ -59,38 +55,36 @@ class OrganizationDetailView(OrgReadViewMixin, DetailView):
         return context
 
 
-class OrganizationEditView(ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
+class OrganizationEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = "orgs/update.html"
     model = Organization
     fields = ["is_active", "name", "acquisition_type"]
     success_message = "Organization Saved!"
 
-    def get_context_data(self, **kwargs):
-        context = super(UpdateView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "Edit Organization"
-        context["acquisition_types"] = Organization.ACQUISITION_TYPE_CHOICES
-        return context
+    def get_page_title(self, context):
+        return "Edit {}".format(context["object"].name)
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.pk})
 
 
-class OrganizationListView(ArchivistMixin, ListView):
-
+class OrganizationListView(PageTitleMixin, ArchivistMixin, ListView):
     template_name = "orgs/list.html"
+    page_title = "Organizations"
     model = Organization
 
-    def get_context_data(self, **kwargs):
-        context = super(OrganizationListView, self).get_context_data(**kwargs)
-        context["meta_page_title"] = "Organizations"
-        return context
 
-
-class BagItProfileManageView(TemplateView):
+class BagItProfileManageView(PageTitleMixin, TemplateView):
     template_name = "bagit_profiles/manage.html"
     model = BagItProfile
 
-    def get(self, request, *args, **kwargs):
+    def get_page_title(self, context):
+        organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
+        profile = organization.bagit_profile
+        return "Edit BagIt Profile" if profile else "Create BagIt Profile"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         source_organization = self.request.user.organization
         organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
         profile = organization.bagit_profile
@@ -100,38 +94,17 @@ class BagItProfileManageView(TemplateView):
             form = BagItProfileForm(
                 initial={
                     "source_organization": source_organization,
-                    "contact_email": "archive@rockarch.org",
-                }
-            )
-        bag_info_formset = BagItProfileBagInfoFormset(
-            instance=profile, prefix="bag_info")
-        manifests_allowed_formset = ManifestsAllowedFormset(
-            instance=profile, prefix="manifests_allowed")
-        manifests_formset = ManifestsRequiredFormset(
-            instance=profile, prefix="manifests")
-        serialization_formset = AcceptSerializationFormset(
-            instance=profile, prefix="serialization")
-        version_formset = AcceptBagItVersionFormset(instance=profile, prefix="version")
-        tag_manifests_formset = TagManifestsRequiredFormset(
-            instance=profile, prefix="tag_manifests")
-        tag_files_formset = TagFilesRequiredFormset(
-            instance=profile, prefix="tag_files")
-        return render(
-            request,
-            self.template_name,
-            {
-                "form": form,
-                "bag_info_formset": bag_info_formset,
-                "manifests_allowed_formset": manifests_allowed_formset,
-                "manifests_formset": manifests_formset,
-                "serialization_formset": serialization_formset,
-                "version_formset": version_formset,
-                "tag_manifests_formset": tag_manifests_formset,
-                "tag_files_formset": tag_files_formset,
-                "meta_page_title": "BagIt Profile",
-                "organization": organization,
-            },
-        )
+                    "contact_email": "archive@rockarch.org"})
+        context["form"] = form
+        context["bag_info_formset"] = BagItProfileBagInfoFormset(instance=profile, prefix="bag_info")
+        context["manifests_allowed_formset"] = ManifestsAllowedFormset(instance=profile, prefix="manifests_allowed")
+        context["manifests_formset"] = ManifestsRequiredFormset(instance=profile, prefix="manifests")
+        context["serialization_formset"] = AcceptSerializationFormset(instance=profile, prefix="serialization")
+        context["version_formset"] = AcceptBagItVersionFormset(instance=profile, prefix="version")
+        context["tag_manifests_formset"] = TagManifestsRequiredFormset(instance=profile, prefix="tag_manifests")
+        context["tag_files_formset"] = TagFilesRequiredFormset(instance=profile, prefix="tag_files")
+        context["organization"] = organization
+        return context
 
     def post(self, request, *args, **kwargs):
         organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
@@ -181,7 +154,6 @@ class BagItProfileManageView(TemplateView):
                             "version_formset": version_formset,
                             "tag_manifests_formset": tag_manifests_formset,
                             "tag_files_formset": tag_files_formset,
-                            "meta_page_title": "BagIt Profile",
                         },
                     )
             for formset in forms_to_save:
@@ -223,23 +195,18 @@ class BagItProfileManageView(TemplateView):
                     request.POST, prefix="tag_manifests"),
                 "tag_files_formset": TagFilesRequiredFormset(
                     request.POST, prefix="tag_files"),
-                "meta_page_title": "BagIt Profile",
             },
         )
 
 
-class BagItProfileDetailView(OrgReadViewMixin, DetailView):
+class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "bagit_profiles/detail.html"
+    page_title = "BagIt Profile"
     model = BagItProfile
 
     def get_object(self):
         org = Organization.objects.get(pk=self.kwargs.get("pk"))
         return org.bagit_profile
-
-    def get_context_data(self, *args, **kwargs):
-        data = super(BagItProfileDetailView, self).get_context_data(*args, **kwargs)
-        data["organization"] = Organization.objects.get(pk=self.kwargs.get("pk"))
-        return data
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):

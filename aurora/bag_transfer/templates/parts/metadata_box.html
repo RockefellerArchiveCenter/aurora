@@ -8,7 +8,7 @@
       </div>
       <div class="box-body">
         <dl class="dl-horizontal">
-          {% for k,v in metadata %}
+          {% for k,v in object.bag_data.items %}
           <dt>{{k}}</dt>
           <dd>{% if v|get_type == 'list' %}{% for i in v %}{{i}}<br/>{% endfor %}{% else %}{{v}}{% endif %}</dd>
           {% endfor %}

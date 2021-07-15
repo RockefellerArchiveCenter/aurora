@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 {% load static %}
-{% block h1_title %}{{ object.name }}<small>Organization Edit</small>{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -24,7 +24,7 @@
 						<label for="id_acquisition_type">Acquisition Type</label>
 						<select id="id_acquisition_type" name="acquisition_type" class="form-control">
 							<option value=""> --- Select an acquisition type --- </option>
-							{% for x,y in acquisition_types %}
+							{% for x,y in view.model.ACQUISITION_TYPE_CHOICES %}
 						    <option value="{{ x }}"{% if object.acquisition_type == x %} selected{% endif %}>{{ y }}</option>
 							{% endfor %}
             </select>

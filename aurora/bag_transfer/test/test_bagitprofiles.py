@@ -91,7 +91,7 @@ class BagItProfileTestCase(TransactionTestCase):
             None, 404)
 
         profile = random.choice(BagItProfile.objects.all())
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.pk}), None, 200)
+        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.source_organization.pk}), None, 200)
 
     def test_save_to_org(self):
         """Asserts that the `save_to_org` method works as intended"""

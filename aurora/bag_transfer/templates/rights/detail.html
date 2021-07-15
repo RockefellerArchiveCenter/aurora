@@ -2,7 +2,7 @@
 {% load tz %}
 
 {% block h1_title %}
-  Rights Statement <small>{{object.organization}}</small>
+  {{page_title}} <small>{{object.organization}}</small>
   <div class="pull-right">
     <a href="{% url 'orgs:detail' object.organization.pk %}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back To Organization</a>
     {% if request.user.is_manager or request.user.is_superuser %}
@@ -45,7 +45,7 @@
         <span class="bg-teal">Rights Granted or Restricted</span>
       </li>
 
-      {% for rights_granted in rights_granted_info %}
+      {% for rights_granted in object.rights_granted.all %}
         {% include 'rights/rights_granted_info.html' %}
       {% endfor %}
 
