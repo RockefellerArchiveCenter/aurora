@@ -1,7 +1,7 @@
 {% load static %}
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title>Aurora{% if page_title %} - {{ page_title }}{% endif %}</title>
+<title>Aurora{% if page_title %} - {{ page_title }}{% elif name %} - {{name}}{% endif %}</title>
 <!-- Tell the browser to be responsive to screen width -->
 <meta content="width=device-width, initial-scale=1, user-scalable=yes" name="viewport">
 <!-- Bootstrap 3.3.6 -->
