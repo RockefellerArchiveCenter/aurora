@@ -3,7 +3,7 @@
 {% load tz %}
 
 {% block h1_title %}
-  Dashboard: <span id="orgName"></span>
+  {{page_title}}: <span id="orgName"></span>
     <select id="context-switcher" aria-label="Select organizational context">
 
       {% for org in sorted_org_list %}
