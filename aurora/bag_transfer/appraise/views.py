@@ -95,10 +95,10 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
 
-    def appraise_buttons(self, bag):
+    def appraise_buttons(self, transfer):
         buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
         if self.request.user.can_appraise():
-            if bag.appraisal_note:
+            if transfer.appraisal_note:
                 btn_class = "btn-primary"
                 note_class = "edit-note"
                 aria_label = 'aria-label="Note exists"'

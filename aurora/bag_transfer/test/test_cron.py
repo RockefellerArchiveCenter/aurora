@@ -25,20 +25,19 @@ class CronTestCase(TestCase):
         Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.org = random.choice(Organization.objects.all())
-        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
-            if os.path.isdir(d):
-                remove_file_or_dir(d)
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
         for d in self.org.org_machine_upload_paths():
             if os.path.exists(d):
                 shutil.rmtree(d)
                 os.makedirs(d)
 
     def test_cron(self):
-        self.discover_bags()
-        self.deliver_bags()
+        self.discover_transfers()
+        self.deliver_transfers()
 
     @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
-    def discover_bags(self, mock_passed_all):
+    def discover_transfers(self, mock_passed_all):
         bag_name, _ = BAGS_REF[0]
         for bag_passed_all in [True, False]:
             self.bags = helpers.create_target_bags(
@@ -48,7 +47,7 @@ class CronTestCase(TestCase):
             discovered = DiscoverTransfers().do()
             self.assertIsNot(False, discovered)
 
-    def deliver_bags(self):
+    def deliver_transfers(self):
         for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
             transfer.process_status = Transfer.ACCESSIONING_STARTED
             transfer.save()
@@ -64,6 +63,5 @@ class CronTestCase(TestCase):
             self.assertEqual(bag.info["Origin"], "aurora")
 
     def tearDown(self):
-        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
-            if os.path.isdir(d):
-                remove_file_or_dir(d)
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)

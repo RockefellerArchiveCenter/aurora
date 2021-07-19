@@ -36,7 +36,7 @@ class TransferRoutine(object):
         """Sets up the transfer routine.
 
         Ensures there is at least one active organization with the expected
-        directories, and builds a dictionary of bags to process.
+        directories, and builds a dictionary of transfers to process.
         """
         self.has_setup_err = False
         if not self.has_active_organizations():
@@ -104,7 +104,7 @@ class TransferRoutine(object):
         self.active_organizations = [org for org in self.active_organizations if org not in orgs_to_remove]
 
     def build_contents_dictionary(self):
-        """Creates a dictionary of bags to process."""
+        """Creates a dictionary of transfers to process."""
         org_dir_contents = {}
         for org in self.active_organizations:
             upload_dir, _ = org.org_machine_upload_paths()
@@ -128,7 +128,7 @@ class TransferRoutine(object):
             self._purge_routine_contents_dictionary()
 
     def _purge_routine_contents_dictionary(self):
-        """Removes bags from the routine if they are still in the process of being transferred."""
+        """Removes transfers from the routine if they are still in the process of being transferred."""
         paths_to_remove_from_active_routine = self._org_contents_in_lsof()
         if paths_to_remove_from_active_routine:
             self._dump_from_routine_contents(paths_to_remove_from_active_routine)
@@ -177,7 +177,7 @@ class TransferRoutine(object):
                     print(e)
 
     def _discover_paths_in_processing_dir(self):
-        """Returns paths of bags to be processed for an organization."""
+        """Returns paths of transfers to be processed for an organization."""
         for org in self.active_organizations:
             _, processing_path = org.org_machine_upload_paths()
             org_paths = [os.path.join(processing_path, x) for x in os.listdir(processing_path)]
