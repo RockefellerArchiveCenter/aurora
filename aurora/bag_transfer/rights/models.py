@@ -2,7 +2,7 @@ from collections import defaultdict
 from datetime import datetime
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import Archives, Organization
+from bag_transfer.models import Organization, Transfer
 from django.db import models
 
 
@@ -20,8 +20,8 @@ class RecordType(models.Model):
 
 class RightsStatement(models.Model):
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    archive = models.ForeignKey(
-        Archives, null=True, blank=True, on_delete=models.CASCADE, related_name="rights_statements")
+    transfer = models.ForeignKey(
+        Transfer, null=True, blank=True, on_delete=models.CASCADE, related_name="rights_statements")
     accession = models.ForeignKey(
         Accession,
         null=True,
@@ -113,7 +113,7 @@ class RightsStatement(models.Model):
 
             # Save statement
             merged_statement.pk = None
-            merged_statement.archive = None
+            merged_statement.transfer = None
             merged_statement.save()
             merged_statements.append(merged_statement)
 

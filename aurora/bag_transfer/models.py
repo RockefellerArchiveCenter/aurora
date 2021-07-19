@@ -41,7 +41,7 @@ class Organization(models.Model):
         return reverse("orgs:edit", kwargs={"pk": self.pk})
 
     def rights_statements(self):
-        return self.rightsstatement_set.filter(archive__isnull=True)
+        return self.rightsstatement_set.filter(transfer__isnull=True)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by("username")
@@ -178,8 +178,8 @@ class User(AbstractUser):
 
     def total_uploads(self):
         """Returns the number of uploads associated with a user."""
-        return Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED, user_uploaded=self
+        return Transfer.objects.filter(
+            process_status__gte=Transfer.TRANSFER_COMPLETED, user_uploaded=self
         ).count()
 
     @staticmethod
@@ -213,7 +213,7 @@ class LanguageCode(models.Model):
         return self.code
 
 
-class Archives(models.Model):
+class Transfer(models.Model):
     machine_file_types = (("ZIP", "zip"), ("TAR", "tar"), ("OTHER", "OTHER"))
     TRANSFER_STARTED = 10
     TRANSFER_COMPLETED = 20
@@ -266,8 +266,8 @@ class Archives(models.Model):
     def gen_identifier():
         """returns a unique identifier"""
         iden = str(uuid4())
-        if Archives.objects.filter(machine_file_identifier=iden).exists():
-            Archives.gen_identifier()
+        if Transfer.objects.filter(machine_file_identifier=iden).exists():
+            Transfer.gen_identifier()
         return iden
 
     @property
@@ -287,13 +287,13 @@ class Archives(models.Model):
     def errors(self):
         """Returns BagLog error objects for an Archive."""
         return None if self.bag_it_valid else [
-            b for b in BAGLog.objects.filter(archive=self, code__code_type__in=["BE", "GE"])]
+            b for b in BAGLog.objects.filter(transfer=self, code__code_type__in=["BE", "GE"])]
 
     @property
     def bag_data(self):
         """Returns a dict containing bag-info.txt data for an Archive."""
-        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
-        excluded_fields = ["id", "pk", "archive"]
+        bag_data = BagInfoMetadata.objects.filter(transfer=self.pk).first()
+        excluded_fields = ["id", "pk", "transfer"]
         mtm_fields = ["record_creators", "language"]
         field_names = list(set([field.name for field in BagInfoMetadata._meta.get_fields()]) - set(excluded_fields))
         values = {}
@@ -311,7 +311,7 @@ class Archives(models.Model):
     @property
     def records_creators(self):
         """Returns a list of creators associated with an Archive."""
-        bag_data = BagInfoMetadata.objects.filter(archive=self.pk).first()
+        bag_data = BagInfoMetadata.objects.filter(transfer=self.pk).first()
         return list(bag_data.record_creators.all()) if bag_data else []
 
     @property
@@ -337,7 +337,7 @@ class Archives(models.Model):
         """Returns list of bag failures."""
         if self.bag_it_valid:
             return None
-        error_objects = BAGLog.objects.filter(archive=self, code__code_type__in=["BE"])
+        error_objects = BAGLog.objects.filter(transfer=self, code__code_type__in=["BE"])
         return error_objects if error_objects else None
 
     @property
@@ -363,7 +363,7 @@ class Archives(models.Model):
             return False
         try:
             bag_data = BagInfoMetadata(
-                archive=self,
+                transfer=self,
                 source_organization=self.organization,
                 external_identifier=metadata.get("External_Identifier", ""),
                 internal_sender_description=metadata.get("Internal_Sender_Description", ""),
@@ -402,13 +402,13 @@ class Archives(models.Model):
             rights_statements = RightsStatement.objects.filter(
                 organization=self.organization,
                 applies_to_type__name=bag_data["record_type"],
-                archive__isnull=True)
+                transfer__isnull=True)
             for statement in rights_statements:
                 """Clone and save new rights statement."""
                 rights_info = statement.rights_info
                 rights_granted = statement.rights_granted.all()
                 statement.pk = None
-                statement.archive = self
+                statement.transfer = self
                 statement.save()
 
                 """Assign dates to rights basis and save."""
@@ -475,7 +475,7 @@ class BAGLog(models.Model):
     """Log objects containing information about system or user actions."""
 
     code = models.ForeignKey(BAGLogCodes, on_delete=models.CASCADE)
-    archive = models.ForeignKey(Archives, blank=True, null=True, on_delete=models.CASCADE, related_name="events")
+    transfer = models.ForeignKey(Transfer, blank=True, null=True, on_delete=models.CASCADE, related_name="events")
     log_info = models.CharField(max_length=255, null=True, blank=True)
     created_time = models.DateTimeField(auto_now_add=True)
 
@@ -484,20 +484,20 @@ class BAGLog(models.Model):
 
     def __str__(self):
         return "{} : {}".format(
-            self.archive.bag_or_failed_name, self.code.code_desc) if self.archive else "-- : {}".format(self.code.code_desc)
+            self.transfer.bag_or_failed_name, self.code.code_desc) if self.transfer else "-- : {}".format(self.code.code_desc)
 
     @classmethod
-    def log_it(cls, code, archive=None):
+    def log_it(cls, code, transfer=None):
         """Creates BagLog object for event."""
         try:
-            cls(code=BAGLogCodes.objects.get(code_short=code), archive=archive).save()
+            cls(code=BAGLogCodes.objects.get(code_short=code), transfer=transfer).save()
 
-            if archive:
+            if transfer:
                 if code in BAGLogCodes.BAGIT_VALIDATIONS:
-                    cls.log_it("GBERR", archive)
+                    cls.log_it("GBERR", transfer)
 
                 if code in BAGLogCodes.RAC_VALIDATIONS:
-                    cls.log_it("RBERR", archive)
+                    cls.log_it("RBERR", transfer)
 
             return True
         except Exception as e:
@@ -509,7 +509,7 @@ class BAGLog(models.Model):
 class BagInfoMetadata(models.Model):
     """Metadata from a bag-info.txt file."""
 
-    archive = models.OneToOneField(Archives, on_delete=models.CASCADE, related_name="metadata")
+    transfer = models.OneToOneField(Transfer, on_delete=models.CASCADE, related_name="metadata")
     source_organization = models.ForeignKey(Organization, blank=True, null=True, on_delete=models.CASCADE)
     external_identifier = models.CharField(max_length=256)
     internal_sender_description = models.TextField()

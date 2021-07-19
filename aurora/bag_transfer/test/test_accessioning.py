@@ -5,7 +5,7 @@ from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
-from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
+from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
@@ -16,7 +16,7 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        self.to_accession = Archives.objects.filter(process_status__lt=Archives.ACCEPTED)
+        self.to_accession = Transfer.objects.filter(process_status__lt=Transfer.ACCEPTED)
 
     def test_views(self):
         """Tests views to ensure exceptions are raised appropriately"""
@@ -127,11 +127,11 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
         for acc in Accession.objects.all():
             self.assertTrue(acc.process_status >= Accession.CREATED)
         for arc_id in id_list:
-            archive = Archives.objects.get(pk=arc_id)
+            transfer = Transfer.objects.get(pk=arc_id)
             self.assertEqual(
-                archive.process_status, Archives.ACCESSIONING_STARTED)
+                transfer.process_status, Transfer.ACCESSIONING_STARTED)
             self.assertEqual(
-                len(BAGLog.objects.filter(archive=archive, code__code_short="BACC")), 1)
+                len(BAGLog.objects.filter(transfer=transfer, code__code_short="BACC")), 1)
 
         mock_post.side_effect = Exception("mock exception")  # have secondary POST throw exception
         self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 302, data=accession_data)

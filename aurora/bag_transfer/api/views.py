@@ -1,17 +1,16 @@
 from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import (AccessionListSerializer,
                                           AccessionSerializer,
-                                          ArchivesListSerializer,
-                                          ArchivesSerializer,
                                           BagItProfileListSerializer,
                                           BagItProfileSerializer,
                                           BAGLogSerializer,
                                           OrganizationSerializer,
                                           RightsStatementSerializer,
-                                          UserSerializer)
+                                          TransferListSerializer,
+                                          TransferSerializer, UserSerializer)
 from bag_transfer.lib.cleanup import CleanupRoutine
 from bag_transfer.mixins.authmixins import OrgReadViewMixin
-from bag_transfer.models import (Archives, BagItProfile, BAGLog, Organization,
+from bag_transfer.models import (BagItProfile, BAGLog, Organization, Transfer,
                                  User)
 from bag_transfer.rights.models import RightsStatement
 from rest_framework import mixins, viewsets
@@ -41,7 +40,7 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
     def rights_statements(self, request, *args, **kwargs):
         org = self.get_object()
         rights_statements = RightsStatement.objects.filter(
-            archive__isnull=True, organization=org
+            transfer__isnull=True, organization=org
         )
         serializer = RightsStatementSerializer(
             rights_statements, context={"request": request}, many=True
@@ -60,7 +59,7 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
         return BagItProfileSerializer
 
 
-class ArchivesViewSet(
+class TransferViewSet(
     OrgReadViewMixin,
     mixins.ListModelMixin,
     mixins.RetrieveModelMixin,
@@ -70,10 +69,10 @@ class ArchivesViewSet(
     """Endpoint for transfers"""
 
     def dispatch(self, *args, **kwargs):
-        return super(ArchivesViewSet, self).dispatch(*args, **kwargs)
+        return super(TransferViewSet, self).dispatch(*args, **kwargs)
 
     def get_queryset(self):
-        queryset = queryset = Archives.objects.all()
+        queryset = queryset = Transfer.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(organization=self.request.user.organization)
         process_status = self.request.GET.get("process_status", "")
@@ -83,16 +82,16 @@ class ArchivesViewSet(
 
     def get_serializer_class(self):
         if self.action == "list":
-            return ArchivesListSerializer
+            return TransferListSerializer
         if self.action == "retrieve":
-            return ArchivesSerializer
-        return ArchivesSerializer
+            return TransferSerializer
+        return TransferSerializer
 
     def update(self, request, pk=None, *args, **kwargs):
         try:
             identifier = request.data.get("identifier")
             CleanupRoutine().run(identifier)
-            return super(ArchivesViewSet, self).update(request, *args, **kwargs)
+            return super(TransferViewSet, self).update(request, *args, **kwargs)
         except Exception as e:
             return Response({"detail": str(e)}, status=500)
 
@@ -106,7 +105,7 @@ class BAGLogViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         queryset = BAGLog.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(
-                archive__organization=self.request.user.organization
+                transfer__organization=self.request.user.organization
             )
         return queryset
 

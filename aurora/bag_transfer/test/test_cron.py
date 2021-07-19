@@ -6,7 +6,7 @@ from unittest.mock import patch
 import bagit
 from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
-from bag_transfer.models import (Archives, DashboardMonthData, Organization,
+from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
 from bag_transfer.test.helpers import BAGS_REF
@@ -22,7 +22,7 @@ class CronTestCase(TestCase):
         Delete existing Archive and DashboardMonthData objects and remove any
         stray objects from the organization upload directory.
         """
-        Archives.objects.all().delete()
+        Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.org = random.choice(Organization.objects.all())
         for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
@@ -49,14 +49,14 @@ class CronTestCase(TestCase):
             self.assertIsNot(False, discovered)
 
     def deliver_bags(self):
-        for archive in Archives.objects.filter(process_status=Archives.VALIDATED):
-            archive.process_status = Archives.ACCESSIONING_STARTED
-            archive.save()
+        for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
+            transfer.process_status = Transfer.ACCESSIONING_STARTED
+            transfer.save()
         delivered = DeliverTransfers().do()
         self.assertIsNot(False, delivered)
-        self.assertEqual(len(Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED)), 0)
+        self.assertEqual(len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED)), 0)
         self.assertEqual(
-            len(Archives.objects.filter(process_status=Archives.DELIVERED)),
+            len(Transfer.objects.filter(process_status=Transfer.DELIVERED)),
             len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
         for bag_path in os.listdir(settings.STORAGE_ROOT_DIR):
             bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))

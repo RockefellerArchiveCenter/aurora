@@ -198,7 +198,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 1,
     "fields": {
         "accession": 3,
@@ -222,7 +222,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 2,
     "fields": {
         "accession": null,
@@ -246,7 +246,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 3,
     "fields": {
         "accession": null,
@@ -270,7 +270,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 4,
     "fields": {
         "accession": 1,
@@ -294,7 +294,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 5,
     "fields": {
         "accession": null,
@@ -318,7 +318,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 6,
     "fields": {
         "accession": null,
@@ -342,7 +342,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 7,
     "fields": {
         "accession": 2,
@@ -366,7 +366,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 8,
     "fields": {
         "accession": null,
@@ -390,7 +390,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 9,
     "fields": {
         "accession": null,
@@ -414,7 +414,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 10,
     "fields": {
         "accession": null,
@@ -438,7 +438,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 11,
     "fields": {
         "accession": null,
@@ -462,7 +462,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 12,
     "fields": {
         "accession": null,
@@ -486,7 +486,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 13,
     "fields": {
         "accession": null,
@@ -510,7 +510,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 14,
     "fields": {
         "accession": null,
@@ -534,7 +534,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 15,
     "fields": {
         "accession": null,
@@ -558,7 +558,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 16,
     "fields": {
         "accession": null,
@@ -582,7 +582,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 17,
     "fields": {
         "accession": null,
@@ -606,7 +606,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 18,
     "fields": {
         "accession": null,
@@ -630,7 +630,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 19,
     "fields": {
         "accession": 3,
@@ -654,7 +654,7 @@
     }
 },
 {
-    "model": "bag_transfer.archives",
+    "model": "bag_transfer.transfer",
     "pk": 20,
     "fields": {
         "accession": 1,
@@ -952,7 +952,7 @@
     "pk": 1,
     "fields": {
         "code": 27,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.610Z"
     }
@@ -962,7 +962,7 @@
     "pk": 2,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.629Z"
     }
@@ -972,7 +972,7 @@
     "pk": 3,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.635Z"
     }
@@ -982,7 +982,7 @@
     "pk": 4,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.640Z"
     }
@@ -992,7 +992,7 @@
     "pk": 5,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.644Z"
     }
@@ -1002,7 +1002,7 @@
     "pk": 6,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.649Z"
     }
@@ -1012,7 +1012,7 @@
     "pk": 7,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.653Z"
     }
@@ -1022,7 +1022,7 @@
     "pk": 8,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.658Z"
     }
@@ -1032,7 +1032,7 @@
     "pk": 9,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.663Z"
     }
@@ -1042,7 +1042,7 @@
     "pk": 10,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.668Z"
     }
@@ -1052,7 +1052,7 @@
     "pk": 11,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.674Z"
     }
@@ -1062,7 +1062,7 @@
     "pk": 12,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.680Z"
     }
@@ -1072,7 +1072,7 @@
     "pk": 13,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.685Z"
     }
@@ -1082,7 +1082,7 @@
     "pk": 14,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.695Z"
     }
@@ -1092,7 +1092,7 @@
     "pk": 15,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.700Z"
     }
@@ -1102,7 +1102,7 @@
     "pk": 16,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.706Z"
     }
@@ -1112,7 +1112,7 @@
     "pk": 17,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.711Z"
     }
@@ -1122,7 +1122,7 @@
     "pk": 18,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.719Z"
     }
@@ -1132,7 +1132,7 @@
     "pk": 19,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.725Z"
     }
@@ -1142,7 +1142,7 @@
     "pk": 20,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.731Z"
     }
@@ -1152,7 +1152,7 @@
     "pk": 21,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.735Z"
     }
@@ -1162,7 +1162,7 @@
     "pk": 22,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.744Z"
     }
@@ -1172,7 +1172,7 @@
     "pk": 23,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.749Z"
     }
@@ -1182,7 +1182,7 @@
     "pk": 24,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.754Z"
     }
@@ -1192,7 +1192,7 @@
     "pk": 25,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.756Z"
     }
@@ -1202,7 +1202,7 @@
     "pk": 26,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.764Z"
     }
@@ -1212,7 +1212,7 @@
     "pk": 27,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.769Z"
     }
@@ -1222,7 +1222,7 @@
     "pk": 28,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.775Z"
     }
@@ -1232,7 +1232,7 @@
     "pk": 29,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.779Z"
     }
@@ -1242,7 +1242,7 @@
     "pk": 30,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.785Z"
     }
@@ -1252,7 +1252,7 @@
     "pk": 31,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.790Z"
     }
@@ -1262,7 +1262,7 @@
     "pk": 32,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.796Z"
     }
@@ -1272,7 +1272,7 @@
     "pk": 33,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.800Z"
     }
@@ -1282,7 +1282,7 @@
     "pk": 34,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.805Z"
     }
@@ -1292,7 +1292,7 @@
     "pk": 35,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.809Z"
     }
@@ -1302,7 +1302,7 @@
     "pk": 36,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.816Z"
     }
@@ -1312,7 +1312,7 @@
     "pk": 37,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.820Z"
     }
@@ -1322,7 +1322,7 @@
     "pk": 38,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.826Z"
     }
@@ -1332,7 +1332,7 @@
     "pk": 39,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.831Z"
     }
@@ -1342,7 +1342,7 @@
     "pk": 40,
     "fields": {
         "code": 6,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.838Z"
     }
@@ -1352,7 +1352,7 @@
     "pk": 41,
     "fields": {
         "code": 23,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:11:28.844Z"
     }
@@ -1362,7 +1362,7 @@
     "pk": 42,
     "fields": {
         "code": 27,
-        "archive": null,
+        "transfer": null,
         "log_info": null,
         "created_time": "2021-06-27T17:14:12.071Z"
     }
@@ -1372,7 +1372,7 @@
     "pk": 43,
     "fields": {
         "code": 25,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T17:15:19.407Z"
     }
@@ -1382,7 +1382,7 @@
     "pk": 44,
     "fields": {
         "code": 12,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T17:15:19.430Z"
     }
@@ -1392,7 +1392,7 @@
     "pk": 45,
     "fields": {
         "code": 11,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T17:15:20.591Z"
     }
@@ -1402,7 +1402,7 @@
     "pk": 46,
     "fields": {
         "code": 24,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T17:15:20.595Z"
     }
@@ -1412,7 +1412,7 @@
     "pk": 47,
     "fields": {
         "code": 25,
-        "archive": 2,
+        "transfer": 2,
         "log_info": null,
         "created_time": "2021-06-27T17:15:23.887Z"
     }
@@ -1422,7 +1422,7 @@
     "pk": 48,
     "fields": {
         "code": 12,
-        "archive": 2,
+        "transfer": 2,
         "log_info": null,
         "created_time": "2021-06-27T17:15:23.978Z"
     }
@@ -1432,7 +1432,7 @@
     "pk": 49,
     "fields": {
         "code": 11,
-        "archive": 2,
+        "transfer": 2,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.126Z"
     }
@@ -1442,7 +1442,7 @@
     "pk": 50,
     "fields": {
         "code": 24,
-        "archive": 2,
+        "transfer": 2,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.131Z"
     }
@@ -1452,7 +1452,7 @@
     "pk": 51,
     "fields": {
         "code": 25,
-        "archive": 3,
+        "transfer": 3,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.633Z"
     }
@@ -1462,7 +1462,7 @@
     "pk": 52,
     "fields": {
         "code": 12,
-        "archive": 3,
+        "transfer": 3,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.645Z"
     }
@@ -1472,7 +1472,7 @@
     "pk": 53,
     "fields": {
         "code": 11,
-        "archive": 3,
+        "transfer": 3,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.758Z"
     }
@@ -1482,7 +1482,7 @@
     "pk": 54,
     "fields": {
         "code": 24,
-        "archive": 3,
+        "transfer": 3,
         "log_info": null,
         "created_time": "2021-06-27T17:15:24.763Z"
     }
@@ -1492,7 +1492,7 @@
     "pk": 55,
     "fields": {
         "code": 25,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.249Z"
     }
@@ -1502,7 +1502,7 @@
     "pk": 56,
     "fields": {
         "code": 12,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.264Z"
     }
@@ -1512,7 +1512,7 @@
     "pk": 57,
     "fields": {
         "code": 11,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.369Z"
     }
@@ -1522,7 +1522,7 @@
     "pk": 58,
     "fields": {
         "code": 24,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.373Z"
     }
@@ -1532,7 +1532,7 @@
     "pk": 59,
     "fields": {
         "code": 25,
-        "archive": 5,
+        "transfer": 5,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.881Z"
     }
@@ -1542,7 +1542,7 @@
     "pk": 60,
     "fields": {
         "code": 12,
-        "archive": 5,
+        "transfer": 5,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.896Z"
     }
@@ -1552,7 +1552,7 @@
     "pk": 61,
     "fields": {
         "code": 11,
-        "archive": 5,
+        "transfer": 5,
         "log_info": null,
         "created_time": "2021-06-27T17:15:25.993Z"
     }
@@ -1562,7 +1562,7 @@
     "pk": 62,
     "fields": {
         "code": 24,
-        "archive": 5,
+        "transfer": 5,
         "log_info": null,
         "created_time": "2021-06-27T17:15:26.000Z"
     }
@@ -1572,7 +1572,7 @@
     "pk": 63,
     "fields": {
         "code": 25,
-        "archive": 6,
+        "transfer": 6,
         "log_info": null,
         "created_time": "2021-06-27T17:15:26.496Z"
     }
@@ -1582,7 +1582,7 @@
     "pk": 64,
     "fields": {
         "code": 12,
-        "archive": 6,
+        "transfer": 6,
         "log_info": null,
         "created_time": "2021-06-27T17:15:26.598Z"
     }
@@ -1592,7 +1592,7 @@
     "pk": 65,
     "fields": {
         "code": 11,
-        "archive": 6,
+        "transfer": 6,
         "log_info": null,
         "created_time": "2021-06-27T17:15:26.710Z"
     }
@@ -1602,7 +1602,7 @@
     "pk": 66,
     "fields": {
         "code": 24,
-        "archive": 6,
+        "transfer": 6,
         "log_info": null,
         "created_time": "2021-06-27T17:15:26.715Z"
     }
@@ -1612,7 +1612,7 @@
     "pk": 67,
     "fields": {
         "code": 25,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T17:15:27.299Z"
     }
@@ -1622,7 +1622,7 @@
     "pk": 68,
     "fields": {
         "code": 12,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T17:15:27.314Z"
     }
@@ -1632,7 +1632,7 @@
     "pk": 69,
     "fields": {
         "code": 11,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T17:15:27.428Z"
     }
@@ -1642,7 +1642,7 @@
     "pk": 70,
     "fields": {
         "code": 24,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T17:15:27.433Z"
     }
@@ -1652,7 +1652,7 @@
     "pk": 71,
     "fields": {
         "code": 25,
-        "archive": 8,
+        "transfer": 8,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.008Z"
     }
@@ -1662,7 +1662,7 @@
     "pk": 72,
     "fields": {
         "code": 12,
-        "archive": 8,
+        "transfer": 8,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.096Z"
     }
@@ -1672,7 +1672,7 @@
     "pk": 73,
     "fields": {
         "code": 11,
-        "archive": 8,
+        "transfer": 8,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.208Z"
     }
@@ -1682,7 +1682,7 @@
     "pk": 74,
     "fields": {
         "code": 24,
-        "archive": 8,
+        "transfer": 8,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.212Z"
     }
@@ -1692,7 +1692,7 @@
     "pk": 75,
     "fields": {
         "code": 25,
-        "archive": 9,
+        "transfer": 9,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.744Z"
     }
@@ -1702,7 +1702,7 @@
     "pk": 76,
     "fields": {
         "code": 12,
-        "archive": 9,
+        "transfer": 9,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.825Z"
     }
@@ -1712,7 +1712,7 @@
     "pk": 77,
     "fields": {
         "code": 11,
-        "archive": 9,
+        "transfer": 9,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.918Z"
     }
@@ -1722,7 +1722,7 @@
     "pk": 78,
     "fields": {
         "code": 24,
-        "archive": 9,
+        "transfer": 9,
         "log_info": null,
         "created_time": "2021-06-27T17:15:28.923Z"
     }
@@ -1732,7 +1732,7 @@
     "pk": 79,
     "fields": {
         "code": 25,
-        "archive": 10,
+        "transfer": 10,
         "log_info": null,
         "created_time": "2021-06-27T17:15:29.488Z"
     }
@@ -1742,7 +1742,7 @@
     "pk": 80,
     "fields": {
         "code": 12,
-        "archive": 10,
+        "transfer": 10,
         "log_info": null,
         "created_time": "2021-06-27T17:15:29.572Z"
     }
@@ -1752,7 +1752,7 @@
     "pk": 81,
     "fields": {
         "code": 11,
-        "archive": 10,
+        "transfer": 10,
         "log_info": null,
         "created_time": "2021-06-27T17:15:29.668Z"
     }
@@ -1762,7 +1762,7 @@
     "pk": 82,
     "fields": {
         "code": 24,
-        "archive": 10,
+        "transfer": 10,
         "log_info": null,
         "created_time": "2021-06-27T17:15:29.672Z"
     }
@@ -1772,7 +1772,7 @@
     "pk": 83,
     "fields": {
         "code": 25,
-        "archive": 11,
+        "transfer": 11,
         "log_info": null,
         "created_time": "2021-06-27T17:15:30.248Z"
     }
@@ -1782,7 +1782,7 @@
     "pk": 84,
     "fields": {
         "code": 12,
-        "archive": 11,
+        "transfer": 11,
         "log_info": null,
         "created_time": "2021-06-27T17:15:30.375Z"
     }
@@ -1792,7 +1792,7 @@
     "pk": 85,
     "fields": {
         "code": 11,
-        "archive": 11,
+        "transfer": 11,
         "log_info": null,
         "created_time": "2021-06-27T17:15:30.480Z"
     }
@@ -1802,7 +1802,7 @@
     "pk": 86,
     "fields": {
         "code": 24,
-        "archive": 11,
+        "transfer": 11,
         "log_info": null,
         "created_time": "2021-06-27T17:15:30.485Z"
     }
@@ -1812,7 +1812,7 @@
     "pk": 87,
     "fields": {
         "code": 25,
-        "archive": 12,
+        "transfer": 12,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.050Z"
     }
@@ -1822,7 +1822,7 @@
     "pk": 88,
     "fields": {
         "code": 12,
-        "archive": 12,
+        "transfer": 12,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.062Z"
     }
@@ -1832,7 +1832,7 @@
     "pk": 89,
     "fields": {
         "code": 11,
-        "archive": 12,
+        "transfer": 12,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.164Z"
     }
@@ -1842,7 +1842,7 @@
     "pk": 90,
     "fields": {
         "code": 24,
-        "archive": 12,
+        "transfer": 12,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.169Z"
     }
@@ -1852,7 +1852,7 @@
     "pk": 91,
     "fields": {
         "code": 25,
-        "archive": 13,
+        "transfer": 13,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.668Z"
     }
@@ -1862,7 +1862,7 @@
     "pk": 92,
     "fields": {
         "code": 12,
-        "archive": 13,
+        "transfer": 13,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.682Z"
     }
@@ -1872,7 +1872,7 @@
     "pk": 93,
     "fields": {
         "code": 11,
-        "archive": 13,
+        "transfer": 13,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.777Z"
     }
@@ -1882,7 +1882,7 @@
     "pk": 94,
     "fields": {
         "code": 24,
-        "archive": 13,
+        "transfer": 13,
         "log_info": null,
         "created_time": "2021-06-27T17:15:31.781Z"
     }
@@ -1892,7 +1892,7 @@
     "pk": 95,
     "fields": {
         "code": 25,
-        "archive": 14,
+        "transfer": 14,
         "log_info": null,
         "created_time": "2021-06-27T17:15:32.401Z"
     }
@@ -1902,7 +1902,7 @@
     "pk": 96,
     "fields": {
         "code": 12,
-        "archive": 14,
+        "transfer": 14,
         "log_info": null,
         "created_time": "2021-06-27T17:15:32.413Z"
     }
@@ -1912,7 +1912,7 @@
     "pk": 97,
     "fields": {
         "code": 11,
-        "archive": 14,
+        "transfer": 14,
         "log_info": null,
         "created_time": "2021-06-27T17:15:32.534Z"
     }
@@ -1922,7 +1922,7 @@
     "pk": 98,
     "fields": {
         "code": 24,
-        "archive": 14,
+        "transfer": 14,
         "log_info": null,
         "created_time": "2021-06-27T17:15:32.538Z"
     }
@@ -1932,7 +1932,7 @@
     "pk": 99,
     "fields": {
         "code": 25,
-        "archive": 15,
+        "transfer": 15,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.122Z"
     }
@@ -1942,7 +1942,7 @@
     "pk": 100,
     "fields": {
         "code": 12,
-        "archive": 15,
+        "transfer": 15,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.213Z"
     }
@@ -1952,7 +1952,7 @@
     "pk": 101,
     "fields": {
         "code": 11,
-        "archive": 15,
+        "transfer": 15,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.315Z"
     }
@@ -1962,7 +1962,7 @@
     "pk": 102,
     "fields": {
         "code": 24,
-        "archive": 15,
+        "transfer": 15,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.319Z"
     }
@@ -1972,7 +1972,7 @@
     "pk": 103,
     "fields": {
         "code": 25,
-        "archive": 16,
+        "transfer": 16,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.898Z"
     }
@@ -1982,7 +1982,7 @@
     "pk": 104,
     "fields": {
         "code": 12,
-        "archive": 16,
+        "transfer": 16,
         "log_info": null,
         "created_time": "2021-06-27T17:15:33.910Z"
     }
@@ -1992,7 +1992,7 @@
     "pk": 105,
     "fields": {
         "code": 11,
-        "archive": 16,
+        "transfer": 16,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.008Z"
     }
@@ -2002,7 +2002,7 @@
     "pk": 106,
     "fields": {
         "code": 24,
-        "archive": 16,
+        "transfer": 16,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.013Z"
     }
@@ -2012,7 +2012,7 @@
     "pk": 107,
     "fields": {
         "code": 25,
-        "archive": 17,
+        "transfer": 17,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.540Z"
     }
@@ -2022,7 +2022,7 @@
     "pk": 108,
     "fields": {
         "code": 12,
-        "archive": 17,
+        "transfer": 17,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.645Z"
     }
@@ -2032,7 +2032,7 @@
     "pk": 109,
     "fields": {
         "code": 11,
-        "archive": 17,
+        "transfer": 17,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.736Z"
     }
@@ -2042,7 +2042,7 @@
     "pk": 110,
     "fields": {
         "code": 24,
-        "archive": 17,
+        "transfer": 17,
         "log_info": null,
         "created_time": "2021-06-27T17:15:34.740Z"
     }
@@ -2052,7 +2052,7 @@
     "pk": 111,
     "fields": {
         "code": 25,
-        "archive": 18,
+        "transfer": 18,
         "log_info": null,
         "created_time": "2021-06-27T17:15:35.261Z"
     }
@@ -2062,7 +2062,7 @@
     "pk": 112,
     "fields": {
         "code": 12,
-        "archive": 18,
+        "transfer": 18,
         "log_info": null,
         "created_time": "2021-06-27T17:15:35.363Z"
     }
@@ -2072,7 +2072,7 @@
     "pk": 113,
     "fields": {
         "code": 11,
-        "archive": 18,
+        "transfer": 18,
         "log_info": null,
         "created_time": "2021-06-27T17:15:35.456Z"
     }
@@ -2082,7 +2082,7 @@
     "pk": 114,
     "fields": {
         "code": 24,
-        "archive": 18,
+        "transfer": 18,
         "log_info": null,
         "created_time": "2021-06-27T17:15:35.460Z"
     }
@@ -2092,7 +2092,7 @@
     "pk": 115,
     "fields": {
         "code": 25,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.025Z"
     }
@@ -2102,7 +2102,7 @@
     "pk": 116,
     "fields": {
         "code": 12,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.130Z"
     }
@@ -2112,7 +2112,7 @@
     "pk": 117,
     "fields": {
         "code": 11,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.232Z"
     }
@@ -2122,7 +2122,7 @@
     "pk": 118,
     "fields": {
         "code": 24,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.236Z"
     }
@@ -2132,7 +2132,7 @@
     "pk": 119,
     "fields": {
         "code": 25,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.786Z"
     }
@@ -2142,7 +2142,7 @@
     "pk": 120,
     "fields": {
         "code": 12,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.877Z"
     }
@@ -2152,7 +2152,7 @@
     "pk": 121,
     "fields": {
         "code": 11,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.965Z"
     }
@@ -2162,7 +2162,7 @@
     "pk": 122,
     "fields": {
         "code": 24,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T17:15:36.969Z"
     }
@@ -2172,7 +2172,7 @@
     "pk": 123,
     "fields": {
         "code": 3,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T18:40:10.253Z"
     }
@@ -2182,7 +2182,7 @@
     "pk": 124,
     "fields": {
         "code": 3,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T18:40:12.359Z"
     }
@@ -2192,7 +2192,7 @@
     "pk": 125,
     "fields": {
         "code": 3,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T18:40:14.174Z"
     }
@@ -2202,7 +2202,7 @@
     "pk": 126,
     "fields": {
         "code": 3,
-        "archive": 6,
+        "transfer": 6,
         "log_info": null,
         "created_time": "2021-06-27T18:40:20.425Z"
     }
@@ -2212,7 +2212,7 @@
     "pk": 127,
     "fields": {
         "code": 3,
-        "archive": 11,
+        "transfer": 11,
         "log_info": null,
         "created_time": "2021-06-27T18:40:22.447Z"
     }
@@ -2222,7 +2222,7 @@
     "pk": 128,
     "fields": {
         "code": 2,
-        "archive": 13,
+        "transfer": 13,
         "log_info": null,
         "created_time": "2021-06-27T18:40:39.165Z"
     }
@@ -2232,7 +2232,7 @@
     "pk": 129,
     "fields": {
         "code": 3,
-        "archive": 16,
+        "transfer": 16,
         "log_info": null,
         "created_time": "2021-06-27T18:40:46.467Z"
     }
@@ -2242,7 +2242,7 @@
     "pk": 130,
     "fields": {
         "code": 3,
-        "archive": 17,
+        "transfer": 17,
         "log_info": null,
         "created_time": "2021-06-27T18:40:48.081Z"
     }
@@ -2252,7 +2252,7 @@
     "pk": 131,
     "fields": {
         "code": 3,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T18:40:52.326Z"
     }
@@ -2262,7 +2262,7 @@
     "pk": 132,
     "fields": {
         "code": 3,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T18:40:54.044Z"
     }
@@ -2272,7 +2272,7 @@
     "pk": 133,
     "fields": {
         "code": 1,
-        "archive": 4,
+        "transfer": 4,
         "log_info": null,
         "created_time": "2021-06-27T18:45:03.907Z"
     }
@@ -2282,7 +2282,7 @@
     "pk": 134,
     "fields": {
         "code": 1,
-        "archive": 20,
+        "transfer": 20,
         "log_info": null,
         "created_time": "2021-06-27T18:45:04.245Z"
     }
@@ -2292,7 +2292,7 @@
     "pk": 135,
     "fields": {
         "code": 1,
-        "archive": 7,
+        "transfer": 7,
         "log_info": null,
         "created_time": "2021-06-27T18:45:22.196Z"
     }
@@ -2302,7 +2302,7 @@
     "pk": 136,
     "fields": {
         "code": 1,
-        "archive": 1,
+        "transfer": 1,
         "log_info": null,
         "created_time": "2021-06-27T18:46:01.165Z"
     }
@@ -2312,7 +2312,7 @@
     "pk": 137,
     "fields": {
         "code": 1,
-        "archive": 19,
+        "transfer": 19,
         "log_info": null,
         "created_time": "2021-06-27T18:46:01.456Z"
     }
@@ -2321,7 +2321,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 1,
     "fields": {
-        "archive": 1,
+        "transfer": 1,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:09:01.446465",
         "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
@@ -2348,7 +2348,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 2,
     "fields": {
-        "archive": 2,
+        "transfer": 2,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:15:32.652164",
         "internal_sender_description": "Administrative records for the Office of Important Affairs",
@@ -2374,7 +2374,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 3,
     "fields": {
-        "archive": 3,
+        "transfer": 3,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:26:04.201734",
         "internal_sender_description": "Communications and publications from the foundation's communications department",
@@ -2401,7 +2401,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 4,
     "fields": {
-        "archive": 4,
+        "transfer": 4,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:16:29.250116",
         "internal_sender_description": "Administrative records for the Office of Important Affairs",
@@ -2427,7 +2427,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 5,
     "fields": {
-        "archive": 5,
+        "transfer": 5,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:18:59.616956",
         "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
@@ -2453,7 +2453,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 6,
     "fields": {
-        "archive": 6,
+        "transfer": 6,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:27:17.079146",
         "internal_sender_description": "Communications and publications from the foundation's communications department",
@@ -2480,7 +2480,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 7,
     "fields": {
-        "archive": 7,
+        "transfer": 7,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:10:49.171065",
         "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
@@ -2506,7 +2506,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 8,
     "fields": {
-        "archive": 8,
+        "transfer": 8,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:10:28.813474",
         "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
@@ -2533,7 +2533,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 9,
     "fields": {
-        "archive": 9,
+        "transfer": 9,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:18:47.349913",
         "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
@@ -2559,7 +2559,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 10,
     "fields": {
-        "archive": 10,
+        "transfer": 10,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:22:48.542586",
         "internal_sender_description": "Board materials from the foundation's board meetings.",
@@ -2585,7 +2585,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 11,
     "fields": {
-        "archive": 11,
+        "transfer": 11,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:27:09.460064",
         "internal_sender_description": "Communications and publications from the foundation's communications department",
@@ -2612,7 +2612,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 12,
     "fields": {
-        "archive": 12,
+        "transfer": 12,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:19:25.105527",
         "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
@@ -2638,7 +2638,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 13,
     "fields": {
-        "archive": 13,
+        "transfer": 13,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:26:23.983048",
         "internal_sender_description": "Communications and publications from the foundation's communications department",
@@ -2665,7 +2665,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 14,
     "fields": {
-        "archive": 14,
+        "transfer": 14,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:15:40.727574",
         "internal_sender_description": "Administrative records for the Office of Important Affairs",
@@ -2691,7 +2691,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 15,
     "fields": {
-        "archive": 15,
+        "transfer": 15,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:23:09.494423",
         "internal_sender_description": "Board materials from the foundation's board meetings.",
@@ -2717,7 +2717,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 16,
     "fields": {
-        "archive": 16,
+        "transfer": 16,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:24:10.772070",
         "internal_sender_description": "Board materials from the foundation's board meetings.",
@@ -2743,7 +2743,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 17,
     "fields": {
-        "archive": 17,
+        "transfer": 17,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:23:09.494423",
         "internal_sender_description": "Board materials from the foundation's board meetings.",
@@ -2769,7 +2769,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 18,
     "fields": {
-        "archive": 18,
+        "transfer": 18,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:19:40.210341",
         "internal_sender_description": "Annual Reports detailing the activities of the foundation.",
@@ -2795,7 +2795,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 19,
     "fields": {
-        "archive": 19,
+        "transfer": 19,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:09:48.238148",
         "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
@@ -2822,7 +2822,7 @@
     "model": "bag_transfer.baginfometadata",
     "pk": 20,
     "fields": {
-        "archive": 20,
+        "transfer": 20,
         "source_organization": 2,
         "external_identifier": "records-2017-12-11T20:16:48.166539",
         "internal_sender_description": "Administrative records for the Office of Important Affairs",
@@ -3849,7 +3849,7 @@
     "pk": 1,
     "fields": {
         "organization": 1,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": [
@@ -3866,7 +3866,7 @@
     "pk": 2,
     "fields": {
         "organization": 1,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": [
@@ -3883,7 +3883,7 @@
     "pk": 3,
     "fields": {
         "organization": 2,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": [
@@ -3900,7 +3900,7 @@
     "pk": 4,
     "fields": {
         "organization": 2,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": [
@@ -3917,7 +3917,7 @@
     "pk": 5,
     "fields": {
         "organization": 2,
-        "archive": 1,
+        "transfer": 1,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -3928,7 +3928,7 @@
     "pk": 6,
     "fields": {
         "organization": 2,
-        "archive": 1,
+        "transfer": 1,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -3939,7 +3939,7 @@
     "pk": 7,
     "fields": {
         "organization": 2,
-        "archive": 2,
+        "transfer": 2,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -3950,7 +3950,7 @@
     "pk": 8,
     "fields": {
         "organization": 2,
-        "archive": 2,
+        "transfer": 2,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -3961,7 +3961,7 @@
     "pk": 9,
     "fields": {
         "organization": 2,
-        "archive": 3,
+        "transfer": 3,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -3972,7 +3972,7 @@
     "pk": 10,
     "fields": {
         "organization": 2,
-        "archive": 3,
+        "transfer": 3,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -3983,7 +3983,7 @@
     "pk": 11,
     "fields": {
         "organization": 2,
-        "archive": 4,
+        "transfer": 4,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -3994,7 +3994,7 @@
     "pk": 12,
     "fields": {
         "organization": 2,
-        "archive": 4,
+        "transfer": 4,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4005,7 +4005,7 @@
     "pk": 13,
     "fields": {
         "organization": 2,
-        "archive": 5,
+        "transfer": 5,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4016,7 +4016,7 @@
     "pk": 14,
     "fields": {
         "organization": 2,
-        "archive": 5,
+        "transfer": 5,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4027,7 +4027,7 @@
     "pk": 15,
     "fields": {
         "organization": 2,
-        "archive": 6,
+        "transfer": 6,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4038,7 +4038,7 @@
     "pk": 16,
     "fields": {
         "organization": 2,
-        "archive": 6,
+        "transfer": 6,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4049,7 +4049,7 @@
     "pk": 17,
     "fields": {
         "organization": 2,
-        "archive": 7,
+        "transfer": 7,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4060,7 +4060,7 @@
     "pk": 18,
     "fields": {
         "organization": 2,
-        "archive": 7,
+        "transfer": 7,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4071,7 +4071,7 @@
     "pk": 19,
     "fields": {
         "organization": 2,
-        "archive": 8,
+        "transfer": 8,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4082,7 +4082,7 @@
     "pk": 20,
     "fields": {
         "organization": 2,
-        "archive": 8,
+        "transfer": 8,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4093,7 +4093,7 @@
     "pk": 21,
     "fields": {
         "organization": 2,
-        "archive": 9,
+        "transfer": 9,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4104,7 +4104,7 @@
     "pk": 22,
     "fields": {
         "organization": 2,
-        "archive": 9,
+        "transfer": 9,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4115,7 +4115,7 @@
     "pk": 23,
     "fields": {
         "organization": 2,
-        "archive": 10,
+        "transfer": 10,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4126,7 +4126,7 @@
     "pk": 24,
     "fields": {
         "organization": 2,
-        "archive": 10,
+        "transfer": 10,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4137,7 +4137,7 @@
     "pk": 25,
     "fields": {
         "organization": 2,
-        "archive": 11,
+        "transfer": 11,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4148,7 +4148,7 @@
     "pk": 26,
     "fields": {
         "organization": 2,
-        "archive": 11,
+        "transfer": 11,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4159,7 +4159,7 @@
     "pk": 27,
     "fields": {
         "organization": 2,
-        "archive": 12,
+        "transfer": 12,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4170,7 +4170,7 @@
     "pk": 28,
     "fields": {
         "organization": 2,
-        "archive": 12,
+        "transfer": 12,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4181,7 +4181,7 @@
     "pk": 29,
     "fields": {
         "organization": 2,
-        "archive": 13,
+        "transfer": 13,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4192,7 +4192,7 @@
     "pk": 30,
     "fields": {
         "organization": 2,
-        "archive": 13,
+        "transfer": 13,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4203,7 +4203,7 @@
     "pk": 31,
     "fields": {
         "organization": 2,
-        "archive": 14,
+        "transfer": 14,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4214,7 +4214,7 @@
     "pk": 32,
     "fields": {
         "organization": 2,
-        "archive": 14,
+        "transfer": 14,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4225,7 +4225,7 @@
     "pk": 33,
     "fields": {
         "organization": 2,
-        "archive": 15,
+        "transfer": 15,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4236,7 +4236,7 @@
     "pk": 34,
     "fields": {
         "organization": 2,
-        "archive": 15,
+        "transfer": 15,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4247,7 +4247,7 @@
     "pk": 35,
     "fields": {
         "organization": 2,
-        "archive": 16,
+        "transfer": 16,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4258,7 +4258,7 @@
     "pk": 36,
     "fields": {
         "organization": 2,
-        "archive": 16,
+        "transfer": 16,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4269,7 +4269,7 @@
     "pk": 37,
     "fields": {
         "organization": 2,
-        "archive": 17,
+        "transfer": 17,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4280,7 +4280,7 @@
     "pk": 38,
     "fields": {
         "organization": 2,
-        "archive": 17,
+        "transfer": 17,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4291,7 +4291,7 @@
     "pk": 39,
     "fields": {
         "organization": 2,
-        "archive": 18,
+        "transfer": 18,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4302,7 +4302,7 @@
     "pk": 40,
     "fields": {
         "organization": 2,
-        "archive": 18,
+        "transfer": 18,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4313,7 +4313,7 @@
     "pk": 41,
     "fields": {
         "organization": 2,
-        "archive": 19,
+        "transfer": 19,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4324,7 +4324,7 @@
     "pk": 42,
     "fields": {
         "organization": 2,
-        "archive": 19,
+        "transfer": 19,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4335,7 +4335,7 @@
     "pk": 43,
     "fields": {
         "organization": 2,
-        "archive": 20,
+        "transfer": 20,
         "accession": null,
         "rights_basis": "Copyright",
         "applies_to_type": []
@@ -4346,7 +4346,7 @@
     "pk": 44,
     "fields": {
         "organization": 2,
-        "archive": 20,
+        "transfer": 20,
         "accession": null,
         "rights_basis": "Other",
         "applies_to_type": []
@@ -4357,7 +4357,7 @@
     "pk": 45,
     "fields": {
         "organization": 1,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "Statute",
         "applies_to_type": [
@@ -4374,7 +4374,7 @@
     "pk": 46,
     "fields": {
         "organization": 1,
-        "archive": null,
+        "transfer": null,
         "accession": null,
         "rights_basis": "License",
         "applies_to_type": [
