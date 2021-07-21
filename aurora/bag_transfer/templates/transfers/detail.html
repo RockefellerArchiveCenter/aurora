@@ -1,7 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load tz static %}
 
-{% block h1_title %}{{ object.bag_or_failed_name }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
+{% block h1_title %}{{ page_title }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
 
 {% block content %}
 

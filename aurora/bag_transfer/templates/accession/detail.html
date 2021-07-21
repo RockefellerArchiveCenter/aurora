@@ -4,7 +4,7 @@
 
 {% block h1_title %}
   <a href="{% url 'accession:list' %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> View all Accessions</a>
-	Accession {{object.title}}
+	{{page_title}}
 	<small>{{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}</small>
 	<span class="label label-{% if object.process_status == 40 %}success{% else %}warning{% endif %}">{{ object.get_process_status_display }}</span>
 {% endblock %}

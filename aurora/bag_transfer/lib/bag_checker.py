@@ -1,5 +1,6 @@
 import glob
 import json
+import logging
 from os.path import isfile, join
 
 import bagit
@@ -12,6 +13,10 @@ from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog
 from django.conf import settings
 from iso639 import languages
+
+# sets logging levels to reduce garbage printed in logs
+logging.getLogger("bagit").setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.CRITICAL)
 
 
 class BagChecker:
