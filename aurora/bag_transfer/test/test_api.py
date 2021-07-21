@@ -67,7 +67,7 @@ class APITest(TestMixin, TestCase):
                 ("organization-detail", Organization),
                 ("user-detail", User)]:
             for obj in model_cls.objects.all():
-                self.assert_status_code(reverse(view, kwargs={"pk": obj.pk}), 200)
+                self.assert_status_code("get", reverse(view, kwargs={"pk": obj.pk}), 200)
 
     def test_validation(self):
         """Asserts that endpoint responses are valid against RAC schemas."""
