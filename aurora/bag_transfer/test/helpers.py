@@ -127,14 +127,13 @@ def create_test_record_types(record_types=None):
     """Creates a RecordType object for each value in list provided.
     If no list is given, RecordTypes are create for each item in a default list."""
     objects = []
-    if record_types is None:
-        record_types = [
-            "administrative records",
-            "board materials",
-            "communications and publications",
-            "grant records",
-            "annual reports",
-        ]
+    record_types = record_types if record_types else [
+        "administrative records",
+        "board materials",
+        "communications and publications",
+        "grant records",
+        "annual reports",
+    ]
     for record_type in record_types:
         object = RecordType.objects.create(name=record_type)
         objects.append(object)
