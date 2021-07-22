@@ -1,5 +1,3 @@
-from socket import gaierror
-
 from bag_transfer.lib.RAC_CMD import set_server_password
 from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
@@ -53,21 +51,19 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.object.pk})
 
-    def post(self, request, *args, **kwargs):
-        """Send password reset email so user changes automatically-generated
-        random password."""
-        post = super(UsersCreateView, self).post(request, *args, **kwargs)
-        form = PasswordResetForm({"email": request.POST.get("email")})
-        if form.is_valid():
+    def form_valid(self, form):
+        """Set a random password to and send a password reset email."""
+        password_form = PasswordResetForm({"email": self.request.POST.get("email")})
+        if password_form.is_valid():
             try:
-                form.save(
+                password_form.save(
                     request=self.request,
                     subject_template_name="users/password_initial_set_subject.txt",
                     email_template_name="users/password_initial_set_email.html",
                 )
-            except gaierror:
-                messages.error(request, "Unable to send email to new user because SMTP settings are not properly configured.")
-        return post
+            except Exception:
+                messages.error(self.request, "Unable to send email to new user because SMTP settings are not properly configured.")
+        return super().form_valid(form)
 
 
 class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
@@ -76,7 +72,7 @@ class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     model = User
 
     def get_context_data(self, **kwargs):
-        context = super(UsersDetailView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["uploads"] = []
         archives = Archives.objects.filter(
             process_status__gte=Archives.TRANSFER_COMPLETED,
@@ -118,9 +114,9 @@ class UserPasswordChangeView(PageTitleMixin, SuccessMessageMixin, PasswordChange
         return reverse("users:detail", kwargs={"pk": self.request.user.pk})
 
     def form_valid(self, form):
-        result = super(UserPasswordChangeView, self).form_valid(form)
+        """Set the user's server password."""
         set_server_password(form.user.username, form.cleaned_data["new_password1"])
-        return result
+        return super().form_valid(form)
 
 
 class UserPasswordResetView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetView):
@@ -140,9 +136,9 @@ class UserPasswordResetConfirmView(PageTitleMixin, AnonymousRequiredMixin, Passw
     form_class = UserSetPasswordForm
 
     def form_valid(self, form):
-        results = super(UserPasswordResetConfirmView, self).form_valid(form)
+        """Set the user's server password."""
         set_server_password(form.user.username, form.cleaned_data["new_password1"])
-        return results
+        return super().form_valid(form)
 
 
 class UserPasswordResetCompleteView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetCompleteView):
