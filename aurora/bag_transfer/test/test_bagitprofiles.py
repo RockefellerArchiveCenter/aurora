@@ -89,8 +89,8 @@ class BagItProfileTestCase(TestMixin, TestCase):
         self.assert_status_code(
             "get", reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}), 404)
 
-        profile = random.choice(BagItProfile.objects.filter(source_organization__isnull=False))
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.source_organization.pk}), 200)
+        org = random.choice(Organization.objects.filter(bagit_profile__isnull=False))
+        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": org.pk}), 200)
 
     def test_save_to_org(self):
         """Asserts that the `save_to_org` method works as intended"""
