@@ -7,6 +7,7 @@ from bag_transfer.models import (Archives, BAGLog, DashboardMonthData,
 from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
+from rac_schemas import is_valid
 
 
 class APITest(TestMixin, TestCase):
@@ -67,3 +68,16 @@ class APITest(TestMixin, TestCase):
                 ("user-detail", User)]:
             for obj in model_cls.objects.all():
                 self.assert_status_code("get", reverse(view, kwargs={"pk": obj.pk}), 200)
+
+    def test_validation(self):
+        """Asserts that endpoint responses are valid against RAC schemas."""
+        for org in Organization.objects.all():
+            rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
+            for statement in rights_statements.json():
+                self.assertTrue(is_valid(statement, "rights_statement.json"))
+        for queryset, view, schema in [
+                (Archives.objects.filter(process_status__gte=Archives.ACCESSIONING_STARTED), "archives-detail", "aurora_bag"),
+                (Accession.objects.all(), "accession-detail", "accession")]:
+            for obj in queryset:
+                data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
+                self.assertTrue(is_valid(data, schema))
