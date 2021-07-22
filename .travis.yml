@@ -17,6 +17,6 @@ script:
   - docker-compose exec $CONTAINER pre-commit run --all-files --show-diff-on-failure
   - docker-compose exec $CONTAINER coverage run manage.py test
 after_script:
-  - docker-compose exec $CONTAINER coverage report -m
+  - docker-compose exec $CONTAINER coverage report --omit=bag_transfer/migrations/* -m
 notifications:
   email: false
