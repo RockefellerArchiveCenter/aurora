@@ -18,8 +18,8 @@ from dateutil import tz
 from django.contrib import messages
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
-from django.shortcuts import redirect, render, reverse
-from django.views.generic import DetailView, ListView
+from django.shortcuts import reverse
+from django.views.generic import CreateView, DetailView, ListView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
@@ -85,40 +85,38 @@ class AccessionDetailView(PageTitleMixin, AccessioningArchivistMixin, DetailView
         return context["object"].title
 
 
-class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONResponseMixin, ListView):
+class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONResponseMixin, CreateView):
     template_name = "accession/create.html"
     page_title = "Create Accession Record"
     model = Accession
     form_class = AccessionForm
 
-    def post(self, request, *args, **kwargs):
-        """Saves accessions, and delivers data to DELIVERY_URL if configured."""
-        form = self.form_class(request.POST)
-        creators_formset = CreatorsFormSet(request.POST)
-        id_list = list(map(int, request.GET.get("transfers").split(",")))
+    def get_success_url(self):
+        return reverse("accession:detail", kwargs={"pk": self.object.pk})
+
+    def form_valid(self, form):
+        """Saves associated formsets and delivers accession data."""
+        creators_formset = CreatorsFormSet(self.request.POST)
+        id_list = list(map(int, self.request.GET.get("transfers").split(",")))
         transfers_list = Archives.objects.filter(pk__in=id_list)
         rights_statements = (
             RightsStatement.objects.filter(archive__in=id_list)
             .annotate(rights_group=F("rights_basis"))
-            .order_by("rights_group")
-        )
-        if form.is_valid() and creators_formset.is_valid():
+            .order_by("rights_group"))
+        if creators_formset.is_valid():
             form.process_status = Accession.CREATED
             accession = form.save()
             creators_formset.save()
             self.update_accession_rights(RightsStatement.merge_rights(rights_statements), accession)
             self.update_accession_transfers(transfers_list, accession)
-            messages.success(request, " Accession created successfully!")
+            messages.success(self.request, " Accession created successfully!")
             if settings.DELIVERY_URL:
                 try:
                     accession_data = AccessionSerializer(
-                        accession, context={"request": request}
-                    )
+                        accession, context={"request": self.request})
                     resp = requests.post(
                         settings.DELIVERY_URL,
-                        data=json.dumps(
-                            accession_data.data, indent=4, sort_keys=True, default=str
-                        ),
+                        data=json.dumps(accession_data.data, default=str),
                         headers={
                             "Content-Type": "application/json",
                             "apikey": settings.API_KEY,
@@ -127,27 +125,14 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
                     resp.raise_for_status()
                     accession.process_status = Accession.DELIVERED
                     accession.save()
-                    messages.success(request, "Accession data delivered.")
+                    messages.success(self.request, "Accession data delivered.")
                 except Exception as e:
-                    messages.error(
-                        request, "Error delivering accession data: {}".format(e)
-                    )
-            return redirect("accession:detail", accession.pk)
+                    messages.error(self.request, "Error delivering accession data: {}".format(e))
+            return super().form_valid(form)
         messages.error(
-            request,
-            "There was a problem with your submission. Please correct the error(s) below and try again.",
-        )
-        return render(
-            request,
-            self.template_name,
-            {
-                "page_title": "Create Accession Record",
-                "form": form,
-                "creators_formset": creators_formset,
-                "rights_statements": rights_statements,
-                "transfers": transfers_list,
-            },
-        )
+            self.request,
+            "There was a problem with your submission. Please correct the error(s) below and try again.")
+        return super().form_invalid()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
