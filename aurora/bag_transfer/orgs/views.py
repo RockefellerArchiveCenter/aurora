@@ -74,7 +74,7 @@ class OrganizationListView(PageTitleMixin, ArchivistMixin, ListView):
     model = Organization
 
 
-class BagItProfileManageView(PageTitleMixin, CreateView):
+class BagItProfileManageView(PageTitleMixin):
     template_name = "bagit_profiles/manage.html"
     model = BagItProfile
     form_class = BagItProfileForm
@@ -142,7 +142,7 @@ class BagItProfileManageView(PageTitleMixin, CreateView):
                 messages.error(
                     self.request,
                     "There was a problem with your submission. Please correct the error(s) below and try again.")
-                return super().form_invalid()
+                return super().form_invalid(form)
             else:
                 formset.save()
         bagit_profile.version = bagit_profile.version + Decimal(1)
@@ -163,6 +163,14 @@ class BagItProfileManageView(PageTitleMixin, CreateView):
             self.request,
             "There was a problem with your submission. Please correct the error(s) below and try again.")
         return super().form_invalid(form)
+
+
+class BagItProfileCreateView(BagItProfileManageView, CreateView):
+    pass
+
+
+class BagItProfileUpdateView(BagItProfileManageView, UpdateView):
+    pass
 
 
 class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):

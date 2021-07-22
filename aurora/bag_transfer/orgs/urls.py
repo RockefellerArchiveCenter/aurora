@@ -1,6 +1,7 @@
 from bag_transfer.orgs.views import (BagItProfileAPIAdminView,
+                                     BagItProfileCreateView,
                                      BagItProfileDetailView,
-                                     BagItProfileManageView,
+                                     BagItProfileUpdateView,
                                      OrganizationCreateView,
                                      OrganizationDetailView,
                                      OrganizationEditView,
@@ -16,7 +17,7 @@ urlpatterns = [
     url(r"^(?P<pk>\d+)/edit/$", OrganizationEditView.as_view(), name="edit"),
     url(
         r"^(?P<pk>\d+)/bagit_profiles/add/$",
-        BagItProfileManageView.as_view(),
+        BagItProfileCreateView.as_view(),
         name="bagit-profiles-add",
     ),
     url(
@@ -26,7 +27,7 @@ urlpatterns = [
     ),
     url(
         r"^(?P<pk>\d+)/bagit_profile/edit$",
-        BagItProfileManageView.as_view(),
+        BagItProfileUpdateView.as_view(),
         name="bagit-profiles-edit",
     ),
     url(
