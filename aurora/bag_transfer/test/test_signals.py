@@ -1,7 +1,7 @@
 import random
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import Archives, DashboardMonthData
+from bag_transfer.models import DashboardMonthData, Transfer
 from django.test import TestCase
 
 
@@ -14,11 +14,11 @@ class SignalsTestCase(TestCase):
     def test_update_accession_status(self):
         """
         Ensures that Accession process status is updated when process status for
-        all associated archives is updated.
+        all associated transfers is updated.
         """
         accession = random.choice(Accession.objects.all())
-        for archive in accession.accession_transfers.all():
-            archive.process_status = Archives.ACCESSIONING_COMPLETE
-            archive.save()
+        for transfer in accession.accession_transfers.all():
+            transfer.process_status = Transfer.ACCESSIONING_COMPLETE
+            transfer.save()
         accession.refresh_from_db()
         self.assertEqual(accession.process_status, Accession.COMPLETE)

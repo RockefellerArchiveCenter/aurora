@@ -2,7 +2,7 @@ import random
 
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
-from bag_transfer.models import Archives, BagItProfile, Organization, User
+from bag_transfer.models import BagItProfile, Organization, Transfer, User
 from django.http import HttpRequest, HttpResponse
 from django.test import TestCase
 
@@ -43,7 +43,7 @@ class MixinTestCase(TestCase):
         for obj, model_cls in [
                 (non_staff_user, User),
                 (non_staff_user.organization, Organization),
-                (random.choice(Archives.objects.filter(organization=non_staff_user.organization)), Archives)]:
+                (random.choice(Transfer.objects.filter(organization=non_staff_user.organization)), Transfer)]:
             mixin.model = model_cls
             mixin.user = non_staff_user
             failed_obj = (

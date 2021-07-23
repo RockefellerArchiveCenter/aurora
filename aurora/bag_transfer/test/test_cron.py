@@ -6,7 +6,7 @@ from unittest.mock import patch
 import bagit
 from asterism.file_helpers import remove_file_or_dir
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
-from bag_transfer.models import (Archives, DashboardMonthData, Organization,
+from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
 from bag_transfer.test.helpers import BAGS_REF
@@ -22,23 +22,22 @@ class CronTestCase(TestCase):
         Delete existing Archive and DashboardMonthData objects and remove any
         stray objects from the organization upload directory.
         """
-        Archives.objects.all().delete()
+        Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.org = random.choice(Organization.objects.all())
-        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
-            if os.path.isdir(d):
-                remove_file_or_dir(d)
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
         for d in self.org.org_machine_upload_paths():
             if os.path.exists(d):
                 shutil.rmtree(d)
                 os.makedirs(d)
 
     def test_cron(self):
-        self.discover_bags()
-        self.deliver_bags()
+        self.discover_transfers()
+        self.deliver_transfers()
 
     @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
-    def discover_bags(self, mock_passed_all):
+    def discover_transfers(self, mock_passed_all):
         bag_name, _ = BAGS_REF[0]
         for bag_passed_all in [True, False]:
             self.bags = helpers.create_target_bags(
@@ -48,15 +47,15 @@ class CronTestCase(TestCase):
             discovered = DiscoverTransfers().do()
             self.assertIsNot(False, discovered)
 
-    def deliver_bags(self):
-        for archive in Archives.objects.filter(process_status=Archives.VALIDATED):
-            archive.process_status = Archives.ACCESSIONING_STARTED
-            archive.save()
+    def deliver_transfers(self):
+        for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
+            transfer.process_status = Transfer.ACCESSIONING_STARTED
+            transfer.save()
         delivered = DeliverTransfers().do()
         self.assertIsNot(False, delivered)
-        self.assertEqual(len(Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED)), 0)
+        self.assertEqual(len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED)), 0)
         self.assertEqual(
-            len(Archives.objects.filter(process_status=Archives.DELIVERED)),
+            len(Transfer.objects.filter(process_status=Transfer.DELIVERED)),
             len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
         for bag_path in os.listdir(settings.STORAGE_ROOT_DIR):
             bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))
@@ -64,6 +63,5 @@ class CronTestCase(TestCase):
             self.assertEqual(bag.info["Origin"], "aurora")
 
     def tearDown(self):
-        for d in [settings.DELIVERY_QUEUE_DIR, settings.STORAGE_ROOT_DIR]:
-            if os.path.isdir(d):
-                remove_file_or_dir(d)
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)

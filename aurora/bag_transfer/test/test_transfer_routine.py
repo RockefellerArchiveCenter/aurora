@@ -6,7 +6,7 @@ from asterism.file_helpers import remove_file_or_dir
 from aurora import settings
 from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.transfer_routine import TransferRoutine
-from bag_transfer.models import (Archives, DashboardMonthData, Organization,
+from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
 from django.test import TestCase
@@ -16,7 +16,7 @@ class TransferRoutineTestCase(TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
-        Archives.objects.all().delete()
+        Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.reset_org_dirs(Organization.objects.all())
 
@@ -55,20 +55,20 @@ class TransferRoutineTestCase(TestCase):
                         self.assertTrue(trans["auto_fail"])
                         self.assertEqual(error, trans["auto_fail_code"])
 
-                archive = Archives.objects.create(
+                transfer = Transfer.objects.create(
                     organization=org,
                     user_uploaded=user,
                     machine_file_path=trans["file_path"],
                     machine_file_size=trans["file_size"],
                     machine_file_upload_time=trans["file_modtime"],
-                    machine_file_identifier=Archives().gen_identifier(),
+                    machine_file_identifier=Transfer().gen_identifier(),
                     machine_file_type=trans["file_type"],
                     bag_it_name=trans["bag_it_name"])
 
                 if trans["auto_fail"]:
                     continue
 
-                bag = BagChecker(archive)
+                bag = BagChecker(transfer)
                 passed_all_results = bag.bag_passed_all()
 
                 if prefix in ["valid_bag", "no_metadata_file"]:
@@ -80,8 +80,8 @@ class TransferRoutineTestCase(TestCase):
 
                 # deleting path in processing and tmp dir
                 remove_file_or_dir(
-                    os.path.join(settings.TRANSFER_EXTRACT_TMP, archive.bag_it_name))
-                remove_file_or_dir(archive.machine_file_path)
+                    os.path.join(settings.TRANSFER_EXTRACT_TMP, transfer.bag_it_name))
+                remove_file_or_dir(transfer.machine_file_path)
 
     def sub_test_db_has_active_orgs(self):
         """Asserts TransferRoutine setup handles inactive organizations."""

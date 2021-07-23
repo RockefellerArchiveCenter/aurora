@@ -3,7 +3,7 @@ from bag_transfer.lib.mailer import Mailer
 from bag_transfer.mixins.authmixins import ArchivistMixin
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import Archives, BAGLog
+from bag_transfer.models import BAGLog, Transfer
 from dateutil import tz
 from django.views.generic import ListView
 from django_datatables_view.base_datatable_view import BaseDatatableView
@@ -12,7 +12,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
     template_name = "appraise/main.html"
     page_title = "Appraisal Queue"
-    model = Archives
+    model = Transfer
 
     def handle_note_request(self, request, upload, rdata):
         if request.GET.get("req_type") == "edit":
@@ -26,7 +26,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         appraisal_decision = 0
         appraisal_decision = int(request.GET.get("appraisal_decision"))
         upload.process_status = (
-            Archives.ACCEPTED if appraisal_decision else Archives.REJECTED
+            Transfer.ACCEPTED if appraisal_decision else Transfer.REJECTED
         )
         BAGLog.log_it(("BACPT" if appraisal_decision else "BREJ"), upload)
         if not appraisal_decision:
@@ -39,7 +39,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["uploads_count"] = len(Archives.objects.filter(process_status=Archives.VALIDATED).order_by("created_time"))
+        context["uploads_count"] = len(Transfer.objects.filter(process_status=Transfer.VALIDATED).order_by("created_time"))
         return context
 
     def get(self, request, *args, **kwargs):
@@ -49,8 +49,8 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
 
             if request.user.is_archivist():
                 try:
-                    upload = Archives.objects.get(pk=request.GET.get("upload_id"))
-                except Archives.DoesNotExist as e:
+                    upload = Transfer.objects.get(pk=request.GET.get("upload_id"))
+                except Transfer.DoesNotExist as e:
                     rdata["emess"] = e
                     return self.render_to_json_response(rdata)
 
@@ -73,7 +73,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
 
 
 class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
-    model = Archives
+    model = Transfer
     columns = [
         "bag_it_name",
         "organization__name",
@@ -95,10 +95,10 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
 
-    def appraise_buttons(self, bag):
+    def appraise_buttons(self, transfer):
         buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
         if self.request.user.can_appraise():
-            if bag.appraisal_note:
+            if transfer.appraisal_note:
                 btn_class = "btn-primary"
                 note_class = "edit-note"
                 aria_label = 'aria-label="Note exists"'
@@ -117,7 +117,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
         return buttons
 
     def get_initial_queryset(self):
-        return Archives.objects.filter(process_status=Archives.VALIDATED)
+        return Transfer.objects.filter(process_status=Transfer.VALIDATED)
 
     def prepare_results(self, qs):
         json_data = []

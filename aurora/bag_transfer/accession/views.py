@@ -12,7 +12,7 @@ from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
                                             ArchivistMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import Archives, BAGLog, LanguageCode, RecordCreators
+from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.rights.models import RightsStatement
 from dateutil import tz
 from django.contrib import messages
@@ -30,7 +30,7 @@ class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["uploads"] = Archives.objects.filter(process_status=Archives.ACCEPTED).annotate(
+        context["uploads"] = Transfer.objects.filter(process_status=Transfer.ACCEPTED).annotate(
             transfer_group=Concat(
                 "organization",
                 "metadata__record_type",
@@ -98,9 +98,9 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
         """Saves associated formsets and delivers accession data."""
         creators_formset = CreatorsFormSet(self.request.POST)
         id_list = list(map(int, self.request.GET.get("transfers").split(",")))
-        transfers_list = Archives.objects.filter(pk__in=id_list)
+        transfers_list = Transfer.objects.filter(pk__in=id_list)
         rights_statements = (
-            RightsStatement.objects.filter(archive__in=id_list)
+            RightsStatement.objects.filter(transfer__in=id_list)
             .annotate(rights_group=F("rights_basis"))
             .order_by("rights_group"))
         if creators_formset.is_valid():
@@ -137,9 +137,9 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         id_list = list(map(int, self.request.GET.get("transfers").split(",")))
-        transfers_list = Archives.objects.filter(pk__in=id_list)
+        transfers_list = Transfer.objects.filter(pk__in=id_list)
         rights_statements = (
-            RightsStatement.objects.filter(archive__in=id_list)
+            RightsStatement.objects.filter(transfer__in=id_list)
             .annotate(rights_group=F("rights_basis"))
             .order_by("rights_group"))
         organization = transfers_list[0].organization
@@ -265,7 +265,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
         """Associates a list of transfers with an accession and updates their status."""
         for transfer in transfers_list:
             BAGLog.log_it("BACC", transfer)
-            transfer.process_status = Archives.ACCESSIONING_STARTED
+            transfer.process_status = Transfer.ACCESSIONING_STARTED
             transfer.accession = accession
             transfer.save()
 

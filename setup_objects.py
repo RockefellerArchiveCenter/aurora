@@ -84,11 +84,11 @@ if len(orgs) == 0:
         new_org = Organization.objects.create(
             name=org["name"], acquisition_type=org["acquisition_type"]
         )
-        archive_org = Organization.objects.get(name="Archival Repository")
+        transfer_org = Organization.objects.get(name="Archival Repository")
 
         print("Creating BagIt Profile for {}".format(new_org))
         profile = BagItProfile.objects.create(
-            source_organization=archive_org,
+            source_organization=transfer_org,
             external_description="Test BagIt Profile",
             contact_email="archive@example.org",
         )

@@ -1,8 +1,8 @@
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import (Archives, BagInfoMetadata, BagItProfile,
+from bag_transfer.models import (BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo, BAGLog, BAGLogCodes,
                                  LanguageCode, Organization, RecordCreators,
-                                 User)
+                                 Transfer, User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -32,8 +32,8 @@ class BagLogAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Archives)
-class ArchivesAdmin(admin.ModelAdmin):
+@admin.register(Transfer)
+class TransferAdmin(admin.ModelAdmin):
     pass
 
 

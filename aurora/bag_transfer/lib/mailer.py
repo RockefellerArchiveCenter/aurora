@@ -55,10 +55,10 @@ class Mailer:
         else:
             return True
 
-    def setup_message(self, mess_code, archive_obj={}):
+    def setup_message(self, mess_code, transfer={}):
         if mess_code == "TRANS_PASS_ALL":
             self.subject = "Transfer {} passed all validation".format(
-                archive_obj.bag_or_failed_name
+                transfer.bag_or_failed_name
             )
 
             eparts = [
@@ -67,14 +67,14 @@ class Mailer:
                 "You can view the current status of this transfer at {}",
             ]
             self.text_content = "\r\n\r\n".join(eparts).format(
-                archive_obj.bag_or_failed_name,
-                archive_obj.bag_it_name,
-                archive_obj.machine_file_upload_time,
-                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
+                transfer.bag_or_failed_name,
+                transfer.bag_it_name,
+                transfer.machine_file_upload_time,
+                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": transfer.pk}),
             )
         elif mess_code == "TRANS_FAIL_VAL":
             self.subject = "Transfer {} failed validation".format(
-                archive_obj.bag_or_failed_name
+                transfer.bag_or_failed_name
             )
 
             eparts = [
@@ -83,33 +83,33 @@ class Mailer:
                 "Please review the complete error log at {}, correct any errors, and try sending the transfer again.",
             ]
 
-            error_obj = archive_obj.last_failure
+            error_obj = transfer.last_failure
 
             self.text_content = "\r\n\r\n".join(eparts).format(
-                archive_obj.bag_or_failed_name,
+                transfer.bag_or_failed_name,
                 (error_obj.code.code_desc if error_obj else "--"),
                 (error_obj.created_time if error_obj else "--"),
-                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": archive_obj.pk}),
+                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": transfer.pk}),
             )
 
-            if archive_obj.additional_errors:
+            if transfer.additional_errors:
                 self.text_content += "\r\n\r\nAdditional Error Information:\r\n\r\n"
-                for err in archive_obj.additional_errors:
+                for err in transfer.additional_errors:
                     self.text_content += "{}\r\n\r\n".format(err)
 
         elif mess_code == "TRANS_REJECT":
-            self.subject = "Transfer {} was rejected".format(archive_obj.bag_or_failed_name)
+            self.subject = "Transfer {} was rejected".format(transfer.bag_or_failed_name)
 
             eparts = [
                 "An appraisal archivist rejected transfer {}. The transfer has been deleted from our systems.".format(
-                    archive_obj.bag_or_failed_name
+                    transfer.bag_or_failed_name
                 )
             ]
 
-            if archive_obj.appraisal_note:
+            if transfer.appraisal_note:
                 eparts.append(
                     "The reason for this action was: {}".format(
-                        archive_obj.appraisal_note
+                        transfer.appraisal_note
                     )
                 )
 

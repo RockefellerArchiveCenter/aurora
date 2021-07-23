@@ -2,8 +2,8 @@ import json
 from unittest.mock import patch
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import (Archives, BAGLog, DashboardMonthData,
-                                 Organization, User)
+from bag_transfer.models import (BAGLog, DashboardMonthData, Organization,
+                                 Transfer, User)
 from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
@@ -21,19 +21,19 @@ class APITest(TestMixin, TestCase):
     def test_update_transfer(self, mock_cleanup):
         """Asserts bad data can be updated."""
         new_values = {
-            "process_status": Archives.ACCESSIONING_STARTED,
+            "process_status": Transfer.ACCESSIONING_STARTED,
             "archivesspace_identifier": "/repositories/2/archival_objects/3",
             "archivesspace_parent_identifier": "/repositories/2/archival_objects/4"
         }
 
-        for archive in Archives.objects.all():
-            archive_data = self.client.get(
-                reverse("archives-detail", kwargs={"pk": archive.pk}), format="json").json()
-            archive_data.update(new_values)
+        for transfer in Transfer.objects.all():
+            transfer_data = self.client.get(
+                reverse("transfer-detail", kwargs={"pk": transfer.pk}), format="json").json()
+            transfer_data.update(new_values)
 
             updated = self.client.put(
-                reverse("archives-detail", kwargs={"pk": archive.pk}),
-                data=json.dumps(archive_data),
+                reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+                data=json.dumps(transfer_data),
                 content_type="application/json")
             self.assertEqual(updated.status_code, 200, updated.data)
             for field in new_values:
@@ -56,12 +56,12 @@ class APITest(TestMixin, TestCase):
 
     def test_list_views(self):
         """Asserts list endpoints return expected response."""
-        for view in ["archives-list", "accession-list", "baglog-list", "organization-list", "user-list"]:
+        for view in ["transfer-list", "accession-list", "baglog-list", "organization-list", "user-list"]:
             self.assert_status_code("get", reverse(view), 200)
 
     def test_detail_views(self):
         for view, model_cls in [
-                ("archives-detail", Archives),
+                ("transfer-detail", Transfer),
                 ("accession-detail", Accession),
                 ("baglog-detail", BAGLog),
                 ("organization-detail", Organization),

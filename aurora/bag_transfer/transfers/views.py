@@ -6,8 +6,8 @@ from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import (Archives, DashboardMonthData,
-                                 DashboardRecordTypeData, Organization, User)
+from bag_transfer.models import (DashboardMonthData, DashboardRecordTypeData,
+                                 Organization, Transfer, User)
 from dateutil.relativedelta import relativedelta
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
@@ -67,15 +67,15 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             org_name (str): a label for the list of organizations
             users (Queryset): list of users associated with the organizations
         """
-        org_uploads = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED, organization__in=orgs)
+        org_uploads = Transfer.objects.filter(process_status__gte=Transfer.TRANSFER_COMPLETED, organization__in=orgs)
         data = {
             "name": org_name,
             "users": users,
             "uploads": org_uploads.order_by("-created_time")[:15],
             "uploads_count": org_uploads.count(),
-            "validated_count": org_uploads.filter(process_status__gte=Archives.VALIDATED).count(),
-            "accepted_count": org_uploads.filter(process_status__gte=Archives.ACCEPTED).count(),
-            "accessioned_count": org_uploads.filter(process_status__gte=Archives.ACCESSIONING_COMPLETE).count(),
+            "validated_count": org_uploads.filter(process_status__gte=Transfer.VALIDATED).count(),
+            "accepted_count": org_uploads.filter(process_status__gte=Transfer.ACCEPTED).count(),
+            "accessioned_count": org_uploads.filter(process_status__gte=Transfer.ACCESSIONING_COMPLETE).count(),
         }
         data.update(self.org_uploads_by_month(orgs))
         data["size_trend"] = round((data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
@@ -124,8 +124,8 @@ class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             Organization.objects.all()
             if (self.request.user.is_archivist())
             else Organization.objects.filter(id=self.request.user.organization.pk))
-        transfers = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED,
+        transfers = Transfer.objects.filter(
+            process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization__in=organizations)
         context["org_uploads_count"] = transfers.count()
         context["user_uploads_count"] = transfers.filter(user_uploaded=self.request.user).count()
@@ -133,10 +133,10 @@ class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
 
 
 class TransferDataView(CSVResponseMixin, View):
-    model = Archives
+    model = Transfer
 
     def process_status_display(self, status):
-        for s in Archives.processing_statuses:
+        for s in Transfer.processing_statuses:
             if s[0] == status:
                 return s[1]
 
@@ -162,7 +162,7 @@ class TransferDataView(CSVResponseMixin, View):
                 "Upload Time",
             )
         ]
-        transfers = Archives.objects.filter(process_status__gte=Archives.TRANSFER_COMPLETED)
+        transfers = Transfer.objects.filter(process_status__gte=Transfer.TRANSFER_COMPLETED)
         if not self.request.user.is_archivist():
             self.organization = get_object_or_404(Organization, pk=self.request.user.organization.pk)
             transfers.filter(organization=self.organization)
@@ -185,7 +185,7 @@ class TransferDataView(CSVResponseMixin, View):
 
 
 class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
-    model = Archives
+    model = Transfer
     columns = [
         "metadata__external_identifier",
         "title",
@@ -215,12 +215,12 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         return self.FILTER_ICONTAINS
 
     def process_status_display(self, status):
-        for integer, label in Archives.processing_statuses:
+        for integer, label in Transfer.processing_statuses:
             if integer == status:
                 return label
 
     def process_status_tag(self, status):
-        percentage = int(round(status / Archives.ACCESSIONING_COMPLETE * 100))
+        percentage = int(round(status / Transfer.ACCESSIONING_COMPLETE * 100))
         return "{label} <div class='progress progress-xs'>\
                     <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
                 </div>".format(
@@ -233,8 +233,8 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
             Organization.objects.all()
             if (self.request.user.is_archivist())
             else Organization.objects.filter(id=self.request.user.organization.pk))
-        qs = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED,
+        qs = Transfer.objects.filter(
+            process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization__in=organizations).annotate(title=Concat("metadata__title", "bag_it_name"))
         if self.request.GET.get("q") == "user":
             qs.filter(user_uploaded=self.request.user)
@@ -271,7 +271,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
 
 class TransferDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "transfers/detail.html"
-    model = Archives
+    model = Transfer
 
     def get_page_title(self, context):
         return context["object"].bag_or_failed_name
