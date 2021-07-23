@@ -68,7 +68,9 @@ iso-639==0.4.5
 iso8601==0.1.16
     # via -r requirements.in
 jsonschema==3.2.0
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   rac-schemas
 more-itertools==8.8.0
     # via archivessnake
 mysqlclient==1.4.6
@@ -94,6 +96,8 @@ pyyaml==5.4.1
     #   -r requirements.in
     #   archivessnake
     #   health-check
+rac_schemas==0.28
+    # via -r requirements.in
 rapidfuzz==1.4.1
     # via archivessnake
 requests==2.26.0
