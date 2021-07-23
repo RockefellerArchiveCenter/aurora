@@ -194,3 +194,5 @@ RECORD_TYPE_COLORS = [
     "#3c8dbc",
     "#d2d6de",
 ]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

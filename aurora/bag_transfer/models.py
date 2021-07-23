@@ -620,8 +620,8 @@ class BagItProfileBagInfo(models.Model):
         ("title", "Title"),
     )
     field = models.CharField(choices=FIELD_CHOICES, max_length=100)
-    required = models.NullBooleanField(default=False, null=True)
-    repeatable = models.NullBooleanField(default=True, null=True)
+    required = models.BooleanField(default=False, null=True)
+    repeatable = models.BooleanField(default=True, null=True)
 
 
 class BagItProfileBagInfoValues(models.Model):

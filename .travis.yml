@@ -15,7 +15,7 @@ install:
   - docker-compose exec $CONTAINER pre-commit install
 script:
   - docker-compose exec $CONTAINER pre-commit run --all-files --show-diff-on-failure
-  - docker-compose exec $CONTAINER coverage run manage.py test
+  - docker-compose exec $CONTAINER coverage run --omit=aurora/bag_transfer/migrations manage.py test
 after_script:
   - docker-compose exec $CONTAINER coverage report -m
 notifications:
