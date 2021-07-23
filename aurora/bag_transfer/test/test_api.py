@@ -76,7 +76,7 @@ class APITest(TestMixin, TestCase):
             for statement in rights_statements.json():
                 self.assertTrue(is_valid(statement, "rights_statement.json"))
         for queryset, view, schema in [
-                (Archives.objects.filter(process_status__gte=Archives.ACCESSIONING_STARTED), "archives-detail", "aurora_bag"),
+                (Transfer.objects.filter(process_status__gte=Transfer.ACCESSIONING_STARTED), "transfer-detail", "aurora_bag"),
                 (Accession.objects.all(), "accession-detail", "accession")]:
             for obj in queryset:
                 data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
