@@ -81,7 +81,7 @@ $(function () {
       e.preventDefault();
       var bagData = getDataFromAttributes($(this).closest('tr'))
       if (!$(this).hasClass('edit-note')){
-        activateModal(bagData.upload_id, 'Add', bagData.bag_name);
+        activateModal(bagData.upload_id, 'Add', bagData.transfer_name);
         return false;
       }
       var data = {
@@ -91,7 +91,7 @@ $(function () {
       };
       $.get(url, data, function(resp){
         if (resp.success){
-          activateModal(bagData.upload_id, 'Edit', bagData.bag_name, resp.appraisal_note);
+          activateModal(bagData.upload_id, 'Edit', bagData.transfer_name, resp.appraisal_note);
         } else {
           alert('Something went wrong! Please try again.');
         }
@@ -109,7 +109,7 @@ $(function () {
       };
       $.get(url, data, function(resp){
         if (resp.success){
-          dmodal.find('.bag-name').text(bagData.bag_name);
+          dmodal.find('.transfer-name').text(bagData.transfer_name);
           transfer_url = '{% url "transfers:detail" pk=1 %}';
           transfer_url = transfer_url.replace('1', bagData.upload_id);
           $.get(transfer_url, function(resp){
@@ -127,7 +127,7 @@ $(function () {
   $("#appraise_table tbody").on("click", ".appraisal-reject", function(e) {
     e.preventDefault();
     var bagData = getDataFromAttributes($(this).closest('tr'))
-    cmodal.find('.bag-name').text(bagData.bag_name);
+    cmodal.find('.transfer-name').text(bagData.transfer_name);
     cmodal.find('.upload_id').val(bagData.upload_id)
     cmodal.modal('show');
     return false;
@@ -197,7 +197,7 @@ function prepareNoteData(form, req_type) {
 
 function getDataFromAttributes(rootElement) {
   return {
-    bag_name: rootElement.attr('data-transfer-name'),
+    transfer_name: rootElement.attr('data-transfer-name'),
     upload_id: rootElement.attr('data-transfer-id')
   }
 }
@@ -232,10 +232,10 @@ function checkNoteLength(note) {
 }
 
 // setups up and opens appraisal note modal
-function activateModal(uid, label, bag_name, appraisal_note) {
+function activateModal(uid, label, transfer_name, appraisal_note) {
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);
-  amodal.find('.bag-name').text(bag_name);
+  amodal.find('.transfer-name').text(transfer_name);
   amodal.find('.appraisal_note').val(appraisal_note);
   if (appraisal_note && appraisal_note.length) {
     amodal.find('#delete-note').show()

@@ -20,27 +20,27 @@ logging.getLogger().setLevel(logging.CRITICAL)
 
 
 class BagChecker:
-    def __init__(self, archiveObj):
+    def __init__(self, transferObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP
         self.bag_dates_to_validate = ["Date_Start", "Date_End", "Bagging_Date"]
-        self.archiveObj = archiveObj
-        self.archive_extracted = self._extract_archive()
-        self.archive_path = join(self.tmp_path, self.archiveObj.bag_it_name)
+        self.transferObj = transferObj
+        self.transfer_extracted = self._extract_transfer()
+        self.transfer_path = join(self.tmp_path, self.transferObj.bag_it_name)
         self.ecode = ""
         self.bag = {}
         self.bag_info_data = {}
         self.bag_exception = ""
 
-    def _extract_archive(self):
-        if self.archiveObj.machine_file_type == "TAR":
-            if not tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+    def _extract_transfer(self):
+        if self.transferObj.machine_file_type == "TAR":
+            if not tar_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
-        elif self.archiveObj.machine_file_type == "ZIP":
-            if not zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+        elif self.transferObj.machine_file_type == "ZIP":
+            if not zip_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
-        elif self.archiveObj.machine_file_type == "OTHER":
-            if not dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+        elif self.transferObj.machine_file_type == "OTHER":
+            if not dir_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
         else:
             return False
@@ -49,7 +49,7 @@ class BagChecker:
     def _is_generic_bag(self):
         """Basic BagIt validation."""
         try:
-            self.bag = bagit.Bag(self.archive_path)
+            self.bag = bagit.Bag(self.transfer_path)
             self.bag.validate()
         except ValueError as e:
             self.bag_exception = "Error during BagIt validation (likely caused by presence of unsupported md5 checksum): {}".format(e)
@@ -58,9 +58,9 @@ class BagChecker:
             self.bag_exception = "Error during BagIt validation: {}".format(e)
             return False
         else:
-            for filename in glob.glob(join(self.archive_path, "manifest-*.txt")):
+            for filename in glob.glob(join(self.transfer_path, "manifest-*.txt")):
                 with open(filename, "r") as manifest_file:
-                    self.archiveObj.manifest = manifest_file.read()
+                    self.transferObj.manifest = manifest_file.read()
             self._retrieve_bag_info_key_val()  # run now to prevent multiple calls below
             return True
 
@@ -126,7 +126,7 @@ class BagChecker:
                 return False
 
     def bag_passed_all(self):
-        if not self.archive_extracted:
+        if not self.transfer_extracted:
             self.ecode = "EXERR"
             return self.bag_failed()
 
@@ -137,7 +137,7 @@ class BagChecker:
         if not self.bag_info_data:
             return self.bag_failed()
 
-        BAGLog.log_it("PBAG", self.archiveObj)
+        BAGLog.log_it("PBAG", self.transferObj)
 
         if not self._is_rac_bag():
             self.ecode = "RBERR"
@@ -151,15 +151,15 @@ class BagChecker:
             self.ecode = "MDERR"
             return self.bag_failed()
 
-        if not self.archiveObj.save_bag_data(self.bag_info_data):
+        if not self.transferObj.save_bag_data(self.bag_info_data):
             self.ecode = "BIERR"
             return self.bag_failed()
 
-        if not self.archiveObj.assign_rights():
+        if not self.transferObj.assign_rights():
             self.ecode = "RSERR"
             return self.bag_failed()
 
-        BAGLog.log_it("PBAGP", self.archiveObj)
+        BAGLog.log_it("PBAGP", self.transferObj)
 
         self.cleanup()
         return True
@@ -171,11 +171,11 @@ class BagChecker:
     def cleanup(self):
         """called on success of failure of bag_checker routine"""
         if self.bag_exception:
-            self.archiveObj.additional_error_info = self.bag_exception
+            self.transferObj.additional_error_info = self.bag_exception
 
     def _retrieve_bag_info_key_val(self):
         """Returns list of key val of bag info fields, only run on valid bag object"""
         if not self.bag.is_valid():
             return False
 
-        self.bag_info_data = get_bag_info_fields(self.archive_path)
+        self.bag_info_data = get_bag_info_fields(self.transfer_path)

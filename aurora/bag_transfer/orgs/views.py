@@ -5,7 +5,7 @@ from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import Archives, BagItProfile, Organization
+from bag_transfer.models import BagItProfile, Organization, Transfer
 from bag_transfer.orgs.form import (AcceptBagItVersionFormset,
                                     AcceptSerializationFormset,
                                     BagItProfileBagInfoFormset,
@@ -41,15 +41,15 @@ class OrganizationDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["uploads"] = []
-        archives = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED,
+        transfers = Transfer.objects.filter(
+            process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization=context["object"],
         ).order_by("-created_time")[:8]
-        for archive in archives:
-            archive.bag_info_data = archive.bag_data
-            context["uploads"].append(archive)
-        context["uploads_count"] = Archives.objects.filter(
-            process_status__gte=Archives.TRANSFER_COMPLETED,
+        for transfer in transfers:
+            transfer.bag_info_data = transfer.bag_data
+            context["uploads"].append(transfer)
+        context["uploads_count"] = Transfer.objects.filter(
+            process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization=context["object"],
         ).count()
         return context

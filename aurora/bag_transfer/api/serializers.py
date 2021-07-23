@@ -1,11 +1,12 @@
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 Archives, BagInfoMetadata, BagItProfile,
+                                 BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, BAGLog,
                                  ManifestsAllowed, ManifestsRequired,
                                  Organization, RecordCreators,
-                                 TagFilesRequired, TagManifestsRequired, User)
+                                 TagFilesRequired, TagManifestsRequired,
+                                 Transfer, User)
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -173,7 +174,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     type = serializers.SerializerMethodField()
     summary = serializers.CharField(source="code.code_desc")
     object = serializers.HyperlinkedRelatedField(
-        source="archive", view_name="archives-detail", read_only=True
+        source="transfer", view_name="transfer-detail", read_only=True
     )
     result = BAGLogResultSerializer(source="code.next_action")
     endTime = serializers.StringRelatedField(source="created_time")
@@ -214,7 +215,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
+class TransferSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer(read_only=True)
     events = BAGLogSerializer(many=True, read_only=True)
     rights_statements = RightsStatementSerializer(many=True, read_only=True)
@@ -224,7 +225,7 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     origin = serializers.StringRelatedField(source="metadata.origin")
 
     class Meta:
-        model = Archives
+        model = Transfer
         fields = (
             "url",
             "identifier",
@@ -246,11 +247,11 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
+class TransferListSerializer(serializers.HyperlinkedModelSerializer):
     identifier = serializers.StringRelatedField(source="machine_file_identifier")
 
     class Meta:
-        model = Archives
+        model = Transfer
         fields = ("url", "identifier", "created_time", "modified_time")
 
 
@@ -366,7 +367,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     creators = RecordCreatorsSerializer(many=True, read_only=True)
-    transfers = ArchivesListSerializer(
+    transfers = TransferListSerializer(
         source="accession_transfers", many=True, read_only=True
     )
     organization = serializers.StringRelatedField(read_only=True)

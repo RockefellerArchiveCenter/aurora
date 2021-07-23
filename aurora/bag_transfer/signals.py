@@ -3,8 +3,9 @@ from datetime import date
 from bag_transfer.accession.models import Accession
 from bag_transfer.lib.files_helper import chown_path_to_root
 from bag_transfer.lib.RAC_CMD import delete_system_group
-from bag_transfer.models import (Archives, BagInfoMetadata, DashboardMonthData,
-                                 DashboardRecordTypeData, Organization, User)
+from bag_transfer.models import (BagInfoMetadata, DashboardMonthData,
+                                 DashboardRecordTypeData, Organization,
+                                 Transfer, User)
 from dateutil.relativedelta import relativedelta
 from django.db.models.signals import (m2m_changed, post_delete, post_save,
                                       pre_delete)
@@ -28,7 +29,7 @@ def set_is_staff(sender, instance, **kwargs):
     instance.save()
 
 
-@receiver(post_save, sender=Archives)
+@receiver(post_save, sender=Transfer)
 def add_dashboard_data(sender, instance, **kwargs):
     """
     Adds dashboard data each time a transfer is saved, which
@@ -49,7 +50,7 @@ def add_dashboard_data(sender, instance, **kwargs):
     set_count(sender, instance, organization)
 
 
-@receiver(post_delete, sender=Archives)
+@receiver(post_delete, sender=Transfer)
 def remove_dashboard_data(sender, instance, **kwargs):
     """
     Removes dashboard data each time a transfer is deleted, which
@@ -85,7 +86,7 @@ def set_count(sender, instance, organization):
                     BagInfoMetadata.objects.all().values_list("record_type", flat=True)):
                 data = DashboardRecordTypeData.objects.get_or_create(
                     organization=organization, label=label)[0]
-                data.count = Archives.objects.filter(
+                data.count = Transfer.objects.filter(
                     organization=organization, metadata__record_type=label).count()
                 data.save()
 
@@ -94,13 +95,13 @@ def set_uploads(current, data, organization):
     """
     Updates dashboard data upload information.
     """
-    data.upload_count = Archives.objects.filter(
+    data.upload_count = Transfer.objects.filter(
         organization=organization,
         machine_file_upload_time__year=current.year,
         machine_file_upload_time__month=current.month,
     ).count()
     data.upload_size = (
-        sum(map(int, Archives.objects.filter(
+        sum(map(int, Transfer.objects.filter(
             organization=organization,
             machine_file_upload_time__year=current.year,
             machine_file_upload_time__month=current.month,
@@ -108,16 +109,16 @@ def set_uploads(current, data, organization):
     data.save()
 
 
-@receiver(post_save, sender=Archives)
+@receiver(post_save, sender=Transfer)
 def update_accession_status(sender, instance, **kwargs):
     """
     Updates Accession status to COMPLETE if all of the transfers in an accession
     have finished processing.
     """
-    if instance.process_status == Archives.ACCESSIONING_COMPLETE:
+    if instance.process_status == Transfer.ACCESSIONING_COMPLETE:
         accession = instance.accession
         last_update = sorted(
             set([t.process_status for t in accession.accession_transfers.all()]))[0]
-        if last_update == Archives.ACCESSIONING_COMPLETE:
+        if last_update == Transfer.ACCESSIONING_COMPLETE:
             accession.process_status = Accession.COMPLETE
             accession.save()
