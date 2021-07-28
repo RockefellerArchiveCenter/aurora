@@ -45,7 +45,7 @@ class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
         """Return applies_to_type_choices for an organization."""
         values = BagItProfileBagInfoValues.objects.filter(
             bagit_profile_baginfo__in=BagItProfileBagInfo.objects.filter(
-                bagit_profile=organization.bagit_profile,
+                bagit_profile__in=organization.profile.all(),
                 field="record_type"))
         applies_to_type_choices = []
         for v in values:
