@@ -143,9 +143,9 @@ if len(orgs) == 0:
             "annual reports",
         ]:
             BagItProfileBagInfoValues.objects.create(
-                bagit_profile_baginfo=record_type, name=name
-            )
-        profile.save_to_org(new_org)
+                bagit_profile_baginfo=record_type,
+                name=name,
+                organization=new_org)
 
         print("Creating Rights Statements for {}".format(new_org))
         copyright_statement = RightsStatement.objects.create(

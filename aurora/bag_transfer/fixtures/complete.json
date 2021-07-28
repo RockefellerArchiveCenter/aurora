@@ -8,8 +8,7 @@
         "machine_name": "archivalrepository",
         "created_time": "2021-06-27T17:09:46.235Z",
         "modified_time": "2021-06-27T17:09:46.303Z",
-        "acquisition_type": "donation",
-        "bagit_profile": 1
+        "acquisition_type": "donation"
     }
 },
 {
@@ -21,8 +20,7 @@
         "machine_name": "donororganization",
         "created_time": "2021-06-27T17:09:46.450Z",
         "modified_time": "2021-06-27T17:09:46.529Z",
-        "acquisition_type": "deposit",
-        "bagit_profile": 2
+        "acquisition_type": "deposit"
     }
 },
 {
@@ -2854,7 +2852,8 @@
         "bagit_profile_identifier": "",
         "contact_email": "archive@example.org",
         "allow_fetch": false,
-        "serialization": "optional"
+        "serialization": "optional",
+        "organization": 1
     }
 },
 {
@@ -2867,7 +2866,8 @@
         "bagit_profile_identifier": "",
         "contact_email": "archive@example.org",
         "allow_fetch": false,
-        "serialization": "optional"
+        "serialization": "optional",
+        "organization": 2
     }
 },
 {
