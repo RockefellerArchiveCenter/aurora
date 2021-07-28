@@ -16,6 +16,7 @@ class BagItProfileForm(forms.ModelForm):
             "serialization": "Serialization allowed?",
         }
         widgets = {
+            "organization": forms.widgets.HiddenInput(),
             "contact_email": forms.widgets.HiddenInput(),
             "source_organization": forms.widgets.HiddenInput(),
             "version": forms.widgets.HiddenInput(),
