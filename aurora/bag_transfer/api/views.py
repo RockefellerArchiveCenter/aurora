@@ -30,10 +30,10 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         return queryset
 
     @action(detail=True)
-    def bagit_profile(self, request, *args, **kwargs):
+    def bagit_profiles(self, request, *args, **kwargs):
         org = self.get_object()
-        bagit_profile = org.bagit_profile
-        serializer = BagItProfileSerializer(bagit_profile, context={"request": request})
+        bagit_profiles = BagItProfile.objects.filter(organization=org)
+        serializer = BagItProfileSerializer(bagit_profiles, context={"request": request}, many=True)
         return Response(serializer.data)
 
     @action(detail=True)
