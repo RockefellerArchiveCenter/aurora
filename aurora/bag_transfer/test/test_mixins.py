@@ -57,8 +57,8 @@ class MixinTestCase(TestCase):
             self.assertFalse(mixin.test_func(non_staff_user))
 
     def bagit_profile_permissions(self, mixin, non_staff_user):
-        org_profile = random.choice(BagItProfile.objects.filter(profile_organization=non_staff_user.organization))
-        non_org_profile = random.choice(BagItProfile.objects.exclude(profile_organization=non_staff_user.organization))
+        org_profile = random.choice(BagItProfile.objects.filter(organization=non_staff_user.organization))
+        non_org_profile = random.choice(BagItProfile.objects.exclude(organization=non_staff_user.organization))
         mixin.model = BagItProfile
         mixin.user = non_staff_user
         mixin.kwargs = {"pk": org_profile.pk}

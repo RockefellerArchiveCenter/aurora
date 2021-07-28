@@ -50,7 +50,7 @@ class APITest(TestMixin, TestCase):
     def test_action_endpoints(self):
         """Asserts custom action endpoints return expected status code."""
         org = Organization.objects.get(name="Donor Organization").pk
-        self.assert_status_code("get", reverse("organization-bagit-profile", kwargs={"pk": org}), 200)
+        self.assert_status_code("get", reverse("organization-bagit-profiles", kwargs={"pk": org}), 200)
         self.assert_status_code("get", reverse("organization-rights-statements", kwargs={"pk": org}), 200)
         self.assert_status_code("get", reverse("user-current"), 200)
 
