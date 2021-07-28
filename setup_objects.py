@@ -91,6 +91,7 @@ if len(orgs) == 0:
             source_organization=transfer_org,
             external_description="Test BagIt Profile",
             contact_email="archive@example.org",
+            organization=new_org
         )
         AcceptSerialization.objects.create(
             name="application/zip", bagit_profile=profile
@@ -144,8 +145,7 @@ if len(orgs) == 0:
         ]:
             BagItProfileBagInfoValues.objects.create(
                 bagit_profile_baginfo=record_type,
-                name=name,
-                organization=new_org)
+                name=name)
 
         print("Creating Rights Statements for {}".format(new_org))
         copyright_statement = RightsStatement.objects.create(
