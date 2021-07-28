@@ -96,10 +96,11 @@ class UserTestCase(TestMixin, TestCase):
             "is_active": True,
             "first_name": "John",
             "last_name": "Doe",
+            "username": "jdoe",
             "email": "test@example.org",
             "organization": random.choice(Organization.objects.all()).pk
         }
-        self.assert_status_code("post", reverse("users:add"), 200, data=user_data)
+        self.assert_status_code("post", reverse("users:add"), 302, data=user_data)
         user_data["active"] = False
         self.assert_status_code(
             "post", reverse("users:edit", kwargs={"pk": random.choice(User.objects.all()).pk}), 200, data=user_data)

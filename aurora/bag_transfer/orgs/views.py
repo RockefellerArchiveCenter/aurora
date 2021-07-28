@@ -16,7 +16,7 @@ from bag_transfer.orgs.form import (AcceptBagItVersionFormset,
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (CreateView, DetailView, ListView,
                                   TemplateView, UpdateView)
@@ -74,9 +74,10 @@ class OrganizationListView(PageTitleMixin, ArchivistMixin, ListView):
     model = Organization
 
 
-class BagItProfileManageView(PageTitleMixin, TemplateView):
+class BagItProfileManageView(PageTitleMixin):
     template_name = "bagit_profiles/manage.html"
     model = BagItProfile
+    form_class = BagItProfileForm
 
     def get_page_title(self, context):
         organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
@@ -106,97 +107,70 @@ class BagItProfileManageView(PageTitleMixin, TemplateView):
         context["organization"] = organization
         return context
 
-    def post(self, request, *args, **kwargs):
+    def get_success_url(self):
+        return reverse("orgs:detail", kwargs={"pk": self.kwargs.get("pk")})
+
+    def form_valid(self, form):
+        """Saves associated formsets."""
         organization = get_object_or_404(Organization, pk=self.kwargs.get("pk"))
-        instance = organization.bagit_profile
-        form = BagItProfileForm(request.POST, instance=instance)
-        if form.is_valid():
-            bagit_profile = instance if instance else form.save()
-            bag_info_formset = BagItProfileBagInfoFormset(
-                request.POST, instance=bagit_profile, prefix="bag_info")
-            manifests_allowed_formset = ManifestsAllowedFormset(
-                request.POST, instance=bagit_profile, prefix="manifests_allowed")
-            manifests_formset = ManifestsRequiredFormset(
-                request.POST, instance=bagit_profile, prefix="manifests")
-            serialization_formset = AcceptSerializationFormset(
-                request.POST, instance=bagit_profile, prefix="serialization")
-            version_formset = AcceptBagItVersionFormset(
-                request.POST, instance=bagit_profile, prefix="version")
-            tag_manifests_formset = TagManifestsRequiredFormset(
-                request.POST, instance=bagit_profile, prefix="tag_manifests")
-            tag_files_formset = TagFilesRequiredFormset(
-                request.POST, instance=bagit_profile, prefix="tag_files")
-            forms_to_save = [
-                bag_info_formset,
-                manifests_allowed_formset,
-                manifests_formset,
-                serialization_formset,
-                version_formset,
-                tag_manifests_formset,
-                tag_files_formset,
-            ]
-            for formset in forms_to_save:
-                if not formset.is_valid():
-                    messages.error(
-                        request,
-                        "There was a problem with your submission. Please correct the error(s) below and try again.",
-                    )
-                    return render(
-                        request,
-                        self.template_name,
-                        {
-                            "organization": organization,
-                            "form": form,
-                            "bag_info_formset": bag_info_formset,
-                            "manifests_allowed_formset": manifests_allowed_formset,
-                            "manifests_formset": manifests_formset,
-                            "serialization_formset": serialization_formset,
-                            "version_formset": version_formset,
-                            "tag_manifests_formset": tag_manifests_formset,
-                            "tag_files_formset": tag_files_formset,
-                        },
-                    )
-            for formset in forms_to_save:
+        bagit_profile = form.save()
+        bag_info_formset = BagItProfileBagInfoFormset(
+            self.request.POST, instance=bagit_profile, prefix="bag_info")
+        manifests_allowed_formset = ManifestsAllowedFormset(
+            self.request.POST, instance=bagit_profile, prefix="manifests_allowed")
+        manifests_formset = ManifestsRequiredFormset(
+            self.request.POST, instance=bagit_profile, prefix="manifests")
+        serialization_formset = AcceptSerializationFormset(
+            self.request.POST, instance=bagit_profile, prefix="serialization")
+        version_formset = AcceptBagItVersionFormset(
+            self.request.POST, instance=bagit_profile, prefix="version")
+        tag_manifests_formset = TagManifestsRequiredFormset(
+            self.request.POST, instance=bagit_profile, prefix="tag_manifests")
+        tag_files_formset = TagFilesRequiredFormset(
+            self.request.POST, instance=bagit_profile, prefix="tag_files")
+        forms_to_save = [
+            bag_info_formset,
+            manifests_allowed_formset,
+            manifests_formset,
+            serialization_formset,
+            version_formset,
+            tag_manifests_formset,
+            tag_files_formset,
+        ]
+        for formset in forms_to_save:
+            if not formset.is_valid():
+                messages.error(
+                    self.request,
+                    "There was a problem with your submission. Please correct the error(s) below and try again.")
+                return super().form_invalid(form)
+            else:
                 formset.save()
-            bagit_profile.version = bagit_profile.version + Decimal(1)
-            bagit_profile.bagit_profile_identifier = request.build_absolute_uri(
-                reverse(
-                    "bagitprofile-detail",
-                    kwargs={"pk": bagit_profile.id, "format": "json"},
-                )
+        bagit_profile.version = bagit_profile.version + Decimal(1)
+        bagit_profile.bagit_profile_identifier = self.request.build_absolute_uri(
+            reverse(
+                "bagitprofile-detail",
+                kwargs={"pk": bagit_profile.id, "format": "json"},
             )
-            bagit_profile.save_to_org(organization)
-            messages.success(
-                request,
-                "BagIt Profile for {} saved".format(organization.name),
-            )
-            return redirect("orgs:detail", organization.pk)
+        )
+        bagit_profile.save_to_org(organization)
+        messages.success(
+            self.request,
+            "BagIt Profile for {} saved".format(organization.name))
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
         messages.error(
-            request,
-            "There was a problem with your submission. Please correct the error(s) below and try again.",
-        )
-        return render(
-            request,
-            self.template_name,
-            {
-                "form": BagItProfileForm(request.POST, instance=instance),
-                "organization": Organization.objects.get(pk=self.kwargs.get("pk")),
-                "bag_info_formset": BagItProfileBagInfoFormset(
-                    request.POST, prefix="bag_info"),
-                "manifests_allowed_formset": ManifestsAllowedFormset(
-                    request.POST, prefix="manifests_allowed"),
-                "manifests_formset": ManifestsRequiredFormset(
-                    request.POST, prefix="manifests"),
-                "serialization_formset": AcceptSerializationFormset(
-                    request.POST, prefix="serialization"),
-                "version_formset": AcceptBagItVersionFormset(
-                    request.POST, prefix="version"),
-                "tag_manifests_formset": TagManifestsRequiredFormset(
-                    request.POST, prefix="tag_manifests"),
-                "tag_files_formset": TagFilesRequiredFormset(
-                    request.POST, prefix="tag_files"),
-            },
-        )
+            self.request,
+            "There was a problem with your submission. Please correct the error(s) below and try again.")
+        return super().form_invalid(form)
+
+
+class BagItProfileCreateView(BagItProfileManageView, CreateView):
+    pass
+
+
+class BagItProfileUpdateView(BagItProfileManageView, UpdateView):
+    pass
 
 
 class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):

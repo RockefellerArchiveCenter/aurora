@@ -56,20 +56,27 @@ class BagItProfileTestCase(TestMixin, TestCase):
             "manifests_allowed-INITIAL_FORMS": 0,
             "manifests_allowed-0-name": random.choice(["sha256", "sha512"]),
         }
+        previous_len = len(BagItProfile.objects.all())
         self.assert_status_code(
             "post", reverse("orgs:bagit-profiles-add", kwargs={"pk": org.pk}),
             302, data=data)
         org.refresh_from_db()
         self.assertIsNot(None, org.bagit_profile, "BagIt profile was not assigned to organization")
+        self.assertEqual(
+            previous_len + 1, len(BagItProfile.objects.all()),
+            "Expected 1 new BagIt Profile to be created, found {}".format(len(BagItProfile.objects.all()) - previous_len))
 
         external_description = helpers.random_string(150)
         data["external_description"] = external_description
         self.assert_status_code(
-            "post", reverse("orgs:bagit-profiles-add", kwargs={"pk": org.pk}),
+            "post", reverse("orgs:bagit-profiles-edit", kwargs={"pk": org.pk}),
             302, data=data)
         self.assertIsNot(None, org.bagit_profile, "BagIt profile not assigned to organization")
         org.refresh_from_db()
         self.assertEqual(org.bagit_profile.external_description, external_description, "External Description was not updated")
+        self.assertEqual(
+            previous_len + 1, len(BagItProfile.objects.all()),
+            "A new BagIt Profile was unexpectedly created")
 
         delete_request = self.assert_status_code(
             "get",
@@ -82,8 +89,8 @@ class BagItProfileTestCase(TestMixin, TestCase):
         self.assert_status_code(
             "get", reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}), 404)
 
-        profile = random.choice(BagItProfile.objects.all())
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": profile.source_organization.pk}), 200)
+        org = random.choice(Organization.objects.filter(bagit_profile__isnull=False))
+        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": org.pk}), 200)
 
     def test_save_to_org(self):
         """Asserts that the `save_to_org` method works as intended"""
