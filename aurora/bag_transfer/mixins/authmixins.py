@@ -72,7 +72,7 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
                 elif self.model == BagItProfile:
                     try:
                         profile = BagItProfile.objects.get(pk=self.kwargs.get("pk"))
-                        organization = Organization.objects.get(bagit_profile=profile)
+                        organization = profile.organization
                     except BagItProfile.DoesNotExist:
                         return False
 

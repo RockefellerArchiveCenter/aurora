@@ -28,8 +28,6 @@ class Organization(models.Model):
     )
     acquisition_type = models.CharField(
         max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
-    bagit_profile = models.ForeignKey(
-        "BagItProfile", on_delete=models.SET_NULL, blank=True, null=True, related_name="profile_organization")
 
     class Meta:
         ordering = ["name"]
@@ -528,9 +526,8 @@ class BagInfoMetadata(models.Model):
 
 
 class BagItProfile(models.Model):
-    source_organization = models.ForeignKey(
-        Organization, on_delete=models.CASCADE, related_name="source_organization"
-    )
+    source_organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="profile")
     external_description = models.TextField(blank=True)
     version = models.DecimalField(max_digits=4, decimal_places=1, default=0.0)
     bagit_profile_identifier = models.URLField(blank=True)
@@ -543,11 +540,6 @@ class BagItProfile(models.Model):
     )
     serialization = models.CharField(
         choices=SERIALIZATION_CHOICES, max_length=25, default="optional")
-
-    def save_to_org(self, org):
-        self.save()
-        org.bagit_profile = self
-        org.save()
 
 
 class ManifestsAllowed(models.Model):

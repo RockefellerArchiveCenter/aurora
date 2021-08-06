@@ -31,6 +31,7 @@ urlpatterns = [
         include("bag_transfer.transfers.urls", namespace="transfers"),
     ),
     url(r"^app/orgs/", include("bag_transfer.orgs.urls", namespace="orgs")),
+    url(r"^app/bagit-profiles/", include("bag_transfer.bagit_profiles.urls", namespace="bagit-profiles")),
     url(r"^app/users/", include("bag_transfer.users.urls", namespace="users")),
     url(
         r"^reset-password/$",

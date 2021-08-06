@@ -11,18 +11,16 @@ class BagItProfileTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def test_views(self):
-        org = Organization.objects.get(name="Donor Organization")
-        for view in ["orgs:bagit-profiles-add", "orgs:bagit-profiles-edit", "organization-bagit-profile"]:
-            self.assert_status_code("get", reverse(view, kwargs={"pk": org.pk}), 200)
+        profile = random.choice(BagItProfile.objects.all())
+        org = random.choice(Organization.objects.all())
+        for view in ["bagit-profiles:detail", "bagit-profiles:edit", "organization-bagit-profiles"]:
+            self.assert_status_code("get", reverse(view, kwargs={"pk": profile.pk}), 200)
         self.assert_status_code("get", reverse("bagitprofile-list"), 200)
-        org.bagit_profile = None
-        org.save()
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-edit", kwargs={"pk": org.pk}), 200)
 
         data = {
             "contact_email": "archive@rockarch.org",
             "source_organization": org.pk,
-            "applies_to_organization": org.pk,
+            "organization": org.pk,
             "allow_fetch": random.choice([True, False]),
             "external_description": helpers.random_string(100),
             "serialization": random.choice(["forbidden", "required", "optional"]),
@@ -58,10 +56,9 @@ class BagItProfileTestCase(TestMixin, TestCase):
         }
         previous_len = len(BagItProfile.objects.all())
         self.assert_status_code(
-            "post", reverse("orgs:bagit-profiles-add", kwargs={"pk": org.pk}),
+            "post", "{}?org={}".format(reverse("bagit-profiles:add"), org.pk),
             302, data=data)
-        org.refresh_from_db()
-        self.assertIsNot(None, org.bagit_profile, "BagIt profile was not assigned to organization")
+        self.assertIsNot(None, profile.organization, "BagIt profile was not assigned to organization")
         self.assertEqual(
             previous_len + 1, len(BagItProfile.objects.all()),
             "Expected 1 new BagIt Profile to be created, found {}".format(len(BagItProfile.objects.all()) - previous_len))
@@ -69,34 +66,22 @@ class BagItProfileTestCase(TestMixin, TestCase):
         external_description = helpers.random_string(150)
         data["external_description"] = external_description
         self.assert_status_code(
-            "post", reverse("orgs:bagit-profiles-edit", kwargs={"pk": org.pk}),
+            "post", reverse("bagit-profiles:edit", kwargs={"pk": profile.pk}),
             302, data=data)
-        self.assertIsNot(None, org.bagit_profile, "BagIt profile not assigned to organization")
+        profile.refresh_from_db()
+        self.assertIsNot(None, profile.organization, "BagIt profile not assigned to organization")
         org.refresh_from_db()
-        self.assertEqual(org.bagit_profile.external_description, external_description, "External Description was not updated")
+        self.assertEqual(profile.external_description, external_description, "External Description was not updated")
         self.assertEqual(
             previous_len + 1, len(BagItProfile.objects.all()),
             "A new BagIt Profile was unexpectedly created")
 
         delete_request = self.assert_status_code(
             "get",
-            reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}),
+            reverse("bagit-profiles:api", kwargs={"pk": profile.pk, "action": "delete"}),
             200, data={}, ajax=True)
         self.assertEqual(delete_request.json()["success"], 1)
         org.refresh_from_db()
-        self.assertEqual(None, org.bagit_profile, "BagIt Profile not deleted")
 
         self.assert_status_code(
-            "get", reverse("orgs:bagit-profiles-api", kwargs={"pk": org.pk, "action": "delete"}), 404)
-
-        org = random.choice(Organization.objects.filter(bagit_profile__isnull=False))
-        self.assert_status_code("get", reverse("orgs:bagit-profiles-detail", kwargs={"pk": org.pk}), 200)
-
-    def test_save_to_org(self):
-        """Asserts that the `save_to_org` method works as intended"""
-        org = random.choice(Organization.objects.all())
-        org.bagit_profile = None
-        org.save()
-        profile = random.choice(BagItProfile.objects.all())
-        profile.save_to_org(org)
-        self.assertIsNot(None, org.bagit_profile)
+            "get", reverse("bagit-profiles:api", kwargs={"pk": profile.pk, "action": "delete"}), 404)

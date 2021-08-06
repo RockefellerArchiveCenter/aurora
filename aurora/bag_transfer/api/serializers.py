@@ -336,6 +336,8 @@ class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
     rights_statements = serializers.HyperlinkedIdentityField(
         read_only=True, view_name="organization-rights-statements")
+    bagit_profiles = serializers.HyperlinkedIdentityField(
+        read_only=True, view_name="organization-bagit-profiles")
 
     class Meta:
         model = Organization
@@ -346,7 +348,7 @@ class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
             "name",
             "machine_name",
             "acquisition_type",
-            "bagit_profile",
+            "bagit_profiles",
             "rights_statements",
         )
 

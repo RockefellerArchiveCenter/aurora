@@ -3,7 +3,7 @@
 
 {% block h1_title %}
   {{page_title}} <small>{{object.source_organization.name}}</small>
-  <a href="{% url 'orgs:detail' pk=object.source_organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
+  <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> Back To Organization</a>
 {% endblock %}
 
 {% block content %}
