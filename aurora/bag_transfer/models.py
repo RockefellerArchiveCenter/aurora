@@ -17,7 +17,7 @@ class Organization(models.Model):
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=60, unique=True)
     machine_name = models.CharField(
-        max_length=30, unique=True, default="orgXXX will be created here"
+        max_length=60, unique=True, default="orgXXX will be created here"
     )
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
