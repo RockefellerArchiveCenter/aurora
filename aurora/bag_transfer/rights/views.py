@@ -95,7 +95,7 @@ class RightsCreateView(RightsManageView, CreateView):
         context["license_form"] = LicenseFormSet()
         context["statute_form"] = StatuteFormSet()
         context["other_form"] = OtherFormSet()
-        context["granted_formset"]: RightsGrantedFormSet()
+        context["granted_formset"] = RightsGrantedFormSet()
         context["basis_form"] = basis_form
         context["organization"] = organization
         return context
