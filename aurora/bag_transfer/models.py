@@ -397,6 +397,7 @@ class Transfer(models.Model):
         try:
             bag_data = self.bag_data
             RightsStatement = apps.get_model("bag_transfer", "RightsStatement")
+            RightsGranted = apps.get_model("bag_transfer", "RightsStatementRightsGranted")
             rights_statements = RightsStatement.objects.filter(
                 organization=self.organization,
                 applies_to_type__name=bag_data["record_type"],
@@ -404,7 +405,7 @@ class Transfer(models.Model):
             for statement in rights_statements:
                 """Clone and save new rights statement."""
                 rights_info = statement.rights_info
-                rights_granted = statement.rights_granted.all()
+                rights_granted = RightsGranted.objects.filter(rights_statement=statement)
                 statement.pk = None
                 statement.transfer = self
                 statement.save()
