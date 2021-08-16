@@ -1,45 +1,112 @@
-from datetime import datetime
-from os import path, listdir, rename, chown
 import pwd
 import random
 import string
-from django.contrib.auth.models import Group
-from bag_transfer.models import (
-    AcceptBagItVersion,
-    AcceptSerialization,
-    Archives,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    BAGLogCodes,
-    LanguageCode,
-    ManifestsAllowed,
-    ManifestsRequired,
-    Organization,
-    RecordCreators,
-    TagFilesRequired,
-    TagManifestsRequired,
-    User,
-)
-from bag_transfer.test import setup as org_setup
-from bag_transfer.rights.models import (
-    RecordType,
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-    RightsStatementRightsGranted,
-)
-from aurora import settings
-from bag_transfer.lib import files_helper as FH
-from bag_transfer.lib.transfer_routine import TransferRoutine
+from datetime import datetime
+from os import chown, listdir, path
 
-# General variables and setup routines
+from asterism.file_helpers import copy_file_or_dir
+from bag_transfer.models import (LanguageCode, Organization, RecordCreators,
+                                 User)
+from bag_transfer.rights.models import (RecordType, RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
+from django.test import TestCase
+from django.utils.timezone import make_aware
 
-####################################
-# Generic functions
-####################################
+BAGS_REF = (
+    ("valid_bag", ""),
+    ("changed_file", "GBERR", True),
+    ("missing_bag_manifest", "GBERR", True),
+    ("missing_bag_declaration", "GBERR", True),
+    ("missing_payload_directory", "GBERR", True),
+    ("missing_payload_manifest", "GBERR", True),
+    ("missing_description", "RBERR", True),
+    ("missing_record_type", "RBERR", True),
+    ("missing_source_organization", "RBERR", True),
+    ("missing_title", "RBERR", True),
+    ("repeating_record_type", "RBERR", True),
+    ("repeating_source_organization", "RBERR", True),
+    ("repeating_title", "RBERR", True),
+    ("unauthorized_record_type", "RBERR", True),
+    ("unauthorized_source_organization", "RBERR", True),
+    ("invalid_metadata_file", "MDERR", True),
+    ("invalid_datatype_date", "DTERR", True),
+    ("invalid_datatype_language", "DTERR", True),
+)
+
+BAGINFO_FIELD_CHOICES = (
+    ("source_organization", "Source-Organization"),
+    ("organization_address", "Organization-Address"),
+    ("contact_name", "Contact-Name"),
+    ("contact_phone", "Contact-Phone"),
+    ("contact_email", "Contact-Email"),
+    ("external_description", "External-Description"),
+    ("external_identifier", "External-Identifier"),
+    ("internal_sender_description", "Internal-Sender-Description"),
+    ("internal_sender_identifier", "Internal-Sender-Identifier"),
+    ("title", "Title"),
+    ("date_start", "Date-Start"),
+    ("date_end", "Date-End"),
+    ("record_creators", "Record-Creators"),
+    ("record_type", "Record-Type"),
+    ("language", "Language"),
+    ("bagging_date", "Bagging-Date"),
+    ("bag_group_identifier", "Bag-Group-Identifier"),
+    ("bag_count", "Bag-Count"),
+    ("bag_size", "Bag-Size"),
+    ("payload_oxum", "Payload-Oxum"),
+)
+
+RIGHTS_BASIS_DATA = [
+    {
+        "rights_basis": "Copyright",
+        "applies_to_type": [2],
+        "rightsstatementcopyright_set-INITIAL_FORMS": 0,
+        "rightsstatementcopyright_set-TOTAL_FORMS": 1,
+        "rightsstatementcopyright_set-0-copyright_note": "Test note",
+        "rightsstatementcopyright_set-0-copyright_status": "copyrighted",
+        "rightsstatementcopyright_set-0-copyright_jurisdiction": "us",
+    },
+    {
+        "rights_basis": "Statute",
+        "applies_to_type": [2],
+        "rightsstatementstatute_set-INITIAL_FORMS": 0,
+        "rightsstatementstatute_set-TOTAL_FORMS": 1,
+        "rightsstatementstatute_set-0-statute_note": "Test note",
+        "rightsstatementstatute_set-0-statute_citation": "Test statute citation",
+        "rightsstatementstatute_set-0-statute_jurisdiction": "us",
+    },
+    {
+        "rights_basis": "License",
+        "applies_to_type": [2],
+        "rightsstatementlicense_set-INITIAL_FORMS": 0,
+        "rightsstatementlicense_set-TOTAL_FORMS": 1,
+        "rightsstatementlicense_set-0-license_note": "Test note",
+    },
+    {
+        "rights_basis": "Other",
+        "applies_to_type": [2],
+        "rightsstatementother_set-INITIAL_FORMS": 0,
+        "rightsstatementother_set-TOTAL_FORMS": 1,
+        "rightsstatementother_set-0-other_rights_note": "Test note",
+        "rightsstatementother_set-0-other_rights_basis": "Donor",
+    },
+]
+
+RIGHTS_GRANTED_DATA = {
+    "rights_granted-TOTAL_FORMS": 1,
+    "rights_granted-INITIAL_FORMS": 0,
+    "rights_granted-0-act": random.choice(
+        ["publish", "disseminate", "replicate", "migrate", "modify", "use", "delete"]
+    ),
+    "rights_granted-0-restriction": random.choice(
+        ["allow", "disallow", "conditional"]
+    ),
+    "rights_granted-0-rights_granted_note": "Grant note",
+}
 
 
 def random_string(length):
@@ -53,211 +120,60 @@ def random_date(year):
         return datetime.strptime("{} {}".format(random.randint(1, 366), year), "%j %Y")
     # accounts for leap year values
     except ValueError:
-
         random_date(year)
 
-
-def random_name(prefix, suffix):
-    """Returns a random name."""
-    return "{} {} {}".format(prefix, random.choice(string.ascii_letters), suffix)
-
-
-####################################
-# CREATE TEST OBJECTS
-####################################
 
 def create_test_record_types(record_types=None):
     """Creates a RecordType object for each value in list provided.
     If no list is given, RecordTypes are create for each item in a default list."""
     objects = []
-    if record_types is None:
-        record_types = [
-            "administrative records",
-            "board materials",
-            "communications and publications",
-            "grant records",
-            "annual reports",
-        ]
+    record_types = record_types if record_types else [
+        "administrative records",
+        "board materials",
+        "communications and publications",
+        "grant records",
+        "annual reports",
+    ]
     for record_type in record_types:
         object = RecordType.objects.create(name=record_type)
         objects.append(object)
-        print("Test record type {record_type} created".format(record_type=object.name))
     return objects
 
 
-def create_test_groups(names=None):
-    """Creates a Group for each value in a list of names.
-    If no list is given, Groups are created for each item in a default list."""
-    groups = []
-    if names is None:
-        names = [
-            "appraisal_archivists",
-            "accessioning_archivists",
-            "managing_archivists",
-        ]
-    for name in names:
-        if not Group.objects.filter(name=name).exists():
-            group = Group(name=name)
-            group.save()
-            groups.append(group)
-            print("Test group {group} created".format(group=group.name))
-        else:
-            print("Test group {group} already exists".format(group=name))
-            group = Group.objects.get(name=name)
-            groups.append(group)
-    return groups
-
-
-def create_test_orgs(org_count=1):
-    """creates random orgs based on org_count"""
-    if org_count < 1:
-        return False
-
-    generated_orgs = []
-    while True:
-        if len(generated_orgs) == org_count:
-            break
-        new_org_name = random_name(
-            random.choice(org_setup.POTUS_NAMES),
-            random.choice(org_setup.COMPANY_SUFFIX),
-        )
-        try:
-            Organization.objects.get(name=new_org_name)
-            continue
-        except Organization.DoesNotExist:
-            pass
-
-        test_org = Organization(
-            name=new_org_name, machine_name="org{}".format((len(generated_orgs) + 1))
-        )
-        test_org.save()
-        generated_orgs.append(test_org)
-
-        print(
-            "Test organization {} -- {} created".format(
-                test_org.name, test_org.machine_name
-            )
-        )
-
-    return generated_orgs
-
-
-def delete_test_orgs(orgs=[]):
-    for org in orgs:
-        org.delete()
-
-
-def create_test_baglogcodes():
-    baglogcodes = (
-        ("ASAVE", "I"),
-        ("PBAG", "S"),
-        ("PBAGP", "S"),
-        ("GBERR", "BE"),
-        ("DTERR", "BE"),
-        ("MDERR", "BE"),
-        ("RBERR", "BE"),
-        ("BIERR", "BE"),
-    )
-    code_objects = []
-    for code in baglogcodes:
-        if not BAGLogCodes.objects.filter(code_short=code[0]).exists():
-            bag_log_code = BAGLogCodes(
-                code_short=code[0], code_type=code[1], code_desc=random_string(50),
-            )
-            bag_log_code.save()
-            code_objects.append(bag_log_code)
-    return code_objects
-
-
-def create_test_user(username=None, org=None):
-    """Creates test user given a username and organization.
-    If no username is given, the default username supplied in settings is used.
-    If no organization is given, an organization is randomly chosen.
-    """
-    if username is None:
-        username = settings.TEST_USER["USERNAME"]
-    if org is None:
-        org = random.choice(Organization.objects.all())
-    test_user = User(
-        username=username, email="{}@example.org".format(username), organization=org
-    )
-    test_user.save()
-    print("Test user {username} created".format(username=username))
-    return test_user
-
-
-def create_test_archive(transfer, org):
-    """Creates Archive objects by running bags through TransferRoutine."""
-    machine_file_identifier = Archives().gen_identifier()
-    archive = Archives.initial_save(
-        org,
-        None,
-        transfer["file_path"],
-        transfer["file_size"],
-        transfer["file_modtime"],
-        machine_file_identifier,
-        transfer["file_type"],
-        transfer["bag_it_name"],
-    )
-
-    # updating the name since the bag info reflects ford
-    archive.organization.name = "Ford Foundation"
-    archive.organization.save()
-
-    return archive
-
-
-def create_target_bags(target_str, test_bags_dir, org, username=None):
+def create_target_bags(target_str, test_bags_dir, org, username="root"):
     """Creates target bags to be picked up by a TransferRoutine based on a string.
-    # This allows processing of bags serialized in multiple formats at once."""
+    This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
     if len(target_bags) < 1:
         return False
-
-    index = 0
-
-    for bags in target_bags:
-        FH.anon_extract_all(
-            path.join(test_bags_dir, bags), org.org_machine_upload_paths()[0]
-        )
-        # Renames extracted path -- add index suffix to prevent collision
-        created_path = path.join(org.org_machine_upload_paths()[0], bags.split(".")[0])
-        new_path = "{}{}".format(created_path, index)
-        rename(created_path, new_path)
-        index += 1
-
-        # chowning path
-        uid = pwd.getpwnam(username).pw_uid if username else pwd.getpwnam("root").pw_uid
-        chown(new_path, uid, -1)
+    for bag_name in target_bags:
+        new_path = path.join(org.org_machine_upload_paths()[0], bag_name)
+        copy_file_or_dir(path.join(test_bags_dir, bag_name), new_path)
+        chown(new_path, pwd.getpwnam(username).pw_uid, -1)
         moved_bags.append(new_path)
-
     return moved_bags
-
-
-def run_transfer_routine():
-    tr = TransferRoutine()
-    tr.setup_routine()
-    tr.run_routine()
-    return tr
 
 
 def create_rights_statement(record_type=None, org=None, rights_basis=None):
     """Creates a rights statement given a record type, organization and rights basis.
     If any one of these values are not given, random values are assigned."""
+    if len(RecordType.objects.all()) == 0:
+        create_test_record_types()
     record_type = (
         record_type if record_type else random.choice(RecordType.objects.all())
     )
     if org is None:
         org = random.choice(Organization.objects.all())
     if rights_basis is None:
-        rights_basis = random.choices(["Copyright", "Statute", "License", "Other"])
+        rights_basis = random.choice(["Copyright", "Statute", "License", "Other"])
     rights_statement = RightsStatement(organization=org, rights_basis=rights_basis,)
     rights_statement.save()
     rights_statement.applies_to_type.add(record_type)
+    return rights_statement
 
 
-def create_rights_info(rights_statement=None):
+def create_test_rights_info(rights_statement=None):
     """Creates a rights info object given a rights statement
     If no rights statement is given, a random value is selected"""
     rights_statement = (
@@ -299,7 +215,7 @@ def create_rights_info(rights_statement=None):
     rights_info.save()
 
 
-def create_rights_granted(rights_statement=None, granted_count=1):
+def create_test_rights_granted(rights_statement=None, granted_count=1):
     """Creates one or more rights granted objects, based on the grant count.
     If no rights statement is given, a random value is selected."""
     rights_statement = (
@@ -332,122 +248,6 @@ def create_rights_granted(rights_statement=None, granted_count=1):
     return all_rights_granted
 
 
-def create_test_bagitprofile(applies_to_organization=None):
-    applies_to_organization = (
-        applies_to_organization
-        if applies_to_organization
-        else random.choice(Organization.objects.all())
-    )
-    profile = BagItProfile(
-        applies_to_organization=applies_to_organization,
-        source_organization=random.choice(Organization.objects.all()),
-        external_description=random_string(150),
-        version=1,
-        contact_email="test@example.org",
-        allow_fetch=random.choice([True, False]),
-        serialization=random.choice(["forbidden", "required", "optional"]),
-    )
-    profile.save()
-    return profile
-
-
-def create_test_manifestsallowed(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    manifests_required = ManifestsAllowed(
-        bagit_profile=bagitprofile, name=random.choice(["sha256", "sha512"])
-    )
-    manifests_required.save()
-    return manifests_required
-
-
-def create_test_manifestsrequired(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    manifests_required = ManifestsRequired(
-        bagit_profile=bagitprofile, name=random.choice(["sha256", "sha512"])
-    )
-    manifests_required.save()
-    return manifests_required
-
-
-def create_test_acceptserialization(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    accept_serialization = AcceptSerialization(
-        bagit_profile=bagitprofile,
-        name=random.choice(
-            ["application/zip", "application/x-tar", "application/x-gzip"]
-        ),
-    )
-    accept_serialization.save()
-    return accept_serialization
-
-
-def create_test_acceptbagitversion(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    acceptbagitversion = AcceptBagItVersion(
-        name=random.choice(["0.96", 0.97]), bagit_profile=bagitprofile
-    )
-    acceptbagitversion.save()
-    return acceptbagitversion
-
-
-def create_test_tagmanifestsrequired(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    tagmanifestsrequired = TagManifestsRequired(
-        name=random.choice(["sha256", "sha512"]), bagit_profile=bagitprofile
-    )
-    tagmanifestsrequired.save()
-    return tagmanifestsrequired
-
-
-def create_test_tagfilesrequired(bagitprofile=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    tagfilesrequired = TagFilesRequired(
-        name=random_string(150), bagit_profile=bagitprofile
-    )
-    tagfilesrequired.save()
-    return tagfilesrequired
-
-
-def create_test_bagitprofilebaginfo(bagitprofile=None, field=None):
-    bagitprofile = (
-        bagitprofile if bagitprofile else random.choice(BagItProfile.objects.all())
-    )
-    if field is None:
-        field = random.choice(org_setup.BAGINFO_FIELD_CHOICES)
-    bag_info = BagItProfileBagInfo(
-        bagit_profile=bagitprofile,
-        field=field,
-        required=random.choice([True, False]),
-        repeatable=random.choice([True, False]),
-    )
-    bag_info.save()
-    return bag_info
-
-
-def create_test_bagitprofilebaginfovalues(baginfo=None):
-    baginfo = baginfo if baginfo else random.choice(BagItProfileBagInfo.objects.all())
-    values = []
-    for i in range(random.randint(1, 5)):
-        bag_info_value = BagItProfileBagInfoValues(
-            bagit_profile_baginfo=baginfo, name=random_string(25)
-        )
-        bag_info_value.save()
-        values.append(bag_info_value)
-    return values
-
-
 def create_test_record_creators(count=1):
     record_creators = []
     for n in range(count):
@@ -474,6 +274,27 @@ def get_accession_data(creator=None):
         "access_restrictions": random_string(100),
         "resource": "http://example.org",
         "description": random_string(150),
+        "end_date": make_aware(random_date(1990)),
+        "extent_size": "17275340",
+        "acquisition_type": random.choice(["donation", "deposit", "gift"]),
+        "title": random_string(255),
+        "accession_number": "2018.184",
+        "start_date": make_aware(random_date(1960)),
+        "extent_files": "14",
+        "appraisal_note": random_string(150),
+        "language": language,
+    }
+    return accession_data
+
+
+def get_accession_form_data(creator=None):
+    creator = creator if creator else create_test_record_creators()[0]
+    language = create_test_languages()[0]
+    accession_data = {
+        "use_restrictions": random_string(100),
+        "access_restrictions": random_string(100),
+        "resource": "http://example.org",
+        "description": random_string(150),
         "end_date": random_date(1990),
         "extent_size": "17275340",
         "acquisition_type": random.choice(["donation", "deposit", "gift"]),
@@ -493,3 +314,20 @@ def get_accession_data(creator=None):
         "form-0-type": "organization",
     }
     return accession_data
+
+
+class TestMixin(TestCase):
+
+    def setUp(self):
+        self.client.force_login(User.objects.get(username="admin"))
+
+    def assert_status_code(self, method, url, status_code, data=None, ajax=False):
+        """Asserts that a request returns the expected HTTP status_code."""
+        if ajax:
+            response = getattr(self.client, method)(url, data, HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        else:
+            response = getattr(self.client, method)(url, data)
+        self.assertEqual(
+            response.status_code, status_code,
+            "Unexpected status code {} for url {}".format(response.status_code, url))
+        return response

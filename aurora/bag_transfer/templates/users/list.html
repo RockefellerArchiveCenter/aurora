@@ -3,8 +3,8 @@
 {% load static %}
 
 {% block h1_title %}
-  Users
-  {% if request.user.is_superuser %}
+  {{page_title}}
+  {% if request.user.is_manager or request.user.is_superuser %}
   <a href="{% url 'users:add' %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add User</a>
   {% endif %}
 {% endblock %}

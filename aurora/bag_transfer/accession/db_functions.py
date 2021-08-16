@@ -1,4 +1,4 @@
-from django.db.models import CharField, Aggregate
+from django.db.models import Aggregate, CharField
 
 
 class GroupConcat(Aggregate):

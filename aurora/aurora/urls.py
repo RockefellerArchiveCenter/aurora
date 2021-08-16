@@ -13,26 +13,25 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url, include
+from bag_transfer.transfers.views import DashboardView
+from bag_transfer.users.views import (SplashView,
+                                      UserPasswordResetCompleteView,
+                                      UserPasswordResetConfirmView,
+                                      UserPasswordResetDoneView,
+                                      UserPasswordResetView)
+from django.conf.urls import include, url
 from django.contrib import admin
-from bag_transfer.users.views import (
-    SplashView,
-    UserPasswordResetView,
-    UserPasswordResetDoneView,
-    UserPasswordResetConfirmView,
-    UserPasswordResetCompleteView,
-)
 from django.contrib.auth import views as auth_views
-from bag_transfer.transfers.views import MainView
 
 urlpatterns = [
     url(r"^admin/", admin.site.urls),
-    url(r"^app/$", MainView.as_view(), name="app_home"),
+    url(r"^app/$", DashboardView.as_view(), name="app_home"),
     url(
         r"^app/transfers/",
         include("bag_transfer.transfers.urls", namespace="transfers"),
     ),
     url(r"^app/orgs/", include("bag_transfer.orgs.urls", namespace="orgs")),
+    url(r"^app/bagit-profiles/", include("bag_transfer.bagit_profiles.urls", namespace="bagit-profiles")),
     url(r"^app/users/", include("bag_transfer.users.urls", namespace="users")),
     url(
         r"^reset-password/$",
@@ -63,7 +62,7 @@ urlpatterns = [
     ),
     url(r"^app/appraise/", include("bag_transfer.appraise.urls", namespace="appraise")),
     url(r"^app/rights/", include("bag_transfer.rights.urls", namespace="rights")),
-    url(r"^$", SplashView.as_view()),
+    url(r"^$", SplashView.as_view(), name="splash"),
     url(
         r"^login/$",
         auth_views.LoginView.as_view(template_name="users/login.html"),

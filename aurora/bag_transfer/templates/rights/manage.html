@@ -1,6 +1,6 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}{% if basis_form.instance.organization %}Edit{% else %}Create{% endif %} Rights Statement <small>{{organization}}</small>{% endblock %}
+{% block h1_title %}{{page_title}} <small>{{organization}}</small>{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -352,7 +352,7 @@
 
   $(document).ready(function() {
     // Show/hide granted formset
-    if ($('input#id_rightsstatementrightsgranted_set-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.has-error').length) {
+    if ($('input#id_rights_granted-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.has-error').length) {
       $('.dynamic-form.act').first().hide()
     }
     // active formset changer
@@ -368,11 +368,11 @@
       if ($('.dynamic-form.act').length == 1 && $('.dynamic-form.act').first().is(':hidden')) {
         $('.dynamic-form.act').first().show()
       } else {
-        addForm(this, 'rightsstatementrightsgranted_set');
+        addForm(this, 'rights_granted');
       }
     });
     $('.delete-row').click(function() {
-	    deleteForm(this, 'rightsstatementrightsgranted_set');
+	    deleteForm(this, 'rights_granted');
     });
     $('.dynamic-form').on('change', function(e){
 			if (isFormEmpty(this)) {

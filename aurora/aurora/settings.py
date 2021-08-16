@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 from aurora import config as CF
+from aurora.fips_monkey_patch import monkey_patch_md5
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
@@ -103,9 +104,9 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
-    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",},
-    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",},
-    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator", },
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator", },
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator", },
 ]
 
 AUTH_USER_MODEL = "bag_transfer.User"
@@ -172,3 +173,41 @@ ASPACE = CF.ASPACE
 
 # Google Analytics configs
 GTM_ID = CF.GTM_ID
+
+# List of colors used in dashboard for record types
+RECORD_TYPE_COLORS = [
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+    "#f56954",
+    "#00a65a",
+    "#f39c12",
+    "#00c0ef",
+    "#3c8dbc",
+    "#d2d6de",
+]
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+
+# Addresses FIPS error caused by Django using MD5 to generate cache keys and database object names
+modules_to_patch = [
+    'django.contrib.staticfiles.storage',
+    'django.core.cache.backends.filebased',
+    'django.core.cache.utils',
+    'django.db.backends.utils',
+    'django.utils.cache',
+]
+try:
+    import hashlib
+    hashlib.md5()
+except ValueError:
+    monkey_patch_md5(modules_to_patch)

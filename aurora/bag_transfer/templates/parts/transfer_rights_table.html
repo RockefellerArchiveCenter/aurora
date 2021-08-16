@@ -10,7 +10,7 @@
       {% for statement in rights_statements %}
       <tr rel="{{ statement.pk }}">
         <td>{{statement.rights_basis}}</td>
-        <td>{{statement.get_table_data.notes}}</td>
+        <td>{{statement.rights_info_notes}}</td>
       </tr>
       {% endfor %}
     </tbody>

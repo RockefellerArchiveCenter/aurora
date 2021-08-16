@@ -1,31 +1,19 @@
-from rest_framework import serializers
-
-from bag_transfer.models import (
-    AcceptBagItVersion,
-    AcceptSerialization,
-    Archives,
-    BagInfoMetadata,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    BAGLog,
-    ManifestsAllowed,
-    ManifestsRequired,
-    Organization,
-    RecordCreators,
-    TagFilesRequired,
-    TagManifestsRequired,
-    User,
-)
 from bag_transfer.accession.models import Accession
-from bag_transfer.rights.models import (
-    RightsStatement,
-    RightsStatementRightsGranted,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-)
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagInfoMetadata, BagItProfile,
+                                 BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, BAGLog,
+                                 ManifestsAllowed, ManifestsRequired,
+                                 Organization, RecordCreators,
+                                 TagFilesRequired, TagManifestsRequired,
+                                 Transfer, User)
+from bag_transfer.rights.models import (RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
+from rest_framework import serializers
 
 
 class RecordCreatorsSerializer(serializers.ModelSerializer):
@@ -40,34 +28,31 @@ class RecordCreatorsSerializer(serializers.ModelSerializer):
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
     note = serializers.StringRelatedField(source="rights_granted_note")
     end_date = serializers.SerializerMethodField()
+    grant_restriction = serializers.CharField(source="restriction")
 
     def get_end_date(self, obj):
         end_date = obj.end_date
         if not end_date:
-            end_date = "OPEN" if obj.end_date_open else None
+            end_date = "open" if obj.end_date_open else None
         return end_date
 
     class Meta:
         model = RightsStatementRightsGranted
-        fields = ("act", "start_date", "end_date", "note", "restriction")
+        fields = ("act", "start_date", "end_date", "note", "grant_restriction")
 
 
 class RightsStatementSerializer(serializers.ModelSerializer):
-    rights_granted = RightsStatementRightsGrantedSerializer(
-        source="rightsstatementrightsgranted_set", many=True
-    )
-    rights_basis = serializers.StringRelatedField()
+    rights_granted = RightsStatementRightsGrantedSerializer(many=True)
+    rights_basis = serializers.SerializerMethodField()
     start_date = serializers.SerializerMethodField()
     end_date = serializers.SerializerMethodField()
-    note = serializers.SerializerMethodField()
+    basis_note = serializers.SerializerMethodField()
     jurisdiction = serializers.SerializerMethodField(allow_null=True, required=False)
-    determination_date = serializers.SerializerMethodField(
-        allow_null=True, required=False
-    )
-    status = serializers.SerializerMethodField(allow_null=True, required=False)
+    determination_date = serializers.SerializerMethodField(allow_null=True, required=False)
+    copyright_status = serializers.SerializerMethodField(allow_null=True, required=False)
     terms = serializers.SerializerMethodField(allow_null=True, required=False)
-    citation = serializers.SerializerMethodField(allow_null=True, required=False)
-    other_rights_basis = serializers.SerializerMethodField(
+    statute_citation = serializers.SerializerMethodField(allow_null=True, required=False)
+    other_basis = serializers.SerializerMethodField(
         allow_null=True, required=False
     )
 
@@ -79,13 +64,16 @@ class RightsStatementSerializer(serializers.ModelSerializer):
             "jurisdiction",
             "start_date",
             "end_date",
-            "note",
-            "status",
+            "basis_note",
+            "copyright_status",
             "terms",
-            "citation",
-            "other_rights_basis",
+            "statute_citation",
+            "other_basis",
             "rights_granted",
         )
+
+    def get_rights_basis(self, obj):
+        return obj.rights_basis.lower()
 
     def get_basis_obj(self, obj):
         if obj.rights_basis == "Copyright":
@@ -117,11 +105,11 @@ class RightsStatementSerializer(serializers.ModelSerializer):
         )
         if not end_date:
             end_date = (
-                "OPEN" if "{}_end_date_open".format(self.get_basis_key(obj)) else None
+                "open" if "{}_end_date_open".format(self.get_basis_key(obj)) else None
             )
         return end_date
 
-    def get_note(self, obj):
+    def get_basis_note(self, obj):
         return getattr(
             self.get_basis_obj(obj), "{}_note".format(self.get_basis_key(obj))
         )
@@ -146,7 +134,7 @@ class RightsStatementSerializer(serializers.ModelSerializer):
         else:
             return None
 
-    def get_status(self, obj):
+    def get_copyright_status(self, obj):
         return (
             getattr(self.get_basis_obj(obj), "copyright_status")
             if (obj.rights_basis == "Copyright")
@@ -160,16 +148,16 @@ class RightsStatementSerializer(serializers.ModelSerializer):
             else None
         )
 
-    def get_citation(self, obj):
+    def get_statute_citation(self, obj):
         return (
             getattr(self.get_basis_obj(obj), "statute_citation")
             if (obj.rights_basis == "Statute")
             else None
         )
 
-    def get_other_rights_basis(self, obj):
+    def get_other_basis(self, obj):
         return (
-            getattr(self.get_basis_obj(obj), "other_rights_basis")
+            getattr(self.get_basis_obj(obj), "other_rights_basis").lower()
             if (obj.rights_basis == "Other")
             else None
         )
@@ -186,7 +174,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     type = serializers.SerializerMethodField()
     summary = serializers.CharField(source="code.code_desc")
     object = serializers.HyperlinkedRelatedField(
-        source="archive", view_name="archives-detail", read_only=True
+        source="transfer", view_name="transfer-detail", read_only=True
     )
     result = BAGLogResultSerializer(source="code.next_action")
     endTime = serializers.StringRelatedField(source="created_time")
@@ -227,7 +215,7 @@ class BagInfoMetadataSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
+class TransferSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer(read_only=True)
     events = BAGLogSerializer(many=True, read_only=True)
     rights_statements = RightsStatementSerializer(many=True, read_only=True)
@@ -237,7 +225,7 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
     origin = serializers.StringRelatedField(source="metadata.origin")
 
     class Meta:
-        model = Archives
+        model = Transfer
         fields = (
             "url",
             "identifier",
@@ -259,11 +247,11 @@ class ArchivesSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class ArchivesListSerializer(serializers.HyperlinkedModelSerializer):
+class TransferListSerializer(serializers.HyperlinkedModelSerializer):
     identifier = serializers.StringRelatedField(source="machine_file_identifier")
 
     class Meta:
-        model = Archives
+        model = Transfer
         fields = ("url", "identifier", "created_time", "modified_time")
 
 
@@ -338,18 +326,18 @@ class BagItProfileSerializer(serializers.BaseSerializer):
 
 
 class BagItProfileListSerializer(serializers.HyperlinkedModelSerializer):
+    organization = serializers.StringRelatedField(source="profile_organization")
+
     class Meta:
         model = BagItProfile
-        fields = ("url", "external_description", "version", "applies_to_organization")
+        fields = ("url", "external_description", "version", "organization")
 
 
 class OrganizationSerializer(serializers.HyperlinkedModelSerializer):
-    bagit_profiles = serializers.HyperlinkedIdentityField(
-        read_only=True, view_name="organization-bagit-profiles"
-    )
     rights_statements = serializers.HyperlinkedIdentityField(
-        read_only=True, view_name="organization-rights-statements"
-    )
+        read_only=True, view_name="organization-rights-statements")
+    bagit_profiles = serializers.HyperlinkedIdentityField(
+        read_only=True, view_name="organization-bagit-profiles")
 
     class Meta:
         model = Organization
@@ -381,7 +369,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     creators = RecordCreatorsSerializer(many=True, read_only=True)
-    transfers = ArchivesListSerializer(
+    transfers = TransferListSerializer(
         source="accession_transfers", many=True, read_only=True
     )
     organization = serializers.StringRelatedField(read_only=True)

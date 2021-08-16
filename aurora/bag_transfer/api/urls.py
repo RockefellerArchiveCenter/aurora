@@ -1,23 +1,17 @@
-from django.conf.urls import url, include
-from rest_framework.schemas import get_schema_view
+from bag_transfer.api.views import (AccessionViewSet, BagItProfileViewSet,
+                                    BAGLogViewSet, OrganizationViewSet,
+                                    TransferViewSet, UserViewSet)
+from django.conf.urls import include, url
 from rest_framework.routers import DefaultRouter
+from rest_framework.schemas import get_schema_view
 from rest_framework_jwt.views import obtain_jwt_token
-
-from bag_transfer.api.views import (
-    AccessionViewSet,
-    OrganizationViewSet,
-    ArchivesViewSet,
-    BAGLogViewSet,
-    BagItProfileViewSet,
-    UserViewSet,
-)
 
 router = DefaultRouter()
 router.register(r"accessions", AccessionViewSet, "accession")
 router.register(r"bagit_profiles", BagItProfileViewSet, "bagitprofile")
 router.register(r"events", BAGLogViewSet, "baglog")
 router.register(r"orgs", OrganizationViewSet, "organization")
-router.register(r"transfers", ArchivesViewSet, "archives")
+router.register(r"transfers", TransferViewSet, "transfer")
 router.register(r"users", UserViewSet, "user")
 
 schema_view = get_schema_view(

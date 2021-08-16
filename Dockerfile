@@ -18,38 +18,32 @@ RUN apt-get update \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy and make Aurora scripts
-COPY scripts/RAC* /usr/local/bin/
-COPY import_sample_data.sh /usr/local/bin/import_sample_data
-RUN chmod +x /usr/local/bin/RAC* && chmod +x /usr/local/bin/import_sample_data
+COPY scripts/* /usr/local/bin/
+RUN chmod +x /usr/local/bin/*
 
-# Setup SSH
-RUN sed -i 's/Port 22/Port 12060/gi' /etc/ssh/sshd_config
-RUN sed -i 's/systemctl restart sshd2.service/service ssh restart/gi' /usr/local/bin/RACaddorg
-
-# Update clamav databases
-RUN wget -O /var/lib/clamav/main.cvd http://database.clamav.net/main.cvd && \
-    wget -O /var/lib/clamav/daily.cvd http://database.clamav.net/daily.cvd && \
-    wget -O /var/lib/clamav/bytecode.cvd http://database.clamav.net/bytecode.cvd && \
-    chown clamav:clamav /var/lib/clamav/*.cvd
-
-# Permissions for clamav
+# Clamav configs and permissions
 RUN mkdir /var/run/clamav && \
     chown clamav:clamav /var/run/clamav && \
-    chmod 750 /var/run/clamav
+    chmod 750 /var/run/clamav && \
+    sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf && \
+    sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf && \
+    freshclam
 
-# Run clamav as root
-RUN sed -i 's/^User .*$/User root/g' /etc/clamav/clamd.conf
-RUN sed -i 's/^DatabaseOwner .*$/DatabaseOwner root/g' /etc/clamav/freshclam.conf
+# Set up SSH
+RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
 
-# Copy Aurora application files
+# Install Python dependencies
 RUN mkdir -p /code/
-COPY . /code
+COPY requirements.txt /code
 
 RUN mkdir -p /data/
 
 # Install Python modules
 RUN pip install --upgrade pip && pip install -r /code/requirements.txt
 
-EXPOSE 8000 3310
+COPY . /code
+
+EXPOSE 8000
+EXPOSE 22
 
 WORKDIR /code/aurora

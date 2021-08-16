@@ -1,7 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load tz static %}
 
-{% block h1_title %}{{ object.bag_or_failed_name }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
+{% block h1_title %}{{ page_title }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
 
 {% block content %}
 
@@ -12,7 +12,7 @@
 	</div>
 </div>
 
-{% if object.get_bag_data %}
+{% if object.bag_data %}
 	{% include 'parts/metadata_box.html' %}
 {% endif %}
 
@@ -31,7 +31,7 @@
 </div>
 {% endif %}
 
-{% if object.get_errors %}
+{% if object.errors %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-danger">
@@ -49,7 +49,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for err in object.get_errors %}
+						{% for err in object.errors %}
 						<tr>
 							<td>{{ err.created_time }}</td>
 							<td>{{ err.code.code_desc }}</td>
@@ -79,7 +79,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						{% for tlog in object.get_transfer_logs %}
+						{% for tlog in object.events.all %}
 						<tr>
 							<td>{{ tlog.created_time }}</td>
 							<td>{{ tlog.code.code_desc }}</td>
@@ -92,7 +92,7 @@
 	</div>
 </div>
 
-{% if object.rights_statements %}
+{% if object.rights_statements.all %}
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">
@@ -100,7 +100,7 @@
 				<h2 class="box-title">Rights Statements</h2>
 			</div>
 			<div class="box-body no-padding">
-				{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements %}
+				{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
 			</div>
 		</div>
 	</div>

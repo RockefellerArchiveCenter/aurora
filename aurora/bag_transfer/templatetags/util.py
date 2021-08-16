@@ -1,6 +1,6 @@
-from django import template
 from bag_transfer.lib.view_helpers import label_class
-from bag_transfer.models import Archives
+from bag_transfer.models import Transfer
+from django import template
 
 register = template.Library()
 
@@ -24,4 +24,4 @@ def progress_class(status):
 
 @register.filter
 def progress_percentage(status):
-    return int(round(float(status) / Archives.ACCESSIONING_COMPLETE * 100))
+    return int(round(float(status) / Transfer.ACCESSIONING_COMPLETE * 100))

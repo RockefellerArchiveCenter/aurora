@@ -1,24 +1,13 @@
-from os.path import join, isfile
 from os import remove
+from os.path import isfile, join
 
 from aurora import settings
 
 
-class CleanupError(Exception):
-    pass
-
-
 class CleanupRoutine:
-    def __init__(self, identifier):
-        self.identifier = identifier
-        self.dir = settings.DELIVERY_QUEUE_DIR
-
-    def run(self):
-        try:
-            self.filepath = "{}.tar.gz".format(join(self.dir, self.identifier))
-            if isfile(self.filepath):
-                remove(self.filepath)
-                return "Transfer {} removed.".format(self.identifier)
-            return "Transfer {} was not found.".format(self.identifier)
-        except Exception as e:
-            raise CleanupError(e)
+    def run(self, identifier):
+        filepath = "{}.tar.gz".format(join(settings.DELIVERY_QUEUE_DIR, identifier))
+        if isfile(filepath):
+            remove(filepath)
+            return "Transfer {} removed.".format(identifier)
+        return "Transfer {} was not found.".format(identifier)

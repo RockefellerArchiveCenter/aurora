@@ -1,144 +1,90 @@
 import random
 
-from django.test import TestCase, Client
-from django.conf import settings
+from bag_transfer.models import Organization
+from bag_transfer.rights.models import (RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementStatute)
+from bag_transfer.test.helpers import (RIGHTS_BASIS_DATA, RIGHTS_GRANTED_DATA,
+                                       TestMixin)
+from django.test import TestCase
 from django.urls import reverse
 
-from bag_transfer.test import helpers, setup
-from bag_transfer.rights.models import RightsStatement
-from bag_transfer.lib.bag_checker import bagChecker
 
+class RightsTestCase(TestMixin, TestCase):
+    fixtures = ["complete.json"]
 
-class RightsTestCase(TestCase):
-    def setUp(self):
-        self.client = Client()
-        self.record_types = helpers.create_test_record_types(setup.record_types)
-        self.baglogcodes = helpers.create_test_baglogcodes()
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.bags = helpers.create_target_bags(
-            "valid_bag", settings.TEST_BAGS_DIR, self.orgs[0]
-        )
-        tr = helpers.run_transfer_routine()
-        self.archives = []
-        for transfer in tr.transfers:
-            archive = helpers.create_test_archive(transfer, self.orgs[0])
-            self.archives.append(archive)
-        self.groups = helpers.create_test_groups(["managing_archivists"])
-        self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"], org=random.choice(self.orgs)
-        )
-        for group in self.groups:
-            self.user.groups.add(group)
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER["PASSWORD"])
-        self.user.save()
+    def test_model_methods(self):
+        self.rights_info()
+        self.rights_info_notes()
+        self.get_date_keys()
+        self.merge_rights()
 
-    def test_rights(self):
-        for record_type in self.record_types:
-            helpers.create_rights_statement(
-                record_type=record_type,
-                org=random.choice(self.orgs),
-                rights_basis=random.choice(setup.rights_bases),
-            )
-        self.assertEqual(len(RightsStatement.objects.all()), len(self.record_types))
+    def rights_info(self):
+        for basis, expected_type in [
+                ("Copyright", RightsStatementCopyright),
+                ("License", RightsStatementLicense),
+                ("Statute", RightsStatementStatute),
+                ("Other", RightsStatementOther)]:
+            rights_statement = random.choice(RightsStatement.objects.filter(rights_basis=basis))
+            self.assertTrue(isinstance(rights_statement.rights_info, expected_type))
 
-        for rights_statement in RightsStatement.objects.all():
-            self.assemble_rights_statement(rights_statement)
+    def rights_info_notes(self):
+        rights_statement = random.choice(RightsStatement.objects.all())
+        self.assertTrue(isinstance(rights_statement.rights_info_notes(), str))
 
-        # Assign rights statements to archives
-        for archive in self.archives:
-            bag = bagChecker(archive)
+    def get_date_keys(self):
+        for basis, prefix in [
+                ("Copyright", "copyright_applicable"),
+                ("License", "license_applicable"),
+                ("Statute", "statute_applicable"),
+                ("Other", "other_rights_applicable")]:
+            rights_statement = random.choice(RightsStatement.objects.filter(rights_basis=basis))
+            for periods, expected_len in [(False, 2), (True, 4)]:
+                keys = rights_statement.get_date_keys(periods=periods)
+                self.assertEqual(len(keys), expected_len)
+                self.assertTrue([s.startswith(prefix) for s in keys])
 
-            # this calls assign_rights
-            self.assertTrue(bag.bag_passed_all())
+    def merge_rights(self):
+        for merge_list in [
+                random.choices(RightsStatement.objects.filter(rights_basis="Copyright"), k=3),
+                random.choices(RightsStatement.objects.all(), k=3)]:
+            merge_list = random.choices(RightsStatement.objects.filter(rights_basis="Copyright"), k=3)
+            merged = RightsStatement.merge_rights(merge_list)
+            self.assertTrue(isinstance(merged, list))
+            self.assertTrue([isinstance(m, RightsStatement) for m in merged])
 
-        # Rights statements are cloned when assigned, so we should have more of them now
-        assigned_length = len(RightsStatement.objects.all())
-        self.assertEqual(assigned_length, len(setup.record_types) + len(self.archives))
-
-        # Test GET views
-        self.get_requests()
-
-        # Test POST views
-        self.post_requests()
-
-        # Delete rights statements via AJAX
-        self.ajax_requests()
-
-        # Delete rights statement
-        to_delete = random.choice(RightsStatement.objects.all())
-        self.assertTrue(to_delete.delete())
-        self.assertEqual(len(RightsStatement.objects.all()), assigned_length - 1)
-
-    #############################################
-    # Functions used in Rights Statements tests #
-    #############################################
-
-    def assemble_rights_statement(self, rights_statement):
-        helpers.create_rights_info(rights_statement=rights_statement)
-        helpers.create_rights_granted(
-            rights_statement=rights_statement, granted_count=random.randint(1, 2)
-        )
-
-        # Make sure correct rights info objects were assigned
-        rights_basis_type = setup.get_rights_basis_type(rights_statement)
-        self.assertIsInstance(
-            rights_statement.get_rights_info_object(), rights_basis_type
-        )
-
-        # Make sure RightsGranted objects were created
-        self.assertIsNot(False, rights_statement.get_rights_granted_objects())
-
-        # Assign rights statements to organization
-        org = random.choice(self.orgs)
-        rights_statement.organization = org
-        rights_statement.save()
-        self.assertTrue(org.rights_statements)
-
-    def get_requests(self):
-        self.client.login(
-            username=self.user.username, password=settings.TEST_USER["PASSWORD"]
-        )
+    def test_views(self):
+        """Asserts that views return expected status codes"""
         for view in ["rights:edit", "rights:detail"]:
-            rights_statement = random.choice(RightsStatement.objects.all())
-            response = self.client.get(
-                reverse(view, kwargs={"pk": rights_statement.pk})
-            )
-            self.assertEqual(response.status_code, 200)
-        add_response = self.client.get(reverse("rights:add"), {"org": self.orgs[0].pk})
-        self.assertEqual(add_response.status_code, 200)
+            self.assert_status_code(
+                "get", reverse(view, kwargs={"pk": random.choice(RightsStatement.objects.all()).pk}), 200)
+        for org in Organization.objects.all():
+            self.assert_status_code("get", reverse("rights:add"), 200, data={"org": org.pk})
 
-        resp = self.client.get(
-            reverse("organization-rights-statements", kwargs={"pk": self.orgs[0].pk})
-        )
-        self.assertEqual(resp.status_code, 200)
-
-    def post_requests(self):
+    def test_manage_rights_statements(self):
+        """Tests creation and update of rights statement views, as well as error handling"""
         # Creating new RightsStatements
-        post_organization = random.choice(self.orgs)
-        new_basis_data = random.choice(setup.basis_data)
+        post_organization = random.choice(Organization.objects.all())
+        new_basis_data = random.choice(RIGHTS_BASIS_DATA)
         new_basis_data["organization"] = post_organization.pk
-        new_basis_data.update(setup.grant_data)
+        new_basis_data.update(RIGHTS_GRANTED_DATA)
         previous_length = len(RightsStatement.objects.all())
-        new_request = self.client.post(
-            "{}{}".format(
-                reverse("rights:add"), "?org={}".format(post_organization.pk)
-            ),
-            new_basis_data,
-        )
-        self.assertEqual(new_request.status_code, 302, "Request was not successful")
+        self.assert_status_code(
+            "post",
+            "{}{}".format(reverse("rights:add"), "?org={}".format(post_organization.pk)),
+            302, data=new_basis_data)
+
         self.assertEqual(
             len(RightsStatement.objects.all()),
             previous_length + 1,
-            "{} Rights Statements were created, correct number is 1".format(
-                len(RightsStatement.objects.all()) - previous_length
-            ),
-        )
+            "{} Rights Statements were created, expected number is 1".format(
+                len(RightsStatement.objects.all()) - previous_length))
         self.assertEqual(
             RightsStatement.objects.last().rights_basis,
             new_basis_data["rights_basis"],
-            "Rights bases do not match",
-        )
+            "Rights bases do not match")
 
         # Updating RightsStatements
         rights_statement = RightsStatement.objects.last()
@@ -148,41 +94,39 @@ class RightsTestCase(TestCase):
             note_key = "other_rights_note"
         else:
             basis_set = "rightsstatement{}_set".format(
-                updated_basis_data["rights_basis"].lower()
-            )
+                updated_basis_data["rights_basis"].lower())
             note_key = "{}_note".format(updated_basis_data["rights_basis"].lower())
         updated_basis_data[basis_set + "-0-" + note_key] = "Revised test note"
         basis_objects = getattr(rights_statement, basis_set).all()
         updated_basis_data[basis_set + "-0-id"] = basis_objects[0].pk
-        update_request = self.client.post(
-            reverse("rights:edit", kwargs={"pk": rights_statement.pk}),
-            updated_basis_data,
-        )
-        self.assertEqual(update_request.status_code, 302, "Request was not redirected")
+        self.assert_status_code(
+            "post", reverse("rights:edit", kwargs={"pk": rights_statement.pk}),
+            302, data=updated_basis_data)
         self.assertEqual(
             len(RightsStatement.objects.all()),
             previous_length + 1,
-            "Another rights statement was mistakenly created",
-        )
+            "Another rights statement was mistakenly created")
 
-    def ajax_requests(self):
+        invalid_data = updated_basis_data
+        del invalid_data["rights_basis"]
+        del invalid_data["rights_granted-0-act"]
+        self.assert_status_code(
+            "post", reverse("rights:edit", kwargs={"pk": rights_statement.pk}),
+            200, data=invalid_data)
+        self.assert_status_code(
+            "post",
+            "{}{}".format(reverse("rights:add"), "?org={}".format(post_organization.pk)),
+            200, data=invalid_data)
+
+    def test_ajax_requests(self):
+        """Asserts that requests made with javascript are processed correctly."""
         rights_statement = RightsStatement.objects.last()
-        delete_request = self.client.get(
-            reverse(
-                "rights:api", kwargs={"pk": rights_statement.pk, "action": "delete"}
-            ),
-            {},
-            HTTP_X_REQUESTED_WITH="XMLHttpRequest",
-        )
+        delete_request = self.assert_status_code(
+            "get", reverse("rights:api", kwargs={"pk": rights_statement.pk, "action": "delete"}),
+            200, data={}, ajax=True)
         self.assertEqual(delete_request.status_code, 200)
         resp = delete_request.json()
         self.assertEqual(resp["success"], 1)
         non_ajax_request = self.client.get(
-            reverse(
-                "rights:api", kwargs={"pk": rights_statement.pk, "action": "delete"}
-            )
-        )
+            reverse("rights:api", kwargs={"pk": rights_statement.pk, "action": "delete"}))
         self.assertEqual(non_ajax_request.status_code, 404)
-
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)

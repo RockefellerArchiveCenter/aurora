@@ -1,49 +1,67 @@
 import os
-import pwd
 import random
+import shutil
+from unittest.mock import patch
 
 import bagit
-from django.test import TransactionTestCase, Client
-from django.conf import settings
-
-from bag_transfer.lib.cron import DiscoverTransfers, DeliverTransfers
+from asterism.file_helpers import remove_file_or_dir
+from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
+from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
+                                 User)
 from bag_transfer.test import helpers
-from bag_transfer.test.setup import BAGS_REF, TEST_ORG_COUNT
-from bag_transfer.models import Archives, User
+from bag_transfer.test.helpers import BAGS_REF
+from django.conf import settings
+from django.test import TestCase
 
 
-class CronTestCase(TransactionTestCase):
+class CronTestCase(TestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.baglogcodes = helpers.create_test_baglogcodes()
-        self.groups = helpers.create_test_groups(['managing_archivists'])
-        self.user = helpers.create_test_user(username=settings.TEST_USER['USERNAME'], org=random.choice(self.orgs))
-        for group in self.groups:
-            self.user.groups.add(group)
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER['PASSWORD'])
-        self.user.save()
-        self.client = Client()
+        """
+        Delete existing Archive and DashboardMonthData objects and remove any
+        stray objects from the organization upload directory.
+        """
+        Transfer.objects.all().delete()
+        DashboardMonthData.objects.all().delete()
+        self.org = random.choice(Organization.objects.all())
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
+        for d in self.org.org_machine_upload_paths():
+            if os.path.exists(d):
+                shutil.rmtree(d)
+                os.makedirs(d)
 
     def test_cron(self):
-        for ref in BAGS_REF:
-            helpers.create_target_bags(ref[0], settings.TEST_BAGS_DIR, self.orgs[0], username=self.user.username)
-        discovered = DiscoverTransfers().do()
-        self.assertIsNot(False, discovered)
+        self.discover_transfers()
+        self.deliver_transfers()
 
-        for archive in Archives.objects.filter(process_status=Archives.VALIDATED):
-            archive.process_status = Archives.ACCESSIONING_STARTED
-            archive.save()
+    @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
+    def discover_transfers(self, mock_passed_all):
+        bag_name, _ = BAGS_REF[0]
+        for bag_passed_all in [True, False]:
+            self.bags = helpers.create_target_bags(
+                bag_name, settings.TEST_BAGS_DIR,
+                self.org, username=random.choice(User.objects.filter(organization=self.org)).username)
+            mock_passed_all.return_value = bag_passed_all
+            discovered = DiscoverTransfers().do()
+            self.assertIsNot(False, discovered)
+
+    def deliver_transfers(self):
+        for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
+            transfer.process_status = Transfer.ACCESSIONING_STARTED
+            transfer.save()
         delivered = DeliverTransfers().do()
         self.assertIsNot(False, delivered)
-        self.assertEqual(len(Archives.objects.filter(process_status=Archives.ACCESSIONING_STARTED)), 0)
+        self.assertEqual(len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED)), 0)
         self.assertEqual(
-            len(Archives.objects.filter(process_status=Archives.DELIVERED)),
-            len(os.listdir(settings.DELIVERY_QUEUE_DIR))
-        )
-        for bag_path in os.listdir(settings.DELIVERY_QUEUE_DIR):
-            bag = bagit.Bag(os.path.join(settings.DELIVERY_QUEUE_DIR, bag_path))
-            self.assertTrue('Origin' in bag.bag_info)
+            len(Transfer.objects.filter(process_status=Transfer.DELIVERED)),
+            len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
+        for bag_path in os.listdir(settings.STORAGE_ROOT_DIR):
+            bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))
+            self.assertTrue("Origin" in bag.info)
+            self.assertEqual(bag.info["Origin"], "aurora")
 
     def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
+        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
+            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)

@@ -1,17 +1,18 @@
 import json
 from os import mkdir
-from os.path import join
+from os.path import isdir, join
 
-from django_cron import CronJobBase, Schedule
-
-from aurora import settings
-from bag_transfer.api.serializers import ArchivesSerializer
-from bag_transfer.lib import files_helper as FH
-from bag_transfer.lib.transfer_routine import TransferRoutine
-from bag_transfer.lib.bag_checker import bagChecker
 import bag_transfer.lib.log_print as Pter
-from bag_transfer.models import Archives, Organization, User, BAGLog
+from asterism.bagit_helpers import update_bag_info
+from asterism.file_helpers import (make_tarfile, move_file_or_dir,
+                                   remove_file_or_dir)
+from aurora import settings
+from bag_transfer.api.serializers import TransferSerializer
+from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.mailer import Mailer
+from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.models import BAGLog, Organization, Transfer, User
+from django_cron import CronJobBase, Schedule
 
 
 class DiscoverTransfers(CronJobBase):
@@ -33,74 +34,64 @@ class DiscoverTransfers(CronJobBase):
                 try:
                     email = Mailer()
 
-                    machine_file_identifier = Archives().gen_identifier()
+                    machine_file_identifier = Transfer().gen_identifier()
                     org = Organization.is_org_active(upload_list["org"])
                     user = User.is_user_active(upload_list["upload_user"], org)
 
                     email.to = [user.email]
 
-                    new_arc = Archives.initial_save(
-                        org,
-                        user,
-                        upload_list["file_path"],
-                        upload_list["file_size"],
-                        upload_list["file_modtime"],
-                        machine_file_identifier,
-                        upload_list["file_type"],
-                        upload_list["bag_it_name"],
-                    )
+                    new_transfer = Transfer.objects.create(
+                        organization=org,
+                        user_uploaded=user,
+                        machine_file_path=upload_list["file_path"],
+                        machine_file_size=upload_list["file_size"],
+                        machine_file_upload_time=upload_list["file_modtime"],
+                        machine_file_identifier=machine_file_identifier,
+                        machine_file_type=upload_list["file_type"],
+                        bag_it_name=upload_list["bag_it_name"],
+                        process_status=Transfer.TRANSFER_COMPLETED)
 
-                    BAGLog.log_it("ASAVE", new_arc)
-                    print(
-                        "\nValidating transfer {}".format(new_arc.machine_file_identifier)
-                    )
+                    BAGLog.log_it("ASAVE", new_transfer)
+                    print("\nValidating transfer {}".format(new_transfer.machine_file_identifier))
 
                     if upload_list["auto_fail"]:
-                        new_arc.setup_save(upload_list)
-                        new_arc.process_status = Archives.INVALID
-                        BAGLog.log_it(upload_list["auto_fail_code"], new_arc)
-                        email.setup_message("TRANS_FAIL_VAL", new_arc)
+                        new_transfer.add_autofail_information(upload_list)
+                        new_transfer.process_status = Transfer.INVALID
+                        BAGLog.log_it(upload_list["auto_fail_code"], new_transfer)
+                        email.setup_message("TRANS_FAIL_VAL", new_transfer)
                         email.send()
-                        FH.remove_file_or_dir(new_arc.machine_file_path)
+                        remove_file_or_dir(new_transfer.machine_file_path)
 
                     else:
-                        bag = bagChecker(new_arc)
+                        bag = BagChecker(new_transfer)
                         if bag.bag_passed_all():
-                            print(
-                                "Transfer {} is valid".format(
-                                    new_arc.machine_file_identifier
-                                )
-                            )
-                            new_arc.process_status = Archives.VALIDATED
-                            new_arc.bag_it_valid = True
-                            BAGLog.log_it("APASS", new_arc)
-                            email.setup_message("TRANS_PASS_ALL", new_arc)
+                            print("Transfer {} is valid".format(new_transfer.machine_file_identifier))
+                            new_transfer.process_status = Transfer.VALIDATED
+                            new_transfer.bag_it_valid = True
+                            BAGLog.log_it("APASS", new_transfer)
+                            email.setup_message("TRANS_PASS_ALL", new_transfer)
                             email.send()
-                            FH.move_file_or_dir(
-                                "/data/tmp/{}".format(new_arc.bag_it_name),
+                            move_file_or_dir(
+                                join(settings.TRANSFER_EXTRACT_TMP, new_transfer.bag_it_name),
                                 "{}{}".format(
                                     settings.STORAGE_ROOT_DIR,
-                                    new_arc.machine_file_identifier,
+                                    new_transfer.machine_file_identifier,
                                 ),
                             )
-                            FH.remove_file_or_dir(new_arc.machine_file_path)
-                            new_arc.machine_file_path = "{}{}".format(
-                                settings.STORAGE_ROOT_DIR, new_arc.machine_file_identifier
+                            remove_file_or_dir(new_transfer.machine_file_path)
+                            new_transfer.machine_file_path = "{}{}".format(
+                                settings.STORAGE_ROOT_DIR, new_transfer.machine_file_identifier
                             )
                         else:
-                            print(
-                                "Transfer {} is invalid".format(
-                                    new_arc.machine_file_identifier
-                                )
-                            )
-                            new_arc.process_status = Archives.INVALID
-                            BAGLog.log_it(bag.ecode, new_arc)
-                            email.setup_message("TRANS_FAIL_VAL", new_arc)
+                            print("Transfer {} is invalid".format(new_transfer.machine_file_identifier))
+                            new_transfer.process_status = Transfer.INVALID
+                            BAGLog.log_it(bag.ecode, new_transfer)
+                            email.setup_message("TRANS_FAIL_VAL", new_transfer)
                             email.send()
-                            FH.remove_file_or_dir(new_arc.machine_file_path)
+                            remove_file_or_dir(new_transfer.machine_file_path)
 
-                    new_arc.save()
-                    FH.remove_file_or_dir("/data/tmp/{}".format(new_arc.bag_it_name))
+                    new_transfer.save()
+                    remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, new_transfer.bag_it_name))
                 except Exception as e:
                     print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
                     result = False
@@ -117,63 +108,42 @@ class DeliverTransfers(CronJobBase):
     def do(self):
         result = True
         Pter.cron_open(self.code)
-        for archive in Archives.objects.filter(
-            process_status=Archives.ACCESSIONING_STARTED
-        ):
+        if not isdir(settings.DELIVERY_QUEUE_DIR):
+            mkdir(settings.DELIVERY_QUEUE_DIR)
+        for transfer in Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED):
             try:
-                FH.update_bag_info(
-                    join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
-                    {"Origin": "aurora"}
-                )
-                tar_filename = "{}.tar.gz".format(archive.machine_file_identifier)
-                FH.make_tarfile(
+                update_bag_info(
+                    join(settings.STORAGE_ROOT_DIR, transfer.machine_file_identifier),
+                    {"Origin": "aurora"})
+                tar_filename = "{}.tar.gz".format(transfer.machine_file_identifier)
+                make_tarfile(
+                    join(settings.STORAGE_ROOT_DIR, transfer.machine_file_identifier),
+                    join(settings.STORAGE_ROOT_DIR, tar_filename))
+
+                mkdir(join(settings.DELIVERY_QUEUE_DIR, transfer.machine_file_identifier))
+
+                move_file_or_dir(
                     join(settings.STORAGE_ROOT_DIR, tar_filename),
-                    join(settings.STORAGE_ROOT_DIR, archive.machine_file_identifier),
-                )
+                    join(settings.DELIVERY_QUEUE_DIR, transfer.machine_file_identifier, tar_filename))
 
-                mkdir(
-                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
-                )
-
-                FH.move_file_or_dir(
-                    join(settings.STORAGE_ROOT_DIR, tar_filename),
-                    join(
+                transfer_json = TransferSerializer(transfer, context={"request": None}).data
+                with open(join(
                         settings.DELIVERY_QUEUE_DIR,
-                        archive.machine_file_identifier,
-                        tar_filename,
-                    ),
-                )
+                        transfer.machine_file_identifier,
+                        "{}.json".format(transfer.machine_file_identifier)), "w") as f:
+                    json.dump(transfer_json, f, indent=4, sort_keys=True, default=str)
 
-                archive_json = ArchivesSerializer(
-                    archive, context={"request": None}
-                ).data
-                with open(
-                    join(
-                        settings.DELIVERY_QUEUE_DIR,
-                        archive.machine_file_identifier,
-                        "{}.json".format(archive.machine_file_identifier),
-                    ),
-                    "w",
-                ) as f:
-                    json.dump(archive_json, f, indent=4, sort_keys=True, default=str)
+                make_tarfile(
+                    join(settings.DELIVERY_QUEUE_DIR, transfer.machine_file_identifier),
+                    join(settings.DELIVERY_QUEUE_DIR, "{}.tar.gz".format(transfer.machine_file_identifier)))
 
-                FH.make_tarfile(
-                    join(
-                        settings.DELIVERY_QUEUE_DIR,
-                        "{}.tar.gz".format(archive.machine_file_identifier),
-                    ),
-                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier),
-                )
+                remove_file_or_dir(join(settings.DELIVERY_QUEUE_DIR, transfer.machine_file_identifier))
 
-                FH.remove_file_or_dir(
-                    join(settings.DELIVERY_QUEUE_DIR, archive.machine_file_identifier)
-                )
-
-                archive.process_status = Archives.DELIVERED
-                print(archive.machine_file_identifier)
-                archive.save()
+                transfer.process_status = Transfer.DELIVERED
+                print(transfer.machine_file_identifier)
+                transfer.save()
             except Exception as e:
-                print("Error delivering transfer {}: {}".format(archive, str(e)))
+                print("Error delivering transfer {}: {}".format(transfer, str(e)))
                 result = False
 
         Pter.cron_close(self.code)

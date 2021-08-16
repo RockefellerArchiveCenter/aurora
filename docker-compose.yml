@@ -12,19 +12,13 @@ services:
     entrypoint: /code/entrypoint.sh
     volumes:
       - .:/code
-      - ~/.pe-shared/aurora-upload:/data
       - storage:/data1
-      - ~/.pe-shared/aurora-ursamajor:/delivery
     ports:
       - "8000:8000"
+      - "22:22"
     depends_on:
       - db
 
 volumes:
   auroradb:
   storage:
-
-# networks:
-#   default:
-#     external:
-#       name: zodiac_microservices

@@ -1,109 +1,83 @@
-import os
-import random
-import shutil
+import json
+from unittest.mock import patch
 
+from bag_transfer.accession.models import Accession
+from bag_transfer.models import (BAGLog, DashboardMonthData, Organization,
+                                 Transfer, User)
+from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
-from rest_framework.test import APIRequestFactory
-
-from aurora import settings
-from bag_transfer.models import Archives
-from bag_transfer.api.views import ArchivesViewSet
-from bag_transfer.test import helpers
+from rac_schemas import is_valid
 
 
-class APITest(TestCase):
+class APITest(TestMixin, TestCase):
+    fixtures = ["complete.json"]
+
     def setUp(self):
-        self.factory = APIRequestFactory()
-        self.process_status = Archives.ACCESSIONING_STARTED
-        self.archivesspace_identifier = "/repositories/2/archival_objects/3"
-        self.archivesspace_parent_identifier = "/repositories/2/archival_objects/4"
-        self.orgs = helpers.create_test_orgs(org_count=1)
-        self.user = helpers.create_test_user(
-            username=settings.TEST_USER["USERNAME"], org=random.choice(self.orgs)
-        )
-        self.user.is_staff = True
-        self.user.set_password(settings.TEST_USER["PASSWORD"])
-        self.user.save()
-        self.bags = helpers.create_target_bags(
-            "valid_bag", settings.TEST_BAGS_DIR, self.orgs[0]
-        )
-        tr = helpers.run_transfer_routine()
-        self.archives = []
-        for transfer in tr.transfers:
-            archive = helpers.create_test_archive(transfer, self.orgs[0])
-            self.archives.append(archive)
-        for archive in self.archives:
-            shutil.copy(
-                os.path.join(
-                    settings.BASE_DIR, settings.TEST_BAGS_DIR, "valid_bag.tar.gz"
-                ),
-                os.path.join(
-                    settings.BASE_DIR,
-                    settings.DELIVERY_QUEUE_DIR,
-                    "{}.tar.gz".format(archive.machine_file_identifier),
-                ),
-            )
+        super().setUp()
+        DashboardMonthData.objects.all().delete()
 
-    def update_transfer(self):
-        for archive in Archives.objects.all():
-            request = self.factory.get(
-                reverse("archives-detail", kwargs={"pk": archive.pk}), format="json"
-            )
-            request.user = self.user
-            new_transfer = ArchivesViewSet.as_view(actions={"get": "retrieve"})(
-                request, pk=archive.pk
-            ).data
-            new_transfer["process_status"] = self.process_status
-            new_transfer["archivesspace_identifier"] = self.archivesspace_identifier
-            new_transfer[
-                "archivesspace_parent_identifier"
-            ] = self.archivesspace_parent_identifier
+    @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
+    def test_update_transfer(self, mock_cleanup):
+        """Asserts bad data can be updated."""
+        new_values = {
+            "process_status": Transfer.ACCESSIONING_STARTED,
+            "archivesspace_identifier": "/repositories/2/archival_objects/3",
+            "archivesspace_parent_identifier": "/repositories/2/archival_objects/4"
+        }
 
-            request = self.factory.put(
-                reverse("archives-detail", kwargs={"pk": archive.pk}),
-                data=new_transfer,
-                format="json",
-            )
-            request.user = self.user
-            response = ArchivesViewSet.as_view(actions={"put": "update"})(
-                request, pk=archive.pk
-            )
-            self.assertEqual(response.status_code, 200, "Wrong HTTP status code")
-            for field in [
-                "process_status",
-                "archivesspace_identifier",
-                "archivesspace_parent_identifier",
-            ]:
-                self.assertEqual(
-                    response.data[field],
-                    getattr(self, field),
-                    "{} status not updated".format(field),
-                )
-            self.assertEqual(
-                False,
-                os.path.isfile(
-                    os.path.join(
-                        settings.BASE_DIR,
-                        settings.DELIVERY_QUEUE_DIR,
-                        "{}.tar.gz".format(new_transfer["identifier"]),
-                    )
-                ),
-                "File was not removed",
-            )
+        for transfer in Transfer.objects.all():
+            transfer_data = self.client.get(
+                reverse("transfer-detail", kwargs={"pk": transfer.pk}), format="json").json()
+            transfer_data.update(new_values)
 
-    def schema(self):
-        schema = self.client.get(reverse("schema"))
-        self.assertEqual(schema.status_code, 200, "Wrong HTTP code")
+            updated = self.client.put(
+                reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+                data=json.dumps(transfer_data),
+                content_type="application/json")
+            self.assertEqual(updated.status_code, 200, updated.data)
+            for field in new_values:
+                self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
+            mock_cleanup.assert_called_once()
+            mock_cleanup.reset_mock()
 
-    def health_check(self):
-        status = self.client.get(reverse('api_health_ping'))
-        self.assertEqual(status.status_code, 200, "Wrong HTTP code")
+    def test_schema_response(self):
+        self.assert_status_code("get", reverse("schema"), 200)
 
-    def test_api(self):
-        self.update_transfer()
-        self.schema()
-        self.health_check()
+    def test_health_check_response(self):
+        self.assert_status_code("get", reverse("api_health_ping"), 200)
 
-    def tearDown(self):
-        helpers.delete_test_orgs(self.orgs)
+    def test_action_endpoints(self):
+        """Asserts custom action endpoints return expected status code."""
+        org = Organization.objects.get(name="Donor Organization").pk
+        self.assert_status_code("get", reverse("organization-bagit-profiles", kwargs={"pk": org}), 200)
+        self.assert_status_code("get", reverse("organization-rights-statements", kwargs={"pk": org}), 200)
+        self.assert_status_code("get", reverse("user-current"), 200)
+
+    def test_list_views(self):
+        """Asserts list endpoints return expected response."""
+        for view in ["transfer-list", "accession-list", "baglog-list", "organization-list", "user-list"]:
+            self.assert_status_code("get", reverse(view), 200)
+
+    def test_detail_views(self):
+        for view, model_cls in [
+                ("transfer-detail", Transfer),
+                ("accession-detail", Accession),
+                ("baglog-detail", BAGLog),
+                ("organization-detail", Organization),
+                ("user-detail", User)]:
+            for obj in model_cls.objects.all():
+                self.assert_status_code("get", reverse(view, kwargs={"pk": obj.pk}), 200)
+
+    def test_validation(self):
+        """Asserts that endpoint responses are valid against RAC schemas."""
+        for org in Organization.objects.all():
+            rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
+            for statement in rights_statements.json():
+                self.assertTrue(is_valid(statement, "rights_statement.json"))
+        for queryset, view, schema in [
+                (Transfer.objects.filter(process_status__gte=Transfer.ACCESSIONING_STARTED), "transfer-detail", "aurora_bag"),
+                (Accession.objects.all(), "accession-detail", "accession")]:
+            for obj in queryset:
+                data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
+                self.assertTrue(is_valid(data, schema))

@@ -2,7 +2,7 @@
 
 {% block h1_title %}
   {% regroup uploads by transfer_group as upload_groups %}
-  Accessioning Queue <small>{{upload_groups|length}} accessions</small>
+  {{page_title}} <small>{{upload_groups|length}} accessions</small>
 {% endblock %}
 
 {% block content %}
@@ -35,11 +35,11 @@
             {% for group in upload_groups %}
             <tr>
               <td>{{group.list.0.organization}}</td>
-              <td>{% for r in group.list.0.get_bag_data.record_creators %}
+              <td>{% for r in group.list.0.bag_data.record_creators %}
       						{{ r }} <br />
       					{% endfor %}
               </td>
-              <td>{{group.list.0.get_bag_data.record_type}}</td>
+              <td>{{group.list.0.bag_data.record_type}}</td>
               <td>
                 {% if request.user.can_accession %}
                 <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a>

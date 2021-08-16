@@ -1,16 +1,9 @@
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, ManifestsAllowed,
+                                 ManifestsRequired, TagFilesRequired,
+                                 TagManifestsRequired)
 from django import forms
-
-from bag_transfer.models import (
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    ManifestsAllowed,
-    ManifestsRequired,
-    AcceptSerialization,
-    AcceptBagItVersion,
-    TagManifestsRequired,
-    TagFilesRequired,
-)
 
 
 class BagItProfileForm(forms.ModelForm):
@@ -23,7 +16,7 @@ class BagItProfileForm(forms.ModelForm):
             "serialization": "Serialization allowed?",
         }
         widgets = {
-            "applies_to_organization": forms.widgets.HiddenInput(),
+            "organization": forms.widgets.HiddenInput(),
             "contact_email": forms.widgets.HiddenInput(),
             "source_organization": forms.widgets.HiddenInput(),
             "version": forms.widgets.HiddenInput(),
@@ -213,7 +206,9 @@ ManifestsAllowedFormset = forms.inlineformset_factory(
     ManifestsAllowed,
     fields=("name",),
     extra=1,
-    max_num=2,
+    max_num=len(ManifestsAllowed.MANIFESTS_ALLOWED_CHOICES),
+    min_num=1,
+    validate_min=True,
     form=ManifestsAllowedForm,
 )
 
@@ -222,7 +217,7 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
     ManifestsRequired,
     fields=("name",),
     extra=1,
-    max_num=2,
+    max_num=len(ManifestsRequired.MANIFESTS_REQUIRED_CHOICES),
     form=ManifestsRequiredForm,
 )
 
@@ -231,7 +226,7 @@ AcceptSerializationFormset = forms.inlineformset_factory(
     AcceptSerialization,
     fields=("name",),
     extra=1,
-    max_num=3,
+    max_num=len(AcceptSerialization.ACCEPT_SERIALIZATION_CHOICES),
     form=AcceptSerializationForm,
 )
 
@@ -240,7 +235,7 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
     AcceptBagItVersion,
     fields=("name",),
     extra=1,
-    max_num=2,
+    max_num=len(AcceptBagItVersion.BAGIT_VERSION_NAME_CHOICES),
     form=AcceptBagItVersionForm,
 )
 
@@ -249,7 +244,7 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
     TagManifestsRequired,
     fields=("name",),
     extra=1,
-    max_num=2,
+    max_num=len(TagManifestsRequired.TAG_MANIFESTS_REQUIRED_CHOICES),
     form=TagManifestsRequiredForm,
 )
 

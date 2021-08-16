@@ -1,24 +1,15 @@
-from django.contrib.auth.models import Group
 import psutil
-
-from bag_transfer.models import (
-    ManifestsAllowed,
-    Organization,
-    User,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BagItProfileBagInfoValues,
-    AcceptSerialization,
-    AcceptBagItVersion,
-)
-from bag_transfer.rights.models import (
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementOther,
-    RightsStatementRightsGranted,
-    RecordType,
-)
-from bag_transfer.lib.RAC_CMD import add_org, add_user, add2grp
+from bag_transfer.lib.RAC_CMD import (add2grp, add_org, add_user,
+                                      set_server_password)
+from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
+                                 BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, ManifestsAllowed,
+                                 Organization, User)
+from bag_transfer.rights.models import (RecordType, RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted)
+from django.contrib.auth.models import Group
 
 orgs = Organization.objects.all()
 org_ids = []
@@ -93,14 +84,14 @@ if len(orgs) == 0:
         new_org = Organization.objects.create(
             name=org["name"], acquisition_type=org["acquisition_type"]
         )
-        archive_org = Organization.objects.get(name="Archival Repository")
+        transfer_org = Organization.objects.get(name="Archival Repository")
 
         print("Creating BagIt Profile for {}".format(new_org))
         profile = BagItProfile.objects.create(
-            applies_to_organization=new_org,
-            source_organization=archive_org,
+            source_organization=transfer_org,
             external_description="Test BagIt Profile",
             contact_email="archive@example.org",
+            organization=new_org
         )
         AcceptSerialization.objects.create(
             name="application/zip", bagit_profile=profile
@@ -153,8 +144,8 @@ if len(orgs) == 0:
             "annual reports",
         ]:
             BagItProfileBagInfoValues.objects.create(
-                bagit_profile_baginfo=record_type, name=name
-            )
+                bagit_profile_baginfo=record_type,
+                name=name)
 
         print("Creating Rights Statements for {}".format(new_org))
         copyright_statement = RightsStatement.objects.create(
@@ -223,11 +214,19 @@ if len(User.objects.all()) == 0:
             for group in user["groups"]:
                 g = Group.objects.get_or_create(name=group)[0]
                 new_user.groups.add(g)
+        set_server_password(user["username"], user["password"])
         new_user.save()
 else:
+    # Re-adds linux system users based on users in database
     for user in User.objects.all():
         if add_user(user.username):
             add2grp(user.organization.machine_name, user.username)
+            # Resets the user's password to "password".
+            # If you don't want this behavior, you can comment out this line,
+            # but be aware that in a Docker environment doing so will mean that
+            # you need to manually set a user's password in Aurora before you are
+            # able to SFTP records into the container with that username and password.
+            set_server_password(user.username, "password")
 
 # Terminate any idle processes, which cause problems later.
 open = [

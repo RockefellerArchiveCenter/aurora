@@ -1,6 +1,6 @@
-from subprocess import CalledProcessError, check_output, STDOUT
 import grp
 import pwd
+from subprocess import STDOUT, CalledProcessError, check_output
 
 
 def set_server_password(user, password):
@@ -41,11 +41,6 @@ def add_user(username):
     try:
         output = check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
-        print(
-            "command '{}' returned with error (code {}): {}".format(
-                e.cmd, e.returncode, str(e.output)
-            )
-        )
         if "Account created" in str(e.output):
             pass
         elif "already exists" in str(e.output):

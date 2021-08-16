@@ -1,15 +1,11 @@
+from bag_transfer.rights.models import (RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
 from django import forms
-
 from django.forms.models import inlineformset_factory
-
-from bag_transfer.rights.models import (
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementOther,
-    RightsStatementStatute,
-    RightsStatementRightsGranted,
-)
 
 
 class RightsForm(forms.ModelForm):
@@ -301,7 +297,7 @@ class RightsLicenseForm(RightsBasisForm):
             "license_note",
         )
         labels = {
-            "license_terms": "Licence Terms",
+            "license_terms": "License Terms",
             "license_applicable_start_date": "Start Date",
             "license_applicable_end_date": "End Date",
             "license_start_date_period": "Years After Start Date",

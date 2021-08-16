@@ -1,47 +1,55 @@
 import glob
 import json
-from os.path import isfile
+import logging
+from os.path import isfile, join
 
-from django.conf import settings
-import iso8601
 import bagit
 import bagit_profile
-from iso639 import languages
-
+import iso8601
+from asterism.bagit_helpers import get_bag_info_fields
+from asterism.file_helpers import (dir_extract_all, tar_extract_all,
+                                   zip_extract_all)
 from bag_transfer.lib import files_helper as FH
 from bag_transfer.models import BAGLog
+from django.conf import settings
+from iso639 import languages
+
+# sets logging levels to reduce garbage printed in logs
+logging.getLogger("bagit").setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.CRITICAL)
 
 
-class bagChecker:
-    def __init__(self, archiveObj):
+class BagChecker:
+    def __init__(self, transferObj):
 
         self.tmp_path = settings.TRANSFER_EXTRACT_TMP
         self.bag_dates_to_validate = ["Date_Start", "Date_End", "Bagging_Date"]
-        self.archiveObj = archiveObj
-        self.archive_extracted = self._extract_archive()
-        self.archive_path = "{}{}".format(self.tmp_path, self.archiveObj.bag_it_name)
+        self.transferObj = transferObj
+        self.transfer_extracted = self._extract_transfer()
+        self.transfer_path = join(self.tmp_path, self.transferObj.bag_it_name)
         self.ecode = ""
         self.bag = {}
         self.bag_info_data = {}
         self.bag_exception = ""
 
-    def _extract_archive(self):
-        if self.archiveObj.machine_file_type == "TAR":
-            if not FH.tar_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+    def _extract_transfer(self):
+        if self.transferObj.machine_file_type == "TAR":
+            if not tar_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
-        elif self.archiveObj.machine_file_type == "ZIP":
-            if not FH.zip_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+        elif self.transferObj.machine_file_type == "ZIP":
+            if not zip_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
-        elif self.archiveObj.machine_file_type == "OTHER":
-            if not FH.dir_extract_all(self.archiveObj.machine_file_path, self.tmp_path):
+        elif self.transferObj.machine_file_type == "OTHER":
+            if not dir_extract_all(self.transferObj.machine_file_path, self.tmp_path):
                 return False
         else:
             return False
         return True
 
     def _is_generic_bag(self):
+        """Basic BagIt validation."""
         try:
-            self.bag = bagit.Bag(self.archive_path)
+            self.bag = bagit.Bag(self.transfer_path)
             self.bag.validate()
         except ValueError as e:
             self.bag_exception = "Error during BagIt validation (likely caused by presence of unsupported md5 checksum): {}".format(e)
@@ -50,9 +58,9 @@ class bagChecker:
             self.bag_exception = "Error during BagIt validation: {}".format(e)
             return False
         else:
-            for filename in glob.glob("{}/manifest-*.txt".format(self.archive_path)):
+            for filename in glob.glob(join(self.transfer_path, "manifest-*.txt")):
                 with open(filename, "r") as manifest_file:
-                    self.archiveObj.manifest = manifest_file.read()
+                    self.transferObj.manifest = manifest_file.read()
             self._retrieve_bag_info_key_val()  # run now to prevent multiple calls below
             return True
 
@@ -63,70 +71,16 @@ class bagChecker:
             self.bag_exception = "No BagIt Profile to validate against"
             return False
         else:
-
             try:
-                profile = bagit_profile.Profile(
-                    self.bag_info_data["BagIt_Profile_Identifier"]
-                )
+                profile = bagit_profile.Profile(self.bag_info_data["BagIt_Profile_Identifier"])
             except BaseException:
                 self.bag_exception = "Cannot retrieve BagIt Profile from URL {}".format(
-                    self.bag_info_data["BagIt_Profile_Identifier"]
-                )
+                    self.bag_info_data["BagIt_Profile_Identifier"])
                 return False
             else:
-
-                # RE IMPLEMENTING  validate() SINCE VALIDATION MESSAGES ARE PRINTED
-                # https://github.com/ruebot/bagit-profiles-validator/blob/master/bagit_profile.py
-                # line 76
-
-                try:
-                    profile.validate_bag_info(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Error in bag-info.txt: {}".format(e.value)
+                if not profile.validate(self.bag):
+                    self.bag_exception = profile.report.errors
                     return False
-                try:
-                    profile.validate_payload_manifests_allowed(self.bag)
-                except Exception as e:
-                    self.bag_exception = "An unallowed manifest was found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
-                    profile.validate_manifests_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required manifests not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
-                    profile.validate_tag_manifests_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required tag manifests not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
-                    profile.validate_tag_files_required(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required tag files not found: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
-                    profile.validate_allow_fetch(self.bag)
-                except Exception as e:
-                    self.bag_exception = "fetch.txt is present but is not allowed: {}".format(
-                        e.value
-                    )
-                    return False
-                try:
-                    profile.validate_accept_bagit_version(self.bag)
-                except Exception as e:
-                    self.bag_exception = "Required BagIt version not found: {}".format(
-                        e.value
-                    )
-                    return False
-
                 return True
 
         return False
@@ -143,8 +97,7 @@ class bagChecker:
             for date in dates:
                 try:
                     iso8601.parse_date(date)
-                except Exception as e:
-                    print("Invalid date value: {}".format(date))
+                except Exception:
                     self.bag_exception = "Invalid date value: {}".format(date)
                     return False
 
@@ -154,8 +107,7 @@ class bagChecker:
             for language in langz:
                 try:
                     languages.get(part2b=language)
-                except KeyError as e:
-                    print("Invalid language value: {}".format(language))
+                except KeyError:
                     self.bag_exception = "Invalid language value: {}".format(language)
                     return False
         return True
@@ -163,61 +115,51 @@ class bagChecker:
     def _has_valid_metadata_file(self):
         """checks if the metadata file path and is json is correct if exist"""
 
-        metadata_file = "/".join([str(self.bag), "data", "metadata.json"])
+        metadata_file = join(str(self.bag), "data", "metadata.json")
 
         if not isfile(metadata_file):
             return True
         else:
             try:
                 return json.loads(FH.get_file_contents(metadata_file))
-            except ValueError as e:
-                print("Error parsing metadata file: {}".format(e))
+            except ValueError:
                 return False
 
     def bag_passed_all(self):
-        if not self.archive_extracted:
+        if not self.transfer_extracted:
             self.ecode = "EXERR"
-            print("Extract error")
             return self.bag_failed()
 
         if not self._is_generic_bag():
-            print("Bag validation failed")
             self.ecode = "GBERR"
             return self.bag_failed()
 
         if not self.bag_info_data:
-            print("Unreadable bag-info")
-            # log internal error here
             return self.bag_failed()
 
-        BAGLog.log_it("PBAG", self.archiveObj)
+        BAGLog.log_it("PBAG", self.transferObj)
 
         if not self._is_rac_bag():
             self.ecode = "RBERR"
-            print("Bag Profile validation failed")
             return self.bag_failed()
 
         if not self._has_valid_datatypes():
             self.ecode = "DTERR"
-            print("Datatype validation failed")
             return self.bag_failed()
 
         if not self._has_valid_metadata_file():
             self.ecode = "MDERR"
-            print("Invalid metadata file")
             return self.bag_failed()
 
-        if not self.archiveObj.save_bag_data(self.bag_info_data):
+        if not self.transferObj.save_bag_data(self.bag_info_data):
             self.ecode = "BIERR"
-            print("Failed to save bag-info data")
             return self.bag_failed()
 
-        if not self.archiveObj.assign_rights():
+        if not self.transferObj.assign_rights():
             self.ecode = "RSERR"
-            print("Failed to assign rights")
             return self.bag_failed()
 
-        BAGLog.log_it("PBAGP", self.archiveObj)
+        BAGLog.log_it("PBAGP", self.transferObj)
 
         self.cleanup()
         return True
@@ -229,13 +171,11 @@ class bagChecker:
     def cleanup(self):
         """called on success of failure of bag_checker routine"""
         if self.bag_exception:
-            self.archiveObj.additional_error_info = self.bag_exception
+            self.transferObj.additional_error_info = self.bag_exception
 
     def _retrieve_bag_info_key_val(self):
         """Returns list of key val of bag info fields, only run on valid bag object"""
         if not self.bag.is_valid():
             return False
 
-        self.bag_info_data = FH.get_fields_from_file(
-            "{}/{}".format(self.archive_path, "bag-info.txt")
-        )
+        self.bag_info_data = get_bag_info_fields(self.transfer_path)

@@ -1,27 +1,15 @@
-from django.contrib import admin
-
-from bag_transfer.models import (
-    Archives,
-    BagInfoMetadata,
-    BagItProfile,
-    BagItProfileBagInfo,
-    BAGLog,
-    BAGLogCodes,
-    LanguageCode,
-    Organization,
-    RecordCreators,
-    User,
-)
 from bag_transfer.accession.models import Accession
-from bag_transfer.rights.models import (
-    RecordType,
-    RightsStatement,
-    RightsStatementCopyright,
-    RightsStatementLicense,
-    RightsStatementStatute,
-    RightsStatementOther,
-    RightsStatementRightsGranted,
-)
+from bag_transfer.models import (BagInfoMetadata, BagItProfile,
+                                 BagItProfileBagInfo, BAGLog, BAGLogCodes,
+                                 LanguageCode, Organization, RecordCreators,
+                                 Transfer, User)
+from bag_transfer.rights.models import (RecordType, RightsStatement,
+                                        RightsStatementCopyright,
+                                        RightsStatementLicense,
+                                        RightsStatementOther,
+                                        RightsStatementRightsGranted,
+                                        RightsStatementStatute)
+from django.contrib import admin
 
 
 @admin.register(Organization)
@@ -44,8 +32,8 @@ class BagLogAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Archives)
-class ArchivesAdmin(admin.ModelAdmin):
+@admin.register(Transfer)
+class TransferAdmin(admin.ModelAdmin):
     pass
 
 

@@ -1,5 +1,5 @@
+from bag_transfer.appraise.views import AppraiseDataTableView, AppraiseView
 from django.conf.urls import url
-from bag_transfer.appraise.views import AppraiseView, AppraiseDataTableView
 
 app_name = 'appraise'
 
