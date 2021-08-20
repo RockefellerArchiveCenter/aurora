@@ -9,7 +9,7 @@ RUN apt-get update \
     clamav-freshclam \
     default-libmysqlclient-dev \
     python-dev \
-    python-pip \
+    python3-pip \
     ssh \
     vim \
     wget \
