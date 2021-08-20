@@ -38,7 +38,7 @@ class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RightsStatementRightsGranted
-        fields = ("act", "start_date", "end_date", "note", "grant_restriction")
+        fields = ("act", "start_date", "end_date", "granted_note", "grant_restriction")
 
 
 class RightsStatementSerializer(serializers.ModelSerializer):
