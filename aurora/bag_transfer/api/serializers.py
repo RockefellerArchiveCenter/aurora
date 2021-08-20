@@ -26,7 +26,7 @@ class RecordCreatorsSerializer(serializers.ModelSerializer):
 
 
 class RightsStatementRightsGrantedSerializer(serializers.ModelSerializer):
-    note = serializers.StringRelatedField(source="rights_granted_note")
+    granted_note = serializers.StringRelatedField(source="rights_granted_note")
     end_date = serializers.SerializerMethodField()
     grant_restriction = serializers.CharField(source="restriction")
 
