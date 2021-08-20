@@ -1,4 +1,4 @@
-FROM python:3.6
+FROM python:3.6-buster
 
 ENV PYTHONUNBUFFERED 1
 
@@ -9,7 +9,7 @@ RUN apt-get update \
     clamav-freshclam \
     default-libmysqlclient-dev \
     python-dev \
-    python-pip \
+    python3-pip \
     ssh \
     vim \
     wget \
