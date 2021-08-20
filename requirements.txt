@@ -96,7 +96,7 @@ pyyaml==5.4.1
     #   -r requirements.in
     #   archivessnake
     #   health-check
-rac_schemas==0.28
+rac_schemas==0.29
     # via -r requirements.in
 rapidfuzz==1.4.1
     # via archivessnake
