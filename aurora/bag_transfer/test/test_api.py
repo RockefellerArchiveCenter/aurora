@@ -74,6 +74,7 @@ class APITest(TestMixin, TestCase):
         for org in Organization.objects.all():
             rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
             for statement in rights_statements.json():
+                print(statement)
                 self.assertTrue(is_valid(statement, "rights_statement.json"))
         for queryset, view, schema in [
                 (Transfer.objects.filter(process_status__gte=Transfer.ACCESSIONING_STARTED), "transfer-detail", "aurora_bag"),

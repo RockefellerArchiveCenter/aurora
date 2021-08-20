@@ -5753,7 +5753,7 @@
         "start_date_period": 5,
         "end_date_period": null,
         "end_date_open": true,
-        "rights_granted_note": "",
+        "rights_granted_note": null,
         "restriction": "disallow"
     }
 },
@@ -5768,7 +5768,7 @@
         "start_date_period": null,
         "end_date_period": 5,
         "end_date_open": true,
-        "rights_granted_note": "",
+        "rights_granted_note": null,
         "restriction": "allow"
     }
 },
