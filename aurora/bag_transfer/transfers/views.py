@@ -55,7 +55,6 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             color_index = n
             while color_index >= len(settings.RECORD_TYPE_COLORS):
                 color_index = color_index - len(settings.RECORD_TYPE_COLORS)
-            print(color_index)
             for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=orgs).values_list("count", flat=True):
                 record_type_count += count
             if record_type_count > 0:
