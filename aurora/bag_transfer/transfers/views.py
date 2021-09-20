@@ -52,11 +52,15 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
 
         for (n, label) in enumerate(set(DashboardRecordTypeData.objects.filter(organization__in=orgs).values_list("label", flat=True))):
             record_type_count = 0
+            color_index = n
+            while color_index >= len(settings.RECORD_TYPE_COLORS):
+                color_index = color_index - len(settings.RECORD_TYPE_COLORS)
+            print(color_index)
             for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=orgs).values_list("count", flat=True):
                 record_type_count += count
             if record_type_count > 0:
                 data["record_types_by_year"].append(
-                    {"label": label, "value": record_type_count, "color": settings.RECORD_TYPE_COLORS[n]})
+                    {"label": label, "value": record_type_count, "color": settings.RECORD_TYPE_COLORS[color_index]})
         return data
 
     def compile_data(self, orgs, org_name, users):
