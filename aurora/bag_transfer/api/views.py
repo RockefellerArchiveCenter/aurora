@@ -13,6 +13,7 @@ from bag_transfer.mixins.authmixins import OrgReadViewMixin
 from bag_transfer.models import (BagItProfile, BAGLog, Organization, Transfer,
                                  User)
 from bag_transfer.rights.models import RightsStatement
+from django.shortcuts import get_object_or_404
 from rest_framework import mixins, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -89,8 +90,8 @@ class TransferViewSet(
 
     def update(self, request, pk=None, *args, **kwargs):
         try:
-            identifier = request.data.get("identifier")
-            CleanupRoutine().run(identifier)
+            transfer = get_object_or_404(Transfer, pk=pk)
+            CleanupRoutine().run(transfer.machine_file_identifier)
             return super(TransferViewSet, self).update(request, *args, **kwargs)
         except Exception as e:
             return Response({"detail": str(e)}, status=500)
