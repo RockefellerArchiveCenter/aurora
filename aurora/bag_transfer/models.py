@@ -39,7 +39,7 @@ class Organization(models.Model):
         return reverse("orgs:edit", kwargs={"pk": self.pk})
 
     def rights_statements(self):
-        return self.rightsstatement_set.filter(transfer__isnull=True)
+        return self.rightsstatement_set.filter(transfer__isnull=True, accession__isnull=True)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by("username")
