@@ -39,7 +39,7 @@ class Organization(models.Model):
         return reverse("orgs:edit", kwargs={"pk": self.pk})
 
     def rights_statements(self):
-        return self.rightsstatement_set.filter(transfer__isnull=True)
+        return self.rightsstatement_set.filter(transfer__isnull=True, accession__isnull=True)
 
     def org_users(self):
         return User.objects.filter(organization=self).order_by("username")
@@ -390,9 +390,12 @@ class Transfer(models.Model):
         """Assigns rights to an Archive."""
 
         def update_date(obj, date_key, period_key, bag_date):
-            if not getattr(obj, date_key):
-                period = getattr(obj, period_key) if getattr(obj, period_key) else 0
-                setattr(obj, date_key, bag_date + relativedelta.relativedelta(years=period))
+            """Updates the date if it does not exist or is not open."""
+            open_key = period_key.replace("_period", "_open")
+            if not(getattr(obj, date_key)):
+                if hasattr(obj, open_key) and not getattr(obj, open_key):
+                    period = getattr(obj, period_key) if getattr(obj, period_key) else 0
+                    setattr(obj, date_key, bag_date + relativedelta.relativedelta(years=period))
 
         try:
             bag_data = self.bag_data

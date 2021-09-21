@@ -50,7 +50,6 @@ class RightsTestCase(TestMixin, TestCase):
         for merge_list in [
                 random.choices(RightsStatement.objects.filter(rights_basis="Copyright"), k=3),
                 random.choices(RightsStatement.objects.all(), k=3)]:
-            merge_list = random.choices(RightsStatement.objects.filter(rights_basis="Copyright"), k=3)
             merged = RightsStatement.merge_rights(merge_list)
             self.assertTrue(isinstance(merged, list))
             self.assertTrue([isinstance(m, RightsStatement) for m in merged])
