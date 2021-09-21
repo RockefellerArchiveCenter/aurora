@@ -10,7 +10,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 
-class BagTestCase(TestMixin, TestCase):
+class ArchivesTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def assert_all_views(self, organization=None):
