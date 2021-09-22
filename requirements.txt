@@ -25,7 +25,7 @@ boltons==21.0.0
     # via archivessnake
 certifi==2021.5.30
     # via requests
-charset-normalizer==2.0.3
+charset-normalizer==2.0.6
     # via requests
 clinner==1.12.3
     # via health-check
@@ -61,7 +61,7 @@ health-check==3.4.1
     # via -r requirements.in
 idna==3.2
     # via requests
-importlib-metadata==4.6.1
+importlib-metadata==4.8.1
     # via jsonschema
 iso-639==0.4.5
     # via -r requirements.in
@@ -71,11 +71,13 @@ jsonschema==3.2.0
     # via
     #   -r requirements.in
     #   rac-schemas
-more-itertools==8.8.0
+more-itertools==8.10.0
     # via archivessnake
 mysqlclient==1.4.6
     # via -r requirements.in
-odin==1.7.0
+numpy==1.19.5
+    # via rapidfuzz
+odin==1.7.2
     # via asterism
 psutil==5.8.0
     # via -r requirements.in
@@ -98,7 +100,7 @@ pyyaml==5.4.1
     #   health-check
 rac_schemas==0.29
     # via -r requirements.in
-rapidfuzz==1.4.1
+rapidfuzz==1.6.2
     # via archivessnake
 requests==2.26.0
     # via
@@ -113,11 +115,11 @@ six==1.16.0
     #   python-dateutil
 smmap==4.0.0
     # via gitdb
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 structlog==21.1.0
     # via archivessnake
-typing-extensions==3.10.0.0
+typing-extensions==3.10.0.2
     # via
     #   asgiref
     #   gitpython
