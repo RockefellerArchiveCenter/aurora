@@ -129,39 +129,48 @@ class BagChecker:
         if not self.transfer_extracted:
             self.ecode = "EXERR"
             return self.bag_failed()
+        print("extracted")
 
         if not self._is_generic_bag():
             self.ecode = "GBERR"
             return self.bag_failed()
+        print("passed bagit")
 
         if not self.bag_info_data:
             return self.bag_failed()
+        print("bag info")
 
         BAGLog.log_it("PBAG", self.transferObj)
 
         if not self._is_rac_bag():
             self.ecode = "RBERR"
             return self.bag_failed()
+        print("passed bagit profile")
 
         if not self._has_valid_datatypes():
             self.ecode = "DTERR"
             return self.bag_failed()
+        print("passed datatypes")
 
         if not self._has_valid_metadata_file():
             self.ecode = "MDERR"
             return self.bag_failed()
+        print("valid metadata file")
 
         if not self.transferObj.save_bag_data(self.bag_info_data):
             self.ecode = "BIERR"
             return self.bag_failed()
+        print("bag data saved")
 
         if not self.transferObj.assign_rights():
             self.ecode = "RSERR"
             return self.bag_failed()
+        print("rights assigned")
 
         BAGLog.log_it("PBAGP", self.transferObj)
 
         self.cleanup()
+        print("cleaned up")
         return True
 
     def bag_failed(self):

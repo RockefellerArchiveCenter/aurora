@@ -72,7 +72,7 @@ class TransferRoutineTestCase(TestCase):
 
                 bag = BagChecker(transfer)
                 print("bag checker done")
-                passed_all_results = bag.bag_passed_all()
+                passed_all_results = bag.bag_passed_all()  # TODO: this is the line
                 print("passed all")
 
                 if prefix in ["valid_bag", "no_metadata_file"]:
