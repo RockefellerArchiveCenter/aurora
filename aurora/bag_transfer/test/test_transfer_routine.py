@@ -36,6 +36,7 @@ class TransferRoutineTestCase(TestCase):
         user = random.choice(User.objects.filter(organization=org))
 
         for prefix, error, *rest in helpers.BAGS_REF:
+            print(prefix)
 
             helpers.create_target_bags(
                 prefix, settings.TEST_BAGS_DIR, org, user.username)
