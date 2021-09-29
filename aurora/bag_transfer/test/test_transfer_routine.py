@@ -42,11 +42,11 @@ class TransferRoutineTestCase(TestCase):
                 prefix, settings.TEST_BAGS_DIR, org, user.username)
             tr = TransferRoutine()
             routine = tr.run_routine()
-            print("routine run")
             self.assertTrue(
                 isinstance(routine, list),
                 "Expected transfer routine to produce a list, got {} instead".format(routine))
 
+            print(tr.transfers)
             for trans in tr.transfers:
                 if not trans["file_name"].startswith(prefix):
                     continue
@@ -73,6 +73,7 @@ class TransferRoutineTestCase(TestCase):
                 bag = BagChecker(transfer)
                 print("bag checker done")
                 passed_all_results = bag.bag_passed_all()
+                print("passed all")
 
                 if prefix in ["valid_bag", "no_metadata_file"]:
                     self.assertTrue(passed_all_results, "Bag unexpectedly invalid")
@@ -81,10 +82,12 @@ class TransferRoutineTestCase(TestCase):
                     if prefix in test_on_BagChecker:
                         self.assertEqual(error, bag.ecode)
 
+                print("deleting")
                 # deleting path in processing and tmp dir
                 remove_file_or_dir(
                     os.path.join(settings.TRANSFER_EXTRACT_TMP, transfer.bag_it_name))
                 remove_file_or_dir(transfer.machine_file_path)
+                print("deleted, done")
 
     def sub_test_db_has_active_orgs(self):
         """Asserts TransferRoutine setup handles inactive organizations."""
