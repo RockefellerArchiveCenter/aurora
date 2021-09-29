@@ -1,22 +1,27 @@
 language: python
-cache: pip
+cache:
+  directories:
+    - $HOME/.cache/pip
+    - $HOME/.cache/pre-commit
 services:
   - docker
 env:
-  CONTAINER: web
   global:
+    - CONTAINER: web
+    - APPLICATION_NAME: aurora
+    - DJANGO_PORT: 8000
     - TRAVIS_CI: true
 before_install:
-  - cp aurora/aurora/config.py.example aurora/aurora/config.py
+  - cp ${APPLICATION_NAME}/${APPLICATION_NAME}/config.py.example ${APPLICATION_NAME}/${APPLICATION_NAME}/config.py
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose -f docker-compose.travis.yml up -d
 install:
-  - ./wait-for-it.sh web:8000 -- docker-compose exec $CONTAINER pip install coverage pre-commit
-  - docker-compose exec $CONTAINER pre-commit install
+  - pip install pre-commit && pre-commit install
+  - ./wait-for-it.sh ${CONTAINER}:${DJANGO_PORT} -- docker-compose exec $CONTAINER pip install coverage
 script:
-  - docker-compose exec $CONTAINER pre-commit run --all-files --show-diff-on-failure
-  - docker-compose exec $CONTAINER coverage run --omit=aurora/bag_transfer/migrations manage.py test
+  - pre-commit run --all-files --show-diff-on-failure
+  - docker-compose exec ${CONTAINER} coverage run --omit=aurora/bag_transfer/migrations manage.py test
 after_script:
-  - docker-compose exec $CONTAINER coverage report --omit=bag_transfer/migrations/* -m
+  - docker-compose exec ${CONTAINER} coverage report --omit=*/migrations/* -m
 notifications:
   email: false

@@ -329,5 +329,5 @@ class TestMixin(TestCase):
             response = getattr(self.client, method)(url, data)
         self.assertEqual(
             response.status_code, status_code,
-            "Unexpected status code {} for url {}".format(response.status_code, url))
+            f"Unexpected status code {response.status_code} for url {url}")
         return response
