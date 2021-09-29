@@ -16,10 +16,10 @@ before_install:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose -f docker-compose.travis.yml up -d
 install:
-  - ./wait-for-it.sh ${CONTAINER}:${DJANGO_PORT} -- docker-compose exec $CONTAINER pip install coverage pre-commit
-  - docker-compose exec $CONTAINER pre-commit install
+  - pip install pre-commit && pre-commit install
+  - ./wait-for-it.sh ${CONTAINER}:${DJANGO_PORT} -- docker-compose exec $CONTAINER pip install coverage
 script:
-  - docker-compose exec ${CONTAINER} pre-commit run --all-files --show-diff-on-failure
+  - pre-commit run --all-files --show-diff-on-failure
   - docker-compose exec ${CONTAINER} coverage run --omit=aurora/bag_transfer/migrations manage.py test
 after_script:
   - docker-compose exec ${CONTAINER} coverage report --omit=*/migrations/* -m
