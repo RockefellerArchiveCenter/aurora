@@ -1,8 +1,5 @@
 language: python
-cache:
-  directories:
-    - $HOME/.cache/pip
-    - $HOME/.cache/pre-commit
+
 services:
   - docker
 env:
