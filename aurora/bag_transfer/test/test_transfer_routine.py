@@ -42,6 +42,7 @@ class TransferRoutineTestCase(TestCase):
                 prefix, settings.TEST_BAGS_DIR, org, user.username)
             tr = TransferRoutine()
             routine = tr.run_routine()
+            print("routine run")
             self.assertTrue(
                 isinstance(routine, list),
                 "Expected transfer routine to produce a list, got {} instead".format(routine))
@@ -70,6 +71,7 @@ class TransferRoutineTestCase(TestCase):
                     continue
 
                 bag = BagChecker(transfer)
+                print("bag checker done")
                 passed_all_results = bag.bag_passed_all()
 
                 if prefix in ["valid_bag", "no_metadata_file"]:
