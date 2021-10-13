@@ -103,7 +103,7 @@ class UserTestCase(TestMixin, TestCase):
         self.assert_status_code("post", reverse("users:add"), 302, data=user_data)
         user_data["active"] = False
         self.assert_status_code(
-            "post", reverse("users:edit", kwargs={"pk": random.choice(User.objects.all()).pk}), 200, data=user_data)
+            "post", reverse("users:edit", kwargs={"pk": random.choice([1, 2, 3])}), 200, data=user_data)
 
         # ensure logged out users are redirected to splash page
         self.client.logout()
