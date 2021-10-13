@@ -4,13 +4,14 @@ from unittest.mock import PropertyMock, patch
 from bag_transfer.models import (BagInfoMetadata, BAGLog, BAGLogCodes,
                                  LanguageCode, Organization, RecordCreators,
                                  Transfer, User)
-from bag_transfer.rights.models import RightsStatement
+from bag_transfer.rights.models import (RightsStatement,
+                                        RightsStatementRightsGranted)
 from bag_transfer.test.helpers import TestMixin
 from django.test import TestCase
 from django.urls import reverse
 
 
-class ArchivesTestCase(TestMixin, TestCase):
+class TransferTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def assert_all_views(self, organization=None):
@@ -39,7 +40,7 @@ class ArchivesTestCase(TestMixin, TestCase):
         self.get_or_create_mtm_objects()
         self.save_bag_data()
         self.records_creators()
-        self.assign_rights()  # 403-452
+        self.assign_rights()
 
     @patch("bag_transfer.models.Transfer.bag_data", new_callable=PropertyMock)
     def bag_or_failed_name(self, mock_bag_data):
@@ -139,6 +140,9 @@ class ArchivesTestCase(TestMixin, TestCase):
         self.assertTrue([isinstance(c, RecordCreators) for c in creators])
 
     def assign_rights(self):
+        """Asserts the correct number of rights statements are assigned. Also
+        asserts that non-null start dates are assigned to both rights bases and
+        rights granted objects."""
         org = Organization.objects.get(name="Donor Organization")
         transfer = random.choice(Transfer.objects.filter(organization=org))
         RightsStatement.objects.filter(transfer=transfer).delete()
@@ -150,3 +154,9 @@ class ArchivesTestCase(TestMixin, TestCase):
         self.assertEqual(
             len(transfer.rights_statements.all()), expected_len,
             "Expected {} rights statements to be assigned, but got {}".format(expected_len, len(transfer.rights_statements.all())))
+        for statement in transfer.rights_statements.all():
+            start_date_key, *rest = statement.get_date_keys()
+            self.assertIsNot(getattr(statement.rights_info, start_date_key), None)
+            rights_granted = RightsStatementRightsGranted.objects.filter(rights_statement=statement)
+            for granted in rights_granted:
+                self.assertIsNot(granted.start_date, None)
