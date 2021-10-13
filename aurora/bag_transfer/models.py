@@ -396,6 +396,8 @@ class Transfer(models.Model):
                 if hasattr(obj, open_key) and not getattr(obj, open_key):
                     period = getattr(obj, period_key) if getattr(obj, period_key) else 0
                     setattr(obj, date_key, bag_date + relativedelta.relativedelta(years=period))
+                else:
+                    setattr(obj, date_key, bag_date)
 
         try:
             bag_data = self.bag_data

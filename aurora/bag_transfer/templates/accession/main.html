@@ -6,11 +6,12 @@
 {% endblock %}
 
 {% block content %}
+{% regroup uploads by transfer_group as upload_groups %}
 <div class="row">
   <div class="col-md-12">
     <div class="nav-tabs-custom">
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions ({{ uploads.count }})</a></li>
+				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions {% if upload_groups|length %}({{ upload_groups|length }}){% endif %}</a></li>
         {% if accessions.count %}
 				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions.count }})</a></li>
         {% endif %}
@@ -31,7 +32,6 @@
           </thead>
 
           <tbody>
-            {% regroup uploads by transfer_group as upload_groups %}
             {% for group in upload_groups %}
             <tr>
               <td>{{group.list.0.organization}}</td>
