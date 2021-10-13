@@ -75,7 +75,7 @@ class RightsStatement(models.Model):
             start_dates = [getattr(obj, start_date_key) for obj in merge_list if getattr(obj, start_date_key)]
             end_dates = [getattr(obj, end_date_key) for obj in merge_list if getattr(obj, end_date_key)]
             setattr(merge_to, start_date_key, sorted(start_dates)[0])
-            setattr(merge_to, end_date_key, sorted(end_dates)[-1])
+            setattr(merge_to, end_date_key, sorted(end_dates)[-1] if len(end_dates) else None)
 
         statements_by_type = defaultdict(list)
         merged_statements = []
