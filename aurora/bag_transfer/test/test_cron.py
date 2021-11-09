@@ -51,13 +51,14 @@ class CronTestCase(TestCase):
         for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
             transfer.process_status = Transfer.ACCESSIONING_STARTED
             transfer.save()
+        awaiting_delivery = len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED))
         delivered = DeliverTransfers().do()
         self.assertIsNot(False, delivered)
-        self.assertEqual(len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED)), 0)
+        self.assertEqual(len(Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED)), awaiting_delivery - 1)
         self.assertEqual(
             len(Transfer.objects.filter(process_status=Transfer.DELIVERED)),
             len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
-        for bag_path in os.listdir(settings.STORAGE_ROOT_DIR):
+        for bag_path in Transfer.objects.filter(process_status=Transfer.DELIVERED).values_list("machine_file_identifier", flat=True):
             bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))
             self.assertTrue("Origin" in bag.info)
             self.assertEqual(bag.info["Origin"], "aurora")

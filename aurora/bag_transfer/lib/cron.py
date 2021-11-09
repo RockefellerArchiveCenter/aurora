@@ -110,7 +110,8 @@ class DeliverTransfers(CronJobBase):
         Pter.cron_open(self.code)
         if not isdir(settings.DELIVERY_QUEUE_DIR):
             mkdir(settings.DELIVERY_QUEUE_DIR)
-        for transfer in Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED):
+        transfer = Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED).first()
+        if transfer:
             try:
                 update_bag_info(
                     join(settings.STORAGE_ROOT_DIR, transfer.machine_file_identifier),

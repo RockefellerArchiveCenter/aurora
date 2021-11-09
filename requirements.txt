@@ -31,7 +31,7 @@ clinner==1.12.3
     # via health-check
 colorlog==3.2.0
     # via clinner
-django==3.2.5
+django==3.2.9
     # via
     #   -r requirements.in
     #   asterism
