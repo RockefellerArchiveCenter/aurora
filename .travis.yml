@@ -9,7 +9,7 @@ env:
   global:
     - CONTAINER: web
     - APPLICATION_NAME: aurora
-    - APPLICATION_PORT: 8000
+    - APPLICATION_PORT: 80
     - TRAVIS_CI: true
 before_install:
   - cp ${APPLICATION_NAME}/config.py.example ${APPLICATION_NAME}/config.py
