@@ -1,0 +1,54 @@
+###############
+#   This is a sample configuration file, intended for demonstration purposes only.
+#   Be sure to change configuration values as necessary for production use.
+#
+#   If you're using the Docker container, this file was automatically created
+#   the first time you started the container.
+##############
+
+DJANGO_DEBUG = True  # run Django in debug mode, which outputs stack traces to the UI, set to False for production (boolean)
+DJANGO_PORT = 8000  # the port on which the Django development server will run (integer)
+DJANGO_SECRET_KEY = "=*+t-qchu_$#hhf9m-n45s7p=@n46(zmf^mof$+cdaa0t6h8pq"  # used by Django to create hashes (string)
+DJANGO_STATIC_URL = "/static/"  # URL for static assets used by Django (string)
+DJANGO_ALLOWED_HOSTS = ["localhost", "testserver"]  # hosts Argo will respond to (list of strings)
+DJANGO_BASE_URL = "http://localhost/"  # Base URL at which Aurora is available, including trailing slash (string)
+DJANGO_TIME_ZONE = "America/New_York"  # TZ database name for local timezone (string)
+
+DJANGO_CRON_LOCKFILE_PATH = "/tmp/" # directory in which to create cron lockfiles
+
+EMAIL_HOST = "mail.example.com"  # email host that sends notification emails (string)
+EMAIL_PORT = 123  # port on which the email host can be reached (integer)
+EMAIL_HOST_USER = "test@example.com"  # user that sends notification emails (string)
+EMAIL_HOST_PASSWORD = ""  # password for the email user (string)
+EMAIL_USE_TLS = True  # Use TLS connection for email (boolean)
+EMAIL_USE_SSL = False  # Use SSL connection for email (boolean)
+EMAIL_DEFAULT_FROM_EMAIL = "test@example.com"  # user that should be set as the sender of notification emails (string)
+EMAIL_PASSWORD_RESET_TIMEOUT_DAYS = 1  # number of days that links in password reset emails are valid (integer)
+
+SQL_ENGINE = "django.db.backends.mysql" # the database engine used by Argo (string, one of django.db.backends)
+SQL_DATABASE = "mysql"  # name of the application database (string)
+SQL_USER = "root"  # name of the application database user (string)
+SQL_PASSWORD = "example"  # password for the application database (string)
+SQL_HOST = "db"  # host for the application database (string)
+SQL_PORT = 3306  # port on which the application database can be reached (integer)
+
+TRANSFER_STORAGE_ROOT_DIR = "/data1/"  # directory in which transfers are stored (string)
+TRANSFER_DELIVERY_QUEUE_DIR = "/delivery/"  # directory in which transfers waiting for delivery are stored (string)
+TRANSFER_FILESIZE_MAX = 2000000000 # Maximium size (in bytes) of transfers (integer)
+TRANSFER_UPLOADS_ROOT = "/data/"  # directory in which uploads are stored
+TRANSFER_EXTRACT_TMP = "/data/tmp/"  # directory to which transfers are extracted
+TRANSFER_UPLOAD_LOG_FILE = "/data/uploads_to_process"  # location of log file for uploads
+
+TEST_BAGS_DIR = "/code/test_bags/"  # location of bags to be used in unit tests (string)
+TEST_USER_USERNAME = "manager"  # user for unit tests (string)
+TEST_USER_PASSWORD = "password"  # password for unit test user (string)
+
+DELIVERY_URL = "http://zodiac-web:8001/api/store-accessions/"  # URL to which to deliver transfers (string)
+DELIVERY_API_KEY = "demo"  # API key to be added to header of delivery requests (string)
+
+ASPACE_BASEURL = "http://localhost:8089/"  # Base URL of ArchivesSpace instance (string)
+ASPACE_USERNAME = "admin"  # ArchivesSpace user (string)
+ASPACE_PASSWORD = "admin"  # Password for ArchivesSpace user (string)
+ASPACE_REPO_ID = 2  # Identifier for ArchivesSpace repository (integer)
+
+GTM_ID = "GTM-xxxxxxx"  # Google Tag Manager identifier (string)

@@ -10,11 +10,13 @@ services:
   web:
     build: .
     entrypoint: /code/entrypoint.sh
+    environment:
+      - APPLICATION_PORT=${APPLICATION_PORT:-8000}
     volumes:
       - .:/code
       - storage:/data1
     ports:
-      - "8000:8000"
+      - "${APPLICATION_PORT:-8000}:${APPLICATION_PORT:-8000}"
     depends_on:
       - db
 

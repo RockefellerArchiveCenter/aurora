@@ -46,4 +46,4 @@ COPY . /code
 EXPOSE 8000
 EXPOSE 22
 
-WORKDIR /code/aurora
+WORKDIR /code

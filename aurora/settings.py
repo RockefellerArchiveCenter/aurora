@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 
-from aurora import config as CF
+from aurora import config
 from aurora.fips_monkey_patch import monkey_patch_md5
 
 # Quick-start development settings - unsuitable for production
@@ -22,14 +22,14 @@ from aurora.fips_monkey_patch import monkey_patch_md5
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "=*+t-qchu_$#hhf9m-n45s7p=@n46(zmf^mof$+cdaa0t6h8pq"
+SECRET_KEY = config.DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = CF.DEBUG
+DEBUG = config.DJANGO_DEBUG
 
-ALLOWED_HOSTS = CF.ALLOWED_HOSTS
+ALLOWED_HOSTS = config.DJANGO_ALLOWED_HOSTS
 
-BASE_URL = CF.BASE_URL
+BASE_URL = config.DJANGO_BASE_URL
 
 # Application definition
 INSTALLED_APPS = [
@@ -92,7 +92,14 @@ REST_FRAMEWORK = {
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    "default": CF.DEFAULT_DB,
+    "default": {
+        "ENGINE": config.SQL_ENGINE,
+        "NAME": config.SQL_DATABASE,
+        "USER": config.SQL_USER,
+        "PASSWORD": config.SQL_PASSWORD,
+        "HOST": config.SQL_HOST,
+        "PORT": config.SQL_PORT,
+    }
 }
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
@@ -115,7 +122,7 @@ LOGIN_REDIRECT_URL = "/app"
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 LANGUAGE_CODE = "en-us"
-TIME_ZONE = CF.TIME_ZONE
+TIME_ZONE = config.DJANGO_TIME_ZONE
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -124,16 +131,15 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = "/static/"
-STATIC_ROOT = CF.STATIC_ROOT
-STORAGE_ROOT_DIR = CF.STORAGE_ROOT_DIR
-DELIVERY_QUEUE_DIR = CF.DELIVERY_QUEUE_DIR
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Transfer settings
-TRANSFER_FILESIZE_MAX = CF.TRANSFER_FILESIZE_MAX
-TRANSFER_UPLOADS_ROOT = CF.TRANSFER_UPLOADS_ROOT
-TRANSFER_EXTRACT_TMP = CF.TRANSFER_EXTRACT_TMP
-UPLOAD_LOG_FILE = CF.UPLOAD_LOG_FILE
+STORAGE_ROOT_DIR = config.TRANSFER_STORAGE_ROOT_DIR
+DELIVERY_QUEUE_DIR = config.TRANSFER_DELIVERY_QUEUE_DIR
+TRANSFER_FILESIZE_MAX = config.TRANSFER_FILESIZE_MAX
+TRANSFER_UPLOADS_ROOT = config.TRANSFER_UPLOADS_ROOT
+TRANSFER_EXTRACT_TMP = config.TRANSFER_EXTRACT_TMP
+UPLOAD_LOG_FILE = config.TRANSFER_UPLOAD_LOG_FILE
 
 
 # Django Cron
@@ -145,34 +151,36 @@ CRON_CLASSES = [
 
 # Django Cron Lock
 DJANGO_CRON_LOCK_BACKEND = "django_cron.backends.lock.file.FileLock"
+DJANGO_CRON_LOCKFILE_PATH = config.DJANGO_CRON_LOCKFILE_PATH
 
 # Email
-EMAIL_HOST = CF.EMAIL_HOST
-EMAIL_PORT = CF.EMAIL_PORT
-EMAIL_HOST_USER = CF.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = CF.EMAIL_HOST_PASSWORD
-EMAIL_USE_TLS = CF.EMAIL_USE_TLS
-EMAIL_USE_SSL = CF.EMAIL_USE_SSL
-EMAIL_OVERRIDE = CF.EMAIL_OVERRIDE
-EMAIL_OVERRIDE_USERS = CF.EMAIL_OVERRIDE_USERS
-DEFAULT_FROM_EMAIL = CF.DEFAULT_FROM_EMAIL
-SERVER_EMAIL = CF.SERVER_EMAIL
-PASSWORD_RESET_TIMEOUT_DAYS = CF.PASSWORD_RESET_TIMEOUT_DAYS
+EMAIL_HOST = config.EMAIL_HOST
+EMAIL_PORT = config.EMAIL_PORT
+EMAIL_HOST_USER = config.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = config.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = config.EMAIL_USE_TLS
+EMAIL_USE_SSL = config.EMAIL_USE_SSL
+DEFAULT_FROM_EMAIL = config.EMAIL_DEFAULT_FROM_EMAIL
+PASSWORD_RESET_TIMEOUT_DAYS = config.EMAIL_PASSWORD_RESET_TIMEOUT_DAYS
 
 # Unit Test configs
-TEST_BAGS_DIR = CF.TEST_BAGS_DIR
-TEST_USER = CF.TEST_USER
-
+TEST_BAGS_DIR = config.TEST_BAGS_DIR
+TEST_USER = {'USERNAME': config.TEST_USER_USERNAME, 'PASSWORD': config.TEST_USER_PASSWORD}
 
 # Post-accession callbacks
-DELIVERY_URL = getattr(CF, "DELIVERY_URL", None)
-API_KEY = getattr(CF, "API_KEY", None)
+DELIVERY_URL = getattr(config, "DELIVERY_URL", None)
+DELIVERY_API_KEY = getattr(config, "DELIVERY_API_KEY", None)
 
 # ArchivesSpace configs
-ASPACE = CF.ASPACE
+ASPACE = {
+    "baseurl": config.ASPACE_BASEURL,
+    "username": config.ASPACE_USERNAME,
+    "password": config.ASPACE_PASSWORD,
+    "repo_id": config.ASPACE_REPO_ID,
+}
 
 # Google Analytics configs
-GTM_ID = CF.GTM_ID
+GTM_ID = config.GTM_ID
 
 # List of colors used in dashboard for record types
 RECORD_TYPE_COLORS = [
