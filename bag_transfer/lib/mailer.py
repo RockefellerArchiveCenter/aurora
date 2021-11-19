@@ -20,12 +20,6 @@ class Mailer:
             return False
 
         send_to = self.to
-        if CF.EMAIL_OVERRIDE and CF.EMAIL_OVERRIDE_USERS:
-
-            self.text_content = "TEST EMAIL: SHOULD BE SENT TO {}\r\n\r\n{}".format(
-                ",".join(self.to), self.text_content
-            )
-            send_to = CF.EMAIL_OVERRIDE_USERS
 
         footer = "\r\n".join(
             [

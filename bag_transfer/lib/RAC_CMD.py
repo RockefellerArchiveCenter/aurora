@@ -8,7 +8,7 @@ def set_server_password(user, password):
         password, user
     )
     try:
-        output = check_output(command, shell=True, stderr=STDOUT)
+        check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         raise RuntimeError(
             "command '{}' returned with error (code {}): {}".format(
@@ -21,7 +21,7 @@ def set_server_password(user, password):
 def add_org(organization_machine_name):
     command = "sudo /usr/local/bin/RACaddorg {}".format(organization_machine_name)
     try:
-        output = check_output(command, shell=True, stderr=STDOUT)
+        check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         raise RuntimeError(
             "command '{}' returned with error (code {}): {}".format(
@@ -39,7 +39,7 @@ def add_user(username):
         username, home, "users", shell
     )
     try:
-        output = check_output(command, shell=True, stderr=STDOUT)
+        check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         if "Account created" in str(e.output):
             pass
@@ -56,7 +56,7 @@ def add2grp(organization_machine_name, machine_user_id):
         organization_machine_name, machine_user_id
     )
     try:
-        output = check_output(command, shell=True, stderr=STDOUT)
+        check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         print(e.output)
         has_ERR = True
@@ -67,7 +67,7 @@ def delete_system_group(organization_machine_name):
     has_ERR = False
     command = "groupdel {}".format(organization_machine_name)
     try:
-        output = check_output(command, shell=True, stderr=STDOUT)
+        check_output(command, shell=True, stderr=STDOUT)
     except CalledProcessError as e:
         print(e.output)
         has_ERR = True
@@ -83,7 +83,7 @@ def del_from_org(machine_user_id):
             continue
         command = "sudo gpasswd -d {} {}".format(machine_user_id, group)
         try:
-            output = check_output(command, shell=True, stderr=STDOUT)
+            check_output(command, shell=True, stderr=STDOUT)
         except CalledProcessError as e:
             print(e.output)
             has_ERR = True

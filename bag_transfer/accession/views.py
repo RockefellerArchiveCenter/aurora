@@ -65,7 +65,7 @@ class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView)
                         ),
                         headers={
                             "Content-Type": "application/json",
-                            "apikey": settings.API_KEY,
+                            "apikey": settings.DELIVERY_API_KEY,
                         },
                     )
                     resp.raise_for_status()
@@ -119,7 +119,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
                         data=json.dumps(accession_data.data, default=str),
                         headers={
                             "Content-Type": "application/json",
-                            "apikey": settings.API_KEY,
+                            "apikey": settings.DELIVERY_API_KEY,
                         },
                     )
                     resp.raise_for_status()
