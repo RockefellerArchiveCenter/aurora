@@ -24,8 +24,8 @@ python manage.py migrate
 
 # Create initial organizations and users
 echo "Setting up organizations and users"
-python manage.py shell < ../setup_objects.py
+python manage.py shell < ./setup_objects.py
 
 #Start server
 echo "Starting server"
-python manage.py runserver 0.0.0.0:8000
+python manage.py runserver 0.0.0.0:${APPLICATION_PORT}
