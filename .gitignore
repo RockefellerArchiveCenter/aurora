@@ -1,5 +1,12 @@
-env/
-/scripts/ldap.*
-.DS_Store
-__pycache__
+*.DS_Store
+*.pickle
+
+### Django ###
+*.log
+*.pot
 *.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media
+config.py
