@@ -31,7 +31,7 @@ clinner==1.12.3
     # via health-check
 colorlog==3.2.0
     # via clinner
-django==3.2.10
+django==3.2.12
     # via
     #   -r requirements.in
     #   asterism
@@ -61,8 +61,6 @@ health-check==3.4.1
     # via -r requirements.in
 idna==3.3
     # via requests
-importlib-metadata==4.8.2
-    # via jsonschema
 iso-639==0.4.5
     # via -r requirements.in
 iso8601==0.1.16
@@ -96,7 +94,7 @@ pyyaml==5.4.1
     #   -r requirements.in
     #   archivessnake
     #   health-check
-rac_schemas==0.29
+rac-schemas==0.29
     # via -r requirements.in
 rapidfuzz==1.9.1
     # via archivessnake
@@ -117,18 +115,10 @@ sqlparse==0.4.2
     # via django
 structlog==21.4.0
     # via archivessnake
-typing-extensions==4.0.1
-    # via
-    #   asgiref
-    #   gitpython
-    #   importlib-metadata
-    #   structlog
 uritemplate==3.0.1
     # via -r requirements.in
 urllib3==1.26.7
     # via requests
-zipp==3.6.0
-    # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
