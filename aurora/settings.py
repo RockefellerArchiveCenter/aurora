@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "django_cron",
     "rest_framework",
-    'health_check',
     "bag_transfer",
 ]
 
