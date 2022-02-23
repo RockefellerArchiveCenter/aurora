@@ -1,3 +1,8 @@
+from django.shortcuts import get_object_or_404
+from rest_framework import mixins, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import (AccessionListSerializer,
                                           AccessionSerializer,
@@ -13,10 +18,6 @@ from bag_transfer.mixins.authmixins import OrgReadViewMixin
 from bag_transfer.models import (BagItProfile, BAGLog, Organization, Transfer,
                                  User)
 from bag_transfer.rights.models import RightsStatement
-from django.shortcuts import get_object_or_404
-from rest_framework import mixins, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
 
 class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):

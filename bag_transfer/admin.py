@@ -1,3 +1,5 @@
+from django.contrib import admin
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import (BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo, BAGLog, BAGLogCodes,
@@ -9,7 +11,6 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted,
                                         RightsStatementStatute)
-from django.contrib import admin
 
 
 @admin.register(Organization)

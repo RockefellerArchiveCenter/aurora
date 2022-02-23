@@ -1,10 +1,11 @@
 import random
 from unittest.mock import patch
 
-from bag_transfer.models import Organization
-from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
+
+from bag_transfer.models import Organization
+from bag_transfer.test import helpers
 
 
 class OrgTestCase(helpers.TestMixin, TestCase):

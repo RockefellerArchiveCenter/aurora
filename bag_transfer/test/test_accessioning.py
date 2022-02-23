@@ -3,12 +3,13 @@ import random
 from datetime import datetime
 from unittest.mock import patch
 
+from django.test import TestCase
+from django.urls import reverse
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
 from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.test import helpers
-from django.test import TestCase
-from django.urls import reverse
 
 
 class AccessioningTestCase(helpers.TestMixin, TestCase):

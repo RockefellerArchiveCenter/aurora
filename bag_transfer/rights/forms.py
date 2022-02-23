@@ -1,11 +1,12 @@
+from django import forms
+from django.forms.models import inlineformset_factory
+
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted,
                                         RightsStatementStatute)
-from django import forms
-from django.forms.models import inlineformset_factory
 
 
 class RightsForm(forms.ModelForm):

@@ -1,5 +1,8 @@
 import random
 
+from django.test import TestCase
+from django.urls import reverse
+
 from bag_transfer.models import Organization
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementCopyright,
@@ -8,8 +11,6 @@ from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementStatute)
 from bag_transfer.test.helpers import (RIGHTS_BASIS_DATA, RIGHTS_GRANTED_DATA,
                                        TestMixin)
-from django.test import TestCase
-from django.urls import reverse
 
 
 class RightsTestCase(TestMixin, TestCase):

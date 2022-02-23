@@ -1,6 +1,7 @@
+from django import template
+
 from bag_transfer.lib.view_helpers import label_class
 from bag_transfer.models import Transfer
-from django import template
 
 register = template.Library()
 

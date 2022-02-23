@@ -1,8 +1,9 @@
 from pathlib import Path
 
+from django.test import TestCase
+
 from aurora import settings
 from bag_transfer.lib.cleanup import CleanupRoutine
-from django.test import TestCase
 
 
 class CleanupRoutineTestCase(TestCase):

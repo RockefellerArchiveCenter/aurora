@@ -1,8 +1,9 @@
 from unittest.mock import patch
 
+from django.test import TestCase
+
 from bag_transfer.lib.clients import (ArchivesSpaceClient,
                                       ArchivesSpaceClientError)
-from django.test import TestCase
 
 
 class ClientTestCase(TestCase):

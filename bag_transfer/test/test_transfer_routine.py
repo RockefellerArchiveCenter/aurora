@@ -3,13 +3,14 @@ import random
 import shutil
 
 from asterism.file_helpers import remove_file_or_dir
+from django.test import TestCase
+
 from aurora import settings
 from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
-from django.test import TestCase
 
 
 class TransferRoutineTestCase(TestCase):
