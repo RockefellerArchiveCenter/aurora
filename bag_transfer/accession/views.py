@@ -1,6 +1,13 @@
 import json
 
 import requests
+from dateutil import tz
+from django.contrib import messages
+from django.db.models import CharField, F
+from django.db.models.functions import Concat
+from django.shortcuts import reverse
+from django.views.generic import CreateView, DetailView, ListView
+
 from aurora import settings
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
@@ -11,16 +18,9 @@ from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
                                             ArchivistMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.viewmixins import PageTitleMixin
+from bag_transfer.mixins.viewmixins import BaseDatatableView, PageTitleMixin
 from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.rights.models import RightsStatement
-from dateutil import tz
-from django.contrib import messages
-from django.db.models import CharField, F
-from django.db.models.functions import Concat
-from django.shortcuts import reverse
-from django.views.generic import CreateView, DetailView, ListView
-from django_datatables_view.base_datatable_view import BaseDatatableView
 
 
 class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
@@ -197,7 +197,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             dates["end"].append(bag_data.get("date_end", ""))
             notes["appraisal"].append(bag_data.get("appraisal_note", ""))
             descriptions_list.append(bag_data.get("internal_sender_description", ""))
-            languages_list += [l for l in bag_data.get("language", [])]
+            languages_list += [lang for lang in bag_data.get("language", [])]
         languages_list = list(set(languages_list))
         record_type = bag_data.get("record_type", "")
         return notes, dates, descriptions_list, languages_list, extent_files, extent_size, record_type
