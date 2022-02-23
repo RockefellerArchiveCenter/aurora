@@ -1,9 +1,10 @@
+from django.urls import re_path
+
 from bag_transfer.appraise.views import AppraiseDataTableView, AppraiseView
-from django.conf.urls import url
 
 app_name = 'appraise'
 
 urlpatterns = [
-    url(r"^$", AppraiseView.as_view(), name="list"),
-    url(r"^datatable/$", AppraiseDataTableView.as_view(), name="datatable"),
+    re_path(r"^$", AppraiseView.as_view(), name="list"),
+    re_path(r"^datatable/$", AppraiseDataTableView.as_view(), name="datatable"),
 ]
