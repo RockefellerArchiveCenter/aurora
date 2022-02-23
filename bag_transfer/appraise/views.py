@@ -5,7 +5,8 @@ from django.views.generic import ListView
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.mixins.authmixins import ArchivistMixin
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.viewmixins import BaseDatatableView, PageTitleMixin
+from bag_transfer.mixins.viewmixins import (BaseDatatableView, PageTitleMixin,
+                                            is_ajax)
 from bag_transfer.models import BAGLog, Transfer
 
 
@@ -43,7 +44,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         return context
 
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
+        if is_ajax(request):
             rdata = {}
             rdata["success"] = 0
 

@@ -10,6 +10,10 @@ from django.utils.html import escape, format_html
 from django.views.generic.base import TemplateView
 
 
+def is_ajax(request):
+    return request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
+
+
 class PageTitleMixin(object):
     """Sets the page_title key in view data.
     On views where this mixin is added, page titles can be set either by providing

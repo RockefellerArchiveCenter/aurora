@@ -18,7 +18,8 @@ from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
                                             ArchivistMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.viewmixins import BaseDatatableView, PageTitleMixin
+from bag_transfer.mixins.viewmixins import (BaseDatatableView, PageTitleMixin,
+                                            is_ajax)
 from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.rights.models import RightsStatement
 
@@ -43,7 +44,7 @@ class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView)
         return context
 
     def get(self, request, *args, **kwargs):
-        if request.is_ajax():
+        if is_ajax(request):
             return self.handle_ajax_request(request)
         return super().get(self, request, *args, **kwargs)
 
@@ -177,7 +178,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
 
     def get(self, request, *args, **kwargs):
         """Performs initial grouping of transfer data."""
-        if request.is_ajax():
+        if is_ajax(request):
             return self.handle_ajax_request(request)
         return super().get(self, request, *args, **kwargs)
 

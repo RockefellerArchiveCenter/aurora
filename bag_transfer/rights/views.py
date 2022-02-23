@@ -1,21 +1,22 @@
 from operator import itemgetter
 
-from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
-                                            OrgReadViewMixin)
-from bag_transfer.mixins.formatmixins import JSONResponseMixin
-from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import (BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, Organization)
-from bag_transfer.rights.forms import (CopyrightFormSet, LicenseFormSet,
-                                       OtherFormSet, RightsForm,
-                                       RightsGrantedFormSet, StatuteFormSet)
-from bag_transfer.rights.models import RecordType, RightsStatement
 from django.contrib import messages
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import (CreateView, DetailView, TemplateView,
                                   UpdateView)
+
+from bag_transfer.mixins.authmixins import (ManagingArchivistMixin,
+                                            OrgReadViewMixin)
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin, is_ajax
+from bag_transfer.models import (BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues, Organization)
+from bag_transfer.rights.forms import (CopyrightFormSet, LicenseFormSet,
+                                       OtherFormSet, RightsForm,
+                                       RightsGrantedFormSet, StatuteFormSet)
+from bag_transfer.rights.models import RecordType, RightsStatement
 
 
 class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
@@ -137,7 +138,7 @@ class RightsUpdateView(RightsManageView, UpdateView):
 
 class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
     def render_to_response(self, context, **kwargs):
-        if not self.request.is_ajax():
+        if not is_ajax(self.request):
             raise Http404
         resp = {"success": 0}
 
