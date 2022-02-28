@@ -9,10 +9,11 @@ import iso8601
 from asterism.bagit_helpers import get_bag_info_fields
 from asterism.file_helpers import (dir_extract_all, tar_extract_all,
                                    zip_extract_all)
-from bag_transfer.lib import files_helper as FH
-from bag_transfer.models import BAGLog
 from django.conf import settings
 from iso639 import languages
+
+from bag_transfer.lib import files_helper as FH
+from bag_transfer.models import BAGLog
 
 # sets logging levels to reduce garbage printed in logs
 logging.getLogger("bagit").setLevel(logging.ERROR)

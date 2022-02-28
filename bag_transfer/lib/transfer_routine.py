@@ -6,10 +6,13 @@ import tarfile
 import zipfile
 from pwd import getpwuid
 
-import bag_transfer.lib.log_print as Pter
 from asterism.file_helpers import (get_dir_size, is_dir_or_file,
                                    remove_file_or_dir, tar_extract_all,
                                    zip_extract_all)
+from django.conf import settings
+from django.utils.timezone import make_aware
+
+import bag_transfer.lib.log_print as Pter
 from bag_transfer.lib.files_helper import (all_paths_exist,
                                            files_in_unserialized,
                                            open_files_list,
@@ -17,8 +20,6 @@ from bag_transfer.lib.files_helper import (all_paths_exist,
                                            zip_has_top_level_only)
 from bag_transfer.lib.virus_scanner import VirusScan
 from bag_transfer.models import BAGLog, Organization
-from django.conf import settings
-from django.utils.timezone import make_aware
 
 
 class TransferRoutine(object):
@@ -334,7 +335,7 @@ class TransferFileObject(object):
         try:
             self.virus_scanner.scan(self.file_path)
         except Exception as e:
-            print("Error scanning for viruses".format(e))
+            print("Error scanning for viruses: {}".format(e))
             return False
         if not self.virus_scanner.scan_result:
             return True

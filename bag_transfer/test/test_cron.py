@@ -5,13 +5,14 @@ from unittest.mock import patch
 
 import bagit
 from asterism.file_helpers import remove_file_or_dir
+from django.conf import settings
+from django.test import TestCase
+
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
 from bag_transfer.test.helpers import BAGS_REF
-from django.conf import settings
-from django.test import TestCase
 
 
 class CronTestCase(TestCase):

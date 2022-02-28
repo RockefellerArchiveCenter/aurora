@@ -1,13 +1,14 @@
 import json
 from unittest.mock import patch
 
+from django.test import TestCase
+from django.urls import reverse
+from rac_schemas import is_valid
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import (BAGLog, DashboardMonthData, Organization,
                                  Transfer, User)
 from bag_transfer.test.helpers import TestMixin
-from django.test import TestCase
-from django.urls import reverse
-from rac_schemas import is_valid
 
 
 class APITest(TestMixin, TestCase):
@@ -44,8 +45,8 @@ class APITest(TestMixin, TestCase):
     def test_schema_response(self):
         self.assert_status_code("get", reverse("schema"), 200)
 
-    def test_health_check_response(self):
-        self.assert_status_code("get", reverse("api_health_ping"), 200)
+    def test_status_response(self):
+        self.assert_status_code("get", reverse("ping"), 200)
 
     def test_action_endpoints(self):
         """Asserts custom action endpoints return expected status code."""

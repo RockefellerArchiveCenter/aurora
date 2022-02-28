@@ -1,10 +1,11 @@
 import random
 
+from django.test import TestCase
+from django.urls import reverse
+
 from bag_transfer.models import BagItProfile, Organization
 from bag_transfer.test import helpers
 from bag_transfer.test.helpers import BAGINFO_FIELD_CHOICES, TestMixin
-from django.test import TestCase
-from django.urls import reverse
 
 
 class BagItProfileTestCase(TestMixin, TestCase):

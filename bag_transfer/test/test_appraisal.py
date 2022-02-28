@@ -1,9 +1,10 @@
 import random
 
-from bag_transfer.models import DashboardMonthData, Transfer
-from bag_transfer.test import helpers
 from django.test import TestCase
 from django.urls import reverse
+
+from bag_transfer.models import DashboardMonthData, Transfer
+from bag_transfer.test import helpers
 
 
 class AppraisalTestCase(helpers.TestMixin, TestCase):

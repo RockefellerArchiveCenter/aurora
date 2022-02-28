@@ -1,4 +1,6 @@
 import psutil
+from django.contrib.auth.models import Group
+
 from bag_transfer.lib.RAC_CMD import (add2grp, add_org, add_user,
                                       set_server_password)
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
@@ -9,7 +11,6 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted)
-from django.contrib.auth.models import Group
 
 orgs = Organization.objects.all()
 org_ids = []

@@ -1,7 +1,8 @@
-from bag_transfer.models import BagItProfile, Organization, User
 from braces.views import (LoginRequiredMixin, SuperuserRequiredMixin,
                           UserPassesTestMixin)
 from django.urls import reverse_lazy
+
+from bag_transfer.models import BagItProfile, Organization, User
 
 
 class LoggedInMixinDefaults(LoginRequiredMixin):
