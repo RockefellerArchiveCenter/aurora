@@ -145,7 +145,6 @@ UPLOAD_LOG_FILE = config.TRANSFER_UPLOAD_LOG_FILE
 CRON_CLASSES = [
     "bag_transfer.lib.cron.DiscoverTransfers",
     "bag_transfer.lib.cron.DeliverTransfers",
-    "django_cron.backends.lock.file.FileLock",
 ]
 
 # Django Cron Lock
