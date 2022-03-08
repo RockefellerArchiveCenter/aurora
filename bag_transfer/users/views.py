@@ -1,6 +1,5 @@
 from braces.views import AnonymousRequiredMixin
 from django.contrib import messages
-from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetCompleteView,
                                        PasswordResetConfirmView,
@@ -53,8 +52,9 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
         return reverse("users:detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
-        """Set a random password to and send a password reset email."""
-        password_form = PasswordResetForm({"email": self.request.POST.get("email")})
+        """Set a random password and send a password reset email."""
+        valid = super().form_valid(form)
+        password_form = UserPasswordResetForm({"email": self.request.POST.get("email")})
         if password_form.is_valid():
             try:
                 password_form.save(
@@ -64,7 +64,7 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
                 )
             except Exception:
                 messages.error(self.request, "Unable to send email to new user because SMTP settings are not properly configured.")
-        return super().form_valid(form)
+        return valid
 
 
 class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):

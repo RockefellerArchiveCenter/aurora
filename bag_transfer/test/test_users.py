@@ -1,6 +1,7 @@
 import random
 from unittest.mock import patch
 
+from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
@@ -102,6 +103,9 @@ class UserTestCase(TestMixin, TestCase):
             "organization": random.choice(Organization.objects.all()).pk
         }
         self.assert_status_code("post", reverse("users:add"), 302, data=user_data)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].subject, "Aurora account created")
+
         user_data["active"] = False
         self.assert_status_code(
             "post", reverse("users:edit", kwargs={"pk": random.choice([1, 2, 3])}), 200, data=user_data)
