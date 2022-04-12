@@ -1,3 +1,5 @@
+from rest_framework import serializers
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  BagInfoMetadata, BagItProfile,
@@ -13,7 +15,6 @@ from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted,
                                         RightsStatementStatute)
-from rest_framework import serializers
 
 
 class RecordCreatorsSerializer(serializers.ModelSerializer):

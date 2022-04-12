@@ -1,9 +1,10 @@
+from django import forms
+
 from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
                                  BagItProfile, BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, ManifestsAllowed,
                                  ManifestsRequired, TagFilesRequired,
                                  TagManifestsRequired)
-from django import forms
 
 
 class BagItProfileForm(forms.ModelForm):

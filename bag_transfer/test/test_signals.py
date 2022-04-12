@@ -1,8 +1,9 @@
 import random
 
+from django.test import TestCase
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import DashboardMonthData, Transfer
-from django.test import TestCase
 
 
 class SignalsTestCase(TestCase):

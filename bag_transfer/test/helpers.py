@@ -5,6 +5,9 @@ from datetime import datetime
 from os import chown, listdir, path
 
 from asterism.file_helpers import copy_file_or_dir
+from django.test import TestCase
+from django.utils.timezone import make_aware
+
 from bag_transfer.models import (LanguageCode, Organization, RecordCreators,
                                  User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,
@@ -13,8 +16,6 @@ from bag_transfer.rights.models import (RecordType, RightsStatement,
                                         RightsStatementOther,
                                         RightsStatementRightsGranted,
                                         RightsStatementStatute)
-from django.test import TestCase
-from django.utils.timezone import make_aware
 
 BAGS_REF = (
     ("valid_bag", ""),

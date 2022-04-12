@@ -1,6 +1,7 @@
+from django import forms
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import RecordCreators
-from django import forms
 
 
 class AccessionForm(forms.ModelForm):

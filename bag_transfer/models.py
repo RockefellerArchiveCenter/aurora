@@ -1,13 +1,14 @@
 from uuid import uuid4
 
 import iso8601
-from bag_transfer.lib import RAC_CMD
 from dateutil import relativedelta, tz
 from django.apps import apps
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.urls import reverse
+
+from bag_transfer.lib import RAC_CMD
 
 
 class Organization(models.Model):
@@ -54,8 +55,8 @@ class Organization(models.Model):
         """Returns a list containing the organizations' upload and processing paths."""
         root_dir = "/".join([settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name])
         return [
-            "{}/upload/".format(root_dir, self.machine_name),
-            "{}/processing/".format(root_dir, self.machine_name),
+            "{}/upload/".format(root_dir),
+            "{}/processing/".format(root_dir),
         ]
 
     def save(self, *args, **kwargs):

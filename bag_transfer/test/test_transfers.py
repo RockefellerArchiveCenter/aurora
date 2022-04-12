@@ -1,14 +1,15 @@
 import random
 from unittest.mock import PropertyMock, patch
 
+from django.test import TestCase
+from django.urls import reverse
+
 from bag_transfer.models import (BagInfoMetadata, BAGLog, BAGLogCodes,
                                  LanguageCode, Organization, RecordCreators,
                                  Transfer, User)
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementRightsGranted)
 from bag_transfer.test.helpers import TestMixin
-from django.test import TestCase
-from django.urls import reverse
 
 
 class TransferTestCase(TestMixin, TestCase):

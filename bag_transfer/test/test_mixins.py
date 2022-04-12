@@ -1,10 +1,11 @@
 import random
 
+from django.http import HttpRequest, HttpResponse
+from django.test import TestCase
+
 from bag_transfer.mixins.authmixins import ArchivistMixin, OrgReadViewMixin
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
 from bag_transfer.models import BagItProfile, Organization, Transfer, User
-from django.http import HttpRequest, HttpResponse
-from django.test import TestCase
 
 
 class MixinTestCase(TestCase):

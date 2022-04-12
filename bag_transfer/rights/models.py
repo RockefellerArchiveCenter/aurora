@@ -1,9 +1,10 @@
 from collections import defaultdict
 from datetime import datetime
 
+from django.db import models
+
 from bag_transfer.accession.models import Accession
 from bag_transfer.models import Organization, Transfer
-from django.db import models
 
 
 # Following models schema from

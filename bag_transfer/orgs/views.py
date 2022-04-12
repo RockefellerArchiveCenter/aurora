@@ -1,11 +1,12 @@
+from django.contrib.messages.views import SuccessMessageMixin
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
 from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import Organization, Transfer
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 
 class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, CreateView):
