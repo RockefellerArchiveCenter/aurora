@@ -383,6 +383,24 @@
 			return false
 		});
 
+    if ($('input[name=applies_to_type]:checked').length == $('input[name=applies_to_type]:checked').length) {
+      console.log("here");
+      $('#toggle-all').html("Unselect all record types")
+    } else  {
+      $('#toggle-all').html("Select all record types")
+    }
+
+    $('#toggle-all').click(function() {
+      console.log($('input[name=applies_to_type]:checked'));
+      if ($('input[name=applies_to_type]:checked').length == $('input[name=applies_to_type]').length) {
+        $('#toggle-all').html("Select all record types")
+        $('input[name=applies_to_type]').prop('checked', false)
+      } else  {
+        $('#toggle-all').html("Unselect all record types")
+        $('input[name=applies_to_type]').prop('checked', true)
+      }
+    })
+
   });
 </script>
 {% endblock %}
