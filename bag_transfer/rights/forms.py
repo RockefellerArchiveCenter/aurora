@@ -9,6 +9,13 @@ from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementStatute)
 
 
+class SelectAllCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
+
+    def render(self, name, value, *args, **kwargs):
+        output = super(forms.widgets.CheckboxSelectMultiple, self).render(name, value, *args, **kwargs)
+        return '<div><button id="toggle-all" type="button" class="btn btn-primary btn-sm">Select all</button></div>' + output
+
+
 class RightsForm(forms.ModelForm):
     class Meta:
         model = RightsStatement
@@ -22,7 +29,7 @@ class RightsForm(forms.ModelForm):
         }
         widgets = {
             "rights_basis": forms.widgets.Select(attrs={"class": "form-control"}),
-            "applies_to_type": forms.widgets.CheckboxSelectMultiple(
+            "applies_to_type": SelectAllCheckboxSelectMultiple(
                 attrs={"class": "list-unstyled"}
             ),
             "organization": forms.widgets.HiddenInput(),
