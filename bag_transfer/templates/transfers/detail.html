@@ -64,6 +64,21 @@
 </div>
 {% endif %}
 
+{% if object.rights_statements.all %}
+<div class="row">
+	<div class="col-md-12">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h2 class="box-title">Rights Statements</h2>
+			</div>
+			<div class="box-body no-padding">
+				{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endif %}
+
 <div class="row">
 	<div class="col-md-12">
 		<div class="box box-primary">
@@ -91,21 +106,6 @@
 		</div>
 	</div>
 </div>
-
-{% if object.rights_statements.all %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Rights Statements</h2>
-			</div>
-			<div class="box-body no-padding">
-				{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
-			</div>
-		</div>
-	</div>
-</div>
-{% endif %}
 
 {% if object.archivesspace_identifier or object.archivesspace_parent_identifier %}
 <div class="row">
