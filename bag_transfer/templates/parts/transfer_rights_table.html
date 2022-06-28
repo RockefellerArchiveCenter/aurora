@@ -4,6 +4,7 @@
       <tr>
         <th>Basis</th>
         <th>Rights Notes</th>
+        <th>Dates Applicable</th>
       </tr>
     </thead>
     <tbody>
@@ -11,6 +12,7 @@
       <tr rel="{{ statement.pk }}">
         <td>{{statement.rights_basis}}</td>
         <td>{{statement.rights_info_notes}}</td>
+        <td>{{statement.dates_applicable_display}}</td>
       </tr>
       {% endfor %}
     </tbody>

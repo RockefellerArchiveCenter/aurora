@@ -41,6 +41,20 @@ class RightsStatement(models.Model):
         return "{}: {}".format(self.organization, self.rights_basis)
 
     @property
+    def dates_applicable_display(self):
+        """Returns a display string of applicable dates for a rights statement.
+
+        Assumes that start and end dates exist on the rights statement,
+        in other words, assumes it is a rights statement that has been assigned
+        to a transfer.
+        """
+        date_keys = self.get_date_keys(periods=True)
+        rights_object = self.rights_info
+        start_date = getattr(rights_object, date_keys[0])
+        end_date = getattr(rights_object, date_keys[2]) if len(date_keys) > 2 else getattr(rights_object, date_keys[1])
+        return f"{start_date.strftime('%b %d %Y') if start_date else 'immediately'} - {end_date.strftime('%b %d %Y') if end_date else 'no end date'}"
+
+    @property
     def rights_info(self):
         """Returns the rights info object associated with a Rights Statement."""
         rights_objects = {
