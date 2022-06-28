@@ -52,7 +52,7 @@ class RightsStatement(models.Model):
         rights_object = self.rights_info
         start_date = getattr(rights_object, date_keys[0])
         end_date = getattr(rights_object, date_keys[2]) if len(date_keys) > 2 else getattr(rights_object, date_keys[1])
-        return f"{start_date.strftime('%A, %b %d %Y') if start_date else 'immediately'} - {end_date.strftime('%A, %b %d %Y') if end_date else 'no end date'}"
+        return f"{start_date.strftime('%b %d %Y') if start_date else 'immediately'} - {end_date.strftime('%b %d %Y') if end_date else 'no end date'}"
 
     @property
     def rights_info(self):
