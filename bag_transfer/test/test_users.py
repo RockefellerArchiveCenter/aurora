@@ -1,14 +1,16 @@
 import random
 from unittest.mock import patch
 
+from django.conf import settings
 from django.core import mail
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from bag_transfer.models import Organization, User
 from bag_transfer.test.helpers import TestMixin
 
 
+@override_settings(COGNITO_USE=False)
 class UserTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
@@ -114,3 +116,31 @@ class UserTestCase(TestMixin, TestCase):
         self.client.logout()
         response = self.assert_status_code("get", reverse("splash"), 302)
         self.assertTrue(response.url.startswith(reverse("login")))
+
+    @override_settings(COGNITO_USE=True)
+    @patch("boto3.client")
+    @patch("bag_transfer.lib.RAC_CMD.add2grp")
+    @patch("bag_transfer.lib.RAC_CMD.add_user")
+    def test_cognito(self, mock_add_user, mock_add2grp, mock_boto):
+        mock_username = "cognito"
+        mock_email = "cognito@example.org"
+        User.objects.create_user(
+            username=mock_username,
+            is_active=True,
+            first_name="Cognito",
+            last_name="User",
+            email=mock_email,
+            organization=random.choice(Organization.objects.all()))
+        self.assertEqual(mock_add_user.call_count, 0)
+        self.assertEqual(mock_add2grp.call_count, 0)
+        mock_boto.assert_called_once_with(
+            'cognito-idp',
+            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+            region_name=settings.COGNITO_REGION)
+        mock_boto().admin_create_user.assert_called_once_with(
+            UserPoolId=settings.COGNITO_USER_POOL,
+            Username=mock_username,
+            UserAttributes=[{'Name': 'email', 'Value': mock_email}],
+            DesiredDeliveryMediums=['EMAIL']
+        )

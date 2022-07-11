@@ -103,6 +103,13 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
+# Amazon Cognito
+COGNITO_USE = config.COGNITO_USE
+COGNITO_USER_POOL = config.COGNITO_USER_POOL
+COGNITO_REGION = config.COGNITO_REGION
+COGNITO_ACCESS_KEY = config.COGNITO_ACCESS_KEY
+COGNITO_SECRET_KEY = config.COGNITO_SECRET_KEY
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 

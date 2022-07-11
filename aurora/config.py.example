@@ -52,3 +52,9 @@ ASPACE_PASSWORD = "admin"  # Password for ArchivesSpace user (string)
 ASPACE_REPO_ID = 2  # Identifier for ArchivesSpace repository (integer)
 
 GTM_ID = "GTM-xxxxxxx"  # Google Tag Manager identifier (string)
+
+COGNITO_USE = False  # Use Amazon Cognito for user management
+COGNITO_USER_POOL = "aurora_users" # Amazon Cognito user pool ID
+COGNITO_REGION = "us-east-1"  # Region in which Amazon Cognito user pool is located
+COGNITO_ACCESS_KEY = "13456adf"  # AWS Access Key for user with permissions to manage Cognito users
+COGNITO_SECRET_KEY = "987654adaf"  # AWS Secret Key for user with permissions to manage Cognito users
