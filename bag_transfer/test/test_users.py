@@ -139,7 +139,7 @@ class UserTestCase(TestMixin, TestCase):
             aws_secret_access_key=settings.COGNITO_SECRET_KEY,
             region_name=settings.COGNITO_REGION)
         mock_boto().admin_create_user.assert_called_once_with(
-            UserPoolId='us-east-1_BP3iWONUO',
+            UserPoolId=settings.COGNITO_USER_POOL,
             Username=mock_username,
             UserAttributes=[{'Name': 'email', 'Value': mock_email}],
             DesiredDeliveryMediums=['EMAIL']
