@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+import boto3
 import iso8601
 from dateutil import relativedelta, tz
 from django.apps import apps
@@ -162,17 +163,38 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         """Adds additional behaviors to default save."""
         if self.pk is None:
-            """Sets default random password for new users."""
-            if RAC_CMD.add_user(self.username):
-                if RAC_CMD.add2grp(self.organization.machine_name, self.username):
-                    self.set_password(User.objects.make_random_password())
-                    super(User, self).save(*args, **kwargs)
+            """Behaviors for new users."""
+            if settings.COGNITO_USE:
+                """Creates new user in Amazon Cognito."""
+                cognito_client = boto3.client(
+                    'cognito-idp',
+                    aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+                    aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+                    region_name=settings.COGNITO_REGION)
+                cognito_client.admin_create_user(
+                    UserPoolId=settings.COGNITO_USER_POOL,
+                    Username=self.username,
+                    UserAttributes=[
+                        {
+                            'Name': 'email',
+                            'Value': self.email
+                        },
+                    ],
+                    DesiredDeliveryMediums=['EMAIL']
+                )
+            else:
+                """Sets default random password."""
+                if RAC_CMD.add_user(self.username):
+                    if RAC_CMD.add2grp(self.organization.machine_name, self.username):
+                        self.set_password(User.objects.make_random_password())
+                        super(User, self).save(*args, **kwargs)
         else:
             """Updates user's group if necessary."""
-            orig = User.objects.get(pk=self.pk)
-            if orig.organization != self.organization:
-                RAC_CMD.del_from_org(self.username)
-                RAC_CMD.add2grp(self.organization.machine_name, self.username)
+            if not settings.COGNITO_USE:
+                orig = User.objects.get(pk=self.pk)
+                if orig.organization != self.organization:
+                    RAC_CMD.del_from_org(self.username)
+                    RAC_CMD.add2grp(self.organization.machine_name, self.username)
         super(User, self).save(*args, **kwargs)
 
     def total_uploads(self):
