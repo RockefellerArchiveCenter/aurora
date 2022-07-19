@@ -1,6 +1,7 @@
 from uuid import uuid4
 
 import boto3
+import botocore
 import iso8601
 from dateutil import relativedelta, tz
 from django.apps import apps
@@ -171,17 +172,21 @@ class User(AbstractUser):
                     aws_access_key_id=settings.COGNITO_ACCESS_KEY,
                     aws_secret_access_key=settings.COGNITO_SECRET_KEY,
                     region_name=settings.COGNITO_REGION)
-                cognito_client.admin_create_user(
-                    UserPoolId=settings.COGNITO_USER_POOL,
-                    Username=self.username,
-                    UserAttributes=[
-                        {
-                            'Name': 'email',
-                            'Value': self.email
-                        },
-                    ],
-                    DesiredDeliveryMediums=['EMAIL']
-                )
+                try:
+                    cognito_client.admin_create_user(
+                        UserPoolId=settings.COGNITO_USER_POOL,
+                        Username=self.username,
+                        UserAttributes=[
+                            {
+                                'Name': 'email',
+                                'Value': self.email
+                            },
+                        ],
+                        DesiredDeliveryMediums=['EMAIL']
+                    )
+                except botocore.errorfactory.UsernameExistsException:
+                    # TODO: add handling for users already in Cognito (update user? Reset PW?)
+                    pass
             else:
                 """Sets default random password."""
                 if RAC_CMD.add_user(self.username):
