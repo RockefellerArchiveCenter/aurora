@@ -1,8 +1,8 @@
 from authlib.integrations.base_client import OAuthError
 from authlib.integrations.django_client import OAuth
 from authlib.oauth2.rfc6749 import OAuth2Token
-from django.contrib.auth import login
-from django.shortcuts import redirect
+from django.contrib.auth import login, logout
+from django.shortcuts import redirect, reverse
 from django.utils.deprecation import MiddlewareMixin
 
 from aurora import settings
@@ -30,6 +30,7 @@ class CognitoMiddleware(MiddlewareMixin):
         )
 
         if request.path in settings.COGNITO_CLIENT_CALLBACK_URL:
+            """Handle OAuth callback."""
             self.clear_session(request)
             request.session['token'] = sso_client.authorize_access_token(request)
             if self.get_current_user(sso_client, request) is not None:
@@ -37,6 +38,12 @@ class CognitoMiddleware(MiddlewareMixin):
                 if redirect_uri is not None:
                     return redirect(redirect_uri)
                 return redirect('app_home')
+
+        if request.path == "/logout/":
+            """Handle logout requests."""
+            self.clear_session(request)
+            logout(request)
+            return redirect(f"{settings.COGNITO_CLIENT['api_base_url']}/logout?client_id={settings.COGNITO_CLIENT['client_id']}&logout_uri={request.build_absolute_uri(reverse('app_home'))}")
 
         if request.session.get('token', None) is not None:
             current_user = self.get_current_user(sso_client, request)
@@ -62,7 +69,8 @@ class CognitoMiddleware(MiddlewareMixin):
             if res.ok:
                 user_data = res.json()
                 user = User.objects.get(username=user_data['username'], email=user_data['email'])
-                if not user.is_authenticated:
+                if not(request.user == user) or not(user.is_authenticated):
+                    print("here")
                     login(request, user)
                 return user_data
         except OAuthError as e:
