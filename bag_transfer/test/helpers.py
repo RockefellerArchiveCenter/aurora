@@ -5,7 +5,7 @@ from datetime import datetime
 from os import chown, listdir, path
 
 from asterism.file_helpers import copy_file_or_dir
-from django.test import TestCase
+from django.test import TestCase, modify_settings, override_settings
 from django.utils.timezone import make_aware
 
 from bag_transfer.models import (LanguageCode, Organization, RecordCreators,
@@ -317,6 +317,8 @@ def get_accession_form_data(creator=None):
     return accession_data
 
 
+@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+@override_settings(COGNITO_USE=False)
 class TestMixin(TestCase):
 
     def setUp(self):

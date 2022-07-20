@@ -10,8 +10,6 @@ from bag_transfer.models import Organization, User
 from bag_transfer.test.helpers import TestMixin
 
 
-@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoMiddleware"})
-@override_settings(COGNITO_USE=False)
 class UserTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
