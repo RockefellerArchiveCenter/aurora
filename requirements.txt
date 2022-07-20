@@ -14,6 +14,8 @@ attrs==21.4.0
     # via
     #   archivessnake
     #   jsonschema
+authlib==1.0.1
+    # via -r requirements.in
 bagit==1.8.1
     # via
     #   -r requirements.in
@@ -36,7 +38,9 @@ cffi==1.15.1
 charset-normalizer==2.0.12
     # via requests
 cryptography==37.0.4
-    # via pyjwt
+    # via
+    #   authlib
+    #   pyjwt
 django==4.0.4
     # via
     #   -r requirements.in
