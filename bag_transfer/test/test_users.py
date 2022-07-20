@@ -121,7 +121,7 @@ class UserTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
-    def test_cognito(self, mock_add_user, mock_add2grp, mock_boto):
+    def test_cognito_create(self, mock_add_user, mock_add2grp, mock_boto):
         mock_username = "cognito"
         mock_email = "cognito@example.org"
         User.objects.create_user(
@@ -144,3 +144,28 @@ class UserTestCase(TestMixin, TestCase):
             UserAttributes=[{'Name': 'email', 'Value': mock_email}],
             DesiredDeliveryMediums=['EMAIL']
         )
+
+    @override_settings(COGNITO_USE=True)
+    @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
+    @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
+    def test_cognito_middleware(self, mock_get, mock_authorize_token):
+        mock_authorize_token.return_value = {
+            'id_token': 'NqB65DYkCr93VJw',
+            'access_token': 'eyJraWQiOiJdIY1zoh1kRNwg',
+            'refresh_token': 'ey7nfxtH9-0k8fw',
+            'expires_in': 3600,
+            'token_type':
+            'Bearer',
+            'expires_at': 1658328143}
+        mock_get.status_code = 200
+        mock_get.return_value.json.return_value = {
+            "username": "admin",
+            "email": "admin@example.org"
+        }
+
+        # inititial redirect
+        resp = self.assert_status_code("get", "/app/", 302)
+        self.assertTrue(resp.url.startswith(settings.COGNITO_CLIENT['authorize_url']))
+
+        # login on callback
+        resp = self.assert_status_code("get", settings.COGNITO_CLIENT_CALLBACK_URL, 302)
