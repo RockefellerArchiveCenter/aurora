@@ -1,8 +1,13 @@
+import datetime
 import random
+from importlib import import_module
 from unittest.mock import patch
 
 from django.conf import settings
+from django.contrib.auth import logout
+from django.contrib.sessions.models import Session
 from django.core import mail
+from django.http import HttpRequest
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -149,6 +154,15 @@ class UserTestCase(TestMixin, TestCase):
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
     def test_cognito_middleware(self, mock_get, mock_authorize_token):
+
+        request = HttpRequest()
+        sessions = Session.objects.filter(expire_date__gt=datetime.datetime.now())
+        for session in sessions:
+            engine = import_module(settings.SESSION_ENGINE)
+            init_session = engine.SessionStore(session.session_key)
+            request.session = init_session
+            logout(request)
+
         mock_authorize_token.return_value = {
             'id_token': 'NqB65DYkCr93VJw',
             'access_token': 'eyJraWQiOiJdIY1zoh1kRNwg',
