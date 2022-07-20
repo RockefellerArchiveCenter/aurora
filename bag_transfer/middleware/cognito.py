@@ -21,34 +21,31 @@ class CognitoMiddleware(MiddlewareMixin):
 
     def process_request(self, request):
         """Handles main OAuth flow."""
-        if settings.COGNITO_USE:
-            def update_token(token, refresh_token, access_token):
-                request.session['token'] = token
-                return None
+        def update_token(token, refresh_token, access_token):
+            request.session['token'] = token
+            return None
 
-            sso_client = self.oauth.register(
-                'cognito', overwrite=True, **settings.COGNITO_CLIENT, update_token=update_token
-            )
+        sso_client = self.oauth.register(
+            'cognito', overwrite=True, **settings.COGNITO_CLIENT, update_token=update_token
+        )
 
-            if request.path in settings.COGNITO_CLIENT_CALLBACK_URL:
-                self.clear_session(request)
-                request.session['token'] = sso_client.authorize_access_token(request)
-                if self.get_current_user(sso_client, request) is not None:
-                    redirect_uri = request.session.pop('redirect_uri', None)
-                    if redirect_uri is not None:
-                        return redirect(redirect_uri)
-                    return redirect('app_home')
+        if request.path in settings.COGNITO_CLIENT_CALLBACK_URL:
+            self.clear_session(request)
+            request.session['token'] = sso_client.authorize_access_token(request)
+            if self.get_current_user(sso_client, request) is not None:
+                redirect_uri = request.session.pop('redirect_uri', None)
+                if redirect_uri is not None:
+                    return redirect(redirect_uri)
+                return redirect('app_home')
 
-            if request.session.get('token', None) is not None:
-                current_user = self.get_current_user(sso_client, request)
-                if current_user is not None:
-                    return self.get_response(request)
+        if request.session.get('token', None) is not None:
+            current_user = self.get_current_user(sso_client, request)
+            if current_user is not None:
+                return self.get_response(request)
 
-            # remember redirect URI for redirecting to the original URL.
-            request.session['redirect_uri'] = request.path
-            return sso_client.authorize_redirect(request, settings.COGNITO_CLIENT['redirect_uri'])
-        else:
-            pass
+        # remember redirect URI for redirecting to the original URL.
+        request.session['redirect_uri'] = request.path
+        return sso_client.authorize_redirect(request, settings.COGNITO_CLIENT['redirect_uri'])
 
     @staticmethod
     def get_current_user(sso_client, request):
