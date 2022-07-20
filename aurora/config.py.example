@@ -58,3 +58,7 @@ COGNITO_USER_POOL = "aurora_users" # Amazon Cognito user pool ID
 COGNITO_REGION = "us-east-1"  # Region in which Amazon Cognito user pool is located
 COGNITO_ACCESS_KEY = "13456adf"  # AWS Access Key for user with permissions to manage Cognito users
 COGNITO_SECRET_KEY = "987654adaf"  # AWS Secret Key for user with permissions to manage Cognito users
+COGNITO_CLIENT_ID = "12341bcdef" # ID for client application
+COGNITO_CLIENT_SECRET_KEY = "9a8b7c6d5e4f1g"  # Secret key for Cognito app
+COGNITO_CLIENT_BASE_URL = "https://user-pool.auth.us-east-1.amazoncognito.com"  # Domain name for your Cognito User Pool. Must not have a trailing slash
+COGNITO_CLIENT_CALLBACK_URL = "http://localhost:8000/oauth/cognito/callback/"  # Callback URL as configured in Cognito. Must have a trailing slash and should not use `localhost` unless testing.
