@@ -64,7 +64,6 @@ class CognitoMiddleware(MiddlewareMixin):
             res = sso_client.get(settings.COGNITO_CLIENT['userinfo_endpoint'], token=OAuth2Token(token))
             if res.ok:
                 user_data = res.json()
-                print(user_data)
                 user = User.objects.get(username=user_data['username'], email=user_data['email'])
                 if not user.is_authenticated:
                     login(request, user)

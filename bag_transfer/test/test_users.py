@@ -1,20 +1,16 @@
-import datetime
 import random
-from importlib import import_module
 from unittest.mock import patch
 
 from django.conf import settings
-from django.contrib.auth import logout
-from django.contrib.sessions.models import Session
 from django.core import mail
-from django.http import HttpRequest
-from django.test import TestCase, override_settings
+from django.test import TestCase, modify_settings, override_settings
 from django.urls import reverse
 
 from bag_transfer.models import Organization, User
 from bag_transfer.test.helpers import TestMixin
 
 
+@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoMiddleware"})
 @override_settings(COGNITO_USE=False)
 class UserTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
@@ -122,7 +118,12 @@ class UserTestCase(TestMixin, TestCase):
         response = self.assert_status_code("get", reverse("splash"), 302)
         self.assertTrue(response.url.startswith(reverse("login")))
 
-    @override_settings(COGNITO_USE=True)
+
+@modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+@override_settings(COGNITO_USE=True)
+class CognitoTestCase(TestMixin, TestCase):
+    fixtures = ["complete.json"]
+
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
@@ -150,18 +151,10 @@ class UserTestCase(TestMixin, TestCase):
             DesiredDeliveryMediums=['EMAIL']
         )
 
-    @override_settings(COGNITO_USE=True)
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
     def test_cognito_middleware(self, mock_get, mock_authorize_token):
-
-        request = HttpRequest()
-        sessions = Session.objects.filter(expire_date__gt=datetime.datetime.now())
-        for session in sessions:
-            engine = import_module(settings.SESSION_ENGINE)
-            init_session = engine.SessionStore(session.session_key)
-            request.session = init_session
-            logout(request)
+        self.client.logout()
 
         mock_authorize_token.return_value = {
             'id_token': 'NqB65DYkCr93VJw',
