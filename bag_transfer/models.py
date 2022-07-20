@@ -1,7 +1,6 @@
 from uuid import uuid4
 
 import boto3
-import botocore
 import iso8601
 from dateutil import relativedelta, tz
 from django.apps import apps
@@ -184,7 +183,7 @@ class User(AbstractUser):
                         ],
                         DesiredDeliveryMediums=['EMAIL']
                     )
-                except botocore.errorfactory.UsernameExistsException:
+                except cognito_client.exceptions.UsernameExistsException:
                     # TODO: add handling for users already in Cognito (update user? Reset PW?)
                     pass
             else:

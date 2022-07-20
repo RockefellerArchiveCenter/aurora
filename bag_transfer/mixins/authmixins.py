@@ -59,7 +59,7 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
             if hasattr(self, "model"):
                 if self.model == User:
                     try:
-                        if User.objects.get(pk=self.kwargs.get("pk")) == self.user:
+                        if User.objects.get(pk=self.kwargs.get("pk")) == self.request.user:
                             return True
                     except User.DoesNotExist:
                         return False
