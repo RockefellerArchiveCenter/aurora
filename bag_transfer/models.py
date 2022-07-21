@@ -160,45 +160,67 @@ class User(AbstractUser):
     def can_accession(self):
         return self.permissions_by_group(User.ACCESSIONER_GROUPS)
 
+    def create_cognito_user(self, cognito_client):
+        """Creates new user in Amazon Cognito."""
+        try:
+            cognito_client.admin_create_user(
+                UserPoolId=settings.COGNITO_USER_POOL,
+                Username=self.username,
+                UserAttributes=[
+                    {
+                        'Name': 'email',
+                        'Value': self.email
+                    },
+                ],
+                DesiredDeliveryMediums=['EMAIL']
+            )
+        except cognito_client.exceptions.UsernameExistsException:
+            # User already exists in Cognito, but we still need to create locally
+            pass
+
+    def set_cognito_user_status(self, cognito_client):
+        """Enables or disables Cognito user. Creates new user if necessary."""
+        try:
+            cognito_user = cognito_client.admin_get_user(UserPoolId=settings.COGNITO_USER_POOL, Username=self.username)
+            if cognito_user["Enabled"] != self.is_active:
+                (cognito_client.admin_enable_user(UserPoolId=settings.COGNITO_USER_POOL, Username=self.username) if
+                 self.is_active else cognito_client.admin_disable_user(UserPoolId=settings.COGNITO_USER_POOL, Username=self.username))
+        except cognito_client.exceptions.UserNotFoundException:
+            self.create_cognito_user(cognito_client)
+
+    def set_random_password(self):
+        """Sets default random password."""
+        if RAC_CMD.add_user(self.username):
+            if RAC_CMD.add2grp(self.organization.machine_name, self.username):
+                self.set_password(User.objects.make_random_password())
+
+    def update_system_group(self):
+        """Updates user's group if necessary."""
+        orig = User.objects.get(pk=self.pk)
+        if orig.organization != self.organization:
+            RAC_CMD.del_from_org(self.username)
+            RAC_CMD.add2grp(self.organization.machine_name, self.username)
+
     def save(self, *args, **kwargs):
         """Adds additional behaviors to default save."""
-        if self.pk is None:
-            """Behaviors for new users."""
-            if settings.COGNITO_USE:
-                """Creates new user in Amazon Cognito."""
-                cognito_client = boto3.client(
-                    'cognito-idp',
-                    aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-                    aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-                    region_name=settings.COGNITO_REGION)
-                try:
-                    cognito_client.admin_create_user(
-                        UserPoolId=settings.COGNITO_USER_POOL,
-                        Username=self.username,
-                        UserAttributes=[
-                            {
-                                'Name': 'email',
-                                'Value': self.email
-                            },
-                        ],
-                        DesiredDeliveryMediums=['EMAIL']
-                    )
-                except cognito_client.exceptions.UsernameExistsException:
-                    # TODO: add handling for users already in Cognito (update user? Reset PW?)
-                    pass
+        if settings.COGNITO_USE:
+            """Behaviors for Cognito users."""
+            cognito_client = boto3.client(
+                'cognito-idp',
+                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+                region_name=settings.COGNITO_REGION)
+            if self.pk is None:
+                self.create_cognito_user(cognito_client)
             else:
-                """Sets default random password."""
-                if RAC_CMD.add_user(self.username):
-                    if RAC_CMD.add2grp(self.organization.machine_name, self.username):
-                        self.set_password(User.objects.make_random_password())
-                        super(User, self).save(*args, **kwargs)
+                self.update_system_group()
+                self.set_cognito_user_status(cognito_client)
         else:
-            """Updates user's group if necessary."""
-            if not settings.COGNITO_USE:
-                orig = User.objects.get(pk=self.pk)
-                if orig.organization != self.organization:
-                    RAC_CMD.del_from_org(self.username)
-                    RAC_CMD.add2grp(self.organization.machine_name, self.username)
+            """Behaviors for local users."""
+            if self.pk is None:
+                self.set_random_password()
+            else:
+                self.update_system_group()
         super(User, self).save(*args, **kwargs)
 
     def total_uploads(self):

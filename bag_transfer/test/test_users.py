@@ -117,14 +117,14 @@ class UserTestCase(TestMixin, TestCase):
         self.assertTrue(response.url.startswith(reverse("login")))
 
 
-@modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
-@override_settings(COGNITO_USE=True)
 class CognitoTestCase(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @override_settings(COGNITO_USE=True)
     def test_cognito_create(self, mock_add_user, mock_add2grp, mock_boto):
         mock_username = "cognito"
         mock_email = "cognito@example.org"
@@ -149,9 +149,35 @@ class CognitoTestCase(TestMixin, TestCase):
             DesiredDeliveryMediums=['EMAIL']
         )
 
+    @patch("boto3.client")
+    @patch("bag_transfer.lib.RAC_CMD.add2grp")
+    @patch("bag_transfer.lib.RAC_CMD.add_user")
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @override_settings(COGNITO_USE=True)
+    def test_cognito_update(self, mock_add_user, mock_add2grp, mock_boto):
+        user = User.objects.get(username="admin")
+        user.is_active = False
+        user.save()
+        self.assertEqual(mock_add_user.call_count, 0)
+        self.assertEqual(mock_add2grp.call_count, 0)
+        mock_boto.assert_called_once_with(
+            'cognito-idp',
+            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+            region_name=settings.COGNITO_REGION)
+        mock_boto().admin_get_user.assert_called_once_with(
+            UserPoolId=settings.COGNITO_USER_POOL,
+            Username=user.username)
+        mock_boto().admin_disable_user.assert_called_once_with(
+            UserPoolId=settings.COGNITO_USER_POOL,
+            Username=user.username)
+
+    @patch("boto3.client")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
-    def test_cognito_middleware(self, mock_get, mock_authorize_token):
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @override_settings(COGNITO_USE=True)
+    def test_cognito_middleware(self, mock_get, mock_authorize_token, mock_boto):
         self.client.logout()
 
         mock_authorize_token.return_value = {
