@@ -70,7 +70,6 @@ class CognitoMiddleware(MiddlewareMixin):
                 user_data = res.json()
                 user = User.objects.get(username=user_data['username'], email=user_data['email'])
                 if not(request.user == user) or not(user.is_authenticated):
-                    print("here")
                     login(request, user)
                 return user_data
         except OAuthError as e:
