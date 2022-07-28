@@ -198,9 +198,19 @@ else:
     for org in Organization.objects.all():
         add_org(org.machine_name)
 
-if len(User.objects.all()) == 0:
-    print("Creating users")
-    for user in DEFAULT_USERS:
+for user in DEFAULT_USERS:
+    if User.objects.filter(username=user["username"]).exists():
+        user = User.objects.get(username=user["username"])
+        # Re-adds linux system users based on users in database
+        if add_user(user.username):
+            add2grp(user.organization.machine_name, user.username)
+            # Resets the user's password to "password".
+            # If you don't want this behavior, you can comment out this line,
+            # but be aware that in a Docker environment doing so will mean that
+            # you need to manually set a user's password in Aurora before you are
+            # able to SFTP records into the container with that username and password.
+            set_server_password(user.username, "password")
+    else:
         new_user = User.objects.create_user(
             user["username"],
             first_name=user["first_name"],
@@ -217,17 +227,6 @@ if len(User.objects.all()) == 0:
                 new_user.groups.add(g)
         set_server_password(user["username"], user["password"])
         new_user.save()
-else:
-    # Re-adds linux system users based on users in database
-    for user in User.objects.all():
-        if add_user(user.username):
-            add2grp(user.organization.machine_name, user.username)
-            # Resets the user's password to "password".
-            # If you don't want this behavior, you can comment out this line,
-            # but be aware that in a Docker environment doing so will mean that
-            # you need to manually set a user's password in Aurora before you are
-            # able to SFTP records into the container with that username and password.
-            set_server_password(user.username, "password")
 
 # Terminate any idle processes, which cause problems later.
 open = [
