@@ -1,12 +1,14 @@
 from braces.views import AnonymousRequiredMixin
 from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetCompleteView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import (CreateView, DetailView, ListView,
@@ -121,7 +123,11 @@ class UserPasswordChangeView(PageTitleMixin, SuccessMessageMixin, PasswordChange
     def form_valid(self, form):
         """Set the user's server password."""
         set_server_password(form.user.username, form.cleaned_data["new_password1"])
-        return super().form_valid(form)
+        if settings.COGNITO_USE:
+            update_session_auth_hash(self.request, form.user)
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return super().form_valid(form)
 
 
 class UserPasswordResetView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetView):

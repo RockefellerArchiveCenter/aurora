@@ -1,3 +1,4 @@
+import json
 import random
 from unittest.mock import patch
 
@@ -7,7 +8,8 @@ from django.test import TestCase, modify_settings, override_settings
 from django.urls import reverse
 
 from bag_transfer.models import Organization, User
-from bag_transfer.test.helpers import TestMixin
+from bag_transfer.test.helpers import TestMixin, random_string
+from bag_transfer.users.form import UserPasswordChangeForm
 
 
 class UserTestCase(TestMixin, TestCase):
@@ -135,8 +137,8 @@ class CognitoTestCase(TestMixin, TestCase):
             last_name="User",
             email=mock_email,
             organization=random.choice(Organization.objects.all()))
-        self.assertEqual(mock_add_user.call_count, 0)
-        self.assertEqual(mock_add2grp.call_count, 0)
+        self.assertEqual(mock_add_user.call_count, 1)
+        self.assertEqual(mock_add2grp.call_count, 1)
         mock_boto.assert_called_once_with(
             'cognito-idp',
             aws_access_key_id=settings.COGNITO_ACCESS_KEY,
@@ -145,7 +147,7 @@ class CognitoTestCase(TestMixin, TestCase):
         mock_boto().admin_create_user.assert_called_once_with(
             UserPoolId=settings.COGNITO_USER_POOL,
             Username=mock_username,
-            UserAttributes=[{'Name': 'email', 'Value': mock_email}],
+            UserAttributes=[{'Name': 'email', 'Value': mock_email}, {'Name': 'email_verified', 'Value': 'true'}],
             DesiredDeliveryMediums=['EMAIL']
         )
 
@@ -180,7 +182,7 @@ class CognitoTestCase(TestMixin, TestCase):
     def test_cognito_middleware(self, mock_get, mock_authorize_token, mock_boto):
         self.client.logout()
 
-        mock_authorize_token.return_value = {
+        auth_resp = {
             'id_token': 'NqB65DYkCr93VJw',
             'access_token': 'eyJraWQiOiJdIY1zoh1kRNwg',
             'refresh_token': 'ey7nfxtH9-0k8fw',
@@ -188,6 +190,7 @@ class CognitoTestCase(TestMixin, TestCase):
             'token_type':
             'Bearer',
             'expires_at': 1658328143}
+        mock_authorize_token.return_value = auth_resp
         mock_get.status_code = 200
         mock_get.return_value.json.return_value = {
             "username": "admin",
@@ -200,3 +203,40 @@ class CognitoTestCase(TestMixin, TestCase):
 
         # login on callback
         resp = self.assert_status_code("get", settings.COGNITO_CLIENT_CALLBACK_URL, 302)
+
+        user = User.objects.get(username="admin")
+        self.assertEqual(auth_resp, user.token)
+
+    @patch('boto3.client')
+    @override_settings(COGNITO_USE=True)
+    def test_password_change_form(self, mock_client):
+        user = random.choice(User.objects.all())
+        token = random_string(255)
+        old_password = random_string(10)
+        new_password = random_string(10)
+        user.token = {"access_token": token}
+        user.save()
+        form = UserPasswordChangeForm(
+            data={
+                "old_password": old_password,
+                "new_password1": new_password,
+                "new_password2": new_password
+            },
+            user=user)
+        valid = form.is_valid()
+        self.assertTrue(valid, f"Expected form to be valid, got {form.errors}")
+        mock_client().change_password.assert_called_once_with(
+            PreviousPassword=old_password,
+            ProposedPassword=new_password,
+            AccessToken=token)
+
+        form = UserPasswordChangeForm(
+            data={
+                "old_password": "",
+                "new_password1": new_password,
+                "new_password2": new_password
+            },
+            user=user)
+        invalid = form.is_valid()
+        self.assertFalse(invalid, "Expected form to be invalid")
+        self.assertIsNot(json.loads(form.errors.as_json()).get("old_password"), None)

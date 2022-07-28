@@ -4,7 +4,7 @@ from subprocess import STDOUT, CalledProcessError, check_output
 
 
 def set_server_password(user, password):
-    command = "sudo usermod --password $(echo {} | openssl passwd -crypt -stdin) {}".format(
+    command = "sudo usermod --password $(echo '{}' | openssl passwd -crypt -stdin) {}".format(
         password, user
     )
     try:
