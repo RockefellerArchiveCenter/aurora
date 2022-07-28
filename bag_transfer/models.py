@@ -113,6 +113,7 @@ class User(AbstractUser):
     AbstractUser._meta.get_field("first_name").blank = False
     AbstractUser._meta.get_field("last_name").blank = False
     AbstractUser._meta.get_field("username").blank = False
+    token = models.JSONField(null=True, blank=True)
 
     class Meta:
         ordering = ["username"]
@@ -188,18 +189,18 @@ class User(AbstractUser):
         except cognito_client.exceptions.UserNotFoundException:
             self.create_cognito_user(cognito_client)
 
-    def set_random_password(self):
-        """Sets default random password."""
-        if RAC_CMD.add_user(self.username):
-            if RAC_CMD.add2grp(self.organization.machine_name, self.username):
-                self.set_password(User.objects.make_random_password())
+    def create_system_user(self):
+        return RAC_CMD.add_user(self.username)
+
+    def add_user_to_system_group(self):
+        return RAC_CMD.add2grp(self.organization.machine_name, self.username)
 
     def update_system_group(self):
         """Updates user's group if necessary."""
         orig = User.objects.get(pk=self.pk)
         if orig.organization != self.organization:
             RAC_CMD.del_from_org(self.username)
-            RAC_CMD.add2grp(self.organization.machine_name, self.username)
+            self.add_user_to_system_group()
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to default save."""
@@ -212,13 +213,17 @@ class User(AbstractUser):
                 region_name=settings.COGNITO_REGION)
             if self.pk is None:
                 self.create_cognito_user(cognito_client)
+                self.create_system_user()
+                self.add_user_to_system_group()
             else:
                 self.update_system_group()
                 self.set_cognito_user_status(cognito_client)
         else:
             """Behaviors for local users."""
             if self.pk is None:
-                self.set_random_password()
+                if self.create_system_user():
+                    if self.add_user_to_system_group():
+                        self.set_password(User.objects.make_random_password())
             else:
                 self.update_system_group()
         super(User, self).save(*args, **kwargs)
