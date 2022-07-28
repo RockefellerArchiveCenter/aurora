@@ -172,6 +172,10 @@ class User(AbstractUser):
                         'Name': 'email',
                         'Value': self.email
                     },
+                    {
+                        'Name': 'email_verified',
+                        'Value': 'true'
+                    }
                 ],
                 DesiredDeliveryMediums=['EMAIL']
             )
