@@ -147,7 +147,7 @@ class CognitoTestCase(TestMixin, TestCase):
         mock_boto().admin_create_user.assert_called_once_with(
             UserPoolId=settings.COGNITO_USER_POOL,
             Username=mock_username,
-            UserAttributes=[{'Name': 'email', 'Value': mock_email}],
+            UserAttributes=[{'Name': 'email', 'Value': mock_email}, {'Name': 'email_verified', 'Value': 'true'}],
             DesiredDeliveryMediums=['EMAIL']
         )
 
