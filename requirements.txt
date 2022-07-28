@@ -10,11 +10,11 @@ asgiref==3.5.2
     # via django
 asterism==0.8
     # via -r requirements.in
-attrs==21.4.0
+attrs==22.1.0
     # via
     #   archivessnake
     #   jsonschema
-authlib==1.0.1
+authlib @ git+https://github.com/lepture/authlib@10cec25
     # via -r requirements.in
 bagit==1.8.1
     # via
@@ -27,7 +27,7 @@ boltons==21.0.0
     # via archivessnake
 boto3==1.24.25
     # via -r requirements.in
-botocore==1.27.26
+botocore==1.27.39
     # via
     #   boto3
     #   s3transfer
@@ -69,7 +69,7 @@ iso-639==0.4.5
     # via -r requirements.in
 iso8601==0.1.16
     # via -r requirements.in
-jarowinkler==1.1.2
+jarowinkler==1.2.0
     # via rapidfuzz
 jmespath==1.0.1
     # via
@@ -109,7 +109,7 @@ pyyaml==6.0
     #   archivessnake
 rac-schemas==0.30
     # via -r requirements.in
-rapidfuzz==2.1.3
+rapidfuzz==2.3.0
     # via archivessnake
 requests==2.27.1
     # via
@@ -124,11 +124,11 @@ six==1.16.0
     #   python-dateutil
 sqlparse==0.4.2
     # via django
-structlog==21.5.0
+structlog==22.1.0
     # via archivessnake
 uritemplate==4.1.1
     # via -r requirements.in
-urllib3==1.26.10
+urllib3==1.26.11
     # via
     #   botocore
     #   requests
