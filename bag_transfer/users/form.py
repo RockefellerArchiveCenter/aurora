@@ -137,6 +137,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
                 self.add_error("old_password", "You entered your current password incorrectly")
             except Exception as e:
                 raise ValidationError(f"An error occurred: {e.response['message']}")
+        return cleaned_data
 
 
 class UserPasswordResetForm(PasswordResetForm):
