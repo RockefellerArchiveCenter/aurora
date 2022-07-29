@@ -10,7 +10,7 @@ from bag_transfer.models import User
 
 
 class CognitoMiddleware(MiddlewareMixin):
-    """Ensures OAuth is used to log in users.
+    """Ensures AWS Cognito is used to log in users.
 
     Taken from https://songrgg.github.io/programming/django-oauth-client-setup/
     """
@@ -20,14 +20,26 @@ class CognitoMiddleware(MiddlewareMixin):
         self.oauth = OAuth()
 
     def process_request(self, request):
-        """Handles main OAuth flow."""
+        """Handles OAuth flow.
+
+        Unauthenticated requests are redirected to Cognito login page, which
+        returns a token to the configured COGNITO_CLIENT_CALLBACK_URL. This
+        token is then parsed and the current user is set in the request.session
+        and the token is saved to the authenticated user's model instance.
+        """
         def update_token(token, refresh_token, access_token):
             request.session['token'] = token
             return None
 
         sso_client = self.oauth.register(
-            'cognito', overwrite=True, **settings.COGNITO_CLIENT, update_token=update_token
-        )
+            'cognito',
+            overwrite=True,
+            **settings.COGNITO_CLIENT,
+            update_token=update_token)
+
+        if request.path == "/":
+            """Redirect requests to root to the application home page."""
+            return redirect("app_home")
 
         if request.path in settings.COGNITO_CLIENT_CALLBACK_URL:
             """Handle OAuth callback."""
@@ -46,11 +58,12 @@ class CognitoMiddleware(MiddlewareMixin):
             return redirect(f"{settings.COGNITO_CLIENT['api_base_url']}/logout?client_id={settings.COGNITO_CLIENT['client_id']}&logout_uri={request.build_absolute_uri(reverse('app_home'))}")
 
         if request.session.get('token', None) is not None:
+            """Navigate to requested page."""
             current_user = self.get_current_user(sso_client, request)
             if current_user is not None:
                 return self.get_response(request)
 
-        # remember redirect URI for redirecting to the original URL.
+        """Initiate authorization."""
         request.session['redirect_uri'] = request.path
         return sso_client.authorize_redirect(request, settings.COGNITO_CLIENT['redirect_uri'])
 
