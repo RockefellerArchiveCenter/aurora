@@ -91,7 +91,11 @@ class DiscoverTransfers(CronJobBase):
                             email.send()
                             remove_file_or_dir(new_transfer.machine_file_path)
 
-                    new_transfer.save()
+                    try:
+                        new_transfer.save()
+                    except Exception as e:
+                        print("Error saving new transfer {}: {}".format(machine_file_identifier, str(e)))
+                        result = False
                     remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, new_transfer.bag_it_name))
                 except Exception as e:
                     print("Error discovering transfer {}: {}".format(machine_file_identifier, str(e)))
