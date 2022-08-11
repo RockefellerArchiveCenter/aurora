@@ -7,6 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: example
     volumes:
       - auroradb:/var/lib/mysql
+    command: ['--character-set-server=utf8mb4', '--collation-server=utf8mb4_unicode_ci']
   web:
     build: .
     entrypoint: /code/entrypoint.sh
