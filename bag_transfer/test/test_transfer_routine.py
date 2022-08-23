@@ -7,7 +7,8 @@ from django.test import TestCase
 
 from aurora import settings
 from bag_transfer.lib.bag_checker import BagChecker
-from bag_transfer.lib.transfer_routine import TransferRoutine
+from bag_transfer.lib.transfer_routine import (TransferFileObject,
+                                               TransferRoutine)
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
@@ -20,6 +21,21 @@ class TransferRoutineTestCase(TestCase):
         Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.reset_org_dirs(Organization.objects.all())
+
+    def test_passes_filename(self):
+        """Asserts passes_filename helper correctly evaluates files."""
+        for file_path, expected in [
+                ("/data/foo/bar.tar", True),
+                ("/data/foo/bar", True),
+                ("/data/foo/ba>", False),
+                ("/data/foo/ba<", False),
+                ("/data/foo/b!a", False),
+                ("/data/foo/b|a", False),
+                ("/data/foo/ba:", False),
+                ("/data/foo/ba?", False),
+                ("/data/foo/ba*", False), ]:
+            output = TransferFileObject(file_path).passes_filename()
+            self.assertEqual(output, expected, f"Expected {file_path} to return {expected}, returned {output} instead.")
 
     def test_setup_routine(self):
         """Asserts TransferRoutine sets up correctly."""
