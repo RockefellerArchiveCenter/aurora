@@ -322,9 +322,9 @@ class TransferFileObject(object):
             datetime.datetime.fromtimestamp(os.path.getmtime(self.file_path)))
 
     def passes_filename(self):
-        is_valid = re.match(
-            r"^[a-zA-Z0-9\-\_\/\.\s]+$", self.file_path.split("/")[-1])
-        if not is_valid:
+        is_invalid = re.search(
+            r"[<>\:\"\!\|\?\*]", self.file_path.split("/")[-1])
+        if is_invalid:
             return self.set_auto_fail_with_code(self.AUTO_FAIL_BFNM)
         return True
 
