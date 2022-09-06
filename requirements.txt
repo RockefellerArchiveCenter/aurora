@@ -61,7 +61,7 @@ iso8601==0.1.16
     # via -r requirements.in
 jarowinkler==1.2.1
     # via rapidfuzz
-jsonschema==4.14.0
+jsonschema==4.15.0
     # via
     #   -r requirements.in
     #   rac-schemas
