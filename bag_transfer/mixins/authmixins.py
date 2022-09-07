@@ -47,6 +47,9 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
 
     def test_func(self, user):
 
+        if getattr(user, 'is_application', False):
+            return True
+
         if user.is_staff:
             return True
 
