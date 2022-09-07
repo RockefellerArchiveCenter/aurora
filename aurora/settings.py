@@ -52,8 +52,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "bag_transfer.middleware.cognito.CognitoMiddleware",
-    "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
+    "bag_transfer.middleware.cognito.CognitoAppMiddleware",
+    "bag_transfer.middleware.cognito.CognitoUserMiddleware",
+    # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
 ]
 
 ROOT_URLCONF = "aurora.urls"
@@ -83,7 +84,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        # "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
 }
@@ -124,11 +125,10 @@ COGNITO_CLIENT = {
         'token_endpoint_auth_method': 'client_secret_basic',
     },
     'userinfo_endpoint': '/oauth2/userInfo',
+    'jwks_url': f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL}/.well-known/jwks.json",
 }
 
 COGNITO_CLIENT_CALLBACK_URL = config.COGNITO_CLIENT_CALLBACK_URL
-
-# OAUTH_COOKIE_SESSION_ID = 'cognito_session_id'
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators

@@ -75,6 +75,20 @@ If you'd like to transfer your own bags, you can do that by SFTPing them into th
 
 The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
 
+
+## Authentication
+
+### Disabling OAuth Provider
+By default, Aurora is configured to use AWS Cognito as an OAuth provider for authentication.
+If you do not have an OAuth provider or don't want to use one, it is possible to
+use the built-in local Django authentication layer. In order to do this you will need
+to make a number of changes:
+1. Update the `MIDDLEWARE` configs in settings.py:
+  - Comment out `bag_transfer.middleware.cognito.CognitoAppMiddleware` and
+    `bag_transfer.middleware.cognito.CognitoUserMiddleware`.
+  - Enable `bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT`.
+2. Ensure that the `COGNITO_USE` config value is set to `False`.
+
 ### User accounts
 
 By default, Aurora comes with five user accounts:
@@ -110,7 +124,19 @@ Aurora comes with a RESTful API, built using the Django Rest Framework. In addit
 
 ### Authentication
 
-Aurora uses JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
+#### Using OAuth
+
+In order to make requests against the Aurora API when using an OAuth provider, you
+will first need to add an application to your OAuth provider, then make a request
+against the provider's token endpoint using the client credentials flow. The token
+returned from the provider should then be attached as a Bearer token to requests.
+
+The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/electronbonder)
+contains code which demonstrates this flow (see the `authorize_oauth` method in
+`/electronbonder/client.py`).
+
+#### Using local authentication
+If OAuth is disabled (see above), Aurora can use JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
 
 To get your token, send a POST request to the `/get-token/` endpoint, passing your username and password:
 
@@ -125,6 +151,10 @@ $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 ```
 
 In a production environment, successfully authenticating against this endpoint may require setting Apache's  `WSGIPassAuthorization` to `On`.
+
+The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/electronbonder)
+contains code which demonstrates this flow (see the `authorize` method in
+`/electronbonder/client.py`).
 
 
 ## Django Admin Configuration

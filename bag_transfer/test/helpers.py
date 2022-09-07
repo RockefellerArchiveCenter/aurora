@@ -317,7 +317,7 @@ def get_accession_form_data(creator=None):
     return accession_data
 
 
-@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
 @override_settings(COGNITO_USE=False)
 class TestMixin(TestCase):
 

@@ -1,13 +1,15 @@
 import json
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from django.test import TestCase
+from django.http import HttpRequest
+from django.test import TestCase, modify_settings
 from django.urls import reverse
 from rac_schemas import is_valid
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import (BAGLog, DashboardMonthData, Organization,
-                                 Transfer, User)
+from bag_transfer.middleware.cognito import CognitoAppMiddleware
+from bag_transfer.models import (Application, BAGLog, DashboardMonthData,
+                                 Organization, Transfer, User)
 from bag_transfer.test.helpers import TestMixin
 
 
@@ -82,3 +84,64 @@ class APITest(TestMixin, TestCase):
             for obj in queryset:
                 data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
                 self.assertTrue(is_valid(data, schema))
+
+
+class TestAPICognitoAuth(TestMixin, TestCase):
+    fixtures = ['complete.json']
+
+    @patch('bag_transfer.middleware.cognito.CognitoAppMiddleware.get_application')
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
+    def test_application_auth(self, mock_user):
+        """Asserts mixin correctly calls authentication."""
+        self.client.get("/api/", content_type="application/json", **{"HTTP_ACCEPT": "application/json"})
+        mock_user.assert_called_once()
+        self.client.get("/api/", content_type="application/json")
+        mock_user.call_count = 1
+        self.client.get("/", content_type="application/json", **{"HTTP_ACCEPT": "application/json"})
+        mock_user.call_count = 1
+
+    @patch('bag_transfer.middleware.cognito.CognitoAppMiddleware.get_auth_token')
+    @patch('bag_transfer.middleware.cognito.CognitoAppMiddleware.get_claims')
+    def test_get_application(self, mock_get_claims, mock_get_token):
+        """Asserts get_application method correctly handles exceptions."""
+        request = HttpRequest()
+        token = "12345"
+        exception_msg = "There was an error!"
+        mock_get_token.return_value = token
+        mock_get_claims.side_effect = Exception(exception_msg)
+
+        with self.assertRaises(Exception) as e:
+            CognitoAppMiddleware(MagicMock()).get_application(request)
+        self.assertTrue(exception_msg in str(e.exception))
+
+        mock_get_claims.side_effect = None
+        mock_get_claims.return_value = {}
+        with self.assertRaises(Exception) as e:
+            CognitoAppMiddleware(MagicMock()).get_application(request)
+        self.assertTrue("The authentication token does not have claims associated with it." in str(e.exception))
+
+        mock_get_claims.return_value = {"client_id": "foobar"}
+        with self.assertRaises(Exception) as e:
+            CognitoAppMiddleware(MagicMock()).get_application(request)
+        self.assertTrue("The application associated with this token does not exist." in str(e.exception))
+
+        app = Application.objects.create(name="foobar", client_id="barbaz")
+        mock_get_claims.return_value = {"client_id": "barbaz"}
+        returned = CognitoAppMiddleware(MagicMock()).get_application(request)
+        self.assertEqual(returned.pk, app.pk)
+
+    def test_get_auth_token(self):
+        """Asserts Bearer token is correctly parsed."""
+        token = "12345"
+        request = HttpRequest()
+        with self.assertRaises(Exception) as e:
+            CognitoAppMiddleware(MagicMock()).get_auth_token(request)
+        self.assertEqual(str(e.exception), 'Expected an Authorization header but got none.')
+
+        request.META["HTTP_AUTHORIZATION"] = f"Bearer {token}"
+        parsed = CognitoAppMiddleware(MagicMock()).get_auth_token(request)
+        self.assertEqual(parsed, token)
+
+        request.META["HTTP_AUTHORIZATION"] = token
+        with self.assertRaises(ValueError):
+            CognitoAppMiddleware(MagicMock()).get_auth_token(request)

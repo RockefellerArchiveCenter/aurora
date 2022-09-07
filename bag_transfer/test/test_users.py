@@ -115,8 +115,9 @@ class UserTestCase(TestMixin, TestCase):
 
         # ensure logged out users are redirected to splash page
         self.client.logout()
+
         response = self.assert_status_code("get", reverse("splash"), 302)
-        self.assertTrue(response.url.startswith(reverse("login")))
+        self.assertTrue(response.url.startswith(reverse("login")), response.url)
 
 
 class CognitoTestCase(TestMixin, TestCase):
@@ -125,7 +126,7 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_create(self, mock_add_user, mock_add2grp, mock_boto):
         mock_username = "cognito"
@@ -154,7 +155,7 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.UserCognitoMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_update(self, mock_add_user, mock_add2grp, mock_boto):
         user = User.objects.get(username="admin")
@@ -177,9 +178,10 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_middleware(self, mock_get, mock_authorize_token, mock_boto):
+
         self.client.logout()
 
         auth_resp = {
@@ -199,7 +201,9 @@ class CognitoTestCase(TestMixin, TestCase):
 
         # inititial redirect
         resp = self.assert_status_code("get", "/app/", 302)
-        self.assertTrue(resp.url.startswith(settings.COGNITO_CLIENT['authorize_url']))
+        self.assertTrue(
+            resp.url.startswith(settings.COGNITO_CLIENT['authorize_url']),
+            resp.url)
 
         # login on callback
         resp = self.assert_status_code("get", settings.COGNITO_CLIENT_CALLBACK_URL, 302)
