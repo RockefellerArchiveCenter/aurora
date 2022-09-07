@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('bag_transfer', '0039_remove_organization_bagit_profile'),
+        ('bag_transfer', '0041_alter_baginfometadata_bag_group_identifier_and_more'),
     ]
 
     operations = [
