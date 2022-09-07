@@ -249,6 +249,17 @@ class User(AbstractUser):
         return user
 
 
+class Application(models.Model):
+    is_active = models.BooleanField(default=True)
+    is_application = models.BooleanField(default=True)
+    is_authenticated = models.BooleanField(default=False)
+    name = models.CharField(max_length=100)
+    client_id = models.CharField(max_length=50)
+
+    def is_archivist(self):
+        return True
+
+
 class RecordCreators(models.Model):
     name = models.CharField(max_length=100)
     TYPE_CHOICES = (
