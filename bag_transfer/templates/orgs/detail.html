@@ -35,6 +35,32 @@
             </div>
         </div>
 
+        {% if request.user.is_org_admin or request.user.is_superuser %}
+        <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
+            <div class="box-body box-profile">
+
+                <h2 class="profile-username text-center">Transfer Settings</h2>
+
+                <ul class="list-group list-group-unbordered">
+                    <li class="list-group-item">
+                      <span class="list-label">Upload Target</span><br/>{{ object.org_machine_upload_paths.0 }}
+                    </li>
+                    {% if object.s3_username %}
+                    <li class="list-group-item">
+                      <span class="list-label">S3 Username</span><br/>{{ object.s3_username }}
+                    </li>
+                    <li class="list-group-item">
+                      <span class="list-label">S3 Access Key ID</span><br/>{{ object.s3_access_key_id }}
+                    </li>
+                    <li class="list-group-item">
+                      <span class="list-label">S3 Secret Access Key</span><br/><span class="force-wrap">{{ object.s3_secret_access_key }}</span>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+
 				<div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
 						<div class="box-header with-border">
 								<h2 class="box-title">Users</h2>
