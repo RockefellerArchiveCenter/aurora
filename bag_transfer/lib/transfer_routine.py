@@ -100,7 +100,8 @@ class TransferRoutine(object):
         """Makes sure organizations have upload and processing paths."""
         orgs_to_remove = []
         for org in self.active_organizations:
-            if not all_paths_exist(org.org_machine_upload_paths()):
+            # TODO: implement all_buckets_exist for S3_USE
+            if not all_paths_exist(org.org_machine_upload_paths):
                 orgs_to_remove.append(org)
         self.active_organizations = [org for org in self.active_organizations if org not in orgs_to_remove]
 
@@ -108,11 +109,12 @@ class TransferRoutine(object):
         """Creates a dictionary of transfers to process."""
         org_dir_contents = {}
         for org in self.active_organizations:
-            upload_dir, _ = org.org_machine_upload_paths()
+            # TODO: implement different handling for S3
+            upload_dir, _ = org.org_machine_upload_paths
             dir_content = os.listdir(upload_dir)
             if dir_content:
                 for item in dir_content:
-                    item_path = "{}{}".format(upload_dir, item)
+                    item_path = os.path.join(upload_dir, item)
                     if org.machine_name not in org_dir_contents:
                         org_dir_contents[org.machine_name] = {
                             "files": [],
@@ -130,6 +132,7 @@ class TransferRoutine(object):
 
     def _purge_routine_contents_dictionary(self):
         """Removes transfers from the routine if they are still in the process of being transferred."""
+        # TODO: implement changes for S3
         paths_to_remove_from_active_routine = self._org_contents_in_lsof()
         if paths_to_remove_from_active_routine:
             self._dump_from_routine_contents(paths_to_remove_from_active_routine)
@@ -180,7 +183,8 @@ class TransferRoutine(object):
     def _discover_paths_in_processing_dir(self):
         """Returns paths of transfers to be processed for an organization."""
         for org in self.active_organizations:
-            _, processing_path = org.org_machine_upload_paths()
+            # TODO: Implement different handling for S3
+            _, processing_path = org.org_machine_upload_paths
             org_paths = [os.path.join(processing_path, x) for x in os.listdir(processing_path)]
             self.organizations_processing_paths += org_paths
 

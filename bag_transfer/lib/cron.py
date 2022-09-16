@@ -5,10 +5,10 @@ from os.path import isdir, join
 from asterism.bagit_helpers import update_bag_info
 from asterism.file_helpers import (make_tarfile, move_file_or_dir,
                                    remove_file_or_dir)
+from django.conf import settings
 from django_cron import CronJobBase, Schedule
 
 import bag_transfer.lib.log_print as Pter
-from aurora import settings
 from bag_transfer.api.serializers import TransferSerializer
 from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.mailer import Mailer
@@ -37,6 +37,7 @@ class DiscoverTransfers(CronJobBase):
 
                     machine_file_identifier = Transfer().gen_identifier()
                     org = Organization.is_org_active(upload_list["org"])
+                    # TODO: user handling for s3
                     user = User.is_user_active(upload_list["upload_user"], org)
 
                     email.to = [user.email]
@@ -72,6 +73,7 @@ class DiscoverTransfers(CronJobBase):
                             BAGLog.log_it("APASS", new_transfer)
                             email.setup_message("TRANS_PASS_ALL", new_transfer)
                             email.send()
+                            # TODO: update for s3
                             move_file_or_dir(
                                 join(settings.TRANSFER_EXTRACT_TMP, new_transfer.bag_it_name),
                                 "{}{}".format(
@@ -80,6 +82,7 @@ class DiscoverTransfers(CronJobBase):
                                 ),
                             )
                             remove_file_or_dir(new_transfer.machine_file_path)
+                            # TODO: update for S3
                             new_transfer.machine_file_path = "{}{}".format(
                                 settings.STORAGE_ROOT_DIR, new_transfer.machine_file_identifier
                             )
@@ -118,6 +121,7 @@ class DeliverTransfers(CronJobBase):
         transfer = Transfer.objects.filter(process_status=Transfer.ACCESSIONING_STARTED).first()
         if transfer:
             try:
+                # TODO: update for s3
                 update_bag_info(
                     join(settings.STORAGE_ROOT_DIR, transfer.machine_file_identifier),
                     {"Origin": "aurora"})
