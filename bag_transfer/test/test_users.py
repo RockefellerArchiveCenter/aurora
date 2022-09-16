@@ -89,6 +89,7 @@ class UserTestCase(TestMixin, TestCase):
         mock_add_user.assert_called_once()
         self.assertEqual(mock_add2grp.call_count, 2)
 
+    @modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
     def test_user_views(self):
         """Ensures correct HTTP status codes are received for views."""
         for view in ["users:detail", "users:edit"]:
@@ -116,7 +117,7 @@ class UserTestCase(TestMixin, TestCase):
         # ensure logged out users are redirected to splash page
         self.client.logout()
 
-        response = self.assert_status_code("get", reverse("splash"), 302)
+        response = self.assert_status_code("get", reverse("app_home"), 302)
         self.assertTrue(response.url.startswith(reverse("login")), response.url)
 
 

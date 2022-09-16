@@ -14,7 +14,7 @@ from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
 from bag_transfer.test import helpers
 
 
-class TransferRoutineTestCase(TestCase):
+class TransferRoutineTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -116,7 +116,7 @@ class TransferRoutineTestCase(TestCase):
         self.routine.has_active_organizations()
         original_active_count = len(self.routine.active_organizations)
         last_org = self.routine.active_organizations[0]
-        last_org_upload_paths = last_org.org_machine_upload_paths()
+        last_org_upload_paths = last_org.org_machine_upload_paths
         random_index = random.randrange(0, len(last_org_upload_paths))
         remove_file_or_dir(last_org_upload_paths[random_index])
         self.routine.verify_organizations_paths()
@@ -145,7 +145,8 @@ class TransferRoutineTestCase(TestCase):
             self.routine.has_setup_err,
             "Expected TransferRoutine.has_setup_err to be False because there are no transfers in the transfer directory")
         organization = random.choice(Organization.objects.filter(is_active=True))
-        helpers.create_target_bags("valid_bag", settings.TEST_BAGS_DIR, organization)
+        user = random.choice(User.objects.filter(organization=organization))
+        helpers.create_target_bags("valid_bag", settings.TEST_BAGS_DIR, organization, username=user.username)
         self.assertTrue(self.routine.setup_routine(), "Expected TransferRoutine setup to succeed.")
         self.assertTrue(
             isinstance(self.routine.routine_contents_dictionary, dict),
@@ -164,12 +165,12 @@ class TransferRoutineTestCase(TestCase):
 
     def delete_org_dirs(self, org_list):
         for org in org_list:
-            for dir in org.org_machine_upload_paths():
+            for dir in org.org_machine_upload_paths:
                 if os.path.exists(dir):
                     shutil.rmtree(dir)
 
     def create_org_dirs(self, org_list):
         for org in org_list:
-            for dir in org.org_machine_upload_paths():
+            for dir in org.org_machine_upload_paths:
                 if not os.path.exists(dir):
                     os.makedirs(dir)

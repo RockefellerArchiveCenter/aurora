@@ -12,10 +12,9 @@ from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
-from bag_transfer.test.helpers import BAGS_REF
 
 
-class CronTestCase(TestCase):
+class CronTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -28,10 +27,10 @@ class CronTestCase(TestCase):
         self.org = random.choice(Organization.objects.all())
         if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
             remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
-        for d in self.org.org_machine_upload_paths():
+        for d in self.org.org_machine_upload_paths:
             if os.path.exists(d):
                 shutil.rmtree(d)
-                os.makedirs(d)
+            os.makedirs(d)
 
     def test_cron(self):
         self.discover_transfers()
@@ -39,7 +38,7 @@ class CronTestCase(TestCase):
 
     @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
     def discover_transfers(self, mock_passed_all):
-        bag_name, _ = BAGS_REF[0]
+        bag_name, _ = helpers.BAGS_REF[0]
         for bag_passed_all in [True, False]:
             self.bags = helpers.create_target_bags(
                 bag_name, settings.TEST_BAGS_DIR,
