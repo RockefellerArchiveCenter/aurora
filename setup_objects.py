@@ -1,4 +1,5 @@
 import psutil
+from django.conf import settings
 from django.contrib.auth.models import Group
 
 from bag_transfer.lib.RAC_CMD import (add2grp, add_org, add_user,
@@ -203,13 +204,15 @@ for user in DEFAULT_USERS:
         user = User.objects.get(username=user["username"])
         # Re-adds linux system users based on users in database
         if add_user(user.username):
-            add2grp(user.organization.machine_name, user.username)
+            if not settings.S3_USE:
+                add2grp(user.organization.machine_name, user.username)
             # Resets the user's password to "password".
             # If you don't want this behavior, you can comment out this line,
             # but be aware that in a Docker environment doing so will mean that
             # you need to manually set a user's password in Aurora before you are
             # able to SFTP records into the container with that username and password.
-            set_server_password(user.username, "password")
+            if not settings.COGNITO_USE:
+                set_server_password(user.username, "password")
     else:
         new_user = User.objects.create_user(
             user["username"],
@@ -225,7 +228,8 @@ for user in DEFAULT_USERS:
             for group in user["groups"]:
                 g = Group.objects.get_or_create(name=group)[0]
                 new_user.groups.add(g)
-        set_server_password(user["username"], user["password"])
+        if not settings.COGNITO_USE:
+            set_server_password(user["username"], user["password"])
         new_user.save()
 
 # Terminate any idle processes, which cause problems later.
