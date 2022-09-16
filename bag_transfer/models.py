@@ -1,3 +1,5 @@
+import json
+from os.path import join
 from uuid import uuid4
 
 import boto3
@@ -30,6 +32,9 @@ class Organization(models.Model):
     )
     acquisition_type = models.CharField(
         max_length=25, choices=ACQUISITION_TYPE_CHOICES, null=True, blank=True)
+    s3_access_key_id = models.CharField(max_length=191, null=True, blank=True)
+    s3_secret_access_key = models.CharField(max_length=191, null=True, blank=True)
+    s3_username = models.CharField(max_length=191, null=True, blank=True)
 
     class Meta:
         ordering = ["name"]
@@ -52,28 +57,131 @@ class Organization(models.Model):
     def inactive_users(self):
         return User.objects.filter(organization=self, is_active=False)
 
+    @property
     def org_machine_upload_paths(self):
-        """Returns a list containing the organizations' upload and processing paths."""
-        root_dir = "/".join([settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name])
-        return [
-            "{}/upload/".format(root_dir),
-            "{}/processing/".format(root_dir),
-        ]
+        """Returns a list containing the organization's upload and processing paths."""
+        root_dir = join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name)
+        if settings.S3_USE:
+            return [
+                f"{settings.S3_PREFIX}-{self.machine_name}-upload",
+                join(root_dir, "processing")]
+        else:
+            return [join(root_dir, "upload"), join(root_dir, "processing")]
+
+    def _construct_machine_name(self, org_name):
+        """Constructs machine name from organization by lowercasing and removing non-alpanumeric characters."""
+        return "".join([c for c in org_name.lower() if c.isalnum()]).strip()
+
+    def get_policy_arn(self, policy_name):
+        sts_client = boto3.client(
+            'sts',
+            aws_access_key_id=settings.IAM_ACCESS_KEY,
+            aws_secret_access_key=settings.IAM_SECRET_KEY)
+        account_id = sts_client.get_caller_identity()['Account']
+        return f"arn:aws:iam::{account_id}:policy/{settings.IAM_PATH}/{policy_name}"
+
+    def create_s3_bucket(self):
+        """Creates S3 upload bucket for organization.
+
+        The `s3_client.create_bucket()` call will either create the bucket if it
+        doesn't exist or return the bucket matching the provided key.
+        """
+        s3_client = boto3.client(
+            's3',
+            aws_access_key_id=settings.S3_ACCESS_KEY,
+            aws_secret_access_key=settings.S3_SECRET_KEY,
+            region_name=settings.S3_REGION)
+        bucket = self.org_machine_upload_paths[0]
+        s3_client.create_bucket(Bucket=bucket)  # creates the bucket if it doesn't exist
+        s3_client.put_public_access_block(
+            Bucket=bucket,
+            PublicAccessBlockConfiguration={
+                'BlockPublicAcls': True,
+                'IgnorePublicAcls': True,
+                'BlockPublicPolicy': True,
+                'RestrictPublicBuckets': True})
+        return bucket
+
+    def create_iam_user(self, bucket):
+        """Creates an IAM user with privileges to put objects in org upload bucket."""
+        formatted_path = f"/{settings.IAM_PATH.rstrip('/').lstrip('/')}/"
+        policy_name = f"{self.machine_name}-S3-policy"
+        policy_doc = {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": "s3:PutObject",
+                    "Resource": f"arn:aws:s3:::{bucket}/*"
+                }
+            ]
+        }
+        iam_client = boto3.client(
+            'iam',
+            aws_access_key_id=settings.IAM_ACCESS_KEY,
+            aws_secret_access_key=settings.IAM_SECRET_KEY,
+            region_name=settings.IAM_REGION)
+        try:
+            iam_client.create_user(
+                Path=formatted_path,
+                UserName=self.machine_name)
+        except iam_client.exceptions.EntityAlreadyExistsException:
+            print(f"User {self.machine_name} already exists.")
+        try:
+            policy_arn = iam_client.create_policy(
+                Path=formatted_path,
+                PolicyName=policy_name,
+                PolicyDocument=json.dumps(policy_doc),
+                Description=f"Allow {self.machine_name} privileges to put objects in {self.org_machine_upload_paths[0]} bucket"
+            )['Policy']['Arn']
+        except iam_client.exceptions.EntityAlreadyExistsException:
+            print(f"Policy {policy_name} already exists.")
+            policy_arn = self.get_policy_arn(policy_name)
+            access_keys = [k['AccessKeyId'] for k in iam_client.list_access_keys(UserName=self.machine_name)['AccessKeyMetadata']]
+            for key_id in access_keys:
+                iam_client.delete_access_key(UserName=self.machine_name, AccessKeyId=key_id)
+        iam_client.attach_user_policy(
+            UserName=self.machine_name,
+            PolicyArn=policy_arn)
+        access_key = iam_client.create_access_key(UserName=self.machine_name)['AccessKey']
+        return (access_key['AccessKeyId'], access_key['SecretAccessKey'], self.machine_name)
+
+    def deactivate_iam_user(self, user_name):
+        """Removes the policy allowing organization IAM user access to S3 bucket."""
+        iam_client = boto3.client(
+            'iam',
+            aws_access_key_id=settings.IAM_ACCESS_KEY,
+            aws_secret_access_key=settings.IAM_SECRET_KEY,
+            region_name=settings.IAM_REGION)
+        policy_arn = self.get_policy_arn(f"{self.machine_name}-S3-policy")
+        iam_client.detatch_user_policy(UserName=user_name, PolicyArn=policy_arn)
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to the default save function."""
         if self.pk is None:
             """Save new Organization instances."""
-            self.machine_name = "".join(c for c in self.name.lower() if c.isalnum()).rstrip()
-            RAC_CMD.add_org(self.machine_name)
+            self.machine_name = self._construct_machine_name(self.name)
+            if settings.S3_USE:
+                bucket = self.create_s3_bucket()
+                self.s3_access_key_id, self.s3_secret_access_key, self.s3_username = self.create_iam_user(bucket)
+            else:
+                RAC_CMD.add_org(self.machine_name)
         else:
+            """Update existing Organization instances."""
             orig = Organization.objects.get(pk=self.pk)
             if orig.is_active != self.is_active and not self.is_active:
-                """Sets all users of org to inactive."""
+                """Behaviors for organizations marked inactive."""
                 for u in self.org_users():
                     if u.is_active:
                         u.is_active = False
                         u.save()
+                if self.s3_username:
+                    self.deactivate_iam_user(self.machine_name)
+            if orig.is_active != self.is_active and self.is_active:
+                """Behaviors for organizations marked active."""
+                if settings.S3_USE and not all([self.s3_username, self.s3_access_key_id, self.s3_secret_access_key]):
+                    bucket = self.create_s3_bucket()
+                    self.s3_access_key_id, self.s3_secret_access_key, self.s3_username = self.create_iam_user(bucket)
         super(Organization, self).save(*args, **kwargs)
 
     @staticmethod
@@ -217,11 +325,13 @@ class User(AbstractUser):
                 region_name=settings.COGNITO_REGION)
             if self.pk is None:
                 self.create_cognito_user(cognito_client)
-                self.create_system_user()
-                self.add_user_to_system_group()
+                if not settings.S3_USE:
+                    self.create_system_user()
+                    self.add_user_to_system_group()
             else:
-                self.update_system_group()
                 self.set_cognito_user_status(cognito_client)
+                if not settings.S3_USE:
+                    self.update_system_group()
         else:
             """Behaviors for local users."""
             if self.pk is None:

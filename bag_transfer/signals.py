@@ -1,6 +1,7 @@
 from datetime import date
 
 from dateutil.relativedelta import relativedelta
+from django.conf import settings
 from django.db.models.signals import (m2m_changed, post_delete, post_save,
                                       pre_delete)
 from django.dispatch import receiver
@@ -16,8 +17,11 @@ from bag_transfer.models import (BagInfoMetadata, DashboardMonthData,
 @receiver(pre_delete, sender=Organization)
 def delete_organization(sender, instance, **kwargs):
     """Clean up system resources when an organization is deleted."""
-    chown_path_to_root(instance.org_machine_upload_paths()[0])
-    delete_system_group(instance.machine_name)
+    if settings.S3_USE:
+        instance.deactivate_iam_user(instance.machine_name)
+    else:
+        chown_path_to_root(instance.org_machine_upload_paths[0])
+        delete_system_group(instance.machine_name)
 
 
 @receiver(m2m_changed, sender=User.groups.through)
