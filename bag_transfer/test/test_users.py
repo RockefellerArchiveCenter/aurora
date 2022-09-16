@@ -89,7 +89,6 @@ class UserTestCase(TestMixin, TestCase):
         mock_add_user.assert_called_once()
         self.assertEqual(mock_add2grp.call_count, 2)
 
-    @modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
     def test_user_views(self):
         """Ensures correct HTTP status codes are received for views."""
         for view in ["users:detail", "users:edit"]:
