@@ -111,8 +111,18 @@ class Organization(models.Model):
             "Statement": [
                 {
                     "Effect": "Allow",
-                    "Action": "s3:PutObject",
-                    "Resource": f"arn:aws:s3:::{bucket}/*"
+                    "Action": [
+                        "s3:GetBucketLocation",
+                        "s3:GetObject",
+                        "s3:ListBucket",
+                        "s3:ListBucketMultipartUploads",
+                        "s3:ListMultipartUploadParts",
+                        "s3:PutObject"
+                    ],
+                    "Resource": [
+                        f"arn:aws:s3:::{bucket}",
+                        f"arn:aws:s3:::{bucket}/*"
+                    ]
                 }
             ]
         }
