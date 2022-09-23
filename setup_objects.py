@@ -27,6 +27,7 @@ DEFAULT_USERS = [
         "last_name": "Administrator",
         "superuser": True,
         "staff": True,
+        "org_admin": True,
         "org": "Archival Repository",
     },
     {
@@ -36,6 +37,7 @@ DEFAULT_USERS = [
         "last_name": "Representative",
         "superuser": False,
         "staff": False,
+        "org_admin": True,
         "org": "Donor Organization",
     },
     {
@@ -45,6 +47,7 @@ DEFAULT_USERS = [
         "last_name": "Archivist",
         "superuser": False,
         "staff": True,
+        "org_admin": True,
         "groups": ["managing_archivists"],
         "org": "Archival Repository",
     },
@@ -218,9 +221,10 @@ for user in DEFAULT_USERS:
             user["username"],
             first_name=user["first_name"],
             last_name=user["last_name"],
-            email="{}@example.org".format(user["username"]),
+            email=f"{user['username']}@example.org",
             is_superuser=user["superuser"],
             is_staff=user["staff"],
+            is_org_admin=user["org_admin"],
             organization=Organization.objects.get(name=user["org"]),
         )
         new_user.set_password(user["password"])
