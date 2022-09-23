@@ -150,7 +150,7 @@ def create_target_bags(target_str, test_bags_dir, org, username="root"):
     if len(target_bags) < 1:
         return False
     for bag_name in target_bags:
-        new_path = path.join(org.org_machine_upload_paths[0], bag_name)
+        new_path = path.join(org.upload_target, bag_name)
         copy_file_or_dir(path.join(test_bags_dir, bag_name), new_path)
         user.create_system_user()
         chown(new_path, pwd.getpwnam(username).pw_uid, -1)

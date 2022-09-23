@@ -1,8 +1,6 @@
 import random
-from os.path import join
 from unittest.mock import patch
 
-from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
@@ -31,18 +29,6 @@ class OrgTestCase(helpers.TestMixin, TestCase):
         org_data["active"] = False
         self.assert_status_code("post", reverse("orgs:add"), 200, data=org_data)
         mock_add_org.assert_called_once()
-
-    def test_org_machine_upload_paths(self):
-        """Asserts org_machine_upload_paths property returns expected values."""
-        machine_name = helpers.random_string(20)
-        org = Organization(machine_name=machine_name)
-        root_dir = join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), org.machine_name)
-        upload_paths = org.org_machine_upload_paths
-        self.assertEqual(upload_paths, [join(root_dir, "upload"), join(root_dir, "processing")])
-
-        with self.settings(S3_USE=True):
-            upload_paths = org.org_machine_upload_paths
-            self.assertEqual(upload_paths, [f"{settings.S3_PREFIX}-{org.machine_name}-upload", join(root_dir, "processing")])
 
     @patch("bag_transfer.lib.RAC_CMD.add_org")
     @patch("bag_transfer.models.Organization.create_s3_bucket")
@@ -106,7 +92,7 @@ class OrgTestCase(helpers.TestMixin, TestCase):
     def test_delete(self, mock_signal, mock_deactivate, mock_delete_group, mock_chown_path):
         """Asserts custom behaviors on organization delete."""
         org = random.choice(Organization.objects.all())
-        upload_path = org.org_machine_upload_paths[0]
+        upload_path = org.upload_target
         machine_name = org.machine_name
         org.delete()
         mock_delete_group.assert_called_once_with(machine_name)
