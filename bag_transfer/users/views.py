@@ -19,7 +19,7 @@ from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import Organization, Transfer, User
+from bag_transfer.models import Organization, User
 from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
                                      RACSuperUserUpdateForm,
                                      UserPasswordChangeForm,
@@ -77,22 +77,6 @@ class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "users/detail.html"
     page_title = "User Profile"
     model = User
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["uploads"] = []
-        transfers = Transfer.objects.filter(
-            process_status__gte=Transfer.TRANSFER_COMPLETED,
-            user_uploaded=context["object"],
-        ).order_by("-created_time")[:9]
-        for transfer in transfers:
-            transfer.bag_info_data = transfer.bag_data
-            context["uploads"].append(transfer)
-        context["uploads_count"] = Transfer.objects.filter(
-            process_status__gte=Transfer.TRANSFER_COMPLETED,
-            user_uploaded=context["object"],
-        ).count()
-        return context
 
 
 class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):

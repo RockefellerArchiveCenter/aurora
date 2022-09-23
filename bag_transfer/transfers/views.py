@@ -99,13 +99,6 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             context["data"]["all_orgs"] = all_orgs_data
             context["sorted_org_list"].append(["all_orgs", "All Organizations"])
 
-        user_data = self.compile_data(
-            Organization.objects.filter(id=self.request.user.organization.pk),
-            "My Transfers",
-            User.objects.filter(id=self.request.user.pk))
-        context["data"][self.request.user] = user_data
-        context["sorted_org_list"].append([self.request.user.username, "My Transfers"])
-
         for organization in organizations:
             org_data = self.compile_data(
                 Organization.objects.filter(id=organization.pk),
@@ -131,7 +124,6 @@ class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization__in=organizations)
         context["org_uploads_count"] = transfers.count()
-        context["user_uploads_count"] = transfers.filter(user_uploaded=self.request.user).count()
         return context
 
 
@@ -239,8 +231,6 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
         qs = Transfer.objects.filter(
             process_status__gte=Transfer.TRANSFER_COMPLETED,
             organization__in=organizations).annotate(title=Concat("metadata__title", "bag_it_name"))
-        if self.request.GET.get("q") == "user":
-            qs.filter(user_uploaded=self.request.user)
         return qs
 
     def get_dates(self, bag_info_data):
