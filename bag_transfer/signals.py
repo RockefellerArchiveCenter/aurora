@@ -20,7 +20,7 @@ def delete_organization(sender, instance, **kwargs):
     if settings.S3_USE:
         instance.deactivate_iam_user(instance.machine_name)
     else:
-        chown_path_to_root(instance.org_machine_upload_paths[0])
+        chown_path_to_root(instance.upload_target)
         delete_system_group(instance.machine_name)
 
 

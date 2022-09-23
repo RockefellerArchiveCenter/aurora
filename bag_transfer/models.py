@@ -1,6 +1,5 @@
 import json
 from os.path import join
-from uuid import uuid4
 
 import boto3
 import iso8601
@@ -20,9 +19,7 @@ class Organization(models.Model):
 
     is_active = models.BooleanField(default=True)
     name = models.CharField(max_length=60, unique=True)
-    machine_name = models.CharField(
-        max_length=60, unique=True, default="orgXXX will be created here"
-    )
+    machine_name = models.CharField(max_length=60, unique=True, default="org placeholder")
     created_time = models.DateTimeField(auto_now_add=True)
     modified_time = models.DateTimeField(auto_now=True)
     ACQUISITION_TYPE_CHOICES = (
@@ -58,15 +55,15 @@ class Organization(models.Model):
         return User.objects.filter(organization=self, is_active=False)
 
     @property
-    def org_machine_upload_paths(self):
-        """Returns a list containing the organization's upload and processing paths."""
-        root_dir = join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name)
+    def admin_users(self):
+        return User.objects.filter(organization=self, is_org_admin=True)
+
+    @property
+    def upload_target(self):
         if settings.S3_USE:
-            return [
-                f"{settings.S3_PREFIX}-{self.machine_name}-upload",
-                join(root_dir, "processing")]
+            return f"{settings.S3_PREFIX}-{self.machine_name}-upload"
         else:
-            return [join(root_dir, "upload"), join(root_dir, "processing")]
+            return join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name, "upload")
 
     def _construct_machine_name(self, org_name):
         """Constructs machine name from organization by lowercasing and removing non-alpanumeric characters."""
@@ -91,7 +88,7 @@ class Organization(models.Model):
             aws_access_key_id=settings.S3_ACCESS_KEY,
             aws_secret_access_key=settings.S3_SECRET_KEY,
             region_name=settings.S3_REGION)
-        bucket = self.org_machine_upload_paths[0]
+        bucket = self.upload_target
         s3_client.create_bucket(Bucket=bucket)  # creates the bucket if it doesn't exist
         s3_client.put_public_access_block(
             Bucket=bucket,
@@ -142,7 +139,7 @@ class Organization(models.Model):
                 Path=formatted_path,
                 PolicyName=policy_name,
                 PolicyDocument=json.dumps(policy_doc),
-                Description=f"Allow {self.machine_name} privileges to put objects in {self.org_machine_upload_paths[0]} bucket"
+                Description=f"Allow {self.machine_name} privileges to put objects in {self.upload_target} bucket"
             )['Policy']['Arn']
         except iam_client.exceptions.EntityAlreadyExistsException:
             print(f"Policy {policy_name} already exists.")
@@ -426,7 +423,6 @@ class Transfer(models.Model):
     accession = models.ForeignKey(
         "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="transfers")
-    user_uploaded = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name="transfers")
     machine_file_path = models.CharField(max_length=191)
     machine_file_size = models.CharField(max_length=30)
     machine_file_upload_time = models.DateTimeField()
@@ -448,14 +444,6 @@ class Transfer(models.Model):
 
     def __str__(self):
         return "{}: {}".format(self.pk, self.bag_or_failed_name)
-
-    @staticmethod
-    def gen_identifier():
-        """returns a unique identifier"""
-        iden = str(uuid4())
-        if Transfer.objects.filter(machine_file_identifier=iden).exists():
-            Transfer.gen_identifier()
-        return iden
 
     @property
     def bag_or_failed_name(self):
@@ -683,7 +671,8 @@ class BAGLog(models.Model):
     def log_it(cls, code, transfer=None):
         """Creates BagLog object for event."""
         try:
-            cls(code=BAGLogCodes.objects.get(code_short=code), transfer=transfer).save()
+            code = BAGLogCodes.objects.get_or_create(code_short=code)[0]
+            cls(code=code, transfer=transfer).save()
 
             if transfer:
                 if code in BAGLogCodes.BAGIT_VALIDATIONS:
