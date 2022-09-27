@@ -139,6 +139,9 @@ class DeliverTransfers(CronJobBase):
                         settings.STORAGE_BUCKET,
                         transfer.machine_file_path,
                         join(target_dir, tar_filename))
+                    s3_client.delete_object(
+                        Bucket=settings.STORAGE_BUCKET,
+                        Key=transfer.machine_file_path)
                 else:
                     move_file_or_dir(
                         join(settings.STORAGE_ROOT_DIR, tar_filename),
@@ -153,6 +156,7 @@ class DeliverTransfers(CronJobBase):
                 remove_file_or_dir(target_dir)
 
                 transfer.process_status = Transfer.DELIVERED
+                transfer.machine_file_path = join(settings.DELIVERY_QUEUE_DIR, tar_filename)
                 print(transfer.machine_file_identifier)
                 transfer.save()
             except Exception as e:
