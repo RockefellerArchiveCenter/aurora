@@ -72,11 +72,11 @@ class TransferRoutineTestCase(helpers.TestMixin, TestCase):
 
                 transfer = Transfer.objects.create(
                     organization=org,
-                    machine_file_path=trans["file_path"],
-                    machine_file_size=trans["file_size"],
-                    machine_file_upload_time=trans["file_modtime"],
+                    machine_file_path=trans["machine_file_path"],
+                    machine_file_size=trans["machine_file_size"],
+                    machine_file_upload_time=trans["machine_file_upload_time"],
                     machine_file_identifier=trans["machine_file_identifier"],
-                    machine_file_type=trans["file_type"],
+                    machine_file_type=trans["machine_file_type"],
                     bag_it_name=trans["bag_it_name"])
 
                 if trans["auto_fail"]:

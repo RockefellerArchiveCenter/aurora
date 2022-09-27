@@ -339,10 +339,10 @@ class TransferFileObject(object):
         """Called after processing fails validation or succeeds, generates dictionary for next step"""
         return {
             "bag_it_name": self.bag_it_name,
-            "file_path": self.file_path,
-            "file_size": self.file_size,
-            "file_type": self.file_type,
-            "file_modtime": self.file_modtime,
+            "machine_file_path": self.file_path,
+            "machine_file_size": self.file_size,
+            "machine_file_type": self.file_type,
+            "machine_file_upload_time": self.file_modtime,
             "machine_file_identifier": self.machine_file_identifier,
             "org": self.org_machine_name,
             "auto_fail": self.auto_fail,

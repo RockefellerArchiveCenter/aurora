@@ -40,11 +40,11 @@ class DiscoverTransfers(CronJobBase):
 
                 new_transfer = Transfer.objects.create(
                     organization=org,
-                    machine_file_path=transfer_dict["file_path"],
-                    machine_file_size=transfer_dict["file_size"],
-                    machine_file_upload_time=transfer_dict["file_modtime"],
+                    machine_file_path=transfer_dict["machine_file_path"],
+                    machine_file_size=transfer_dict["machine_file_size"],
+                    machine_file_upload_time=transfer_dict["machine_file_upload_time"],
                     machine_file_identifier=transfer_dict["machine_file_identifier"],
-                    machine_file_type=transfer_dict["file_type"],
+                    machine_file_type=transfer_dict["machine_file_type"],
                     bag_it_name=transfer_dict["bag_it_name"],
                     process_status=Transfer.TRANSFER_COMPLETED)
 
@@ -106,7 +106,7 @@ class DiscoverTransfers(CronJobBase):
                     result = False
                     remove_file_or_dir(join(settings.TRANSFER_EXTRACT_TMP, new_transfer.machine_file_identifier))
             except Exception as e:
-                print("Error discovering transfer {}: {}".format(new_transfer.machine_file_identifier, str(e)))
+                print("Error discovering transfer {}: {}".format(transfer_dict["machine_file_identifier"], str(e)))
                 result = False
         Pter.cron_close(self.code)
         return result
