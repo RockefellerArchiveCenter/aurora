@@ -224,7 +224,7 @@ for user in DEFAULT_USERS:
             email=f"{user['username']}@example.org",
             is_superuser=user["superuser"],
             is_staff=user["staff"],
-            is_org_admin=user["org_admin"],
+            is_org_admin=user.get("org_admin", False),
             organization=Organization.objects.get(name=user["org"]),
         )
         new_user.set_password(user["password"])
