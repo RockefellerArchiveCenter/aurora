@@ -31,7 +31,7 @@ charset-normalizer==2.1.1
     # via requests
 cryptography==38.0.1
     # via pyjwt
-django==4.1.1
+django==4.0.7
     # via
     #   -r requirements.in
     #   asterism
