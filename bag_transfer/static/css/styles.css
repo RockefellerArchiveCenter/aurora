@@ -208,3 +208,7 @@ div.dataTables_wrapper div.dataTables_filter input {
 @media (min-width: 590px) {
 	#context-switcher {float: right;}
 }
+
+.force-wrap {
+	overflow-wrap: break-word;
+}

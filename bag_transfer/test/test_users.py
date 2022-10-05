@@ -93,7 +93,7 @@ class UserTestCase(TestMixin, TestCase):
         """Ensures correct HTTP status codes are received for views."""
         for view in ["users:detail", "users:edit"]:
             self.assert_status_code(
-                "get", reverse(view, kwargs={"pk": random.choice(User.objects.filter(transfers__isnull=False)).pk}), 200)
+                "get", reverse(view, kwargs={"pk": random.choice(User.objects.all()).pk}), 200)
         for view in ["users:add", "users:list", "users:password-change"]:
             self.assert_status_code("get", reverse(view), 200)
 
@@ -116,7 +116,7 @@ class UserTestCase(TestMixin, TestCase):
         # ensure logged out users are redirected to splash page
         self.client.logout()
 
-        response = self.assert_status_code("get", reverse("splash"), 302)
+        response = self.assert_status_code("get", reverse("app_home"), 302)
         self.assertTrue(response.url.startswith(reverse("login")), response.url)
 
 

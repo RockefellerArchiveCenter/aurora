@@ -4,34 +4,36 @@ import re
 import shutil
 import tarfile
 import zipfile
-from pwd import getpwuid
 
+import boto3
 from asterism.file_helpers import (get_dir_size, is_dir_or_file,
-                                   remove_file_or_dir, tar_extract_all,
-                                   zip_extract_all)
+                                   move_file_or_dir, remove_file_or_dir,
+                                   tar_extract_all, zip_extract_all)
 from django.conf import settings
 from django.utils.timezone import make_aware
 
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.lib.files_helper import (all_paths_exist,
                                            files_in_unserialized,
-                                           open_files_list,
+                                           generate_identifier,
+                                           open_files_list, s3_bucket_exists,
                                            tar_has_top_level_only,
                                            zip_has_top_level_only)
 from bag_transfer.lib.virus_scanner import VirusScan
-from bag_transfer.models import BAGLog, Organization
+from bag_transfer.models import Organization
+
+
+class TransferRoutineException(Exception):
+    def __init__(self, code):
+        self.code = code
 
 
 class TransferRoutine(object):
-    def __init__(self, RUN=False):
-        self.transfers = []
-        self.active_organizations = []
-        self.routine_contents_dictionary = {}
-        self.organizations_processing_paths = []
+    def __init__(self):
+        self.tmp_dir = settings.TRANSFER_EXTRACT_TMP
+        self.active_organizations = None
+        self.routine_contents_dictionary = None
         self.has_setup_err = False
-
-        if RUN:
-            self.run_routine()
 
     def setup_routine(self):
         """Sets up the transfer routine.
@@ -39,20 +41,21 @@ class TransferRoutine(object):
         Ensures there is at least one active organization with the expected
         directories, and builds a dictionary of transfers to process.
         """
-        self.has_setup_err = False
-        if not self.has_active_organizations():
+        active_organizations = Organization.objects.filter(is_active=True)
+        if not len(active_organizations):
             self.has_setup_err = True
             Pter.plines(["No active organizations in database"])
             return False
 
-        self.verify_organizations_paths()
+        self.active_organizations = self.verify_organizations_paths(active_organizations)
         if not self.active_organizations:
             self.has_setup_err = True
             Pter.plines(["No active organizations that are set up correctly"])
             return False
 
-        self.build_contents_dictionary()
-        if not self.routine_contents_dictionary:
+        self.routine_contents_dictionary = self.build_contents_dictionary()
+        if not self.has_processible_files():
+            self.has_setup_err = False
             Pter.plines(["No files discovered in uploads directory"])
             return False
 
@@ -60,84 +63,94 @@ class TransferRoutine(object):
 
     def run_routine(self):
         """Runs the transfer routine."""
-        if self.setup_routine():
-            self._move_transfers_to_processing_dir()
+        transfers = []
 
-        self._discover_paths_in_processing_dir()
+        self.setup_routine()
+        for org, org_transfers in self.routine_contents_dictionary.items():
+            to_process = org_transfers["files"] + org_transfers["dirs"]
+            for transfer_path in to_process:
+                processing_path = self.move_transfer_to_tmp_dir(transfer_path, org)
+                transfer = TransferFileObject(processing_path, org)
+                identifier = generate_identifier()
+                try:
+                    transfer.is_processible()
+                    transfer.passes_filename()
+                    transfer.passes_virus_scan()
+                    transfer.file_modtime = transfer.get_file_modified_time()
+                    transfer.file_type, transfer.bag_it_name = transfer.resolve_file_type()
+                    transfer.file_size, expanded_path = transfer.resolve_file_size()
+                    transfer.passes_filesize_max()
+                    move_file_or_dir(expanded_path, os.path.join(self.tmp_dir, identifier))
+                    transfer.file_path = os.path.join(self.tmp_dir, identifier)
+                    transfer.machine_file_identifier = identifier
+                except TransferRoutineException as err:
+                    transfer.auto_fail = True
+                    transfer.auto_fail_code = err.code
+                remove_file_or_dir(processing_path)
+                transfers.append(transfer.render_transfer_record())
+        return transfers
 
-        for file_path in self.organizations_processing_paths:
-            transObj = TransferFileObject(file_path)
-
-            if not transObj.is_processible():
-                BAGLog.log_it("DEXT")
-                continue
-
-            if not transObj.passes_filename():
-                pass
-            else:
-                if not transObj.passes_virus_scan():
-                    pass
-                else:
-                    if not transObj.resolve_file_type():
-                        pass
-                    else:
-                        if not transObj.resolve_file_size():
-                            pass
-                        else:
-                            if not transObj.passes_filesize_max():
-                                pass
-
-            self.transfers.append(transObj.render_transfer_record())
-
-        return self.transfers if self.transfers else False
-
-    def has_active_organizations(self):
-        """Checks to see if the routine has active organizations."""
-        self.active_organizations = Organization.objects.filter(is_active=True)
-        return True if self.active_organizations else False
-
-    def verify_organizations_paths(self):
+    def verify_organizations_paths(self, active_orgs):
         """Makes sure organizations have upload and processing paths."""
-        orgs_to_remove = []
-        for org in self.active_organizations:
-            if not all_paths_exist(org.org_machine_upload_paths()):
-                orgs_to_remove.append(org)
-        self.active_organizations = [org for org in self.active_organizations if org not in orgs_to_remove]
+        for org in active_orgs:
+            if settings.S3_USE:
+                if not s3_bucket_exists(org.upload_target):
+                    active_orgs = active_orgs.exclude(name=org.name)
+            else:
+                if not all_paths_exist([org.upload_target]):
+                    active_orgs = active_orgs.exclude(name=org.name)
+        return active_orgs
 
     def build_contents_dictionary(self):
         """Creates a dictionary of transfers to process."""
         org_dir_contents = {}
         for org in self.active_organizations:
-            upload_dir, _ = org.org_machine_upload_paths()
-            dir_content = os.listdir(upload_dir)
-            if dir_content:
-                for item in dir_content:
-                    item_path = "{}{}".format(upload_dir, item)
-                    if org.machine_name not in org_dir_contents:
-                        org_dir_contents[org.machine_name] = {
-                            "files": [],
-                            "dirs": [],
-                            "count": 0}
+            if org.machine_name not in org_dir_contents:
+                org_dir_contents[org.machine_name] = {
+                    "files": [],
+                    "dirs": [],
+                    "count": 0}
+            upload_path = org.upload_target
+            if settings.S3_USE:
+                # TODO: will need futzing for dirs
+                s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=settings.S3_ACCESS_KEY,
+                    aws_secret_access_key=settings.S3_SECRET_KEY,
+                    region_name=settings.S3_REGION)
+                paginator = s3_client.get_paginator('list_objects_v2')
+                results = paginator.paginate(Bucket=upload_path)
+                for page in results:
+                    org_dir_contents[org.machine_name]["files"] += [item["Key"] for item in page.get("Contents", [])]
+                    org_dir_contents[org.machine_name]["count"] += page["KeyCount"]
+            else:
+                dir_contents = os.listdir(upload_path)
+                org_dir_contents[org.machine_name]["count"] = len(dir_contents)
+                for item in dir_contents:
+                    item_path = os.path.join(upload_path, item)
                     if os.path.isfile(item_path):
                         org_dir_contents[org.machine_name]["files"].append(item_path)
-                        org_dir_contents[org.machine_name]["count"] += 1
                     elif os.path.isdir(item_path):
                         org_dir_contents[org.machine_name]["dirs"].append(item_path)
-                        org_dir_contents[org.machine_name]["count"] += 1
-        if org_dir_contents:
-            self.routine_contents_dictionary = org_dir_contents
-            self._purge_routine_contents_dictionary()
+                if org_dir_contents:
+                    org_dir_contents = self._purge_routine_contents_dictionary(org_dir_contents)
+        return org_dir_contents
 
-    def _purge_routine_contents_dictionary(self):
+    def has_processible_files(self):
+        """Returns a boolean indicating if any files are waiting for processing."""
+        return bool(sum([self.routine_contents_dictionary[org]["count"] for org in self.routine_contents_dictionary]))
+
+    def _purge_routine_contents_dictionary(self, org_dir_contents):
         """Removes transfers from the routine if they are still in the process of being transferred."""
-        paths_to_remove_from_active_routine = self._org_contents_in_lsof()
+        paths_to_remove_from_active_routine = self._org_contents_in_lsof(org_dir_contents)
         if paths_to_remove_from_active_routine:
-            self._dump_from_routine_contents(paths_to_remove_from_active_routine)
+            return self._dump_from_routine_contents(paths_to_remove_from_active_routine)
+        return org_dir_contents
 
-    def _org_contents_in_lsof(self):
+    def _org_contents_in_lsof(self, org_dir_contents):
         """Returns list of files to remove from current processing, based on lsof log (open files)"""
         rm_list = []
-        for org, obj in self.routine_contents_dictionary.items():
+        for org, obj in org_dir_contents.items():
             open_files = open_files_list()
             if obj["count"] < 1:
                 continue
@@ -148,41 +161,47 @@ class TransferRoutine(object):
                 for fls in files_in_unserialized(d):
                     if fls in open_files:
                         rm_list.append((org, 1, d))
-            return rm_list
+        return rm_list
 
-    def _dump_from_routine_contents(self, active_paths):
+    def _dump_from_routine_contents(self, active_paths, org_dir_contents):
         """Removes items from processing list"""
         for org, isdir, fpath in active_paths:
             if isdir == 0 and os.path.isfile(fpath):
-                self.routine_contents_dictionary[org]["files"] = [
+                org_dir_contents[org]["files"] = [
                     x
-                    for x in self.routine_contents_dictionary[org]["files"]
+                    for x in org_dir_contents[org]["files"]
                     if x != fpath]
             elif isdir == 1 and os.path.isdir(fpath):
-                self.routine_contents_dictionary[org]["dirs"] = [
+                org_dir_contents[org]["dirs"] = [
                     x
-                    for x in self.routine_contents_dictionary[org]["dirs"]
+                    for x in org_dir_contents[org]["dirs"]
                     if x != fpath]
+        return org_dir_contents
 
-    def _move_transfers_to_processing_dir(self):
-        """Moves transfers prebuilt in setup to processiong dir"""
-        for org, obj in self.routine_contents_dictionary.items():
-            merged_list = obj["files"] + obj["dirs"]
-            for f in merged_list:
-                processing_path = f.replace("upload", "processing")
-                try:
-                    if is_dir_or_file(processing_path):
-                        remove_file_or_dir(processing_path)
-                    shutil.move(f, processing_path)
-                except Exception as e:
-                    print(e)
-
-    def _discover_paths_in_processing_dir(self):
-        """Returns paths of transfers to be processed for an organization."""
-        for org in self.active_organizations:
-            _, processing_path = org.org_machine_upload_paths()
-            org_paths = [os.path.join(processing_path, x) for x in os.listdir(processing_path)]
-            self.organizations_processing_paths += org_paths
+    def move_transfer_to_tmp_dir(self, file_path, org):
+        """Moves transfer from upload target to processing directory."""
+        upload_path = Organization.objects.get(machine_name=org).upload_target
+        if settings.S3_USE:
+            # TODO: this is going to need some futzing for dirs
+            s3_client = boto3.client(
+                's3',
+                aws_access_key_id=settings.S3_ACCESS_KEY,
+                aws_secret_access_key=settings.S3_SECRET_KEY,
+                region_name=settings.S3_REGION)
+            if os.path.dirname(file_path):
+                target_dir = os.path.join(self.tmp_dir, os.path.dirname(file_path))
+                if not os.path.exists(target_dir):
+                    os.makedirs(target_dir)
+            s3_client.download_file(
+                upload_path,
+                file_path,
+                os.path.join(self.tmp_dir, file_path))
+            s3_client.delete_object(
+                Bucket=upload_path,
+                Key=file_path)
+        else:
+            shutil.move(file_path, self.tmp_dir)
+        return os.path.join(self.tmp_dir, os.path.basename(file_path))
 
 
 class TransferFileObject(object):
@@ -192,6 +211,7 @@ class TransferFileObject(object):
     AUTO_FAIL_DEXT = "DEXT"
     AUTO_FAIL_BFNM = "BFNM"
     AUTO_FAIL_VIRUS = "VIRUS"
+    AUTO_FAIL_VCONN = "VCONN"
     AUTO_FAIL_BDIR = "BDIR"
     AUTO_FAIL_BTAR = "BTAR"
     AUTO_FAIL_BTAR2 = "BTAR2"
@@ -202,8 +222,7 @@ class TransferFileObject(object):
     PATH_TYPE_DIR = "isdir"
     PATH_TYPE_FILE = "isfile"
 
-    def __init__(self, file_path):
-        self._is_processible = False
+    def __init__(self, file_path, org):
         self.extract_dir = settings.TRANSFER_EXTRACT_TMP
         self.transfer_filesize_max = settings.TRANSFER_FILESIZE_MAX * 1000
         self.file_path = file_path
@@ -212,81 +231,68 @@ class TransferFileObject(object):
         self.bag_it_name = ""
         self.file_type = self.FILE_TYPE_OTHER
         self.file_size = 0
+        self.file_modtime = None
         self.file_path_ext = ""
-        self.path_type = self.PATH_TYPE_FILE
-        self.org_machine_name = ""
-        self.virus_scanner = {}
-
-        if (self.path_still_exists() and self._resolve_org_machine_name() and self._resolve_virus_scan_connection()):
-            self._generate_file_info()
-            self._is_processible = True
+        self.machine_file_identifier = ""
+        self.path_type = self.PATH_TYPE_FILE if os.path.isfile(file_path) else self.PATH_TYPE_DIR
+        self.org_machine_name = org
+        self.virus_scanner = {"scan_result": None}
 
     def is_processible(self):
-        """True when class init has passed all"""
-        return self._is_processible
+        """Transfer is available to be processed."""
+        return (self.path_still_exists() and self._resolve_virus_scan_connection())
 
     def path_still_exists(self):
         """Secondary check in routine that path still exist"""
         if not is_dir_or_file(self.file_path):
-            return self.set_auto_fail_with_code(self.AUTO_FAIL_DEXT)
-        return True
-
-    def _resolve_org_machine_name(self):
-        org_in_path = self.file_path.split(os.sep)[-3]
-        if not org_in_path:
-            return False
-        self.org_machine_name = org_in_path
+            raise TransferRoutineException(self.AUTO_FAIL_DEXT)
         return True
 
     def _resolve_virus_scan_connection(self):
         self.virus_scanner = VirusScan()
         if not self.virus_scanner.is_ready():
-            BAGLog.log_it("VCONN")
-            return False
+            raise TransferRoutineException(self.AUTO_FAIL_VCONN)
         return True
 
     def resolve_file_type(self):
         """Sets file_type based on extension and then file type validation"""
 
         if os.path.isdir(self.file_path):
-            self.file_type = self.FILE_TYPE_OTHER
-            self.path_type = self.PATH_TYPE_DIR
-            self.bag_it_name = self.file_path.split("/")[-1]
+            file_type = self.FILE_TYPE_OTHER
+            bag_it_name = self.file_path.split("/")[-1]
         else:
-            self.file_path_ext = os.path.splitext(self.file_path)[-1]
-            if not any(self.file_path_ext in sl for sl in list(self.ACCEPTABLE_FILE_EXT.values())):
-                self.set_auto_fail_with_code(self.AUTO_FAIL_BDIR)  # ACTUALLY NOT Acurate
+            file_path_ext = os.path.splitext(self.file_path)[-1]
+            if not any(file_path_ext in sl for sl in list(self.ACCEPTABLE_FILE_EXT.values())):
+                raise TransferRoutineException(self.AUTO_FAIL_BDIR)
             else:
                 passed = False
-                if self.file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_TAR]:
-                    self.file_type = self.FILE_TYPE_TAR
+                if file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_TAR]:
+                    file_type = self.FILE_TYPE_TAR
                     try:
                         if tarfile.is_tarfile(self.file_path):
                             passed = True
                     except Exception as e:
-                        print("Error validating tar file: {}".format(e))
+                        raise Exception(f"Error validating tar file: {e}")
                     if not passed:
-                        self.set_auto_fail_with_code(self.AUTO_FAIL_BTAR)
+                        raise TransferRoutineException(self.AUTO_FAIL_BTAR)
                     else:
-                        self.bag_it_name = tar_has_top_level_only(self.file_path)
-                        if not self.bag_it_name:
-                            self.set_auto_fail_with_code(self.AUTO_FAIL_BTAR2)
+                        bag_it_name = tar_has_top_level_only(self.file_path)
+                        if not bag_it_name:
+                            raise TransferRoutineException(self.AUTO_FAIL_BTAR2)
 
-                elif self.file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_ZIP]:
-                    self.file_type = self.FILE_TYPE_ZIP
+                elif file_path_ext in self.ACCEPTABLE_FILE_EXT[self.FILE_TYPE_ZIP]:
+                    file_type = self.FILE_TYPE_ZIP
 
                     if not zipfile.is_zipfile(self.file_path):
-                        self.set_auto_fail_with_code(self.AUTO_FAIL_ZIP)
+                        raise TransferRoutineException(self.AUTO_FAIL_ZIP)
                     else:
-                        self.bag_it_name = zip_has_top_level_only(self.file_path)
-                        if not self.bag_it_name:
-                            self.set_auto_fail_with_code(self.AUTO_FAIL_ZIP2)
-
-        return False if self.auto_fail else True
+                        bag_it_name = zip_has_top_level_only(self.file_path)
+                        if not bag_it_name:
+                            raise TransferRoutineException(self.AUTO_FAIL_ZIP2)
+        return file_type, bag_it_name
 
     def resolve_file_size(self):
         """Sets file size for a transfer."""
-
         file_size = 0
         if self.path_type == self.PATH_TYPE_DIR:
             file_size = get_dir_size(self.file_path)
@@ -295,29 +301,15 @@ class TransferFileObject(object):
             if self.file_type == self.FILE_TYPE_TAR:
                 if tar_extract_all(self.file_path, self.extract_dir):
                     file_size = get_dir_size(tmp_dir_path)
-                    remove_file_or_dir(tmp_dir_path)
             elif self.file_type == self.FILE_TYPE_ZIP:
                 if zip_extract_all(self.file_path, self.extract_dir):
                     file_size = get_dir_size(tmp_dir_path)
-                    remove_file_or_dir(tmp_dir_path)
-
         if not file_size or (isinstance(file_size, tuple) and not file_size[0]):
-            self.file_size = 0
-            return self.set_auto_fail_with_code(self.AUTO_FAIL_FSERR)
+            file_size = 0
+            raise TransferRoutineException(self.AUTO_FAIL_FSERR)
+        return file_size, os.path.join(self.extract_dir, self.bag_it_name)
 
-        self.file_size = file_size
-        return True
-
-    def _generate_file_info(self):
-        self.file_owner = self._get_file_owner()
-        self.file_modtime = self._get_file_modified_time()
-        self.file_date = self.file_modtime.date()
-        self.file_time = self.file_modtime.time()
-
-    def _get_file_owner(self):
-        return getpwuid(os.stat(self.file_path).st_uid).pw_name
-
-    def _get_file_modified_time(self):
+    def get_file_modified_time(self):
         return make_aware(
             datetime.datetime.fromtimestamp(os.path.getmtime(self.file_path)))
 
@@ -325,49 +317,35 @@ class TransferFileObject(object):
         is_invalid = re.search(
             r"[<>\:\"\!\|\?\*]", self.file_path.split("/")[-1])
         if is_invalid:
-            return self.set_auto_fail_with_code(self.AUTO_FAIL_BFNM)
+            raise TransferRoutineException(self.AUTO_FAIL_BFNM)
         return True
 
     def passes_virus_scan(self):
         """Checks transfer for viruses."""
-        if not self.virus_scanner.is_ready():
-            return False
         try:
             self.virus_scanner.scan(self.file_path)
         except Exception as e:
-            print("Error scanning for viruses: {}".format(e))
-            return False
-        if not self.virus_scanner.scan_result:
-            return True
-        remove_file_or_dir(self.file_path)
-
-        return self.set_auto_fail_with_code(self.AUTO_FAIL_VIRUS)
+            raise Exception(f"Error scanning for viruses: {e}")
+        if self.virus_scanner.scan_result:
+            remove_file_or_dir(self.file_path)
+            raise TransferRoutineException(self.AUTO_FAIL_VIRUS)
 
     def passes_filesize_max(self):
         """Checks transfer to see if it's larger than the allowed maximum."""
         if self.file_size > self.transfer_filesize_max:
-            return self.set_auto_fail_with_code(self.AUTO_FAIL_FSERR)
-        return True
-
-    def set_auto_fail_with_code(self, code):
-        self.auto_fail = True
-        self.auto_fail_code = code
-        return False
+            raise TransferRoutineException(self.AUTO_FAIL_FSERR)
 
     def render_transfer_record(self):
         """Called after processing fails validation or succeeds, generates dictionary for next step"""
         return {
-            "date": self.file_date,
-            "time": self.file_time,
-            "file_path": self.file_path,
-            "file_name": self.file_path.split("/")[-1],
-            "file_type": self.file_type,
+            "bag_it_name": self.bag_it_name,
+            "machine_file_path": self.file_path,
+            "machine_file_size": self.file_size,
+            "machine_file_type": self.file_type,
+            "machine_file_upload_time": self.file_modtime,
+            "machine_file_identifier": self.machine_file_identifier,
             "org": self.org_machine_name,
-            "file_modtime": self.file_modtime,
-            "file_size": self.file_size,
-            "upload_user": self.file_owner,
             "auto_fail": self.auto_fail,
             "auto_fail_code": self.auto_fail_code,
-            "bag_it_name": self.bag_it_name,
             "virus_scanresult": self.virus_scanner.scan_result,
         }

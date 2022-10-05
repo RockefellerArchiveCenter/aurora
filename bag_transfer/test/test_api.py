@@ -90,7 +90,7 @@ class TestAPICognitoAuth(TestMixin, TestCase):
     fixtures = ['complete.json']
 
     @patch('bag_transfer.middleware.cognito.CognitoAppMiddleware.get_application')
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoAppMiddleware"})
     def test_application_auth(self, mock_user):
         """Asserts mixin correctly calls authentication."""
         self.client.get("/api/", content_type="application/json", **{"HTTP_ACCEPT": "application/json"})

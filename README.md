@@ -79,10 +79,14 @@ The Docker container is currently configured to persist the MySQL database in lo
 ## Authentication
 
 ### Disabling OAuth Provider
-By default, Aurora is configured to use AWS Cognito as an OAuth provider for authentication.
-If you do not have an OAuth provider or don't want to use one, it is possible to
-use the built-in local Django authentication layer. In order to do this you will need
-to make a number of changes:
+
+By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/)
+as an OAuth provider for authentication.
+
+If you don't want to use this method of authentication, it is possible to
+use the built-in local Django authentication layer instead. In order to do this
+you will need to make a few changes:
+
 1. Update the `MIDDLEWARE` configs in settings.py:
   - Comment out `bag_transfer.middleware.cognito.CognitoAppMiddleware` and
     `bag_transfer.middleware.cognito.CognitoUserMiddleware`.
@@ -107,16 +111,36 @@ Note that in the Docker container, all user passwords are reset to "password" ea
 
 ## Transferring digital records
 
-Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing two subdirectories: `uploads` and `processing`. Any new files or directories in the `uploads` subdirectory are added to Aurora's processing queue.
+### Transfer Validation
+
+At regularly scheduled intervals, Aurora scans the upload targets for each active
+organization. Any new files or directories in the upload target are added to
+Aurora's processing queue.
 
 At a high level, transfers are processed as follows:
-- Transfers are checked to ensure they have a valid filename, in other words that the top-level directory (for unserialized bags) or filename (for serialized bags) does not contain illegal characters.
+- Transfers are checked to ensure they have a valid filename, in other words that
+  the top-level directory (for unserialized bags) or filename (for serialized bags)
+  does not contain illegal characters.
 - Transfers are checked for viruses.
 - Transfers are checked to ensure they have only one top-level directory.
 - Size of transfers is checked to ensure it doesn't exceed `TRANSFER_FILESIZE_MAX`.
 - Transfers are validated against the BagIt specification using `bagit-python`.
-- Transfers are validated against the BagIt Profile specified in their `bag-info.txt` file using `bagit-profiles-validator`.
-- Relevant PREMIS rights statements are assigned to transfers (see Organization Management section for details).
+- Transfers are validated against the BagIt Profile specified in their `bag-info.txt`
+  file using `bagit-profiles-validator`.
+- Relevant PREMIS rights statements are assigned to transfers (see Organization
+  Management section for details).
+
+### Disabling S3 Storage
+
+By default, Aurora is configured to use [Amazon S3](https://aws.amazon.com/s3/) to
+store uploaded and validated transfers.
+
+If you don't want to use S3, you can configure Aurora to use the local file system
+instead:
+
+1. Set the `S3_USE` config value to `False`.
+2. Ensure that the `TRANSFER_UPLOADS_ROOT` is properly set and that the filepath
+   specified there exists and is writable by Aurora.s
 
 ## API
 

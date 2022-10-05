@@ -21,7 +21,6 @@ class TransferTestCase(TestMixin, TestCase):
             self.assert_status_code("get", reverse(view), 200)
         for transfer in transfers:
             self.assert_status_code("get", reverse("transfers:detail", kwargs={"pk": transfer.pk}), 200)
-        self.assert_status_code("get", "{}?q=user".format(reverse("transfers:datatable")), 200)
 
     def test_views(self):
         """Asserts views return expected responses for admin and donor users."""

@@ -4,7 +4,7 @@ import shutil
 from unittest.mock import patch
 
 import bagit
-from asterism.file_helpers import remove_file_or_dir
+from asterism.file_helpers import remove_file_or_dir, tar_extract_all
 from django.conf import settings
 from django.test import TestCase
 
@@ -12,10 +12,9 @@ from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
                                  User)
 from bag_transfer.test import helpers
-from bag_transfer.test.helpers import BAGS_REF
 
 
-class CronTestCase(TestCase):
+class CronTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -26,29 +25,32 @@ class CronTestCase(TestCase):
         Transfer.objects.all().delete()
         DashboardMonthData.objects.all().delete()
         self.org = random.choice(Organization.objects.all())
-        if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
-            remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
-        for d in self.org.org_machine_upload_paths():
-            if os.path.exists(d):
-                shutil.rmtree(d)
-                os.makedirs(d)
+        self.remove_delivery_queue()
+        self.empty_org_upload_paths()
 
     def test_cron(self):
-        self.discover_transfers()
-        self.deliver_transfers()
+        self.sub_test_discover_transfers()
+        self.sub_test_deliver_transfers()
 
     @patch("bag_transfer.lib.bag_checker.BagChecker.bag_passed_all")
-    def discover_transfers(self, mock_passed_all):
-        bag_name, _ = BAGS_REF[0]
+    def sub_test_discover_transfers(self, mock_passed_all):
+        bag_name, _ = helpers.BAGS_REF[0]
         for bag_passed_all in [True, False]:
-            self.bags = helpers.create_target_bags(
+            self.empty_org_upload_paths()
+            helpers.create_target_bags(
                 bag_name, settings.TEST_BAGS_DIR,
                 self.org, username=random.choice(User.objects.filter(organization=self.org)).username)
             mock_passed_all.return_value = bag_passed_all
             discovered = DiscoverTransfers().do()
             self.assertIsNot(False, discovered)
+        for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
+            self.assertTrue(os.path.isfile(transfer.machine_file_path))
+            tar_extract_all(transfer.machine_file_path, settings.STORAGE_ROOT_DIR)
+            bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, transfer.machine_file_identifier))
+            self.assertTrue("Origin" in bag.info)
+            self.assertEqual(bag.info["Origin"], "aurora")
 
-    def deliver_transfers(self):
+    def sub_test_deliver_transfers(self):
         for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
             transfer.process_status = Transfer.ACCESSIONING_STARTED
             transfer.save()
@@ -59,11 +61,15 @@ class CronTestCase(TestCase):
         self.assertEqual(
             len(Transfer.objects.filter(process_status=Transfer.DELIVERED)),
             len(os.listdir(settings.DELIVERY_QUEUE_DIR)))
-        for bag_path in Transfer.objects.filter(process_status=Transfer.DELIVERED).values_list("machine_file_identifier", flat=True):
-            bag = bagit.Bag(os.path.join(settings.STORAGE_ROOT_DIR, bag_path))
-            self.assertTrue("Origin" in bag.info)
-            self.assertEqual(bag.info["Origin"], "aurora")
 
-    def tearDown(self):
+    def empty_org_upload_paths(self):
+        if os.path.exists(self.org.upload_target):
+            shutil.rmtree(self.org.upload_target)
+        os.makedirs(self.org.upload_target)
+
+    def remove_delivery_queue(self):
         if os.path.isdir(settings.DELIVERY_QUEUE_DIR):
             remove_file_or_dir(settings.DELIVERY_QUEUE_DIR)
+
+    def tearDown(self):
+        self.remove_delivery_queue()

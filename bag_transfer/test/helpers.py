@@ -146,11 +146,13 @@ def create_target_bags(target_str, test_bags_dir, org, username="root"):
     This allows processing of bags serialized in multiple formats at once."""
     moved_bags = []
     target_bags = [b for b in listdir(test_bags_dir) if b.startswith(target_str)]
+    user = User.objects.get(username=username)
     if len(target_bags) < 1:
         return False
     for bag_name in target_bags:
-        new_path = path.join(org.org_machine_upload_paths()[0], bag_name)
+        new_path = path.join(org.upload_target, bag_name)
         copy_file_or_dir(path.join(test_bags_dir, bag_name), new_path)
+        user.create_system_user()
         chown(new_path, pwd.getpwnam(username).pw_uid, -1)
         moved_bags.append(new_path)
     return moved_bags
@@ -317,8 +319,11 @@ def get_accession_form_data(creator=None):
     return accession_data
 
 
-@modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
-@override_settings(COGNITO_USE=False)
+@modify_settings(MIDDLEWARE={
+    "remove": [
+        "bag_transfer.middleware.cognito.CognitoUserMiddleware",
+        "bag_transfer.middleware.cognito.CognitoAppMiddleware"]})
+@override_settings(COGNITO_USE=False, S3_USE=False)
 class TestMixin(TestCase):
 
     def setUp(self):
