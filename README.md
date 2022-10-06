@@ -64,7 +64,11 @@ $ docker-compose exec web import_sample_data
 
 ### Transferring Your Own Bags
 
-If you'd like to transfer your own bags, you can do that by SFTPing them into the local container:
+If you'd like to transfer your own bags, note that bags must be serialized as either a TAR (compressed or uncompressed) or ZIP file.
+
+If you'er using S3 storage (see [Transferring digital records](#transferring-digital-records)), you'll need to upload a bag to an S3 bucket configured as an upload bucket for one of your organizations. 
+
+If you're using local storage you can then transfer those bags by SFTPing them into the local container using the credentials below:
 - Protocol: `SFTP`
 - Host name: `localhost`
 - Port number: `22`

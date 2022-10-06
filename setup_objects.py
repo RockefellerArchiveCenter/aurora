@@ -1,4 +1,3 @@
-import psutil
 from django.conf import settings
 from django.contrib.auth.models import Group
 
@@ -235,17 +234,3 @@ for user in DEFAULT_USERS:
         if not settings.COGNITO_USE:
             set_server_password(user["username"], user["password"])
         new_user.save()
-
-# Terminate any idle processes, which cause problems later.
-open = [
-    p
-    for p in psutil.process_iter(attrs=["pid", "name"])
-    if p.info["name"] in ["add_org", "add_user", "add2grp"]
-]
-for p in open:
-    print("terminating", p)
-    p.terminate()
-gone, alive = psutil.wait_procs(open, timeout=3)
-for p in alive:
-    print("killing", p)
-    p.kill()
