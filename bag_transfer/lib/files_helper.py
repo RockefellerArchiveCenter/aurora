@@ -5,59 +5,10 @@ import zipfile
 from uuid import uuid4
 
 import boto3
-import psutil
 from asterism.file_helpers import is_dir_or_file
 from django.conf import settings
 
 from ..models import Transfer
-
-
-def open_files_list():
-    """Return a list of files open on the linux system"""
-    path_list = []
-
-    for proc in psutil.process_iter():
-        open_files = proc.open_files()
-        if open_files:
-            for fileObj in open_files:
-                path_list.append(fileObj.path)
-    return path_list
-
-
-def files_in_unserialized(dirpath):
-    """Returns a list of files in infinitely recursing subdirectories."""
-    files = []
-    dirpaths = []
-    to_check = [dirpath]
-    checked_dirs = []
-
-    while True:
-        if not to_check:
-            break
-        live_dir = to_check[0]
-
-        for path in os.listdir(live_dir):
-            fullpath = "{}/{}".format(live_dir, path)
-            if os.path.isdir(fullpath):
-                dirpaths.append(fullpath)
-
-                if fullpath not in checked_dirs:
-                    to_check.append(fullpath)
-
-        checked_dirs.append(live_dir)
-        if live_dir in to_check:
-            to_check = [x for x in to_check if x != live_dir]
-
-    # check all dirs -- can narrow to /data since payload requirement or not
-    if dirpaths:
-        for dire in dirpaths:
-            d = os.listdir(dire)
-            if d:
-                for contents in d:
-                    fullpath = "{}/{}".format(dire, contents)
-                    if os.path.isfile(fullpath):
-                        files.append(fullpath)
-    return files
 
 
 def zip_has_top_level_only(file_path):
