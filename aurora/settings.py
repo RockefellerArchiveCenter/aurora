@@ -178,7 +178,7 @@ ASPACE = {
     "repo_id": config.ASPACE_REPO_ID,
 }
 
-# Google Analytics configs
+# Matomo Analytics configs
 MTM_ID = config.MTM_ID
 
 # List of colors used in dashboard for record types
