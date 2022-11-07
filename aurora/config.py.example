@@ -51,4 +51,4 @@ ASPACE_USERNAME = "admin"  # ArchivesSpace user (string)
 ASPACE_PASSWORD = "admin"  # Password for ArchivesSpace user (string)
 ASPACE_REPO_ID = 2  # Identifier for ArchivesSpace repository (integer)
 
-GTM_ID = "GTM-xxxxxxx"  # Google Tag Manager identifier (string)
+MTM_ID = "https://cdn.matomo.cloud/rockarch.matomo.cloud/container_xxxxxxxx.js"  # Matomo Tag Manager identifier (string)
