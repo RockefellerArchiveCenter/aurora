@@ -68,7 +68,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
-                "bag_transfer.context_processors.gtm_id",
+                "bag_transfer.context_processors.mtm_id",
             ],
         },
     },
@@ -178,8 +178,8 @@ ASPACE = {
     "repo_id": config.ASPACE_REPO_ID,
 }
 
-# Google Analytics configs
-GTM_ID = config.GTM_ID
+# Matomo Analytics configs
+MTM_ID = config.MTM_ID
 
 # List of colors used in dashboard for record types
 RECORD_TYPE_COLORS = [
