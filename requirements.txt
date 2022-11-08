@@ -38,7 +38,9 @@ cffi==1.15.1
 charset-normalizer==2.1.1
     # via requests
 cryptography==38.0.1
-    # via pyjwt
+    # via
+    #   authlib
+    #   pyjwt
 django==4.0.8
     # via
     #   -r requirements.in
@@ -69,8 +71,6 @@ iso-639==0.4.5
     # via -r requirements.in
 iso8601==0.1.16
     # via -r requirements.in
-jarowinkler==1.2.1
-    # via rapidfuzz
 jmespath==1.0.1
     # via
     #   boto3
