@@ -1,6 +1,6 @@
 from django.conf import settings
 
 
-def gtm_id(request):
-    """Adds Google Tag Manager ID to requests."""
-    return {"gtm_id": settings.GTM_ID}
+def mtm_id(request):
+    """Adds Matomo Tag Manager ID to requests."""
+    return {"mtm_id": settings.MTM_ID}
