@@ -135,7 +135,6 @@ log info "Group: $nextorg created."
 #Create the directory for the organization and a upload directory within.
 newdir='/data/'$nextorg
 uploaddir=$newdir'/upload'
-processingdir=$newdir'/processing'
 if [ ! -d $newdir ]; then
    if mkdir -p  "$newdir" ; then
       log info "Directory $newdir created."
@@ -145,30 +144,28 @@ if [ ! -d $newdir ]; then
    fi
 fi
 
-for dir in $uploaddir $processingdir; do
-  if [ ! -d $dir ]; then
-     if mkdir -p  "$dir" ; then
-        log info "Directory $dir created."
-     else
-        log err "Unable to create directory $dir, exiting"
-        exit 4
-     fi
-  fi
+if [ ! -d $uploaddir ]; then
+   if mkdir -p  "$uploaddir" ; then
+      log info "Directory $uploaddir created."
+   else
+      log err "Unable to create directory $uploaddir, exiting"
+      exit 4
+   fi
+fi
 
-  chown root:$nextorg $dir
-  if [ $? -ne 0 ]; then
-     log err "Unable to  chmod Directory $dir, termining."
-     exit 8
-  fi
+chown root:$nextorg $uploaddir
+if [ $? -ne 0 ]; then
+   log err "Unable to  chmod Directory $uploaddir, termining."
+   exit 8
+fi
 
-  chmod 770 $dir
-  if [ $? -ne 0 ]; then
-     log err  "Unable to  chown Directory $dir, termining."
-     exit 8
-  fi
-done
+chmod 770 $uploaddir
+if [ $? -ne 0 ]; then
+   log err  "Unable to  chown Directory $uploaddir, termining."
+   exit 8
+fi
 
-log info "Directory $newdir, $uploaddir and $processingdir have been created."
+log info "Directory $newdir and $uploaddir have been created."
 
 ####################################################################################
 README=$newdir'/README'

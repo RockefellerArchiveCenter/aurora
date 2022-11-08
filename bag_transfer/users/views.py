@@ -1,11 +1,14 @@
 from braces.views import AnonymousRequiredMixin
+from django.conf import settings
 from django.contrib import messages
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import (PasswordChangeView,
                                        PasswordResetCompleteView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
                                        PasswordResetView)
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import (CreateView, DetailView, ListView,
@@ -16,7 +19,7 @@ from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.viewmixins import PageTitleMixin
-from bag_transfer.models import Organization, Transfer, User
+from bag_transfer.models import Organization, User
 from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
                                      RACSuperUserUpdateForm,
                                      UserPasswordChangeForm,
@@ -52,18 +55,21 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
         return reverse("users:detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
-        """Set a random password and send a password reset email."""
+        """If users are managed locally, sets a random password and send a \
+        password reset email.
+        """
         valid = super().form_valid(form)
-        password_form = UserPasswordResetForm({"email": self.request.POST.get("email")})
-        if password_form.is_valid():
-            try:
-                password_form.save(
-                    request=self.request,
-                    subject_template_name="users/password_initial_set_subject.txt",
-                    email_template_name="users/password_initial_set_email.html",
-                )
-            except Exception:
-                messages.error(self.request, "Unable to send email to new user because SMTP settings are not properly configured.")
+        if not settings.COGNITO_USE:
+            password_form = UserPasswordResetForm({"email": form.cleaned_data["email"]})
+            if password_form.is_valid():
+                try:
+                    password_form.save(
+                        request=self.request,
+                        subject_template_name="users/password_initial_set_subject.txt",
+                        email_template_name="users/password_initial_set_email.html",
+                    )
+                except Exception:
+                    messages.error(self.request, "Unable to send email to new user because SMTP settings are not properly configured.")
         return valid
 
 
@@ -71,22 +77,6 @@ class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "users/detail.html"
     page_title = "User Profile"
     model = User
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["uploads"] = []
-        transfers = Transfer.objects.filter(
-            process_status__gte=Transfer.TRANSFER_COMPLETED,
-            user_uploaded=context["object"],
-        ).order_by("-created_time")[:9]
-        for transfer in transfers:
-            transfer.bag_info_data = transfer.bag_data
-            context["uploads"].append(transfer)
-        context["uploads_count"] = Transfer.objects.filter(
-            process_status__gte=Transfer.TRANSFER_COMPLETED,
-            user_uploaded=context["object"],
-        ).count()
-        return context
 
 
 class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
@@ -117,7 +107,11 @@ class UserPasswordChangeView(PageTitleMixin, SuccessMessageMixin, PasswordChange
     def form_valid(self, form):
         """Set the user's server password."""
         set_server_password(form.user.username, form.cleaned_data["new_password1"])
-        return super().form_valid(form)
+        if settings.COGNITO_USE:
+            update_session_auth_hash(self.request, form.user)
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return super().form_valid(form)
 
 
 class UserPasswordResetView(PageTitleMixin, AnonymousRequiredMixin, PasswordResetView):

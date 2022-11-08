@@ -29,9 +29,6 @@
                     <li class="list-group-item">
                         <span class="list-label">Last login</span> <span class="pull-right">{{ object.last_login }}</span>
                     </li>
-                    <li class="list-group-item">
-                        <span class="list-label">Total Uploads</span> <span class="pull-right">{{ object.total_uploads }}</span>
-                    </li>
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
@@ -66,16 +63,6 @@
                   {% endfor %}
                 </p>
             </div>
-        </div>
-    </div>
-    <div class="col-md-9">
-      <div class="box box-primary">
-          <div class="box-header with-border">
-              <h2 class="box-title">Recent Transfers</h2>
-          </div>
-          <div class="box-body">
-            {% include 'parts/recent_transfer_table.html' with org=object.organization %}
-          </div>
         </div>
     </div>
 </div>

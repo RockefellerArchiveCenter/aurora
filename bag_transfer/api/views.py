@@ -139,7 +139,7 @@ class AccessionViewSet(
 
     def get_queryset(self):
         queryset = Accession.objects.all().order_by("-created")
-        if not self.request.user.is_archivist():
+        if not (getattr(self.request.user, 'is_application', False) or self.request.user.is_archivist()):
             queryset = queryset.filter(organization=self.request.user.organization)
         process_status = self.request.GET.get("process_status", "")
         if process_status != "":

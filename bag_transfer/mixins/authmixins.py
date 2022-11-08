@@ -47,6 +47,9 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
 
     def test_func(self, user):
 
+        if getattr(user, 'is_application', False):
+            return True
+
         if user.is_staff:
             return True
 
@@ -59,7 +62,7 @@ class OrgReadViewMixin(LoggedInMixinDefaults, UserPassesTestMixin):
             if hasattr(self, "model"):
                 if self.model == User:
                     try:
-                        if User.objects.get(pk=self.kwargs.get("pk")) == self.user:
+                        if User.objects.get(pk=self.kwargs.get("pk")) == self.request.user:
                             return True
                     except User.DoesNotExist:
                         return False

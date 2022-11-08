@@ -39,7 +39,7 @@
         "date_joined": "2021-06-27T17:09:46.601Z",
         "organization": 1,
         "is_machine_account": true,
-        "is_org_admin": false,
+        "is_org_admin": true,
         "groups": [],
         "user_permissions": []
     }
@@ -60,7 +60,7 @@
         "date_joined": "2021-06-27T17:09:46.966Z",
         "organization": 2,
         "is_machine_account": true,
-        "is_org_admin": false,
+        "is_org_admin": true,
         "groups": [],
         "user_permissions": []
     }
@@ -81,7 +81,7 @@
         "date_joined": "2021-06-27T17:09:47.253Z",
         "organization": 1,
         "is_machine_account": true,
-        "is_org_admin": false,
+        "is_org_admin": true,
         "groups": [
             1
         ],
@@ -201,7 +201,6 @@
     "fields": {
         "accession": 3,
         "organization": 1,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d21c72bb-6381-4768-819f-fb460bed14fa",
         "machine_file_size": "256727",
         "machine_file_upload_time": "2021-06-27T17:14:09.940Z",
@@ -225,7 +224,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d8d279d6-9f8e-48f3-864c-6d765397dc24",
         "machine_file_size": "8601986",
         "machine_file_upload_time": "2021-06-27T17:14:08.626Z",
@@ -249,7 +247,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/25b86165-331a-440c-ac2e-3b8a646282ea",
         "machine_file_size": "48702",
         "machine_file_upload_time": "2021-06-27T17:14:09.521Z",
@@ -273,7 +270,6 @@
     "fields": {
         "accession": 1,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/28d44fb3-7cce-44dd-839c-3c1bfcff1f4b",
         "machine_file_size": "256494",
         "machine_file_upload_time": "2021-06-27T17:14:08.634Z",
@@ -297,7 +293,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/a4456709-efd9-4399-bd95-57ce2bab4eda",
         "machine_file_size": "256460",
         "machine_file_upload_time": "2021-06-27T17:14:08.941Z",
@@ -321,7 +316,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/5ecefb69-b7bd-4599-be88-06e3826878a1",
         "machine_file_size": "8602018",
         "machine_file_upload_time": "2021-06-27T17:14:09.751Z",
@@ -345,7 +339,6 @@
     "fields": {
         "accession": 2,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/66a19383-2d40-4bbf-906b-6c75fbedca04",
         "machine_file_size": "107781",
         "machine_file_upload_time": "2021-06-27T17:14:09.936Z",
@@ -369,7 +362,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/aac0b764-b151-4fb1-994b-3a62818a3ae3",
         "machine_file_size": "7730533",
         "machine_file_upload_time": "2021-06-27T17:14:09.930Z",
@@ -393,7 +385,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/80ea3a03-ae23-4ab0-bb43-f0ac3a543c9a",
         "machine_file_size": "7730266",
         "machine_file_upload_time": "2021-06-27T17:14:08.934Z",
@@ -417,7 +408,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d5ea11b8-5af2-4942-aab4-7724996d7f62",
         "machine_file_size": "7730259",
         "machine_file_upload_time": "2021-06-27T17:14:09.228Z",
@@ -441,7 +431,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d33689c0-55fd-4aa5-b5e8-2f1bfc738e3b",
         "machine_file_size": "7730367",
         "machine_file_upload_time": "2021-06-27T17:14:09.610Z",
@@ -465,7 +454,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/7d97a814-e4f7-4175-9373-9713a1f4ce68",
         "machine_file_size": "48657",
         "machine_file_upload_time": "2021-06-27T17:14:08.944Z",
@@ -489,7 +477,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/bed56969-72d0-479e-ba79-484d1ee68c52",
         "machine_file_size": "256503",
         "machine_file_upload_time": "2021-06-27T17:14:09.529Z",
@@ -513,7 +500,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/e36671cb-0b38-4691-b596-00fc6281eb05",
         "machine_file_size": "48726",
         "machine_file_upload_time": "2021-06-27T17:14:08.631Z",
@@ -537,7 +523,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d520be78-05a4-4f72-bbe8-8f74861517a9",
         "machine_file_size": "8601910",
         "machine_file_upload_time": "2021-06-27T17:14:09.339Z",
@@ -561,7 +546,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/1f89ed25-ef39-4125-8ca2-fd07811d80a0",
         "machine_file_size": "256479",
         "machine_file_upload_time": "2021-06-27T17:14:09.446Z",
@@ -585,7 +569,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/1d13eb65-f42e-488b-af75-e0da86a6268c",
         "machine_file_size": "8601910",
         "machine_file_upload_time": "2021-06-27T17:14:09.441Z",
@@ -609,7 +592,6 @@
     "fields": {
         "accession": null,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/d0635bed-1e1c-47f8-9475-0cfd7d10aa3e",
         "machine_file_size": "8601917",
         "machine_file_upload_time": "2021-06-27T17:14:09.056Z",
@@ -633,7 +615,6 @@
     "fields": {
         "accession": 3,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/16200353-f739-47a8-86ad-aa6ba036e60e",
         "machine_file_size": "8602184",
         "machine_file_upload_time": "2021-06-27T17:14:10.040Z",
@@ -657,7 +638,6 @@
     "fields": {
         "accession": 1,
         "organization": 2,
-        "user_uploaded": 2,
         "machine_file_path": "/data1/a3147437-2eeb-4acb-af96-91eec4fd9a06",
         "machine_file_size": "7730300",
         "machine_file_upload_time": "2021-06-27T17:14:08.764Z",

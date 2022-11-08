@@ -32,11 +32,10 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         BAGLog.log_it(("BACPT" if appraisal_decision else "BREJ"), upload)
         if not appraisal_decision:
             remove_file_or_dir(upload.machine_file_path)
-            if upload.user_uploaded:
-                email = Mailer()
-                email.to = [upload.user_uploaded.email]
-                email.setup_message("TRANS_REJECT", upload)
-                email.send()
+            email = Mailer()
+            email.to = [u.email for u in upload.organization.admin_users]
+            email.setup_message("TRANS_REJECT", upload)
+            email.send()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
