@@ -28,8 +28,11 @@
 										{% endif %}
                 </ul>
 
-                {% if request.user.is_org_admin or request.user.is_superuser %}
+                {% if request.user.is_manager or request.user.is_superuser %}
                   <p><a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit Organization</a></p>
+                {% endif %}
+
+                {% if request.user.is_org_admin or request.user.is_superuser %}
                   <p><button class="btn btn-default btn-block" data-toggle="modal" data-target="#modal-transfer-settings">Show Transfer Settings</button></p>
                 {% endif %}
 
