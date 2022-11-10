@@ -572,7 +572,7 @@ class Transfer(models.Model):
         def update_date(obj, date_key, period_key, bag_date):
             """Updates the date if it does not exist or is not open."""
             open_key = period_key.replace("_period", "_open")
-            if not(getattr(obj, date_key)):
+            if not (getattr(obj, date_key)):
                 if hasattr(obj, open_key) and not getattr(obj, open_key):
                     period = getattr(obj, period_key) if getattr(obj, period_key) else 0
                     setattr(obj, date_key, bag_date + relativedelta.relativedelta(years=period))

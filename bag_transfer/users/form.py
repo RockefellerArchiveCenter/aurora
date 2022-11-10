@@ -12,7 +12,7 @@ from bag_transfer.models import User
 class OrgUserCreateForm(forms.ModelForm):
     class Meta:
         model = User
-        
+
         fields = [
             "is_active",
             "is_org_admin",

@@ -87,7 +87,7 @@ class CognitoUserMiddleware(MiddlewareMixin):
             if res.ok:
                 user_data = res.json()
                 user = User.objects.get(username=user_data['username'], email=user_data['email'])
-                if not(request.user == user) or not(user.is_authenticated):
+                if not (request.user == user) or not (user.is_authenticated):
                     user.token = request.session['token']
                     user.save()
                     login(request, user)
