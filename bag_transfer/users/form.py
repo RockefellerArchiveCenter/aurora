@@ -12,8 +12,10 @@ from bag_transfer.models import User
 class OrgUserCreateForm(forms.ModelForm):
     class Meta:
         model = User
+        
         fields = [
             "is_active",
+            "is_org_admin",
             "username",
             "first_name",
             "last_name",
@@ -21,6 +23,9 @@ class OrgUserCreateForm(forms.ModelForm):
             "organization",
             "groups",
         ]
+        help_texts = {
+            "is_org_admin": "Should this user be assigned organization administrator privileges?"
+        }
         widgets = {
             "username": forms.widgets.TextInput(attrs={"class": "form-control"}),
             "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
@@ -35,6 +40,7 @@ class OrgUserUpdateForm(forms.ModelForm):
         model = User
         fields = [
             "is_active",
+            "is_org_admin",
             "username",
             "first_name",
             "last_name",
@@ -42,6 +48,9 @@ class OrgUserUpdateForm(forms.ModelForm):
             "organization",
             "groups",
         ]
+        help_texts = {
+            "is_org_admin": "Should this user be assigned organization administrator privileges?"
+        }
         widgets = {
             "username": forms.widgets.TextInput(
                 attrs={"class": "form-control", "readonly": "readonly"}
