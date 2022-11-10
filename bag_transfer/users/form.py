@@ -56,7 +56,10 @@ class OrgUserUpdateForm(forms.ModelForm):
 class RACSuperUserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ["is_active", "username", "first_name", "last_name", "email", "groups"]
+        fields = ["is_active", "is_org_admin", "username", "first_name", "last_name", "email", "groups"]
+        help_texts = {
+            "is_org_admin": "Should this user be assigned organization administrator privileges?"
+        }
         widgets = {
             "username": forms.widgets.TextInput(
                 attrs={"class": "form-control", "readonly": "readonly"}

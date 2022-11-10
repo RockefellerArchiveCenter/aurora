@@ -46,6 +46,7 @@
 						<div class="box-body">
 							{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
 							{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
+              {% include 'parts/user_table.html' with users=object.org_admins switch='Org Admin' %}
 						</div>
 				</div>
 

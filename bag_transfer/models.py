@@ -54,6 +54,9 @@ class Organization(models.Model):
     def inactive_users(self):
         return User.objects.filter(organization=self, is_active=False)
 
+    def org_admins(self):
+        return User.objects.filter(organization=self, is_active=True, is_org_admin=True)
+
     @property
     def admin_users(self):
         return User.objects.filter(organization=self, is_org_admin=True)

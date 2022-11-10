@@ -51,6 +51,11 @@
 
                 <hr/>
 
+                <span class="list-label"><i class="fa fa-user margin-r-5"></i> Org Admin?</span>
+                <p>{% if object.is_org_admin %}yes{% else %}no{% endif %}</p>
+
+                <hr/>
+
                 <span class="list-label"><i class="fa fa-envelope margin-r-5"></i> Email</span>
                 <p>{{ object.email }}</p>
 

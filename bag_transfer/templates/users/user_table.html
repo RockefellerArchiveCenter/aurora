@@ -15,6 +15,7 @@
             <th>Username</th>
             <th>Groups</th>
             <th>Last Login</th>
+            <th>Org Admin?</th>
             <th>Active?</th>
           </tr>
         <thead>
@@ -27,6 +28,7 @@
             <span class="label label-default">{{ group.name }}</span><br/>
           {% endfor %}</td>
           <td>{{ u.last_login }}</td>
+          <td>{% if u.is_org_admin %}Yes{% else %}No{% endif %}</td>
           <td>{% if u.is_active %}Yes{% else %}No{% endif %}</td>
         </tr>
         {% endfor %}
