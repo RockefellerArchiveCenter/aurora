@@ -19,7 +19,7 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, re_path
 
 from bag_transfer.transfers.views import DashboardView
-from bag_transfer.users.views import (SplashView,
+from bag_transfer.users.views import (SplashView, UserLogoutView,
                                       UserPasswordResetCompleteView,
                                       UserPasswordResetConfirmView,
                                       UserPasswordResetDoneView,
@@ -70,7 +70,7 @@ urlpatterns = [
         auth_views.LoginView.as_view(template_name="users/login.html"),
         name="login",
     ),
-    re_path(r"^logout/$", auth_views.LogoutView.as_view(next_page="/login"), name="logout"),
+    re_path(r"^logout/$", UserLogoutView.as_view(), name="logout"),
     re_path(r"^api/", include("bag_transfer.api.urls")),
     re_path(r'^status/', PingView.as_view(), name="ping"),
 ]

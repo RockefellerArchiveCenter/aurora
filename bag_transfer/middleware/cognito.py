@@ -3,9 +3,9 @@ from authlib.integrations.base_client import OAuthError
 from authlib.integrations.django_client import OAuth
 from authlib.oauth2.rfc6749 import OAuth2Token
 from django.conf import settings
-from django.contrib.auth import login, logout
+from django.contrib.auth import login
 from django.core.cache import cache
-from django.shortcuts import redirect, reverse
+from django.shortcuts import redirect
 from django.utils.deprecation import MiddlewareMixin
 from jose import jwt
 
@@ -56,12 +56,6 @@ class CognitoUserMiddleware(MiddlewareMixin):
                 if redirect_uri is not None:
                     return redirect(redirect_uri)
                 return redirect('app_home')
-
-        if request.path == "/logout/":
-            """Handle logout requests."""
-            self.clear_session(request)
-            logout(request)
-            return redirect(f"{settings.COGNITO_CLIENT['api_base_url']}/logout?client_id={settings.COGNITO_CLIENT['client_id']}&logout_uri={request.build_absolute_uri(reverse('app_home'))}")
 
         if request.session.get('token', None) is not None:
             """Navigate to requested page."""
