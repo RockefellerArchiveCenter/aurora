@@ -11,6 +11,7 @@ from bag_transfer.models import Organization, Transfer, User
 def validate_orgs():
     """Ensures that orgs have at least one admin user and S3 credentials."""
     for org in Organization.objects.filter(is_active=True):
+        print(f"Validating {org.name}")
         if settings.S3_USE:
             assert len(org.admin_users) > 0
             if not all([org.s3_username, org.s3_access_key_id, org.s3_secret_access_key]):
@@ -22,12 +23,16 @@ def validate_orgs():
 def move_files_to_s3():
     """Moves files in local storage directory to storage bucket"""
     if settings.S3_USE:
-        for filename in os.listdir(settings.STORAGE_DIR):
-            local_filepath = os.join(settings.STORAGE_DIR, filename)
-            transfer_obj = Transfer.objects.get(machine_file_path=local_filepath)
+        for filename in os.listdir(settings.STORAGE_ROOT_DIR):
+            local_filepath = os.path.join(settings.STORAGE_ROOT_DIR, filename)
+            try:
+                transfer_obj = Transfer.objects.get(machine_file_path=local_filepath)
+            except Transfer.DoesNotExist:
+                print(f"Could not find a database object for {local_filepath}")
+                continue
             update_bag_info(local_filepath, {"Origin": "aurora"})
             tar_filename = f"{filename}.tar.gz"
-            local_tarpath = os.path.join(settings.STORAGE_DIR, tar_filename)
+            local_tarpath = os.path.join(settings.STORAGE_ROOT_DIR, tar_filename)
             make_tarfile(local_filepath, local_tarpath)
             s3_client = boto3.client(
                 's3',
@@ -39,12 +44,14 @@ def move_files_to_s3():
             transfer_obj.save()
             remove_file_or_dir(local_tarpath)
             remove_file_or_dir(local_filepath)
+            print(f"{local_filepath} tarballed and uploaded to S3 as {tar_filename}")
 
 
 def reset_user_passwords():
     """Reset passwords for all users."""
     for user in User.objects.filter(is_active=True):
         if settings.COGNITO_USE:
+            print(f"Resetting password for {user.username}")
             cognito_client = boto3.client(
                 'cognito-idp',
                 aws_access_key_id=settings.COGNITO_ACCESS_KEY,
@@ -56,11 +63,6 @@ def reset_user_passwords():
                 user.add_user_to_system_group()
 
 
-def main():
-    validate_orgs()
-    move_files_to_s3()
-    reset_user_passwords()
-
-
-if __name__ == "__main__":
-    main()
+validate_orgs()
+move_files_to_s3()
+reset_user_passwords()
