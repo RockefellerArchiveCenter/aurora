@@ -131,7 +131,8 @@ class UserPasswordChangeView(PageTitleMixin, SuccessMessageMixin, PasswordChange
 
     def form_valid(self, form):
         """Set the user's server password."""
-        set_server_password(form.user.username, form.cleaned_data["new_password1"])
+        if not settings.S3_USE:
+            set_server_password(form.user.username, form.cleaned_data["new_password1"])
         if settings.COGNITO_USE:
             update_session_auth_hash(self.request, form.user)
             return HttpResponseRedirect(self.get_success_url())
