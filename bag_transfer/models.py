@@ -324,6 +324,34 @@ class User(AbstractUser):
             RAC_CMD.del_from_org(self.username)
             self.add_user_to_system_group()
 
+    def cognito_status(self):
+        """Returns user's status in AWS Cognito, if applicable."""
+        if settings.COGNITO_USE:
+            cognito_client = boto3.client(
+                'cognito-idp',
+                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+                region_name=settings.COGNITO_REGION)
+            user = cognito_client.admin_get_user(
+                UserPoolId=settings.COGNITO_USER_POOL,
+                Username=self.username)
+            return user['UserStatus']
+        else:
+            return None
+
+    def resend_invitation(self):
+        """Resends the initial password reset email."""
+        cognito_client = boto3.client(
+            'cognito-idp',
+            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
+            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
+            region_name=settings.COGNITO_REGION)
+        cognito_client.admin_create_user(
+            UserPoolId=settings.COGNITO_USER_POOL,
+            Username=self.username,
+            MessageAction='RESEND')
+        return True
+
     def save(self, *args, **kwargs):
         """Adds additional behaviors to default save."""
         if settings.COGNITO_USE:
