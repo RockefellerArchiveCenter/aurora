@@ -18,7 +18,8 @@ from bag_transfer.lib.RAC_CMD import set_server_password
 from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             ManagingArchivistMixin,
                                             OrgReadViewMixin)
-from bag_transfer.mixins.viewmixins import PageTitleMixin
+from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.viewmixins import PageTitleMixin, is_ajax
 from bag_transfer.models import Organization, User
 from bag_transfer.users.form import (OrgUserCreateForm, OrgUserUpdateForm,
                                      RACSuperUserUpdateForm,
@@ -73,10 +74,22 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
         return valid
 
 
-class UsersDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
+class UsersDetailView(PageTitleMixin, JSONResponseMixin, OrgReadViewMixin, DetailView):
     template_name = "users/detail.html"
     page_title = "User Profile"
     model = User
+
+    def get(self, request, *args, **kwargs):
+        """Sends password resets"""
+        if is_ajax(request):
+            rdata = {}
+            rdata["success"] = 0
+            user = User.objects.get(pk=request.GET.get("user_id"))
+            if user.resend_invitation():
+                rdata["success"] = 1
+            return self.render_to_json_response(rdata)
+        """Handles all other GET requests"""
+        return super().get(self, request, *args, **kwargs)
 
 
 class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
