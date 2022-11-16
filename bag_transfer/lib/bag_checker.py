@@ -9,8 +9,9 @@ import iso8601
 from asterism.bagit_helpers import get_bag_info_fields
 from iso639 import languages
 
+from bag_transfer.api.serializers import BagItProfileSerializer
 from bag_transfer.lib import files_helper as FH
-from bag_transfer.models import BAGLog
+from bag_transfer.models import BagItProfile, BAGLog
 
 # sets logging levels to reduce garbage printed in logs
 logging.getLogger("bagit").setLevel(logging.ERROR)
@@ -63,9 +64,9 @@ class BagChecker:
             try:
                 profile = bagit_profile.Profile(self.bag_info_data["BagIt_Profile_Identifier"])
             except BaseException:
-                raise BagCheckerException(
-                    "RBERR",
-                    f"Cannot retrieve BagIt Profile from URL {self.bag_info_data['BagIt_Profile_Identifier']}")
+                profile_obj = BagItProfile.objects.get(organization=self.transferObj.organization)
+                profile_data = BagItProfileSerializer(profile_obj, context={"request": None}).data
+                profile = bagit_profile.Profile(self.bag_info_data["BagIt_Profile_Identifier"], profile=profile_data)
             else:
                 if not profile.validate(self.bag):
                     raise BagCheckerException("RBERR", profile.report.errors)
