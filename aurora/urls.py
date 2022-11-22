@@ -15,11 +15,11 @@ Including another URLconf
 """
 from asterism.views import PingView
 from django.contrib import admin
-from django.contrib.auth import views as auth_views
 from django.urls import include, re_path
 
 from bag_transfer.transfers.views import DashboardView
-from bag_transfer.users.views import (SplashView, UserLogoutView,
+from bag_transfer.users.views import (SplashView, UserLoginView,
+                                      UserLogoutView,
                                       UserPasswordResetCompleteView,
                                       UserPasswordResetConfirmView,
                                       UserPasswordResetDoneView,
@@ -65,11 +65,7 @@ urlpatterns = [
     re_path(r"^app/appraise/", include("bag_transfer.appraise.urls", namespace="appraise")),
     re_path(r"^app/rights/", include("bag_transfer.rights.urls", namespace="rights")),
     re_path(r"^$", SplashView.as_view(), name="splash"),
-    re_path(
-        r"^login/$",
-        auth_views.LoginView.as_view(template_name="users/login.html"),
-        name="login",
-    ),
+    re_path(r"^login/$", UserLoginView.as_view(), name="login"),
     re_path(r"^logout/$", UserLogoutView.as_view(), name="logout"),
     re_path(r"^api/", include("bag_transfer.api.urls")),
     re_path(r'^status/', PingView.as_view(), name="ping"),

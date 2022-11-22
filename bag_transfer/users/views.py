@@ -2,7 +2,8 @@ from braces.views import AnonymousRequiredMixin
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
-from django.contrib.auth.views import (LogoutView, PasswordChangeView,
+from django.contrib.auth.views import (LoginView, LogoutView,
+                                       PasswordChangeView,
                                        PasswordResetCompleteView,
                                        PasswordResetConfirmView,
                                        PasswordResetDoneView,
@@ -105,6 +106,17 @@ class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin,
 
     def get_success_url(self):
         return reverse("users:detail", kwargs={"pk": self.object.pk})
+
+
+class UserLoginView(LoginView):
+    template_name = "users/login.html"
+    """Custom login view to handle redirect for Cognito users."""
+
+    def dispatch(self, request, *args, **kwargs):
+        if settings.COGNITO_USE:
+            return redirect("app_home")
+        else:
+            return super().dispatch(request, *args, **kwargs)
 
 
 class UserLogoutView(LogoutView):
