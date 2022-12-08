@@ -57,6 +57,8 @@ MIDDLEWARE = [
     # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
 ]
 
+SESSION_COOKIE_SECURE = True
+
 ROOT_URLCONF = "aurora.urls"
 
 TEMPLATES = [
