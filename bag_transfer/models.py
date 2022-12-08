@@ -105,6 +105,7 @@ class Organization(models.Model):
     def create_iam_user(self, bucket):
         """Creates an IAM user with privileges to put objects in org upload bucket."""
         formatted_path = f"/{settings.IAM_PATH.rstrip('/').lstrip('/')}/"
+        group_name = f"{self.machine_name}-UserGroup"
         policy_name = f"{self.machine_name}-S3-policy"
         policy_doc = {
             "Version": "2012-10-17",
@@ -150,9 +151,16 @@ class Organization(models.Model):
             access_keys = [k['AccessKeyId'] for k in iam_client.list_access_keys(UserName=self.machine_name)['AccessKeyMetadata']]
             for key_id in access_keys:
                 iam_client.delete_access_key(UserName=self.machine_name, AccessKeyId=key_id)
-        iam_client.attach_user_policy(
-            UserName=self.machine_name,
+        try:
+            iam_client.create_group(Path=formatted_path, GroupName=group_name)
+        except iam_client.exceptions.EntityAlreadyExistsException:
+            print(f"Group {group_name} already exists.")
+        iam_client.attach_group_policy(
+            GroupName=group_name,
             PolicyArn=policy_arn)
+        iam_client.add_user_to_group(
+            GroupName=group_name,
+            UserName=self.machine_name)
         access_key = iam_client.create_access_key(UserName=self.machine_name)['AccessKey']
         return (access_key['AccessKeyId'], access_key['SecretAccessKey'], self.machine_name)
 
@@ -163,8 +171,9 @@ class Organization(models.Model):
             aws_access_key_id=settings.IAM_ACCESS_KEY,
             aws_secret_access_key=settings.IAM_SECRET_KEY,
             region_name=settings.IAM_REGION)
-        policy_arn = self.get_policy_arn(f"{self.machine_name}-S3-policy")
-        iam_client.detatch_user_policy(UserName=user_name, PolicyArn=policy_arn)
+        iam_client.remove_user_from_group(
+            GroupName='{self.machine_name}-UserGroup',
+            UserName=self.machine_name)
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to the default save function."""
