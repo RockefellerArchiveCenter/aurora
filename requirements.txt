@@ -23,7 +23,7 @@ bagit-profile==1.3.1
     # via -r requirements.in
 boltons==21.0.0
     # via archivessnake
-certifi==2022.9.24
+certifi==2022.12.7
     # via requests
 cffi==1.15.1
     # via cryptography
