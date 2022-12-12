@@ -55,6 +55,7 @@ MIDDLEWARE = [
     "bag_transfer.middleware.cognito.CognitoAppMiddleware",
     "bag_transfer.middleware.cognito.CognitoUserMiddleware",
     # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
+    'csp.middleware.CSPMiddleware',
 ]
 
 SESSION_COOKIE_SECURE = True
@@ -160,6 +161,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Content Security Policy
+CSP_IMG_SRC = ("'self'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://fonts.googleapis.com/')
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
+CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com/')
 
 # Transfer settings
 S3_USE = config.S3_USE

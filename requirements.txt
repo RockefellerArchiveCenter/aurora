@@ -47,6 +47,7 @@ django==4.0.8
     #   asterism
     #   django-braces
     #   django-common-helpers
+    #   django-csp
     #   django4-cron
     #   djangorestframework
     #   drf-jwt
@@ -54,6 +55,8 @@ django-braces==1.15.0
     # via -r requirements.in
 django-common-helpers==0.9.2
     # via django4-cron
+django-csp==3.7
+    # via -r requirements.in
 django4-cron==0.5.1
     # via -r requirements.in
 djangorestframework==3.14.0

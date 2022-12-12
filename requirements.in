@@ -7,6 +7,7 @@ boto3~=1.24
 Django~=4.0.7
 django-braces~=1.15
 django4-cron~=0.5
+django-csp~=3.7
 djangorestframework~=3.13
 drf-jwt~=1.19
 iso-639~=0.4
