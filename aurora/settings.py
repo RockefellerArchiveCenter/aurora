@@ -161,6 +161,11 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Content Security Policy
+CSP_IMG_SRC = ("'self'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'")
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com')
+
 # Transfer settings
 S3_USE = config.S3_USE
 S3_ACCESS_KEY = config.S3_ACCESS_KEY
