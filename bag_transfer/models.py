@@ -104,9 +104,11 @@ class Organization(models.Model):
 
     def create_iam_user(self, bucket):
         """Creates an IAM user with privileges to put objects in org upload bucket."""
-        formatted_path = f"/{settings.IAM_PATH.rstrip('/').lstrip('/')}/"
-        group_name = f"{self.machine_name}-UserGroup"
-        policy_name = f"{self.machine_name}-S3-policy"
+        environment = settings.IAM_PATH.rstrip('/').lstrip('/')
+        formatted_path = f"/{environment}/"
+        user_name = f"{self.machine_name}-{environment}"
+        group_name = f"{self.machine_name}-{environment}-UserGroup"
+        policy_name = f"{self.machine_name}-{environment}-S3-policy"
         policy_doc = {
             "Version": "2012-10-17",
             "Statement": [
@@ -135,22 +137,22 @@ class Organization(models.Model):
         try:
             iam_client.create_user(
                 Path=formatted_path,
-                UserName=self.machine_name)
+                UserName=user_name)
         except iam_client.exceptions.EntityAlreadyExistsException:
-            print(f"User {self.machine_name} already exists.")
+            print(f"User {user_name} already exists.")
         try:
             policy_arn = iam_client.create_policy(
                 Path=formatted_path,
                 PolicyName=policy_name,
                 PolicyDocument=json.dumps(policy_doc),
-                Description=f"Allow {self.machine_name} privileges to put objects in {self.upload_target} bucket"
+                Description=f"Allow {user_name} privileges to put objects in {self.upload_target} bucket"
             )['Policy']['Arn']
         except iam_client.exceptions.EntityAlreadyExistsException:
             print(f"Policy {policy_name} already exists.")
             policy_arn = self.get_policy_arn(policy_name)
-            access_keys = [k['AccessKeyId'] for k in iam_client.list_access_keys(UserName=self.machine_name)['AccessKeyMetadata']]
+            access_keys = [k['AccessKeyId'] for k in iam_client.list_access_keys(UserName=user_name)['AccessKeyMetadata']]
             for key_id in access_keys:
-                iam_client.delete_access_key(UserName=self.machine_name, AccessKeyId=key_id)
+                iam_client.delete_access_key(UserName=user_name, AccessKeyId=key_id)
         try:
             iam_client.create_group(Path=formatted_path, GroupName=group_name)
         except iam_client.exceptions.EntityAlreadyExistsException:
@@ -160,20 +162,21 @@ class Organization(models.Model):
             PolicyArn=policy_arn)
         iam_client.add_user_to_group(
             GroupName=group_name,
-            UserName=self.machine_name)
-        access_key = iam_client.create_access_key(UserName=self.machine_name)['AccessKey']
-        return (access_key['AccessKeyId'], access_key['SecretAccessKey'], self.machine_name)
+            UserName=user_name)
+        access_key = iam_client.create_access_key(UserName=user_name)['AccessKey']
+        return (access_key['AccessKeyId'], access_key['SecretAccessKey'], user_name)
 
     def deactivate_iam_user(self, user_name):
         """Removes the policy allowing organization IAM user access to S3 bucket."""
+        environment = settings.IAM_PATH.rstrip('/').lstrip('/')
         iam_client = boto3.client(
             'iam',
             aws_access_key_id=settings.IAM_ACCESS_KEY,
             aws_secret_access_key=settings.IAM_SECRET_KEY,
             region_name=settings.IAM_REGION)
         iam_client.remove_user_from_group(
-            GroupName='{self.machine_name}-UserGroup',
-            UserName=self.machine_name)
+            GroupName=f"{user_name}-{environment}-UserGroup",
+            UserName=f"{user_name}-{environment}")
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to the default save function."""
