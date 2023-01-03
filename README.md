@@ -64,7 +64,11 @@ $ docker-compose exec web import_sample_data
 
 ### Transferring Your Own Bags
 
-If you'd like to transfer your own bags, you can do that by SFTPing them into the local container:
+If you'd like to transfer your own bags, note that bags must be serialized as either a TAR (compressed or uncompressed) or ZIP file.
+
+If you'er using S3 storage (see [Transferring digital records](#transferring-digital-records)), you'll need to upload a bag to an S3 bucket configured as an upload bucket for one of your organizations. 
+
+If you're using local storage you can then transfer those bags by SFTPing them into the local container using the credentials below:
 - Protocol: `SFTP`
 - Host name: `localhost`
 - Port number: `22`
@@ -74,6 +78,24 @@ If you'd like to transfer your own bags, you can do that by SFTPing them into th
 ### Data Persistence
 
 The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
+
+
+## Authentication
+
+### Disabling OAuth Provider
+
+By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/)
+as an OAuth provider for authentication.
+
+If you don't want to use this method of authentication, it is possible to
+use the built-in local Django authentication layer instead. In order to do this
+you will need to make a few changes:
+
+1. Update the `MIDDLEWARE` configs in settings.py:
+  - Comment out `bag_transfer.middleware.cognito.CognitoAppMiddleware` and
+    `bag_transfer.middleware.cognito.CognitoUserMiddleware`.
+  - Enable `bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT`.
+2. Ensure that the `COGNITO_USE` config value is set to `False`.
 
 ### User accounts
 
@@ -93,16 +115,36 @@ Note that in the Docker container, all user passwords are reset to "password" ea
 
 ## Transferring digital records
 
-Aurora scans subdirectories at the location specified by the `TRANSFER_UPLOADS_ROOT` setting. It expects each organization to have its own directory, containing two subdirectories: `uploads` and `processing`. Any new files or directories in the `uploads` subdirectory are added to Aurora's processing queue.
+### Transfer Validation
+
+At regularly scheduled intervals, Aurora scans the upload targets for each active
+organization. Any new files or directories in the upload target are added to
+Aurora's processing queue.
 
 At a high level, transfers are processed as follows:
-- Transfers are checked to ensure they have a valid filename, in other words that the top-level directory (for unserialized bags) or filename (for serialized bags) does not contain illegal characters.
+- Transfers are checked to ensure they have a valid filename, in other words that
+  the top-level directory (for unserialized bags) or filename (for serialized bags)
+  does not contain illegal characters.
 - Transfers are checked for viruses.
 - Transfers are checked to ensure they have only one top-level directory.
 - Size of transfers is checked to ensure it doesn't exceed `TRANSFER_FILESIZE_MAX`.
 - Transfers are validated against the BagIt specification using `bagit-python`.
-- Transfers are validated against the BagIt Profile specified in their `bag-info.txt` file using `bagit-profiles-validator`.
-- Relevant PREMIS rights statements are assigned to transfers (see Organization Management section for details).
+- Transfers are validated against the BagIt Profile specified in their `bag-info.txt`
+  file using `bagit-profiles-validator`.
+- Relevant PREMIS rights statements are assigned to transfers (see Organization
+  Management section for details).
+
+### Disabling S3 Storage
+
+By default, Aurora is configured to use [Amazon S3](https://aws.amazon.com/s3/) to
+store uploaded and validated transfers.
+
+If you don't want to use S3, you can configure Aurora to use the local file system
+instead:
+
+1. Set the `S3_USE` config value to `False`.
+2. Ensure that the `TRANSFER_UPLOADS_ROOT` is properly set and that the filepath
+   specified there exists and is writable by Aurora.s
 
 ## API
 
@@ -110,7 +152,19 @@ Aurora comes with a RESTful API, built using the Django Rest Framework. In addit
 
 ### Authentication
 
-Aurora uses JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
+#### Using OAuth
+
+In order to make requests against the Aurora API when using an OAuth provider, you
+will first need to add an application to your OAuth provider, then make a request
+against the provider's token endpoint using the client credentials flow. The token
+returned from the provider should then be attached as a Bearer token to requests.
+
+The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/electronbonder)
+contains code which demonstrates this flow (see the `authorize_oauth` method in
+`/electronbonder/client.py`).
+
+#### Using local authentication
+If OAuth is disabled (see above), Aurora can use JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
 
 To get your token, send a POST request to the `/get-token/` endpoint, passing your username and password:
 
@@ -125,6 +179,10 @@ $ curl -H "Authorization: JWT <your_token>" http://localhost:8000/api/orgs/1/
 ```
 
 In a production environment, successfully authenticating against this endpoint may require setting Apache's  `WSGIPassAuthorization` to `On`.
+
+The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/electronbonder)
+contains code which demonstrates this flow (see the `authorize` method in
+`/electronbonder/client.py`).
 
 
 ## Django Admin Configuration

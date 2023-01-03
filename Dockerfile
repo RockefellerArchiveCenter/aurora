@@ -36,7 +36,7 @@ RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
 RUN mkdir -p /code/
 COPY requirements.txt /code
 
-RUN mkdir -p /data/
+RUN mkdir -p /data/tmp/
 
 # Install Python modules
 RUN pip install --upgrade pip && pip install -r /code/requirements.txt

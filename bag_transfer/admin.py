@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import (BagInfoMetadata, BagItProfile,
+from bag_transfer.models import (Application, BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo, BAGLog, BAGLogCodes,
                                  LanguageCode, Organization, RecordCreators,
                                  Transfer, User)
@@ -20,6 +20,11 @@ class OrganizationsAdmin(admin.ModelAdmin):
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Application)
+class ApplicationAdmin(admin.ModelAdmin):
     pass
 
 

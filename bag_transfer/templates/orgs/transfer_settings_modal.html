@@ -1,0 +1,29 @@
+<div class="modal fade" id="modal-transfer-settings" role="dialog" aria-labelledby="modal-transfer-settings-title", tabindex="-1">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span></button>
+          <h1 id="modal-transfer-settings-title" class="modal-title">
+            Transfer Settings
+          </h1>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group list-group-unbordered">
+            <li class="list-group-item">
+              <span class="list-label">Upload Bucket</span><br/>{{ object.upload_target }}
+            </li>
+            <li class="list-group-item">
+              <span class="list-label">S3 Username</span><br/>{{ object.s3_username }}
+            </li>
+            <li class="list-group-item">
+              <span class="list-label">S3 Access Key ID (DART login)</span><br/>{{ object.s3_access_key_id }}
+            </li>
+            <li class="list-group-item">
+              <span class="list-label">S3 Secret Access Key (DART password)</span><br/><span class="force-wrap">{{ object.s3_secret_access_key }}</span>
+            </li>
+          </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,4 @@
-import psutil
+from django.conf import settings
 from django.contrib.auth.models import Group
 
 from bag_transfer.lib.RAC_CMD import (add2grp, add_org, add_user,
@@ -26,6 +26,7 @@ DEFAULT_USERS = [
         "last_name": "Administrator",
         "superuser": True,
         "staff": True,
+        "org_admin": True,
         "org": "Archival Repository",
     },
     {
@@ -35,6 +36,7 @@ DEFAULT_USERS = [
         "last_name": "Representative",
         "superuser": False,
         "staff": False,
+        "org_admin": True,
         "org": "Donor Organization",
     },
     {
@@ -44,6 +46,7 @@ DEFAULT_USERS = [
         "last_name": "Archivist",
         "superuser": False,
         "staff": True,
+        "org_admin": True,
         "groups": ["managing_archivists"],
         "org": "Archival Repository",
     },
@@ -198,16 +201,29 @@ else:
     for org in Organization.objects.all():
         add_org(org.machine_name)
 
-if len(User.objects.all()) == 0:
-    print("Creating users")
-    for user in DEFAULT_USERS:
+for user in DEFAULT_USERS:
+    if User.objects.filter(username=user["username"]).exists():
+        user = User.objects.get(username=user["username"])
+        # Re-adds linux system users based on users in database
+        if add_user(user.username):
+            if not settings.S3_USE:
+                add2grp(user.organization.machine_name, user.username)
+            # Resets the user's password to "password".
+            # If you don't want this behavior, you can comment out this line,
+            # but be aware that in a Docker environment doing so will mean that
+            # you need to manually set a user's password in Aurora before you are
+            # able to SFTP records into the container with that username and password.
+            if not settings.COGNITO_USE:
+                set_server_password(user.username, "password")
+    else:
         new_user = User.objects.create_user(
             user["username"],
             first_name=user["first_name"],
             last_name=user["last_name"],
-            email="{}@example.org".format(user["username"]),
+            email=f"{user['username']}@example.org",
             is_superuser=user["superuser"],
             is_staff=user["staff"],
+            is_org_admin=user.get("org_admin", False),
             organization=Organization.objects.get(name=user["org"]),
         )
         new_user.set_password(user["password"])
@@ -215,30 +231,6 @@ if len(User.objects.all()) == 0:
             for group in user["groups"]:
                 g = Group.objects.get_or_create(name=group)[0]
                 new_user.groups.add(g)
-        set_server_password(user["username"], user["password"])
+        if not settings.COGNITO_USE:
+            set_server_password(user["username"], user["password"])
         new_user.save()
-else:
-    # Re-adds linux system users based on users in database
-    for user in User.objects.all():
-        if add_user(user.username):
-            add2grp(user.organization.machine_name, user.username)
-            # Resets the user's password to "password".
-            # If you don't want this behavior, you can comment out this line,
-            # but be aware that in a Docker environment doing so will mean that
-            # you need to manually set a user's password in Aurora before you are
-            # able to SFTP records into the container with that username and password.
-            set_server_password(user.username, "password")
-
-# Terminate any idle processes, which cause problems later.
-open = [
-    p
-    for p in psutil.process_iter(attrs=["pid", "name"])
-    if p.info["name"] in ["add_org", "add_user", "add2grp"]
-]
-for p in open:
-    print("terminating", p)
-    p.terminate()
-gone, alive = psutil.wait_procs(open, timeout=3)
-for p in alive:
-    print("killing", p)
-    p.kill()

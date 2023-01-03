@@ -29,13 +29,13 @@
                     <li class="list-group-item">
                         <span class="list-label">Last login</span> <span class="pull-right">{{ object.last_login }}</span>
                     </li>
-                    <li class="list-group-item">
-                        <span class="list-label">Total Uploads</span> <span class="pull-right">{{ object.total_uploads }}</span>
-                    </li>
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
                     <a href="{% url 'users:edit' object.pk %}" class="btn btn-primary btn-block">Edit User</a>
+                    {% if object.cognito_status == 'FORCE_CHANGE_PASSWORD' %}
+                    <button id="resend-invitation" class="btn btn-primary btn-block">Resend Invitation Email</button>
+                    {% endif %}
                 {% endif %}
                 {% if request.user.pk == object.pk %}
                     <a href="{% url 'users:password-change' %}" class="btn btn-default btn-block">Change Password</a>
@@ -54,6 +54,11 @@
 
                 <hr/>
 
+                <span class="list-label"><i class="fa fa-user margin-r-5"></i> Org Admin?</span>
+                <p>{% if object.is_org_admin %}yes{% else %}no{% endif %}</p>
+
+                <hr/>
+
                 <span class="list-label"><i class="fa fa-envelope margin-r-5"></i> Email</span>
                 <p>{{ object.email }}</p>
 
@@ -68,20 +73,23 @@
             </div>
         </div>
     </div>
-    <div class="col-md-9">
-      <div class="box box-primary">
-          <div class="box-header with-border">
-              <h2 class="box-title">Recent Transfers</h2>
-          </div>
-          <div class="box-body">
-            {% include 'parts/recent_transfer_table.html' with org=object.organization %}
-          </div>
-        </div>
-    </div>
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
+<script type="text/javascript">
+    $('#resend-invitation').on('click', function () {
+        let data = {user_id: {{object.id}}};
+        let url = '{% url 'users:detail' pk=object.id %}'
+        $.get(url, data, function(resp){
+            if (resp.success){
+                displayMessage('success', 'Invitation was resent.', false);
+            } else {
+                displayMessage('danger', 'Something went wrong! Please try again.', false);
+            }
+        })
+    })
+</script>
 {% endblock %}

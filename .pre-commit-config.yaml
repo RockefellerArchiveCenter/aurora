@@ -1,13 +1,13 @@
 repos:
 - repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v1.6.0
+  rev: v2.0.0
   hooks:
   - id: autopep8
     args:
       - --in-place
       - --aggressive
 - repo: https://github.com/pycqa/flake8
-  rev: 4.0.1
+  rev: 5.0.4
   hooks:
   - id: flake8
 - repo: https://github.com/pycqa/isort
@@ -15,6 +15,6 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/jazzband/pip-tools
-  rev: 6.5.1
+  rev: 6.9.0
   hooks:
     - id: pip-compile

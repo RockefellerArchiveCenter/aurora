@@ -52,8 +52,13 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "bag_transfer.middleware.AuthenticationMiddlewareJWT",
+    "bag_transfer.middleware.cognito.CognitoAppMiddleware",
+    "bag_transfer.middleware.cognito.CognitoUserMiddleware",
+    # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
+    'csp.middleware.CSPMiddleware',
 ]
+
+SESSION_COOKIE_SECURE = True
 
 ROOT_URLCONF = "aurora.urls"
 
@@ -82,7 +87,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 50,
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        # "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
 }
@@ -103,6 +108,30 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
+
+# Amazon Cognito
+COGNITO_USE = config.COGNITO_USE
+COGNITO_USER_POOL = config.COGNITO_USER_POOL
+COGNITO_REGION = config.COGNITO_REGION
+COGNITO_ACCESS_KEY = config.COGNITO_ACCESS_KEY
+COGNITO_SECRET_KEY = config.COGNITO_SECRET_KEY
+
+# COGNITO_CLIENT
+COGNITO_CLIENT = {
+    'client_id': config.COGNITO_CLIENT_ID,
+    'client_secret': config.COGNITO_CLIENT_SECRET_KEY,
+    'access_token_url': f"{config.COGNITO_CLIENT_BASE_URL}/oauth2/token",
+    'authorize_url': f"{config.COGNITO_CLIENT_BASE_URL}/oauth2/authorize",
+    'api_base_url': config.COGNITO_CLIENT_BASE_URL,
+    'redirect_uri': config.COGNITO_CLIENT_CALLBACK_URL,
+    'client_kwargs': {
+        'token_endpoint_auth_method': 'client_secret_basic',
+    },
+    'userinfo_endpoint': '/oauth2/userInfo',
+    'jwks_url': f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL}/.well-known/jwks.json",
+}
+
+COGNITO_CLIENT_CALLBACK_URL = config.COGNITO_CLIENT_CALLBACK_URL
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -133,8 +162,24 @@ USE_TZ = True
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
+# Content Security Policy
+CSP_IMG_SRC = ("'self'")
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://fonts.googleapis.com/')
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
+CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com/')
+
 # Transfer settings
+S3_USE = config.S3_USE
+S3_ACCESS_KEY = config.S3_ACCESS_KEY
+S3_SECRET_KEY = config.S3_SECRET_KEY
+S3_REGION = config.S3_REGION
+S3_PREFIX = config.S3_PREFIX
+IAM_ACCESS_KEY = config.IAM_ACCESS_KEY
+IAM_SECRET_KEY = config.IAM_SECRET_KEY
+IAM_REGION = config.IAM_REGION
+IAM_PATH = config.IAM_PATH
 STORAGE_ROOT_DIR = config.TRANSFER_STORAGE_ROOT_DIR
+STORAGE_BUCKET = f"{config.S3_PREFIX}-storage"
 DELIVERY_QUEUE_DIR = config.TRANSFER_DELIVERY_QUEUE_DIR
 TRANSFER_FILESIZE_MAX = config.TRANSFER_FILESIZE_MAX
 TRANSFER_UPLOADS_ROOT = config.TRANSFER_UPLOADS_ROOT

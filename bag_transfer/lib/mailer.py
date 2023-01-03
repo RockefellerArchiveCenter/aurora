@@ -13,10 +13,8 @@ class Mailer:
         self.email = {}
 
     def send(self):
-        if (
-            not self.subject or not self.from_email or not self.to or not self.text_content
-        ):
-            print("All Fields required werent present")
+        if not all([self.subject, self.from_email, self.to, self.text_content]):
+            print("Unable to send email. One or more of the following fields were missing: subject, from email, to email or text content.")
             return False
 
         send_to = self.to

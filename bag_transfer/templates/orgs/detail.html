@@ -29,7 +29,11 @@
                 </ul>
 
                 {% if request.user.is_manager or request.user.is_superuser %}
-                    <a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit Organization</a>
+                  <p><a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit Organization</a></p>
+                {% endif %}
+
+                {% if request.user.is_org_admin or request.user.is_superuser %}
+                  <p><button class="btn btn-default btn-block" data-toggle="modal" data-target="#modal-transfer-settings">Show Transfer Settings</button></p>
                 {% endif %}
 
             </div>
@@ -42,6 +46,7 @@
 						<div class="box-body">
 							{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
 							{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
+              {% include 'parts/user_table.html' with users=object.org_admins switch='Org Admin' %}
 						</div>
 				</div>
 
@@ -66,6 +71,9 @@
 
 {% block modals %}
 	{% include 'rights/modals/confirm_delete.html' %}
+  {% if request.user.is_org_admin or request.user.is_superuser and object.s3_username %}
+    {% include 'orgs/transfer_settings_modal.html' %}
+  {% endif %}
 {% endblock %}
 
 {% block extra_js %}

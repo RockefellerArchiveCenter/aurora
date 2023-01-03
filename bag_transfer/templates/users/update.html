@@ -15,6 +15,7 @@
 
                     {% if request.user.is_manager or request.user.is_superuser %}
                       {% include 'rights/form_fields.html' with field=form.is_active %}
+                      {% include 'rights/form_fields.html' with field=form.is_org_admin %}
                       {% include 'rights/form_fields.html' with field=form.username %}
                       {% include 'rights/form_fields.html' with field=form.first_name %}
                       {% include 'rights/form_fields.html' with field=form.last_name %}
