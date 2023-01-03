@@ -106,9 +106,9 @@ class Organization(models.Model):
         """Creates an IAM user with privileges to put objects in org upload bucket."""
         environment = settings.IAM_PATH.rstrip('/').lstrip('/')
         formatted_path = f"/{environment}/"
-        user_name = f"{self.machine_name}-{environment}"
-        group_name = f"{self.machine_name}-{environment}-UserGroup"
-        policy_name = f"{self.machine_name}-{environment}-S3-policy"
+        user_name = f"{environment}-{self.machine_name}"
+        group_name = f"{environment}-{self.machine_name}-UserGroup"
+        policy_name = f"{environment}-{self.machine_name}-S3-policy"
         policy_doc = {
             "Version": "2012-10-17",
             "Statement": [
@@ -175,8 +175,8 @@ class Organization(models.Model):
             aws_secret_access_key=settings.IAM_SECRET_KEY,
             region_name=settings.IAM_REGION)
         iam_client.remove_user_from_group(
-            GroupName=f"{user_name}-{environment}-UserGroup",
-            UserName=f"{user_name}-{environment}")
+            GroupName=f"{environment}-{user_name}-UserGroup",
+            UserName=f"{environment}-{user_name}")
 
     def save(self, *args, **kwargs):
         """Adds additional behaviors to the default save function."""
