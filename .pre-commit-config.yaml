@@ -18,6 +18,3 @@ repos:
   rev: 6.9.0
   hooks:
     - id: pip-compile
-
-ci:
-  autoupdate_branch: 'development'
