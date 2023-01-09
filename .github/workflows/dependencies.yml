@@ -15,13 +15,21 @@ jobs:
         with:
           ref: development
 
-      - uses: actions/setup-python@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.10'
           cache: pip
-      - run: |
-          pip install pip-tools
-          pip-compile --upgrade
+
+      - name: Install pre-commit and pip-tools
+        run: pip install pre-commit pip-tools
+
+      - name: Run pre-commit autoupdate
+        run: pre-commit autoupdate
+      
+      - name: Run pip-compile
+        run: pip-compile --upgrade
+      
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v4
         with:
