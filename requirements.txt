@@ -25,9 +25,9 @@ bagit-profile==1.3.1
     # via -r requirements.in
 boltons==21.0.0
     # via archivessnake
-boto3==1.26.61
+boto3==1.26.64
     # via -r requirements.in
-botocore==1.29.61
+botocore==1.29.64
     # via
     #   boto3
     #   s3transfer
@@ -41,7 +41,7 @@ cryptography==39.0.0
     # via
     #   authlib
     #   pyjwt
-django==4.0.8
+django==4.0.9
     # via
     #   -r requirements.in
     #   asterism
@@ -86,7 +86,7 @@ more-itertools==9.0.0
     # via archivessnake
 mysqlclient==2.1.1
     # via -r requirements.in
-odin==2.1
+odin==2.2
     # via asterism
 psycopg2-binary==2.9.5
     # via asterism
