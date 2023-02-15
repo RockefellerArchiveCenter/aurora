@@ -41,7 +41,7 @@ cryptography==39.0.0
     # via
     #   authlib
     #   pyjwt
-django==4.0.9
+django==4.1.7
     # via
     #   -r requirements.in
     #   asterism
