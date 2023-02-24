@@ -110,7 +110,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             creators_formset.save()
             self.update_accession_rights(RightsStatement.merge_rights(rights_statements), accession)
             self.update_accession_transfers(transfers_list, accession)
-            messages.success(self.request, " Accession created successfully!")
+            messages.success(self.request, "Accession created successfully!")
             if settings.DELIVERY_URL:
                 try:
                     accession_data = AccessionSerializer(
@@ -133,7 +133,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
         messages.error(
             self.request,
             "There was a problem with your submission. Please correct the error(s) below and try again.")
-        return super().form_invalid()
+        return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
