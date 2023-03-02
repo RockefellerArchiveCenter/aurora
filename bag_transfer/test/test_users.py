@@ -89,6 +89,8 @@ class UserTestCase(TestMixin, TestCase):
         mock_add_user.assert_called_once()
         self.assertEqual(mock_add2grp.call_count, 2)
 
+    @modify_settings(MIDDLEWARE={"remove": "bag_transfer.middleware.cognito.CognitoMiddleware"})
+    @override_settings(COGNITO_USE=False)
     def test_user_views(self):
         """Ensures correct HTTP status codes are received for views."""
         for view in ["users:detail", "users:edit"]:
@@ -126,7 +128,7 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_create(self, mock_add_user, mock_add2grp, mock_boto):
         mock_username = "cognito"
@@ -155,7 +157,7 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("bag_transfer.lib.RAC_CMD.add2grp")
     @patch("bag_transfer.lib.RAC_CMD.add_user")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.UserCognitoMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_update(self, mock_add_user, mock_add2grp, mock_boto):
         user = User.objects.get(username="admin")
@@ -178,7 +180,7 @@ class CognitoTestCase(TestMixin, TestCase):
     @patch("boto3.client")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.authorize_access_token")
     @patch("authlib.integrations.django_client.apps.DjangoOAuth2App.get")
-    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoUserMiddleware"})
+    @modify_settings(MIDDLEWARE={"append": "bag_transfer.middleware.cognito.CognitoMiddleware"})
     @override_settings(COGNITO_USE=True)
     def test_cognito_middleware(self, mock_get, mock_authorize_token, mock_boto):
 
