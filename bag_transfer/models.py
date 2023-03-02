@@ -413,8 +413,12 @@ class Application(models.Model):
     is_active = models.BooleanField(default=True)
     is_application = models.BooleanField(default=True)
     is_authenticated = models.BooleanField(default=False)
+    is_anonymous = models.BooleanField(default=False)
     name = models.CharField(max_length=100)
     client_id = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f"{self.name} {self.client_id}"
 
     def is_archivist(self):
         return True

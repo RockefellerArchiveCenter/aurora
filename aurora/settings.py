@@ -52,8 +52,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "bag_transfer.middleware.cognito.CognitoAppMiddleware",
-    "bag_transfer.middleware.cognito.CognitoUserMiddleware",
+    "bag_transfer.middleware.cognito.CognitoMiddleware",
     # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
     'csp.middleware.CSPMiddleware',
 ]
@@ -88,6 +87,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 50,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
+        "bag_transfer.authentication.CognitoAppAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
 }
