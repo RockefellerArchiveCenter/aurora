@@ -163,6 +163,7 @@ STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Content Security Policy
+CSP_DEFAULT_SRC = ("'self'", 'https://rockarch.matomo.cloud/')
 CSP_IMG_SRC = ("'self'")
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://fonts.googleapis.com/')
 CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
