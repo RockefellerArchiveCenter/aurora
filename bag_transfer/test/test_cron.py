@@ -6,7 +6,7 @@ from unittest.mock import patch
 import bagit
 from asterism.file_helpers import remove_file_or_dir, tar_extract_all
 from django.conf import settings
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
@@ -14,7 +14,7 @@ from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
 from bag_transfer.test import helpers
 
 
-class CronTestCase(helpers.TestMixin, TestCase):
+class CronTestCase(helpers.TestMixin, TransactionTestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
@@ -28,7 +28,11 @@ class CronTestCase(helpers.TestMixin, TestCase):
         self.remove_delivery_queue()
         self.empty_org_upload_paths()
 
-    def test_cron(self):
+    @patch('bag_transfer.lib.virus_scanner.VirusScan.is_ready')
+    @patch('bag_transfer.lib.transfer_routine.TransferFileObject.passes_virus_scan')
+    def test_cron(self, mock_scan, mock_ready):
+        mock_scan.return_value = True
+        mock_ready.return_value = True
         self.sub_test_discover_transfers()
         self.sub_test_deliver_transfers()
 

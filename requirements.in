@@ -18,6 +18,6 @@ pyClamd~=0.4
 python-dateutil~=2.8
 python-jose~=3.3
 PyYAML~=6.0
-rac_schemas~=0.30
+rac-schema-validator~=0.1
 requests~=2.27
 uritemplate~=4.1

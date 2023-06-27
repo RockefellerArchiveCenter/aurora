@@ -1,10 +1,11 @@
 import json
+from os.path import join
 from unittest.mock import patch
 
 from django.http import HttpRequest
 from django.test import TestCase, modify_settings
 from django.urls import reverse
-from rac_schemas import is_valid
+from rac_schema_validator import is_valid
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.authentication import CognitoAppAuthentication
@@ -74,16 +75,23 @@ class APITest(TestMixin, TestCase):
 
     def test_validation(self):
         """Asserts that endpoint responses are valid against RAC schemas."""
-        for org in Organization.objects.all():
-            rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
-            for statement in rights_statements.json():
-                self.assertTrue(is_valid(statement, "rights_statement.json"))
+        base_file = open(join('rac_schemas', 'schemas', 'base.json'), 'r')
+        base_schema = json.load(base_file)
+        base_file.close()
+        with open(join('rac_schemas', 'schemas', 'rights_statement.json'), 'r') as object_file:
+            object_schema = json.load(object_file)
+            for org in Organization.objects.all():
+                rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
+                for statement in rights_statements.json():
+                    self.assertTrue(is_valid(statement, object_schema, base_schema))
         for queryset, view, schema in [
                 (Transfer.objects.filter(process_status__gte=Transfer.ACCESSIONING_STARTED), "transfer-detail", "aurora_bag"),
                 (Accession.objects.all(), "accession-detail", "accession")]:
-            for obj in queryset:
-                data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
-                self.assertTrue(is_valid(data, schema))
+            with open(join('rac_schemas', 'schemas', f'{schema}.json'), 'r') as object_file:
+                object_schema = json.load(object_file)
+                for obj in queryset:
+                    data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
+                    self.assertTrue(is_valid(data, object_schema, base_schema))
 
 
 class TestAPICognitoAuth(TestMixin, TestCase):

@@ -1,0 +1,3 @@
+[submodule "rac_schemas"]
+	path = rac_schemas
+	url = https://github.com/RockefellerArchiveCenter/rac_schemas
