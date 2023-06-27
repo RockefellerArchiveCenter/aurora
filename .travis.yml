@@ -1,4 +1,4 @@
-dist: bionic
+dist: focal
 language: python
 python: "3.10"
 cache:
@@ -16,6 +16,7 @@ env:
 before_install:
   - cp ${APPLICATION_NAME}/config.py.example ${APPLICATION_NAME}/config.py
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - git submodule init && git submodule update
   - docker-compose -f docker-compose.travis.yml up -d
 install:
   - pip install pre-commit && pre-commit install
