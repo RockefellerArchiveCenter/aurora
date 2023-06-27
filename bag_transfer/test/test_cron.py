@@ -6,7 +6,7 @@ from unittest.mock import patch
 import bagit
 from asterism.file_helpers import remove_file_or_dir, tar_extract_all
 from django.conf import settings
-from django.test import TestCase
+from django.test import TransactionTestCase
 
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
 from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
@@ -14,7 +14,7 @@ from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
 from bag_transfer.test import helpers
 
 
-class CronTestCase(helpers.TestMixin, TestCase):
+class CronTestCase(helpers.TestMixin, TransactionTestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
