@@ -29,7 +29,9 @@ class CronTestCase(helpers.TestMixin, TransactionTestCase):
         self.empty_org_upload_paths()
 
     @patch('bag_transfer.lib.virus_scanner.VirusScan.is_ready')
-    def test_cron(self, mock_ready):
+    @patch('bag_transfer.lib.transfer_routine.TransferFileObject.passes_virus_scan')
+    def test_cron(self, mock_scan, mock_ready):
+        mock_scan.return_value = True
         mock_ready.return_value = True
         self.sub_test_discover_transfers()
         self.sub_test_deliver_transfers()
