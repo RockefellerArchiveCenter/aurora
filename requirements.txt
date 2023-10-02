@@ -26,23 +26,23 @@ bagit-profile==1.3.1
     # via -r requirements.in
 boltons==23.0.0
     # via archivessnake
-boto3==1.28.39
+boto3==1.28.57
     # via -r requirements.in
-botocore==1.31.39
+botocore==1.31.57
     # via
     #   boto3
     #   s3transfer
 certifi==2023.7.22
     # via requests
-cffi==1.15.1
+cffi==1.16.0
     # via cryptography
-charset-normalizer==3.2.0
+charset-normalizer==3.3.0
     # via requests
-cryptography==41.0.3
+cryptography==41.0.4
     # via
     #   authlib
     #   pyjwt
-django==4.2.4
+django==4.2.5
     # via
     #   -r requirements.in
     #   asterism
@@ -79,7 +79,7 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.19.0
+jsonschema==4.19.1
     # via
     #   -r requirements.in
     #   rac-schema-validator
@@ -89,9 +89,9 @@ more-itertools==10.1.0
     # via archivessnake
 mysqlclient==2.2.0
     # via -r requirements.in
-odin==2.8.1
+odin==2.9.0
     # via asterism
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.8
     # via asterism
 pyasn1==0.5.0
     # via
@@ -109,7 +109,7 @@ python-dateutil==2.8.2
     #   botocore
 python-jose==3.3.0
     # via -r requirements.in
-pytz==2023.3
+pytz==2023.3.post1
     # via djangorestframework
 pyyaml==6.0.1
     # via
@@ -117,7 +117,7 @@ pyyaml==6.0.1
     #   archivessnake
 rac-schema-validator==0.1
     # via -r requirements.in
-rapidfuzz==3.2.0
+rapidfuzz==3.3.1
     # via archivessnake
 referencing==0.30.2
     # via
@@ -128,13 +128,13 @@ requests==2.31.0
     #   -r requirements.in
     #   archivessnake
     #   bagit-profile
-rpds-py==0.10.0
+rpds-py==0.10.3
     # via
     #   jsonschema
     #   referencing
 rsa==4.9
     # via python-jose
-s3transfer==0.6.2
+s3transfer==0.7.0
     # via boto3
 six==1.16.0
     # via
@@ -144,7 +144,7 @@ sqlparse==0.4.4
     # via django
 structlog==23.1.0
     # via archivessnake
-typing-extensions==4.7.1
+typing-extensions==4.8.0
     # via asgiref
 uritemplate==4.1.1
     # via -r requirements.in
