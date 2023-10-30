@@ -12,7 +12,7 @@ DJANGO_SECRET_KEY = "=*+t-qchu_$#hhf9m-n45s7p=@n46(zmf^mof$+cdaa0t6h8pq"  # used
 DJANGO_STATIC_URL = "/static/"  # URL for static assets used by Django (string)
 DJANGO_ALLOWED_HOSTS = ["localhost", "testserver"]  # hosts Argo will respond to (list of strings)
 DJANGO_BASE_URL = "http://localhost/"  # Base URL at which Aurora is available, including trailing slash (string)
-DJANGO_TIME_ZONE = "America/New_York"  # TZ database name for local timezone (string)
+DJANGO_TIME_ZONE = "UTC"  # TZ database name for local timezone (string)
 
 DJANGO_CRON_LOCKFILE_PATH = "/tmp/" # directory in which to create cron lockfiles
 
