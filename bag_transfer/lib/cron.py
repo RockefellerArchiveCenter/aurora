@@ -1,6 +1,7 @@
 import json
 from os import mkdir
 from os.path import isdir, join
+from subprocess import CalledProcessError, check_output
 
 import boto3
 from asterism.bagit_helpers import update_bag_info
@@ -23,7 +24,20 @@ class DiscoverTransfers(CronJobBase):
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "transfers.discover_transfers"
 
+    def is_running(self):
+        """Checks to see if an instance of this class is already running."""
+        try:
+            running = check_output(["pgrep", "-f", self.__class__.__name__]).decode("utf-8").strip().split("\n")
+            if len(running) > 2:
+                return True
+            else:
+                return False
+        except CalledProcessError:
+            return False
+
     def do(self):
+        if self.is_running():
+            return
         result = True
         Pter.cron_open(self.code)
         BAGLog.log_it("CSTR")
