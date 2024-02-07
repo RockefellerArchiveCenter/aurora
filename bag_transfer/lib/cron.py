@@ -86,7 +86,8 @@ class DiscoverTransfers(CronJobBase):
                         tar_filename = "{}.tar.gz".format(new_transfer.machine_file_identifier)
                         make_tarfile(
                             new_transfer.machine_file_path,
-                            join(settings.TRANSFER_EXTRACT_TMP, tar_filename))
+                            join(settings.TRANSFER_EXTRACT_TMP, tar_filename),
+                            remove_src=True)
                         if settings.S3_USE:
                             s3_client = boto3.client(
                                 's3',
