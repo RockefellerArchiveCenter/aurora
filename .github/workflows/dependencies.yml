@@ -10,8 +10,11 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           ref: development
 
@@ -26,12 +29,12 @@ jobs:
 
       - name: Run pre-commit autoupdate
         run: pre-commit autoupdate
-      
+
       - name: Run pip-compile
         run: pip-compile --upgrade
-      
+
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v6.0.2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           base: development
