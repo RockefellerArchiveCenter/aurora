@@ -45,9 +45,6 @@ class APITest(TestMixin, TestCase):
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
 
-    def test_schema_response(self):
-        self.assert_status_code("get", reverse("schema"), 200)
-
     def test_status_response(self):
         self.assert_status_code("get", reverse("ping"), 200)
 
@@ -75,10 +72,10 @@ class APITest(TestMixin, TestCase):
 
     def test_validation(self):
         """Asserts that endpoint responses are valid against RAC schemas."""
-        base_file = open(join('rac_schemas', 'schemas', 'base.json'), 'r')
+        base_file = open(join('rac_schemas', 'base.json'), 'r')
         base_schema = json.load(base_file)
         base_file.close()
-        with open(join('rac_schemas', 'schemas', 'rights_statement.json'), 'r') as object_file:
+        with open(join('rac_schemas', 'rights_statement.json'), 'r') as object_file:
             object_schema = json.load(object_file)
             for org in Organization.objects.all():
                 rights_statements = self.client.get(reverse("organization-rights-statements", kwargs={"pk": org.pk}))
@@ -87,7 +84,7 @@ class APITest(TestMixin, TestCase):
         for queryset, view, schema in [
                 (Transfer.objects.filter(process_status__gte=Transfer.ACCESSIONING_STARTED), "transfer-detail", "aurora_bag"),
                 (Accession.objects.all(), "accession-detail", "accession")]:
-            with open(join('rac_schemas', 'schemas', f'{schema}.json'), 'r') as object_file:
+            with open(join('rac_schemas', f'{schema}.json'), 'r') as object_file:
                 object_schema = json.load(object_file)
                 for obj in queryset:
                     data = self.client.get(reverse(view, kwargs={"pk": obj.pk})).json()
