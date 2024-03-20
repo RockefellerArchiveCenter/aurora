@@ -45,6 +45,9 @@ class APITest(TestMixin, TestCase):
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
 
+    def test_schema_response(self):
+        self.assert_status_code("get", reverse("schema"), 200)
+
     def test_status_response(self):
         self.assert_status_code("get", reverse("ping"), 200)
 
