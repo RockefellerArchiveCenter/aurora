@@ -10,6 +10,7 @@ django4-cron~=0.5
 django-csp~=3.7
 djangorestframework~=3.13
 drf-jwt~=1.19
+inflection~=0.5.1
 iso-639~=0.4
 iso8601~=0.1
 jsonschema~=4.4
