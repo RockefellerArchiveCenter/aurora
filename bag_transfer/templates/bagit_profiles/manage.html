@@ -1,4 +1,5 @@
 {% extends 'transfers/base.html' %}
+{% load util %}
 
 {% block h1_title %}{{page_title}} <small>{{organization}}</small> <span class="badge">Version {{form.version.value}}</span>{% endblock %}
 
@@ -101,7 +102,7 @@
 					{{ bag_info_formset.management_form }}
 					{{ bag_info_formset.non_form_errors }}
 					{% for form in bag_info_formset %}
-					<div id="{{ form.prefix }}-row" class="{{form.prefix|slice:'-2'}} well dynamic-form">
+					<div id="{{ form.prefix }}-row" class="{{ form.prefix | trim_form_prefix }} well dynamic-form">
 						{% for hidden in form.hidden_fields %}
 					    {{ hidden }}
 						{% endfor %}
@@ -114,7 +115,7 @@
 								<div class="nested-form">
 									{{ form.nested.management_form }}
 									{{ form.nested.non_form_errors }}
-									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right" data-target="{{form.prefix|slice:'-2'}}"><i class="fa fa-times"></i> Delete Field</a>
+									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right" data-target="{{ form.prefix | trim_form_prefix }}"><i class="fa fa-times"></i> Delete Field</a>
 									<label id="values-label">Values</label>
 									<div class="show-values-inputs">
 										<a href="javascript:void(0)" class="btn btn-primary btn-sm add-values">Add Controlled Values</a>
@@ -161,6 +162,7 @@
 	}
 	function renumberForms(prefix) {
 		forms = $('[class^='+prefix+']')
+		console.log(prefix)
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
 			updateElementIndex(forms.get(i), prefix, i)
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
