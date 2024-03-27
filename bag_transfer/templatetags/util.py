@@ -26,3 +26,9 @@ def progress_class(status):
 @register.filter
 def progress_percentage(status):
     return int(round(float(status) / Transfer.ACCESSIONING_COMPLETE * 100))
+
+
+@register.filter
+def trim_form_prefix(value):
+    split_prefix = value.split("-")
+    return "-".join(split_prefix[:2])
