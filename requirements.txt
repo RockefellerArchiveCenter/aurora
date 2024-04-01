@@ -4,9 +4,9 @@
 #
 #    pip-compile
 #
-archivessnake==0.9.1
+archivessnake==0.10.1
     # via -r requirements.in
-asgiref==3.8.0
+asgiref==3.8.1
     # via django
 asterism==0.9.0
     # via -r requirements.in
@@ -24,11 +24,11 @@ bagit==1.8.1
     #   bagit-profile
 bagit-profile==1.3.1
     # via -r requirements.in
-boltons==23.1.1
+boltons==24.0.0
     # via archivessnake
-boto3==1.34.67
+boto3==1.34.74
     # via -r requirements.in
-botocore==1.34.67
+botocore==1.34.74
     # via
     #   boto3
     #   s3transfer
@@ -60,7 +60,7 @@ django-csp==3.8
     # via -r requirements.in
 django4-cron==0.5.1
     # via -r requirements.in
-djangorestframework==3.15.0
+djangorestframework==3.15.1
     # via
     #   -r requirements.in
     #   asterism
@@ -95,16 +95,18 @@ odin==2.9.0
     # via asterism
 psycopg2-binary==2.9.9
     # via asterism
-pyasn1==0.5.1
+pyasn1==0.6.0
     # via
     #   python-jose
     #   rsa
 pyclamd==0.4.0
     # via -r requirements.in
-pycparser==2.21
+pycparser==2.22
     # via cffi
 pyjwt[crypto]==2.8.0
-    # via drf-jwt
+    # via
+    #   drf-jwt
+    #   pyjwt
 python-dateutil==2.9.0.post0
     # via
     #   -r requirements.in
@@ -117,7 +119,7 @@ pyyaml==6.0.1
     #   archivessnake
 rac-schema-validator==0.1
     # via -r requirements.in
-rapidfuzz==3.6.2
+rapidfuzz==3.7.0
     # via archivessnake
 referencing==0.34.0
     # via
