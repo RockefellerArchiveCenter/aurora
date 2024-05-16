@@ -9,30 +9,19 @@ Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an i
 
 ## Installation
 
-### Quick Start
-
-If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
-```
-git clone https://github.com/RockefellerArchiveCenter/aurora.git
-cd aurora
-docker-compose up
-```
-Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
-
-### Detailed Installation Instructions
-
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
 ```
 $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
 ```
-3. Build and run Aurora. The initial build may take some time, so be patient!
+3. Remove the default OAuth Provider as detailed in the [authentication](#authentication) section below.
+4. Build and run Aurora. The initial build may take some time, so be patient!
 ```
 $ cd aurora
 $ docker-compose up
 ```
-
-4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
+5. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`.
+6. Log in using one of the default user accounts (see [User accounts](#user-accounts) below).
 
 ### Sample Data
 
@@ -66,16 +55,14 @@ The Docker container is currently configured to persist the MySQL database in lo
 
 ### Disabling OAuth Provider
 
-By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/)
-as an OAuth provider for authentication.
+By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/) as an OAuth provider for authentication.
 
 If you don't want to use this method of authentication, it is possible to
 use the built-in local Django authentication layer instead. In order to do this
 you will need to make a few changes:
 
 1. Update the `MIDDLEWARE` configs in settings.py:
-  - Comment out `bag_transfer.middleware.cognito.CognitoAppMiddleware` and
-    `bag_transfer.middleware.cognito.CognitoUserMiddleware`.
+  - Comment out `bag_transfer.middleware.cognito.CognitoMiddleware`.
   - Enable `bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT`.
 2. Ensure that the `COGNITO_USE` config value is set to `False`.
 
