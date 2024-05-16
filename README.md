@@ -5,52 +5,23 @@
 
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
-The name of the application is a reference both to the natural light display often seen in the northern hemisphere - sometimes referred to as _aurora borealis_ - as well as the Roman goddess of dawn.
-
-Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/). Project updates are available on [Bits & Bytes](http://blog.rockarch.org/), the RAC's blog.
+Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/).
 
 ## Installation
-
-### Quick Start
-
-If you have [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition) installed, getting Aurora up and running is as simple as:
-```
-git clone https://github.com/RockefellerArchiveCenter/aurora.git
-cd aurora
-docker-compose up
-```
-Once the build and startup process has completed, log into Aurora at `http://localhost:8000` with the user/password pair `admin` and `password`.
-
-### Detailed Installation Instructions
 
 1. Install [git](https://git-scm.com/) and [Docker](https://www.docker.com/community-edition)
 2. Download or clone this repository
 ```
 $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
 ```
-3. Build and run Aurora. The initial build may take some time, so be patient!
+3. Remove the default OAuth Provider as detailed in the [authentication](#authentication) section below.
+4. Build and run Aurora. The initial build may take some time, so be patient!
 ```
 $ cd aurora
 $ docker-compose up
 ```
-
-4. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`. Log in using one of the default user accounts (see "User accounts" below).
-
-#### Installation Notes for Windows Users
-
-By default, when cloning to a Windows machine, git will convert line endings to DOS format, which will cause a variety of issues in the Docker container. To avoid these problems, clone the repo to Windows using `core.autocrlf`
-```
-$ git clone https://github.com/RockefellerArchiveCenter/aurora.git --config core.autocrlf=input
-```
-
-Install the correct version of Docker based on the Windows platform being used. [Docker Toolbox](https://docs.docker.com/toolbox/toolbox_install_windows/) is available for versions of Windows that do not support [Docker for Windows](https://docs.docker.com/docker-for-windows/).
-
-When using Docker Toolbox, clone aurora to a location in the C:\Users directory. By default, Docker Toolbox only has access to this directory.
-
-Note that with Docker Toolbox, Aurora will not default to run on `http://localhost:8000`. Check the docker ip default:
-```
-$ docker-machine ip default
-```
+5. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`.
+6. Log in using one of the default user accounts (see [User accounts](#user-accounts) below).
 
 ### Sample Data
 
@@ -84,16 +55,14 @@ The Docker container is currently configured to persist the MySQL database in lo
 
 ### Disabling OAuth Provider
 
-By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/)
-as an OAuth provider for authentication.
+By default, Aurora is configured to use [Amazon Cognito](https://aws.amazon.com/cognito/) as an OAuth provider for authentication.
 
 If you don't want to use this method of authentication, it is possible to
 use the built-in local Django authentication layer instead. In order to do this
 you will need to make a few changes:
 
 1. Update the `MIDDLEWARE` configs in settings.py:
-  - Comment out `bag_transfer.middleware.cognito.CognitoAppMiddleware` and
-    `bag_transfer.middleware.cognito.CognitoUserMiddleware`.
+  - Comment out `bag_transfer.middleware.cognito.CognitoMiddleware`.
   - Enable `bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT`.
 2. Ensure that the `COGNITO_USE` config value is set to `False`.
 
