@@ -1,0 +1,84 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - development
+      - base
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref_name }}
+
+    env:
+      APPLICATION_NAME: aurora
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Export secrets to environment variables
+        uses: oNaiPs/secrets-to-env-action@v1.5
+        with:
+          secrets: ${{ toJSON(secrets) }}
+
+      - name: Clone deploy scripts if not present
+        run: git clone https://github.com/RockefellerArchiveCenter/deploy_scripts.git;
+
+      - name: Substitute environment variables
+        uses: tvarohohlavy/inplace-envsubst-action@v1.0.0
+        with:
+          files: |
+            $APPLICATION_NAME/config.py.deploy
+            appspec.yml.deploy
+            deploy_scripts/create_apache_config.sh.deploy
+            deploy_scripts/curl_index.sh.deploy
+            deploy_scripts/curl_status_endpoint.sh.deploy
+            deploy_scripts/install_dependencies_django.sh.deploy
+            deploy_scripts/restart_apachectl.sh.deploy
+            deploy_scripts/run_management_commands_django.sh.deploy
+            deploy_scripts/set_permissions.sh.deploy
+            deploy_scripts/stop_cron.sh.deploy
+
+      - name: Rename deploy files
+        run: |
+          mv $APPLICATION_NAME/config.py.deploy $APPLICATION_NAME/config.py
+          mv appspec.yml.deploy appspec.yml
+          mv deploy_scripts/create_apache_config.sh.deploy deploy_scripts/create_apache_config.sh
+          mv deploy_scripts/curl_index.sh.deploy deploy_scripts/curl_index.sh
+          mv deploy_scripts/curl_status_endpoint.sh.deploy deploy_scripts/curl_status_endpoint.sh
+          mv deploy_scripts/install_dependencies_django.sh.deploy deploy_scripts/install_dependencies_django.sh
+          mv deploy_scripts/restart_apachectl.sh.deploy deploy_scripts/restart_apachectl.sh
+          mv deploy_scripts/run_management_commands_django.sh.deploy deploy_scripts/run_management_commands_django.sh
+          mv deploy_scripts/set_permissions.sh.deploy deploy_scripts/set_permissions.sh
+          mv deploy_scripts/stop_cron.sh.deploy deploy_scripts/stop_cron.sh
+
+      - name: Make deploy scripts executable
+        run: chmod +x deploy_scripts/*.sh
+
+      - name: Create deployment zip
+        run: sudo deploy_scripts/make_zip_django.sh $DEPLOY_ZIP_DIR $DEPLOY_ZIP_NAME
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE }}
+          role-skip-session-tagging: true
+          role-duration-seconds: 900
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to S3
+        run: aws s3 cp $DEPLOY_ZIP_DIR s3://$AWS_BUCKET_NAME --recursive
+
+      - name: Deploy to AWS CodeDeploy
+        run: aws deploy create-deployment
+          --region ${{ secrets.AWS_REGION }}
+          --application-name $APPLICATION_NAME
+          --deployment-config-name CodeDeployDefault.OneAtATime
+          --deployment-group-name $DEPLOYMENT_GROUP
+          --s3-location bucket=$AWS_BUCKET_NAME,bundleType=zip,key=$DEPLOY_ZIP_NAME
