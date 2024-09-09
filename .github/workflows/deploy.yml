@@ -15,6 +15,8 @@ jobs:
 
     env:
       APPLICATION_NAME: aurora
+      CONTAINER: web
+      APPLICATION_PORT: 8006
 
     steps:
       - name: Checkout code
