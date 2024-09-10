@@ -1,8 +1,5 @@
 # Aurora
 
-[![Build Status](https://app.travis-ci.com/RockefellerArchiveCenter/aurora.svg?branch=base)](https://app.travis-ci.com/RockefellerArchiveCenter/aurora)
-![GitHub (pre-)release](https://img.shields.io/github/release/RockefellerArchiveCenter/aurora/all.svg)
-
 Aurora is a Django web application that can receive, virus check and validate transfers of digital archival records, and allows archivists to appraise and accession those records.
 
 Aurora is part of [Project Electron](http://projectelectron.rockarch.org/), an initiative to build sustainable, open and user-centered infrastructure for the archival management of digital records at the [Rockefeller Archive Center](http://rockarch.org/).
