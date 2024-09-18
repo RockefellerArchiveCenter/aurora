@@ -17,7 +17,6 @@ services:
       - storage:/data1
     ports:
       - "${APPLICATION_PORT:-8000}:${APPLICATION_PORT:-8000}"
-      - "22:22"
     depends_on:
       - db
 
