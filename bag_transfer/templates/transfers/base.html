@@ -5,29 +5,23 @@
     {% block extra_css %}{% endblock %}
   </head>
   <body class="hold-transition fixed skin-blue sidebar-mini">
-    <div class="wrapper">
       <!-- Main Header -->
       {% include 'transfers/header.html' %}
 
-      <!-- Left Sidebar -->
-      {% include 'transfers/left_sidebar.html' %}
-
       <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          <h1>{% block h1_title %}{% endblock %}</h1>
-        </section>
+      <main class="content-wrapper">
+        <div class="container">
+          <!-- Content Header (Page header) -->
+          <div>
+            <h1>{% block h1_title %}{% endblock %}</h1>
+          </section>
 
-
-        <!-- Main content -->
-        <main class="content">
 
           <div id="messages">{% include 'transfers/messages.html' %}</div>
 
           {% block content %}{% endblock %}
-        </main>
-      </div>
+        </div>
+      </main>
 
       <!-- Main Footer -->
       {% include 'transfers/footer.html' %}
@@ -39,6 +33,5 @@
       {% include 'transfers/js_scripts.html' %}
       {% block extra_js %}{% endblock %}
 
-    </div>
   </body>
 </html>

@@ -1,4 +1,20 @@
-@import url('https://fonts.googleapis.com/css?family=Satisfy');
+.header__brand {
+  margin-left: 10px;
+  margin-top: 23px;
+  padding: 0;
+  position: absolute;
+  z-index: 3;
+
+  @media screen and (min-width: 580px) {
+    margin-left: 15px;
+  }
+
+  @media screen and (min-width: 1024px) {
+    margin-left: 33px;
+  }
+}
+
+/* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
 a:focus, .dropdown-toggle:focus {
 	outline: auto;
@@ -211,4 +227,4 @@ div.dataTables_wrapper div.dataTables_filter input {
 
 .force-wrap {
 	overflow-wrap: break-word;
-}
+} */
