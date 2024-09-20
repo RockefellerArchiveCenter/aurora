@@ -1,3 +1,18 @@
+.container {
+	margin: 0 15px;
+
+	@media screen and (min-width: 580px) {
+    margin: 0 30px;
+  }
+}
+
+header {
+	position: sticky;
+	top: 0;
+  z-index: 999;
+	background-color: #ebeff4;
+}
+
 /**
 * Adjust top position so that skip link is more visible in the header
 **/
@@ -19,6 +34,18 @@
   @media screen and (min-width: 1024px) {
     margin-left: 33px;
   }
+}
+
+/**
+* Styles for clickable table rows
+**/
+.pointer-row {
+	cursor: pointer;
+}
+
+.pointer-row:hover {
+	background-color: #bcbab3 !important;
+	outline: #2e2e2e 1px solid;
 }
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
@@ -46,14 +73,6 @@ h5 .small, h5 small, h6 .small, h6 small {
 
 h5.description-text {
     margin-top: 0;
-}
-
-.pointer-row {
-	cursor: pointer;
-}
-
-.pointer-row:hover {
-	background-color: #ccc !important;
 }
 
 .mar-top20 {
