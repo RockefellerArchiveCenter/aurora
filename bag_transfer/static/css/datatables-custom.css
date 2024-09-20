@@ -28,3 +28,22 @@ table.dataTable thead > tr > td.dt-orderable-desc:hover {
 div.dt-processing > div:last-child > div {
   background: #192d48;
 }
+
+.dt-layout-row label {
+  font-size: 16px;
+}
+
+div.dt-container .dt-search input {
+  appearance: none;
+  border: 1px solid #2e2e2e;
+  border-radius: 0;
+  font-size: 18px;
+  padding: 10px;
+  min-width: 300px
+}
+
+/* Pagination font styles */
+.dt-paging {
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+}
