@@ -48,6 +48,22 @@ header {
 	outline: #2e2e2e 1px solid;
 }
 
+/**
+* Progress label-class color styles
+**/
+
+.progress-bar--green {
+	accent-color: #00a65a;
+}
+
+.progress-bar--red {
+	accent-color: #dd4b39;
+}
+
+.progress-bar--yellow {
+	accent-color: #ffc107;
+}
+
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
 a:focus, .dropdown-toggle:focus {
