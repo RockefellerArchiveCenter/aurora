@@ -37,6 +37,16 @@ header {
 }
 
 /**
+* h1 div container to allow buttons or other elements to be positioned
+* on the same line has the page title
+**/
+.title-container {
+	display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/**
 * Styles for clickable table rows
 **/
 .pointer-row {
@@ -53,7 +63,7 @@ header {
 **/
 
 .progress-bar--green {
-	accent-color: #00a65a;
+	accent-color: #026d3a;
 }
 
 .progress-bar--red {

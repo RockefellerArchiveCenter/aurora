@@ -13,10 +13,13 @@
     <main>
       <div class="wrapper">
         <div class="container">
-          <!-- Content Header (Page header) -->
-          <div>
-            <h1>{% block h1_title %}{% endblock %}</h1>
-            <div id="messages">{% include 'transfers/messages.html' %}</div>
+          {% block title_section %}
+          <div class="title-container">
+            <h1>{% block h1_title %}Default Title{% endblock %}</h1>
+            {% block title_actions %}{% endblock %}
+          </div>
+        {% endblock %}
+          <div id="messages">{% include 'transfers/messages.html' %}</div>
 
             {% block content %}{% endblock %}
           </div>

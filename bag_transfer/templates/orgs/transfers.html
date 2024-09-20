@@ -3,11 +3,17 @@
 {% load static %}
 
 {% block h1_title %}
-{% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} {{page_title}}
+  {% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} {{page_title}}
+{% endblock %}
+
+{% block title_actions %}
+  <a href="{% url 'transfers:data' %}" class="btn btn--md btn--blue">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">download</span>
+    Download CSV
+  </a>
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'transfers:data' %}" class="btn btn--md btn--blue">Download CSV</a>
 <div>
 	{% include 'parts/transfer_table.html' with uploads_count=org_uploads_count table_id='all_transfers' %}
 </div>
