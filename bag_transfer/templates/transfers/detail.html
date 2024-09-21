@@ -1,147 +1,126 @@
 {% extends 'transfers/base.html' %}
 {% load tz static %}
 
-{% block h1_title %}{{ page_title }} <small>{{ object.machine_file_size|filesizeformat }}</small> <span class="pull-right label label-{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>{% endblock %}
+{% block h1_title %}{{ page_title }}{% endblock %}
 
 {% block content %}
-
-<div class="row">
-	<div class="col-md-12">
-		<p>Identifier {{ object.machine_file_identifier }}</p>
-		<p>Uploaded by {{ object.user_uploaded }} at {{ object.machine_file_upload_time}} and processed at {{ object.created_time }}</p>
-	</div>
+<div class="mb-30">
+	<span class="badge badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
 </div>
+<div class="card card--container flex--column mb-30">
+	<h2>Transfer Details</h2>
+	<dl class="summary-list">
+		<div class="summary-list__row">
+			<dt class="summary-list__key">File size</dt>
+			<dd class="summary-list__value">{{ object.machine_file_size|filesizeformat }}</dd>
+		</div>
+		<div class="summary-list__row">
+			<dt class="summary-list__key">Identifier</dt>
+			<dd class="summary-list__value">{{ object.machine_file_identifier }}</dd>
+		</div>
+		<div class="summary-list__row">
+			<dt class="summary-list__key">Uploaded</dt>
+			<dd class="summary-list__value">{{ object.machine_file_upload_time}} and processed at {{ object.created_time }}</dd>
+		</div>
+	</dl>
+</div>
+
 
 {% if object.bag_data %}
 	{% include 'parts/metadata_box.html' %}
 {% endif %}
 
 {% if user.is_archivist and object.appraisal_note %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Appraisal Note</h2>
-			</div>
-			<div class="box-body">
-				<p>{{ object.appraisal_note }}</p>
-			</div>
-		</div>
+
+	<div class="card card--container flex--column mb-30">
+		<h2>Appraisal Note</h2>
+		<p>{{ object.appraisal_note }}</p>
 	</div>
-</div>
+
 {% endif %}
 
 {% if object.errors %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-danger">
-			<div class="box-header with-border">
-				<h2 class="box-title">Error Messages</h2>
-			</div>
-			<div class="box-body">
 
-				<table class= "table table-striped dataTable">
-					<thead>
-						<tr>
-							<th>Date/Time</th>
-							<th>Summary</th>
-							<th>Details</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for err in object.errors %}
-						<tr>
-							<td>{{ err.created_time }}</td>
-							<td>{{ err.code.code_desc }}</td>
-							<td>{% if object.additional_error_info %}{{ object.additional_error_info }}{% else %}No additional details available.{% endif %}</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
+	<div class="mb-30">
+		<h2>Error Messages</h2>
+		<table class= "table table-striped dataTable">
+			<thead>
+				<tr>
+					<th>Date/Time</th>
+					<th>Summary</th>
+					<th>Details</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for err in object.errors %}
+				<tr>
+					<td>{{ err.created_time }}</td>
+					<td>{{ err.code.code_desc }}</td>
+					<td>{% if object.additional_error_info %}{{ object.additional_error_info }}{% else %}No additional details available.{% endif %}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
 	</div>
-</div>
+
 {% endif %}
 
 {% if object.rights_statements.all %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Rights Statements</h2>
-			</div>
-			<div class="box-body no-padding">
-				{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
-			</div>
-		</div>
+
+	<div class="mb-30">
+		<h2 class="box-title">Rights Statements</h2>
+		{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
 	</div>
-</div>
+
 {% endif %}
 
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Log</h2>
-			</div>
-			<div class="box-body">
-				<table class="table table-striped dataTable">
-					<thead>
-						<tr>
-							<th>Date/Time</th>
-							<th>Message</th>
-						</tr>
-					</thead>
-					<tbody>
-						{% for tlog in object.events.all %}
-						<tr>
-							<td>{{ tlog.created_time }}</td>
-							<td>{{ tlog.code.code_desc }}</td>
-						</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+
+<div class="mb-30">
+	<h2>Transfer Log</h2>
+	<table class="table table-striped dataTable">
+		<thead>
+			<tr>
+				<th>Date/Time</th>
+				<th>Message</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for tlog in object.events.all %}
+			<tr>
+				<td>{{ tlog.created_time }}</td>
+				<td>{{ tlog.code.code_desc }}</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 </div>
 
+
 {% if object.archivesspace_identifier or object.archivesspace_parent_identifier %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">External Identifiers</h2>
-			</div>
-			<div class="box-body">
-				{% if object.archivesspace_identifier %}
-				<p class="list-label">ArchivesSpace Component</p>
-				<p>{{object.archivesspace_identifier}}</p>
-				{% endif %}
-				{% if object.archivesspace_parent_identifier %}
-				<p class="list-label">ArchivesSpace Parent Component</p>
-				<p>{{object.archivesspace_parent_identifier}}</p>
-				{% endif %}
-			</div>
+
+	<div class="card card--container flex--column mb-30">
+		<h2>External Identifiers</h2>
+		<div>
+			{% if object.archivesspace_identifier %}
+			<p class="list-label">ArchivesSpace Component</p>
+			<p>{{object.archivesspace_identifier}}</p>
+			{% endif %}
+			{% if object.archivesspace_parent_identifier %}
+			<p class="list-label">ArchivesSpace Parent Component</p>
+			<p>{{object.archivesspace_parent_identifier}}</p>
+			{% endif %}
 		</div>
 	</div>
-</div>
+
 {% endif %}
 
 {% if object.manifest %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-primary">
-			<div class="box-header with-border">
-				<h2 class="box-title">Manifest</h2>
-			</div>
-			<div class="box-body">
-				<pre>{{ object.manifest|linebreaks }}</pre>
-			</div>
-		</div>
+
+	<div class="card card--container flex--column mb-30">
+		<h2 class="box-title">Manifest of Files</h2>
+		<pre>{{ object.manifest|linebreaks }}</pre>
 	</div>
-</div>
+
 {% endif %}
 
 {% endblock %}

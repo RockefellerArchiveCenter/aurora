@@ -46,6 +46,10 @@ header {
   align-items: center;
 }
 
+.card--container {
+	padding: 18px;
+}
+
 /**
 * Styles for clickable table rows
 **/
@@ -73,6 +77,27 @@ header {
 .progress-bar--yellow {
 	accent-color: #ffc107;
 }
+
+/**
+* Badge colors
+**/
+
+.badge--green {
+	background-color: #026d3a;
+}
+
+.badge--red {
+	background-color: #dd4b39;
+}
+
+.badge--yellow {
+	background-color: #ffc107;
+}
+
+.card h2 {
+ margin-top: 0;
+}
+
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 

@@ -1,19 +1,13 @@
 {% load util %}
 
-<div class="row">
-  <div class="col-md-12">
-    <div class="box box-primary">
-      <div class="box-header with-border">
-        <h2 class="box-title">Metadata</h2>
-      </div>
-      <div class="box-body">
-        <dl class="dl-horizontal">
-          {% for k,v in object.bag_data.items %}
-          <dt>{{k}}</dt>
-          <dd>{% if v|get_type == 'list' %}{% for i in v %}{{i}}<br/>{% endfor %}{% else %}{{v}}{% endif %}</dd>
-          {% endfor %}
-        </dl>
-      </div>
-    </div>
-  </div>
+<div class="card card--container mb-20">
+	<h2>Metadata</h2>
+	<dl class="summary-list">
+    {% for k,v in object.bag_data.items %}
+		<div class="summary-list__row">
+			<dt class="summary-list__key">{{k}}</dt>
+			<dd class="summary-list__value">{% if v|get_type == 'list' %}{% for i in v %}{{i}}<br/>{% endfor %}{% else %}{{v}}{% endif %}</dd></dd>
+		</div>
+    {% endfor %}
+	</dl>
 </div>
