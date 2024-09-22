@@ -53,12 +53,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
                 except Transfer.DoesNotExist as e:
                     rdata["emess"] = e
                     return self.render_to_json_response(rdata)
-
-                if request.GET.get("req_form") == "detail":
-                    rdata["object"] = upload.id
-                    rdata["success"] = 1
-
-                elif (
+                if (
                     request.GET.get("req_form") == "appraise" and request.user.can_appraise()
                 ):
                     if request.GET.get("req_type") == "decision":
@@ -96,7 +91,6 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
         return self.FILTER_ICONTAINS
 
     def appraise_buttons(self, transfer):
-        buttons = '<a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'
         if self.request.user.can_appraise():
             if transfer.appraisal_note:
                 btn_class = "btn-primary"
@@ -110,8 +104,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 note_text = "Add"
             buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
                        <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
-                       <a type="button" class="appraisal-note btn btn-xs {} {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>\
-                       <a type="button" class="transfer-detail btn btn-xs btn-warning" data-toggle="modal" data-target="#modal-detail" aria-expanded="false" href="#">Details</a>'.format(
+                       <a type="button" class="appraisal-note btn btn-xs {} {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>'.format(
                 btn_class, note_class, aria_label, note_text
             )
         return buttons
