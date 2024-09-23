@@ -39,8 +39,6 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-// TODO: I don't think this is the django way to generate this transfer detail page url in the table
-var transferDetailBaseUrl = '/app/transfers/';  // Base URL for transfer details
 var amodal = $("#modal-appraisal-note");
 var cmodal = $("#modal-confirm");
 var url = '{% url 'appraise:list' %}';
@@ -56,13 +54,13 @@ $(function () {
         }
       ],
       'createdRow': function(row, data, dataIndex) {
-        var nameCell = $('td', row).eq(0);  // Select the first cell (Name)
-        // TODO: I don't think this is the django was to get the base url
-        var transferUrl = '/app/transfers/' + data[6];
+        var nameCell = $('td', row).eq(0);
+        var transferPk = data[6];
         var transferName = data[0];
+        var transferUrl = '{% url "transfers:detail" 0 %}'.replace('0', transferPk);
 
         // Set the Name cell content as a clickable link to the transfer detail page
-        nameCell.html('<a href="' + transferUrl + '">' + transferName + '</a>');
+        $('td', row).eq(0).html('<a href="' + transferUrl + '">' + transferName + '</a>');
 
         $(row).attr('data-transfer-id', data[6]);
         $(row).attr('data-transfer-name', data[0]);
