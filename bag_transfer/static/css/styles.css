@@ -1,4 +1,4 @@
-.container {
+main .container {
 	margin: 0 15px;
 
 	@media screen and (min-width: 580px) {
