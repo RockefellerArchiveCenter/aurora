@@ -37,13 +37,24 @@ header {
 }
 
 /**
+* Smaller h1 on large screens that better matches layout of this site
+**/
+h1 {
+  font-size: 42px;
+}
+
+/**
 * h1 div container to allow buttons or other elements to be positioned
 * on the same line has the page title
 **/
 .title-container {
-	display: flex;
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+  display: flex;
   justify-content: space-between;
   align-items: center;
+  }
 }
 
 .card--container {

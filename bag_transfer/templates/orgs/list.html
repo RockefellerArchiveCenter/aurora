@@ -2,11 +2,15 @@
 {% load tz %}
 {% load static %}
 
-{% block h1_title %}
-  {{page_title}}
-  {% if request.user.is_manager or request.user.is_superuser %}
-    <a href="{% url 'orgs:add' %}" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Add Organization</a>
-  {% endif %}
+{% block h1_title %}{{page_title}}{% endblock %}
+
+{% block title_actions %}
+{% if request.user.is_manager or request.user.is_superuser %}
+  <a href="{% url 'orgs:add' %}" class="btn btn--md btn--blue">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">add</span>
+    Add Organization
+  </a>
+{% endif %}
 {% endblock %}
 
 {% block content %}

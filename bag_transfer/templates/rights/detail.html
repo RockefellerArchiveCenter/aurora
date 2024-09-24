@@ -2,13 +2,21 @@
 {% load tz %}
 
 {% block h1_title %}
-  {{page_title}} <small>{{object.organization}}</small>
-  <div class="pull-right">
-    <a href="{% url 'orgs:detail' object.organization.pk %}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back To Organization</a>
-    {% if request.user.is_manager or request.user.is_superuser %}
-      <a href="{% url 'rights:edit' object.pk %}" class="btn btn-warning">Edit Rights Statement</a>
-    {% endif %}
-  </div>
+  {{page_title}}: {{object.organization}}
+{% endblock %}
+
+{% block title_actions %}
+<div>
+  <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn--md btn--gray mr-10">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
+    Back to Organization
+  </a>
+  {% if request.user.is_manager or request.user.is_superuser %}
+  <a href="{% url 'rights:edit' object.pk %}" class="btn btn--md btn--blue">
+    Edit Rights Statement
+  </a>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block content %}
