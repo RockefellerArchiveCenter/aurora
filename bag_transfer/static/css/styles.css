@@ -74,6 +74,17 @@ h1 {
 }
 
 /**
+* Extra small button for tables shrinks padding from btn--sm styles
+**/
+.btn--xs {
+	font-size: 10px;
+	line-height: 16px;
+	padding: 3px;
+	font-weight: bold;
+	margin-bottom: 3px;
+}
+
+/**
 * Progress label-class color styles
 **/
 

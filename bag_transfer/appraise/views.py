@@ -93,7 +93,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
     def appraise_buttons(self, transfer):
         if self.request.user.can_appraise():
             if transfer.appraisal_note:
-                btn_class = "btn-primary"
+                btn_class = "btn btn--xs btn--light-blue"
                 note_class = "edit-note"
                 aria_label = 'aria-label="Note exists"'
                 note_text = "Edit"
@@ -102,9 +102,9 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 note_class = ""
                 aria_label = ""
                 note_text = "Add"
-            buttons = '<a type=button class="btn btn-xs btn-primary appraisal-accept" href="#">Accept</a>\
-                       <a type="button" class="btn btn-xs btn-danger appraisal-reject" href="#">Reject</a>\
-                       <a type="button" class="appraisal-note btn btn-xs {} {}" data-toggle="modal" data-target="#modal-appraisal-note" href="#" {}>{} Note</a>'.format(
+            buttons = '<button class="btn btn--xs btn--blue appraisal-accept">Accept</button>\
+                       <button class="btn btn--xs btn--orange appraisal-reject">Reject</button>\
+                       <button class="btn btn--xs btn--light-blue appraisal-note {} {}" data-toggle="modal" data-target="#modal-appraisal-note" {}>{} Note</button>'.format(
                 btn_class, note_class, aria_label, note_text
             )
         return buttons
