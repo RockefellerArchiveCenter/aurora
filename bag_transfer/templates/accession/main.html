@@ -82,37 +82,23 @@
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     saved = $('#saved_accession_table').DataTable({
-      'createdRow': function(row, data, dataIndex) {
+      createdRow: function(row, data, dataIndex) {
           $(row).attr('data-accession-id', data[5]);
       },
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      'pageLength'  : 25,
-      'processing': true,
-      'serverSide': true,
+      stateSave: true,
+      processing: true,
+      serverSide: true,
       fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
+        headerOffset: $('.nav-center').outerHeight()
 	    },
-      'ajax': '{% url "accession:saved-datatable" %}'
+      ajax: '{% url "accession:saved-datatable" %}'
     });
     saved.draw();
     pending = $('#pending_accession_table').DataTable({
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
+      stateSave: true,
       fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
+        headerOffset: $('.nav-center').outerHeight()
 	    },
-      'pageLength'  : 25
     })
     pending.draw()
 

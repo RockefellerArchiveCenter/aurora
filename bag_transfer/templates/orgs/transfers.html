@@ -29,14 +29,14 @@
 					$(row).addClass('pointer-row');
 					$(row).attr('tabindex', 0)
   		},
-      order       : [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
-			stateSave   : true,
-			processing  : true,
-      serverSide  : true,
-			fixedHeader : {
+      order: [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
+			stateSave: true,
+			processing: true,
+      serverSide: true,
+			fixedHeader: {
           headerOffset: $('.nav-center').outerHeight()
         },
-      ajax        : '{% url "transfers:datatable" %}'
+      ajax: '{% url "transfers:datatable" %}'
     })
   })
 </script>
