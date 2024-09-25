@@ -1,171 +1,168 @@
 <header class="header">
+  <div class="header__brand header__brand--text">
+    <a href="{% url 'app_home' %}" class="header__brand-title">Aurora</a>
+  </div>
   <div class="wrapper">
-    <div class="container flex">
-      <div class="header__brand header__brand--text">
-        <a href="{% url 'app_home' %}" class="header__brand-title">Aurora</a>
-      </div>
-
-      <nav class="nav-center" aria-label="Main">
-        <div class="nav-column">
-          <div class="hide-on-lg-up">
-            <button
-              id="nav-toggle-menu"
-              class="btn nav__btn--mobile nav__btn--orange"
-              aria-label="menu"
-              aria-expanded="false"
-            >
-              <span class="material-icon" aria-hidden="true">menu</span>
-            </button>
-          </div>
-
-          <ul id="disclosure-nav" class="nav__list list--unstyled">
-            <li class="nav__item--dropdown">
-              <button
-                class="nav__btn--dropdown"
-                aria-expanded="false"
-                aria-controls="id-transfers-menu"
-              >
-                Transfers
-                <span aria-hidden="true" class="material-icon">
-                  keyboard_arrow_down
-                </span>
-              </button>
-              <ul
-                id="id-transfers-menu"
-                class="list--unstyled nav__list--dropdown"
-                hidden
-              >
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'transfers:list' %}">
-                    <p class="nav__link-title">All Transfers</p>
-                  </a>
-                </li>
-                {% if request.user.is_staff %}
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'appraise:list' %}">
-                    <p class="nav__link-title">Appraise</p>
-                  </a>
-                </li>
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'accession:list' %}">
-                    <p class="nav__link-title">Accession</p>
-                  </a>
-                </li>
-                {% endif %}
-              </ul>
-            </li>
-
-            {% if request.user.is_staff %}
-            <li class="nav__item--dropdown">
-              <button
-                class="nav__btn--dropdown"
-                aria-expanded="false"
-                aria-controls="id-admin-menu"
-              >
-                Admin
-                <span aria-hidden="true" class="material-icon">
-                  keyboard_arrow_down
-                </span>
-              </button>
-              <ul
-                id="id-admin-menu"
-                class="list--unstyled nav__list--dropdown"
-                hidden
-              >
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'orgs:list' %}">
-                    <p class="nav__link-title">Organizations</p>
-                  </a>
-                </li>
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'users:list' %}">
-                    <p class="nav__link-title">Users</p>
-                  </a>
-                </li>
-                {% if request.user.is_superuser %}
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'admin:index' %}">
-                    <p class="nav__link-title">Django Administration</p>
-                  </a>
-                </li>
-                {% endif %}
-              </ul>
-            </li>
-            {% endif %}
-
-            <li class="nav__item--dropdown">
-              <button
-                class="nav__btn--dropdown"
-                aria-expanded="false"
-                aria-controls="id-developer-menu"
-              >
-                Developer
-                <span aria-hidden="true" class="material-icon">
-                  keyboard_arrow_down
-                </span>
-              </button>
-              <ul
-                id="id-developer-menu"
-                class="list--unstyled nav__list--dropdown"
-                hidden
-              >
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'api-root' %}">
-                    <p class="nav__link-title">Browseable API</p>
-                  </a>
-                </li>
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'schema' %}">
-                    <p class="nav__link-title">OpenAPI Schema</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-
-            <li class="nav__item--dropdown">
-              <button
-                class="nav__btn--dropdown"
-                aria-expanded="false"
-                aria-controls="id-profile-menu"
-              >
-                My Profile
-                <span aria-hidden="true" class="material-icon">
-                  keyboard_arrow_down
-                </span>
-              </button>
-              <ul
-                id="id-profile-menu"
-                class="list--unstyled nav__list--dropdown"
-                hidden
-              >
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'users:detail' pk=request.user.id %}">
-                    <p class="nav__link-title">Profile</p>
-                  </a>
-                </li>
-                {% if not request.user.is_staff %}
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'orgs:detail' pk=request.user.organization.pk %}">
-                    <p class="nav__link-title">My Organization</p>
-                  </a>
-                </li>
-                {% endif %}
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="{% url 'users:password-change' %}">
-                    <p class="nav__link-title">Change Password</p>
-                  </a>
-                </li>
-                <li class="nav__list-item--dropdown">
-                  <a class="nav__link" href="/logout/">
-                    <p class="nav__link-title">Sign Out</p>
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
+    <nav class="nav-center" aria-label="Main">
+      <div class="nav-column">
+        <div class="hide-on-lg-up">
+          <button
+            id="nav-toggle-menu"
+            class="btn nav__btn--mobile nav__btn--orange"
+            aria-label="menu"
+            aria-expanded="false"
+          >
+            <span class="material-icon" aria-hidden="true">menu</span>
+          </button>
         </div>
-      </nav>
-    </div>
+
+        <ul id="disclosure-nav" class="nav__list list--unstyled">
+          <li class="nav__item--dropdown">
+            <button
+              class="nav__btn--dropdown"
+              aria-expanded="false"
+              aria-controls="id-transfers-menu"
+            >
+              Transfers
+              <span aria-hidden="true" class="material-icon">
+                keyboard_arrow_down
+              </span>
+            </button>
+            <ul
+              id="id-transfers-menu"
+              class="list--unstyled nav__list--dropdown"
+              hidden
+            >
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'transfers:list' %}">
+                  <p class="nav__link-title">All Transfers</p>
+                </a>
+              </li>
+              {% if request.user.is_staff %}
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'appraise:list' %}">
+                  <p class="nav__link-title">Appraise</p>
+                </a>
+              </li>
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'accession:list' %}">
+                  <p class="nav__link-title">Accession</p>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+
+          {% if request.user.is_staff %}
+          <li class="nav__item--dropdown">
+            <button
+              class="nav__btn--dropdown"
+              aria-expanded="false"
+              aria-controls="id-admin-menu"
+            >
+              Admin
+              <span aria-hidden="true" class="material-icon">
+                keyboard_arrow_down
+              </span>
+            </button>
+            <ul
+              id="id-admin-menu"
+              class="list--unstyled nav__list--dropdown"
+              hidden
+            >
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'orgs:list' %}">
+                  <p class="nav__link-title">Organizations</p>
+                </a>
+              </li>
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'users:list' %}">
+                  <p class="nav__link-title">Users</p>
+                </a>
+              </li>
+              {% if request.user.is_superuser %}
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'admin:index' %}">
+                  <p class="nav__link-title">Django Administration</p>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </li>
+          {% endif %}
+
+          <li class="nav__item--dropdown">
+            <button
+              class="nav__btn--dropdown"
+              aria-expanded="false"
+              aria-controls="id-developer-menu"
+            >
+              Developer
+              <span aria-hidden="true" class="material-icon">
+                keyboard_arrow_down
+              </span>
+            </button>
+            <ul
+              id="id-developer-menu"
+              class="list--unstyled nav__list--dropdown"
+              hidden
+            >
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'api-root' %}">
+                  <p class="nav__link-title">Browseable API</p>
+                </a>
+              </li>
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'schema' %}">
+                  <p class="nav__link-title">OpenAPI Schema</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav__item--dropdown">
+            <button
+              class="nav__btn--dropdown"
+              aria-expanded="false"
+              aria-controls="id-profile-menu"
+            >
+              My Profile
+              <span aria-hidden="true" class="material-icon">
+                keyboard_arrow_down
+              </span>
+            </button>
+            <ul
+              id="id-profile-menu"
+              class="list--unstyled nav__list--dropdown"
+              hidden
+            >
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'users:detail' pk=request.user.id %}">
+                  <p class="nav__link-title">Profile</p>
+                </a>
+              </li>
+              {% if not request.user.is_staff %}
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'orgs:detail' pk=request.user.organization.pk %}">
+                  <p class="nav__link-title">My Organization</p>
+                </a>
+              </li>
+              {% endif %}
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'users:password-change' %}">
+                  <p class="nav__link-title">Change Password</p>
+                </a>
+              </li>
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="/logout/">
+                  <p class="nav__link-title">Sign Out</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </nav>
   </div>
 </header>
 
