@@ -14,9 +14,9 @@
       <div class="wrapper">
         <div class="container">
           {% block title_section %}
-          <div class="title-container">
+          <div class="title__container">
             <h1>{% block h1_title %}Default Title{% endblock %}</h1>
-            {% block title_actions %}{% endblock %}
+            <div class="title__actions">{% block title_actions %}{% endblock %}</div>
           </div>
         {% endblock %}
           <div id="messages">{% include 'transfers/messages.html' %}</div>

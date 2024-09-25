@@ -51,7 +51,7 @@ h1 {
 * h1 div container to allow buttons or other elements to be positioned
 * on the same line has the page title
 **/
-.title-container {
+.title__container {
 	display: block;
 
 	@media screen and (min-width: 1024px) {
@@ -60,6 +60,12 @@ h1 {
   align-items: center;
   }
 }
+
+.title__actions {
+	@media screen and (min-width: 1024px) {
+		margin-left: 20px;
+		}
+	}
 
 .card--container {
 	padding: 18px;
@@ -78,6 +84,13 @@ h1 {
 }
 
 /**
+* Prevent button label text from wrapping
+**/
+.btn {
+	white-space: nowrap;
+}
+
+/**
 * Extra small button for tables shrinks padding from btn--sm styles
 **/
 .btn--xs {
@@ -86,7 +99,6 @@ h1 {
 	padding: 3px;
 	font-weight: bold;
 	margin-bottom: 3px;
-	white-space: nowrap;
 }
 
 /**

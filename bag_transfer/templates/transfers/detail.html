@@ -3,6 +3,16 @@
 
 {% block h1_title %}{{ page_title }}{% endblock %}
 
+{% block title_actions %}
+{% if request.user.is_staff %}
+	<a href="{% url 'appraise:list' %}" class="btn btn--md btn--gray mb-10">
+		<span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
+		Appraisal Queue
+	</a>
+{% endif %}
+{% endblock %}
+
+
 {% block content %}
 <div class="mb-30">
 	<span class="badge badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
