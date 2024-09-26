@@ -5,7 +5,7 @@
 
 {% block title_actions %}
 {% if request.user.is_staff %}
-	<a href="{% url 'appraise:list' %}" class="btn btn--md btn--gray mb-10">
+	<a href="{% url 'appraise:list' %}" class="btn btn--md btn--light-blue">
 		<span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
 		Appraisal Queue
 	</a>
@@ -14,7 +14,7 @@
 
 
 {% block content %}
-<div class="mb-30">
+<div class="my-30">
 	<span class="badge badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
 </div>
 <div class="card card--container flex--column mb-30">

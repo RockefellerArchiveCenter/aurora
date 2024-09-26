@@ -34,9 +34,15 @@
       <td><a href="{% url 'users:detail' u.pk %}">{{u.first_name}} {{u.last_name}}</a></td>
       <td>{{ u.username }}</td>
       <td>{{ u.organization }}</td>
-      <td>{% for group in u.groups.all %}
-        <div class="badge badge--light-blue my-3">{{ group.name }}</div>
-      {% endfor %}</td>
+      <td>
+        {% if u.groups.exists %}
+          {% for group in u.groups.all %}
+            <div class="badge badge--light-blue my-3">{{ group.name }}</div>
+          {% endfor %}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
       <td>{{ u.last_login }}</td>
       <td>{% if u.is_org_admin %}Yes{% else %}No{% endif %}</td>
       <td>{% if u.is_active %}Yes{% else %}No{% endif %}</td>

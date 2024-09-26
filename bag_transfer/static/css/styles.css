@@ -3,10 +3,10 @@
 }
 
 main .container {
-	margin: 0 15px;
+	margin: 0 15px 30px;
 
 	@media screen and (min-width: 580px) {
-    margin: 0 30px;
+    margin: 0 30px 30px;
   }
 }
 
@@ -69,6 +69,19 @@ h1 {
 
 .card--container {
 	padding: 18px;
+}
+
+.card-list {
+	grid-gap: 30px;
+
+	@media screen and (min-width: 1024px) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.user__actions {
+	display: flex;
+	margin-top: auto;
 }
 
 /**
@@ -146,7 +159,7 @@ h1 {
   display: none;
 }
 
-table div.badge {
+div.badge {
 	width: fit-content;
 }
 
