@@ -14,28 +14,42 @@
 {% endblock %}
 
 {% block content %}
-<div class="nav-tabs-custom">
-    <ul class="nav nav-tabs">
-  		<li class="active"><a href="#tab_all_users" data-toggle="tab">All Users</a></li>
-  		<li class=""><a href="#tab_org_users" data-toggle="tab">Users by Organization</a></li>
-    </ul>
-    <div class="tab-content">
-    	<div class="tab-pane active table-responsive" id="tab_all_users">
-        {% for blk in users_list %}
-          {% include "users/user_table.html" %}
-        {% endfor %}
-    	</div>
-    	<div class="tab-pane" id="tab_org_users">
-        {% for blk in org_users_list %}
-          {% include "users/user_table.html" with list_type="org" %}
-        {% endfor %}
-    	</div>
-
-    </div>
-  </div>
-
+<div class="table-responsive">
+  {% for blk in users_list %}
+  <table id="user-table" class="table table-striped dataDatble">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Organization</th>
+        <th>Groups</th>
+        <th>Last Login</th>
+        <th>Org Admin?</th>
+        <th>Active?</th>
+      </tr>
+    <thead>
+    <tbody>
+    {% for u in blk.users %}
+    <tr>
+      <td><a href="{% url 'users:detail' u.pk %}">{{u.first_name}} {{u.last_name}}</a></td>
+      <td>{{ u.username }}</td>
+      <td>{{ u.organization }}</td>
+      <td>{% for group in u.groups.all %}
+        <div class="badge badge--light-blue my-3">{{ group.name }}</div>
+      {% endfor %}</td>
+      <td>{{ u.last_login }}</td>
+      <td>{% if u.is_org_admin %}Yes{% else %}No{% endif %}</td>
+      <td>{% if u.is_active %}Yes{% else %}No{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% endfor %}
+</div>
 {% endblock %}
 
 {% block extra_js %}
-<script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
+<script type="text/javascript">
+  new DataTable('#user-table')
+</script>
 {% endblock %}

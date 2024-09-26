@@ -133,6 +133,11 @@ h1 {
 	background-color: #ffc107;
 }
 
+.badge--light-blue {
+	background-color: #ebeff4;
+	color: #2e2e2e;
+}
+
 .card h2 {
  margin-top: 0;
 }
@@ -141,6 +146,9 @@ h1 {
   display: none;
 }
 
+table div.badge {
+	width: fit-content;
+}
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
