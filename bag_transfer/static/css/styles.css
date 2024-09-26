@@ -137,6 +137,10 @@ h1 {
  margin-top: 0;
 }
 
+.tabs__panel--hidden {
+  display: none;
+}
+
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
