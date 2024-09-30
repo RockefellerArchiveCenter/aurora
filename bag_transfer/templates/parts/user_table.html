@@ -1,6 +1,6 @@
-<span class="list-label">{{ switch }}</span>
+<h3 class="mt-15 mb-15">{{ switch }}</h3>
 {% if users %}
-	<ul class="list-unstyled">
+	<ul class="mt-0 mb-15">
 			{% for u in users %}
 				<li>
 					{% if request.user.is_staff or u == request.user %}<a href="{% url 'users:detail' u.pk %}">{% endif %}
@@ -12,4 +12,4 @@
 {% else %}
 	<p>There are no {{ switch|lower }} users for this organization.</p>
 {% endif %}
-<hr/>
+<hr aria-hidden="true"/>
