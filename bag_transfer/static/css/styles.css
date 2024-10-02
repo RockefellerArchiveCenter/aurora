@@ -58,6 +58,7 @@ h1 {
   display: flex;
   justify-content: space-between;
   align-items: center;
+	width: 100%;
   }
 }
 
@@ -67,8 +68,8 @@ h1 {
 		}
 	}
 
-.card--container {
-	padding: 18px;
+.card {
+	min-height: auto;
 }
 
 .card-list {
@@ -82,6 +83,29 @@ h1 {
 .user__actions {
 	display: flex;
 	margin-top: auto;
+}
+
+/* Layout for organization details page */
+.org-detail {
+	grid-column: 1 / span 12;
+	margin-right: 0;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 1 / span 3;
+		margin-right: 30px;
+	}
+}
+
+.org-settings {
+	grid-column: 1 / span 12;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 4 / span 9;
+  }
+}
+
+.org-detail .summary-list__key {
+	width: 60%;
 }
 
 /**
@@ -115,9 +139,16 @@ h1 {
 }
 
 /**
+* Override table styles for links that are styled as buttons
+**/
+table a.btn {
+	font-size: 10px;
+	line-height: 16px;
+}
+
+/**
 * Progress label-class color styles
 **/
-
 .progress-bar--green {
 	accent-color: #026d3a;
 }
@@ -131,9 +162,8 @@ h1 {
 }
 
 /**
-* Badge colors
+* Badge colors and layout styles
 **/
-
 .badge--green {
 	background-color: #026d3a;
 }
@@ -151,17 +181,112 @@ h1 {
 	color: #2e2e2e;
 }
 
-.card h2 {
- margin-top: 0;
-}
+.badge__bagit-version {
+	display: inline-block;
+	margin-top: 3px;
 
-.tabs__panel--hidden {
-  display: none;
+	@media screen and (min-width: 1024px) {
+    margin-top: 0px;
+  }
 }
 
 div.badge {
 	width: fit-content;
 }
+
+/**
+* For layout cards, remove h2 top margin;
+**/
+.card--container h2 {
+ margin-top: 0;
+}
+
+/**
+* Reduce padding for layout cards
+**/
+.card--container {
+	padding: 18px;
+}
+
+/**
+* Add functionality to hide tabs in tablist
+**/
+.tabs__panel--hidden {
+  display: none;
+}
+
+/**
+* Form styles
+**/
+.input input, .input textarea, .input select {
+	width: 100%;
+}
+
+.input label {
+	display: block;
+}
+
+/**
+* Accession form layout
+**/
+.card--grid-container {
+	display: grid;
+	column-gap: 20px;
+	grid-template-columns: repeat(5, 1fr)
+}
+
+.accession__input--full-width {
+	grid-column: 1 / span 5;
+}
+
+.accession__card {
+	grid-column: 1 / span 5;
+	column-gap: 20px;
+	padding-bottom: 0;
+	margin-bottom: 20px;
+	background-color: #ebeff4;
+}
+
+.accession__dates {
+	@media screen and (min-width: 1024px) {
+		grid-column: 1 / span 2;
+	}
+
+	.input {
+		flex: 1;
+	}
+}
+
+.accession__creators {
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+		grid-column: 3 / span 3;
+	}
+
+	div.input {
+		flex: 1;
+		margin-bottom: 20px;
+	}
+}
+
+/**
+* Accession form AS resource name and dismiss button styles
+**/
+#resource_title {
+	font-size: 16px;
+	padding: 6px 18px;
+}
+
+#resource_title_dismiss {
+	margin-left: 5px;
+}
+
+#resource_title_dismiss:focus {
+	outline-color: #f6f6f4;
+}
+
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 

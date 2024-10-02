@@ -10,7 +10,7 @@
     {% include 'transfers/header.html' %}
 
     <!-- Content Wrapper. Contains page content -->
-    <main>
+    <main id="main">
       <div class="wrapper">
         <div class="container">
           {% block title_section %}
@@ -19,7 +19,7 @@
             <div class="title__actions">{% block title_actions %}{% endblock %}</div>
           </div>
         {% endblock %}
-          <div id="messages">{% include 'transfers/messages.html' %}</div>
+          <div id="messages" role="status">{% include 'transfers/messages.html' %}</div>
 
             {% block content %}{% endblock %}
           </div>

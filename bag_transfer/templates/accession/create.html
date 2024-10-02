@@ -9,124 +9,94 @@
     {{hidden}}
   {% endfor %}
   <!-- {{form.resource}} -->
-  <div class="row">
-    <div class="col-md-12">
-      <div class="box box-primary">
-        <div class="box-body">
-          <div class="form-group {% if form.resource.errors %}has-error{% endif %}">
-            <label for="resource_id">Related Resource *</label>
-            <div id="resource_input">
-              <input id="resource_id" class="form-control" type="text"></input>
-              <p class="help-text">Enter an ID for a resource (for example <code>231</code>)</p>
-              {% if form.resource.errors %}
-                {% for error in form.resource.errors %}
-                  <p class="help-block">{{error}}</p>
-                  {% endfor %}
-              {% endif %}
-              <button type="submit" href="#" id="resource_find" class="btn btn-default">Find in ArchivesSpace</button>
-            </div>
-            <div id="resource_result" style="display: none;">
-              <h3><span class="label label-default"><span id="resource_title">Resource name</span> <a href="#" id="resource_title_dismisss"><i class="fa fa-times"></i></a></span></h3>
-            </div>
-          </div>
+  <div class="card card--container card--grid-container mb-30">
+    <div class="accession__input--full-width">
+      <h2>Target ArchivesSpace Resource</h2>
+      <div class="input">
+        <label for="resource_id">Related Resource *</label>
+        <div id="resource_input">
+          <input id="resource_id" type="text" aria-describedby="resource-id-help" aria-required="true"/>
+          <div id="resource-id-help" class="input__help-text">Enter an ArchivesSpace resource ID (e.g. "231")</div>
+          <button type="button" id="resource_find" class="btn btn--sm btn--blue mt-20">Find in ArchivesSpace</button>
         </div>
+      </div>
+      <div id="resource_result">
+        <h3>
+          <div class="badge badge--orange" id="resource_title">
+            Resource name
+            <button id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="remove resource">
+              <span class="material-icon" aria-hidden="true">close</span>
+            </button>
+          </div>
+        </h3>
       </div>
     </div>
   </div>
 
-  <div class="box box-primary">
-    <div class="box-body">
+  <div class="card card--container card--grid-container pb-0 mb-30">
+    <div class="accession__input--full-width">
+      <h2>Accession Details</h2>
       {% include 'accession/form_fields.html' with field=form.title %}
-      <div class="row">
-        <div class="col-md-5">
-          <div class="well">
-            <div class="row">
-              <div class="col-md-6">
-                {% include 'accession/form_fields.html' with field=form.start_date%}
-              </div>
-              <div class="col-md-6">
-                {% include 'accession/form_fields.html' with field=form.end_date%}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-7">
-          <div class="well">
-            <div class="form-group">
-                {{ creators_formset.management_form }}
-                {% for creator in creators_formset %}
-                  {% include 'accession/creators.html' %}
-                {% endfor %}
-            </div>
-          </div>
-        </div>
-      </div>
-      {{form.access_restriction}}
-      {% include 'accession/form_fields.html' with field=form.description %}
-      {% include 'accession/form_fields.html' with field=form.access_restrictions %}
-      {% include 'accession/form_fields.html' with field=form.use_restrictions %}
     </div>
+    <div class="card card--container accession__card accession__dates">
+      {% include 'accession/form_fields.html' with field=form.start_date%}
+      {% include 'accession/form_fields.html' with field=form.end_date%}
+    </div>
+    {{ creators_formset.management_form }}
+    {% for creator in creators_formset %}
+      {% include 'accession/creators.html' %}
+    {% endfor %}
+
+    {{form.access_restriction}}
+    {% include 'accession/form_fields.html' with field=form.description %}
+    {% include 'accession/form_fields.html' with field=form.access_restrictions %}
+    {% include 'accession/form_fields.html' with field=form.use_restrictions %}
   </div>
 
-  <div class="box box-primary">
-    <div class="box-header with-border">
-      <h2 class="box-title">Rights Statements</h2>
-      <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-label="Collapse"><i class="fa fa-minus"></i></button>
-      </div>
-    </div>
-    <div class="box-body no-padding">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Basis</th>
-            <th>Rights Notes</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% regroup rights_statements by rights_group as merged_rights %}
-          {% for statement in merged_rights %}
-          <tr>
-            <td>{{statement.list.0.rights_basis}}</td>
-            <td>{{statement.list.0.rights_info_notes}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+  <div class="card card--container mb-30">
+    <h2>Rights Statements</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Basis</th>
+          <th>Rights Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% regroup rights_statements by rights_group as merged_rights %}
+        {% for statement in merged_rights %}
+        <tr>
+          <td>{{statement.list.0.rights_basis}}</td>
+          <td>{{statement.list.0.rights_info_notes}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="card card--container mb-30">
+    <h2>Transfers</h2>
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Dates</th>
+          <th>Size</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in transfers %}
+        <tr>
+          <td>{{t.bag_or_failed_name}}</td>
+          <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
+          <td>{{t.machine_file_size|filesizeformat}}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
   </div>
 
-  <div class="box box-primary">
-    <div class="box-header with-border">
-      <h2 class="box-title">Transfers</h2>
-      <div class="box-tools pull-right">
-        <button type="button" class="btn btn-box-tool" data-widget="collapse" aria-label="Collapse"><i class="fa fa-minus"></i></button>
-      </div>
-    </div>
-    <div class="box-body">
-      <table class="table table-striped">
-    		<thead>
-    			<tr>
-    				<th>Name</th>
-    				<th>Dates</th>
-    				<th>Size</th>
-    			</tr>
-    		</thead>
-        <tbody>
-          {% for t in transfers %}
-          <tr>
-            <td>{{t.bag_or_failed_name}}</td>
-            <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
-            <td>{{t.machine_file_size|filesizeformat}}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-    	</table>
-    </div>
-  </div>
-
-  <button type="submit" class="btn btn-primary">Submit</button>
-  <a href="{% url 'accession:list' %}" class="btn btn-danger">Cancel</a>
+  <button type="submit" class="btn btn--md btn--blue">Submit</button>
+  <a href="{% url 'accession:list' %}" class="btn btn--md btn--gray">Cancel</a>
 
 </form>
 
@@ -141,7 +111,6 @@
       e.preventDefault();
 
       $('#messages').empty();
-      $(this).parents('.form-group').removeClass('has-error');
       $(this).siblings('.help-block').hide();
       $('#resource_input').fadeTo(200, 0.5);
 
@@ -153,12 +122,12 @@
           $('#resource_result').show()
         } else {
           $('#resource_input').fadeTo(0, 1).show()
-          displayMessage('danger', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
+          displayMessage('orange', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
         }
       })
     });
 
-    $('#resource_title_dismisss').on('click', function(){
+    $('#resource_title_dismiss').on('click', function(){
       $('#resource_result').hide()
       $('#resource_title').text("")
       $('#id_resource').val("")

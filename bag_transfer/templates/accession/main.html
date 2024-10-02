@@ -70,7 +70,7 @@
             <td>{{group.list.0.bag_data.record_type}}</td>
             <td>
               {% if request.user.can_accession %}
-              <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a>
+              <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn--sm btn--blue">Accession: {{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</a>
               {% endif %}
             </td>
           </tr>
@@ -89,7 +89,7 @@
     <h2>Saved Accessions</h2>
     {% if accessions.count %}
     <div class="table-responsive">
-      <table id="saved_accession_table" class="table table-striped dataTable" style="width:100%">
+      <table id="saved_accession_table" class="table table-striped dataTable">
         <thead>
           <tr>
             <th>Title</th>

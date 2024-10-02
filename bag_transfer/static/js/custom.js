@@ -8,28 +8,32 @@ $(document).ready(function(){
 
 function displayMessage(type, message, dismissible) {
   console.log(dismissible)
-  var iconClass = 'check'
-  if (type == 'danger') {
-    iconClass = 'times'
+  var iconClass = 'check_circle_outline'
+  if (type == 'orange') {
+    iconClass = 'error_outline'
   }
   $('#messages').empty()
   if (dismissible) {
     $('#messages').append(
-      '<div class="row">\
-        <div class="col-md-12">\
-          <div class="alert alert-'+type+' alert-dismissible">\
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>\
-              <i class="icon fa fa-'+iconClass+'"></i>'+message+'\
-          </div>\
+      '<div class="alert alert-'+type+' alert-dismissible">\
+        <button class="alert__button" aria-label="Close" data-dismiss="alert">\
+          <span class="material-icon" aria-hidden="true">close</span>\
+        </button>\
+        <div class="alert__icon-wrapper">\
+          <span class="alert__icon" aria-hidden="true">'+iconClass+'</span>\
+        </div>\
+        <div class="alert__text-wrapper">\
+          <p class="alert__text">'+message+'</p>\
         </div>\
       </div>').fadeIn(global_fadein_time);
   } else {
     $('#messages').append(
-      '<div class="row">\
-        <div class="col-md-12">\
-          <div class="alert alert-'+type+'">\
-              <i class="icon fa fa-'+iconClass+'"></i>'+message+'\
-          </div>\
+      '<div class="alert alert--'+type+'">\
+        <div class="alert__icon-wrapper">\
+          <span class="alert__icon" aria-hidden="true">'+iconClass+'</span>\
+        </div>\
+        <div class="alert__text-wrapper">\
+          <p class="alert__text">'+message+'</p>\
         </div>\
       </div>').fadeIn(global_fadein_time);
   }
