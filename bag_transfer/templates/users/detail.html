@@ -67,9 +67,9 @@
         let url = '{% url 'users:detail' pk=object.id %}'
         $.get(url, data, function(resp){
             if (resp.success){
-                displayMessage('success', 'Invitation was resent.', false);
+                displayMessage('blue', 'Invitation was resent.', false);
             } else {
-                displayMessage('danger', 'Something went wrong! Please try again.', false);
+                displayMessage('orange', 'Something went wrong! Please try again.', false);
             }
         })
     })

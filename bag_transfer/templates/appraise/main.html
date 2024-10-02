@@ -148,7 +148,7 @@ function handleAppraisalDecision(upload_row, upload_id, code) {
     if (resp.success){
       handleRemoveRow(upload_row, decision)
     } else {
-      displayMessage('danger', 'Something went wrong! Please try again.', false);
+      displayMessage('orange', 'Something went wrong! Please try again.', false);
     }
   });
 }
@@ -170,7 +170,7 @@ function getDataFromAttributes(rootElement) {
 }
 
 function handleRemoveRow(row, action) {
-  var cls = (action == 'accepted') ? 'success':'danger'
+  var cls = (action == 'accepted') ? 'blue':'orange'
   var name = $(row).children('td').first().text()
   $(row).remove()
   displayMessage(cls, 'Transfer <b>'+name+'</b> '+action+'.', true);
