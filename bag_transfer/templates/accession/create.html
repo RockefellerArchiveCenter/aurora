@@ -12,7 +12,7 @@
   <div class="card card--container card--grid-container mb-30">
     <div class="accession__input--full-width">
       <h2>Target ArchivesSpace Resource</h2>
-      <div class="input">
+      <div id="resource_input_wrapper" class="input">
         <label for="resource_id">Related Resource *</label>
         <div id="resource_input">
           <input id="resource_id" type="text" aria-describedby="resource-id-help" aria-required="true"/>
@@ -20,9 +20,9 @@
           <button type="button" id="resource_find" class="btn btn--sm btn--blue mt-20">Find in ArchivesSpace</button>
         </div>
       </div>
-      <div id="resource_result">
+      <div id="resource_result" style="display: none;">
         <h3>
-          <div class="badge badge--orange" id="resource_title">
+          <div class="badge badge--blue" id="resource_title">
             Resource name
             <button id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="remove resource">
               <span class="material-icon" aria-hidden="true">close</span>
@@ -111,15 +111,20 @@
       e.preventDefault();
 
       $('#messages').empty();
-      $(this).siblings('.help-block').hide();
       $('#resource_input').fadeTo(200, 0.5);
 
+      // Make GET request to find the resource
       $.get(url, {'resource_id': $('#resource_id').val()}, function(resp){
         if (resp.success){
-          $('#resource_input').hide()
+          // Hide input one resource is found
+          $('#resource_input_wrapper').hide()
+
+          // Display the resource title and success alert
           $('#resource_title').text(resp.title)
-          $('#id_resource').val(resp.uri)
+          $('#id_resource').val(resp.uri) // store URI in hidden field
           $('#resource_result').show()
+          displayMessage('blue', resp.title + ' was added as the target ArchiveSpace resource');
+
         } else {
           $('#resource_input').fadeTo(0, 1).show()
           displayMessage('orange', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
@@ -127,6 +132,7 @@
       })
     });
 
+    // Dismiss resource and show input again
     $('#resource_title_dismiss').on('click', function(){
       $('#resource_result').hide()
       $('#resource_title').text("")
