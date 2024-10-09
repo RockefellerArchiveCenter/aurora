@@ -10,7 +10,7 @@
   {% endfor %}
   <!-- {{form.resource}} -->
   <div class="card card--container card--grid-container mb-30">
-    <div class="accession__input--full-width">
+    <div class="input--full-width">
       <h2>Target ArchivesSpace Resource</h2>
       <div id="resource_input_wrapper" class="input">
         <label for="resource_id">Related Resource *</label>
@@ -34,7 +34,7 @@
   </div>
 
   <div class="card card--container card--grid-container pb-0 mb-30">
-    <div class="accession__input--full-width">
+    <div class="input--full-width">
       <h2>Accession Details</h2>
       {% include 'accession/form_fields.html' with field=form.title %}
     </div>

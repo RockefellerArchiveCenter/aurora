@@ -27,11 +27,13 @@ class OrgUserCreateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
-            "username": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
-            "organization": forms.widgets.Select(attrs={"class": "form-control"}),
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "username": forms.widgets.TextInput(),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
+            "organization": forms.widgets.Select(),
         }
 
 
@@ -52,13 +54,15 @@ class OrgUserUpdateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "username": forms.widgets.TextInput(
-                attrs={"class": "form-control", "readonly": "readonly"}
+                attrs={"readonly": "readonly"}
             ),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
-            "organization": forms.widgets.Select(attrs={"class": "form-control"}),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
+            "organization": forms.widgets.Select(),
         }
 
 
@@ -70,12 +74,14 @@ class RACSuperUserUpdateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "username": forms.widgets.TextInput(
-                attrs={"class": "form-control", "readonly": "readonly"}
+                attrs={"readonly": "readonly"}
             ),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
         }
 
 

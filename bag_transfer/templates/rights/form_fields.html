@@ -1,14 +1,14 @@
-<div class="form-group {% if field.errors %}has-error{% endif %}">
+<div class="input input__form-layout mb-20">
   {% if field.label != "Delete" %}
   <label for="{{field.id_for_label}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
   {{ field }}
   {% endif %}
   {% if field.help_text %}
-  <p class="help-block">{{field.help_text}}</p>
+  <div class="input__help-text">{{field.help_text}}</div>
   {% endif %}
   {% if field.errors %}
   {% for error in field.errors %}
-    <p class="help-block">{{error}}</p>
+    <div class="input__error">{{error}}</div>
   {% endfor %}
   {% endif %}
 </div>

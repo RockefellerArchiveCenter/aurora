@@ -76,9 +76,8 @@
 {% endif %}
 
 {% if object.rights_statements.all %}
-
 	<div class="mb-30">
-		<h2 class="box-title">Rights Statements</h2>
+		<h2>Rights Statements</h2>
 		{% include 'parts/transfer_rights_table.html' with rights_statements=object.rights_statements.all %}
 	</div>
 
@@ -127,7 +126,7 @@
 {% if object.manifest %}
 
 	<div class="card card--container flex--column mb-30">
-		<h2 class="box-title">Manifest of Files</h2>
+		<h2>Manifest of Files</h2>
 		<pre>{{ object.manifest|linebreaks }}</pre>
 	</div>
 

@@ -235,7 +235,7 @@ div.badge {
 	grid-template-columns: repeat(5, 1fr)
 }
 
-.accession__input--full-width {
+.input--full-width {
 	grid-column: 1 / span 5;
 }
 
@@ -285,6 +285,21 @@ div.badge {
 
 #resource_title_dismiss:focus {
 	outline-color: #f6f6f4;
+}
+
+/**
+* User/Org create form input layout
+**/
+.input__form-layout {
+	width: 100%;
+
+	@media screen and (min-width: 580px) {
+		width: 50%;
+	}
+
+	@media screen and (min-width: 1024px) {
+		width: 33%;
+	}
 }
 
 
@@ -446,17 +461,17 @@ h5.description-text {
 }
 
 /* Scroll within modal */
-#appraisal-note-form .modal-body {
+/* #appraisal-note-form .modal-body {
     overflow: scroll;
     max-height: 600px;
-}
+} */
 
 /* Increases contrast of table striping */
-.table-striped>tbody>tr:nth-of-type(odd) {
+/* .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: rgba(0,0,0,.06);
-}
+} */
 
-div.dataTables_wrapper div.dataTables_filter {
+/* div.dataTables_wrapper div.dataTables_filter {
     background: rgba(0, 0, 0, .12);
     padding: 1rem;
     border-radius: 3px;
