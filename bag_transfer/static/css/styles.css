@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Satisfy');
+
 .container {
 	max-width: 1600px;
 }
@@ -8,6 +10,41 @@ main .container {
 	@media screen and (min-width: 580px) {
     margin: 0 30px 30px;
   }
+}
+
+/**
+* Login page styles
+**/
+.login-page {
+	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+}
+
+.login-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.login-logo {
+	color: #fff;
+}
+
+.login-credit {
+	color: #fff;
+	position: fixed;
+	bottom: 10px;
+	left: 0;
+	right: 0;
+	text-align: center;
+}
+
+.login-logo {
+	font-family: "Satisfy", cursive;
+	font-size: 60px;
 }
 
 header {

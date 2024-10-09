@@ -96,20 +96,20 @@ class UserPasswordChangeForm(PasswordChangeForm):
     old_password = forms.CharField(
         required=False,
         label="Current Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please enter your current password"},
     )
 
     new_password1 = forms.CharField(
         required=True,
         label="New Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please enter your new password"},
     )
     new_password2 = forms.CharField(
         required=True,
         label="New Password (repeat)",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please confirm your new password"},
     )
 
@@ -161,7 +161,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
 class UserPasswordResetForm(PasswordResetForm):
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(attrs={"class": "form-control has-feedback"}),
+        widget=forms.EmailInput(attrs={"class": "input"}),
         error_messages={"required": "Please enter your email"},
     )
 
