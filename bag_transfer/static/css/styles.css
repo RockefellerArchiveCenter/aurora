@@ -255,7 +255,7 @@ div.badge {
 /**
 * Form styles
 **/
-.input input, .input textarea, .input select {
+form, .input input, .input textarea, .input select {
 	width: 100%;
 }
 

@@ -94,7 +94,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
     )
 
     old_password = forms.CharField(
-        required=False,
+        required=True,
         label="Current Password",
         widget=forms.PasswordInput(),
         error_messages={"required": "Please enter your current password"},
