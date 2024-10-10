@@ -276,12 +276,15 @@ form, .input input, .input textarea, .input select {
 	grid-column: 1 / span 5;
 }
 
+.card--blue {
+	background-color: #ebeff4;
+}
+
 .accession__card {
 	grid-column: 1 / span 5;
 	column-gap: 20px;
 	padding-bottom: 0;
 	margin-bottom: 20px;
-	background-color: #ebeff4;
 }
 
 .accession__dates {
