@@ -191,7 +191,7 @@ table a.btn {
 }
 
 .progress-bar--red {
-	accent-color: #dd4b39;
+	accent-color: #d63924;
 }
 
 .progress-bar--yellow {
@@ -206,16 +206,18 @@ table a.btn {
 }
 
 .badge--red {
-	background-color: #dd4b39;
+	background-color: #d63924;
 }
 
 .badge--yellow {
 	background-color: #ffc107;
+	color: #2e2e2e;
 }
 
 .badge--light-blue {
 	background-color: #ebeff4;
 	color: #2e2e2e;
+	border: 1px solid #2e2e2e;
 }
 
 .badge__bagit-version {
@@ -231,11 +233,18 @@ div.badge {
 	width: fit-content;
 }
 
+.list__badge li, h3 .badge {
+	display: inline-block;
+	vertical-align: middle;
+	margin-bottom: 6px;
+}
+
 /**
-* For layout cards, remove h2 top margin;
+* Style headings for layout cards
 **/
-.card--container h2 {
+.card--container h2, .card--container h3 {
  margin-top: 0;
+ width: 100%;
 }
 
 /**
@@ -243,6 +252,13 @@ div.badge {
 **/
 .card--container {
 	padding: 18px;
+}
+
+/**
+* Add option for a container card with a blue background
+**/
+.card--blue {
+	background-color: #ebeff4;
 }
 
 /**
@@ -274,10 +290,6 @@ form, .input input, .input textarea, .input select {
 
 .input--full-width {
 	grid-column: 1 / span 5;
-}
-
-.card--blue {
-	background-color: #ebeff4;
 }
 
 .accession__card {
