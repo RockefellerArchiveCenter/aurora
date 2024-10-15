@@ -61,9 +61,7 @@ $(function () {
       stateSave: true,
       processing: true,
       serverSide: true,
-      fixedHeader: {
-        headerOffset: $('.nav-center').outerHeight()
-      },
+      fixedHeader: true,
       ajax: '{% url "appraise:datatable" %}'
     })
 

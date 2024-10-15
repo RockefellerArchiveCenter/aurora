@@ -120,17 +120,13 @@
       stateSave: true,
       processing: true,
       serverSide: true,
-      fixedHeader: {
-        headerOffset: $('.nav-center').outerHeight()
-	    },
+      fixedHeader: true,
       ajax: '{% url "accession:saved-datatable" %}'
     });
     saved.draw();
     pending = $('#pending_accession_table').DataTable({
       stateSave: true,
-      fixedHeader: {
-        headerOffset: $('.nav-center').outerHeight()
-	    },
+      fixedHeader: true,
     })
     pending.draw()
 
