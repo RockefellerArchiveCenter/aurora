@@ -1,31 +1,32 @@
-<li>
-  <i class="fa {% if rights_granted.restriction == 'disallow' %}fa-times bg-red{% elif rights_granted.restriction == 'allow' %}fa-check bg-green{% else %}fa-warning bg-orange{% endif %}"></i>
 
-  <div class="timeline-item">
-
-    <h3 class="timeline-header">{{rights_granted.act}} <span class="label label-{% if rights_granted.restriction == 'disallow' %}danger{% elif rights_granted.restriction == 'allow' %}success{% else %}warning{% endif %}">{{rights_granted.restriction}}</span></h3>
-
-    <div class="timeline-body">
-      <dl>
-        {% if rights_granted.start_date %}
-          <dt>Applicable Dates</dt>
-          {% if rights_granted.end_date %}
-            <dd>{{ rights_granted.start_date }} - {{ rights_granted.end_date }}</dd>
-          {% elif rights_granted.end_date_open %}
-            <dd>{{ rights_granted.start_date }} - OPEN</dd>
-          {% else %}
-            <dd>{{ rights_granted.start_date }}</dd>
-          {% endif %}
-        {% elif rights_granted.end_date_period %}
-          <dt>Applicable Date Rules</dt>
-          <dd>{{ rights_granted.end_date_period }} years after end date</dd>
-        {% else %}
-          <dt>Applicable Date Rules</dt>
-          <dd>{{ rights_granted.start_date_period }} years after start date</dd>
-        {% endif %}
-        <dt>Note</dt>
-        <dd>{{ rights_granted.rights_granted_note }}</dd>
-      </dl>
+<h3 class="heading--dotted-border mb-20">{{rights_granted.act}} <span class="mt-0 badge badge--{% if rights_granted.restriction == 'disallow' %}red{% elif rights_granted.restriction == 'allow' %}green{% else %}yellow{% endif %}">{{rights_granted.restriction}}</span></h3>
+<div class="summary-list ml-20">
+  {% if rights_granted.start_date %}
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Applicable Dates</dt>
+      {% if rights_granted.end_date %}
+        <dd class="summary-list__value">{{ rights_granted.start_date }} - {{ rights_granted.end_date }}</dd>
+      {% elif rights_granted.end_date_open %}
+        <dd class="summary-list__value">{{ rights_granted.start_date }} - OPEN</dd>
+      {% else %}
+        <dd class="summary-list__value">{{ rights_granted.start_date }}</dd>
+      {% endif %}
     </div>
+  {% elif rights_granted.end_date_period %}
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Applicable Date Rules</dt>
+      <dd class="summary-list__value">{{ rights_granted.end_date_period }} years after end date</dd>
+    </div>
+  {% else %}
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Applicable Date Rules</dt>
+      <dd class="summary-list__value">{{ rights_granted.start_date_period }} years after start date</dd>
+    </div>
+  {% endif %}
+  <div class="summary-list__row">
+    <dt class="summary-list__key">Note</dt>
+    <dd class="summary-list__value">{{ rights_granted.rights_granted_note }}</dd>
   </div>
-</li>
+</div>
+
+

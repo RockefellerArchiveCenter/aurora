@@ -1,21 +1,20 @@
-<div id="{{creator.prefix}}" class="row form-group">
+<div class="card card--container card--blue accession__card accession__creators" id="{{creator.prefix}}">
   {% for hidden in creator.hidden_fields %}{{hidden}}{% endfor %}
-  <div class="{% if creator.name.errors %}has-error {% endif %}col-sm-8">
-    <label for="{{creator.name.id_for_label}}">Creator Name *</label>
+  <div class="input">
+    <label for="{{creator.name.id_for_label}}" required>Creator Name *</label>
     {{ creator.name }}
     {% if creator.name.errors %}
     {% for error in creator.name.errors %}
-      <p class="help-block">{{error}}</p>
+      <div class="input__error">{{error}}</div>
     {% endfor %}
     {% endif %}
   </div>
-
-  <div class="{% if creator.type.errors %}has-error {% endif %}col-sm-4">
-    <label for="{{creator.type.id_for_label}}">Creator Type *</label>
+  <div class="input">
+    <label for="{{creator.type.id_for_label}}" required>Creator Type *</label>
     {{ creator.type }}
     {% if creator.type.errors %}
     {% for error in creator.type.errors %}
-      <p class="help-block">{{error}}</p>
+      <div class="input__error">{{error}}</div>
     {% endfor %}
     {% endif %}
   </div>

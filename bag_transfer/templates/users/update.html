@@ -4,52 +4,53 @@
 {% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
-<div class="row">
 
-    <div class="col-md-12">
+<form role="form" action="" method="post">
+  {% csrf_token %}
+  <div class="card card--container flex--column">
+    {% if request.user.is_manager or request.user.is_superuser %}
+      <div class="input-group">
+        {{ form.is_active }}
+        <label class="checkbox--blue" for="{{form.is_active.id_for_label}}">{{form.is_active.label}}</label>
+      </div>
+      <div class="input__help-text mt-5 mb-20">{{form.is_active.help_text}}</div>
+      <div class="input-group">
+        {{ form.is_org_admin }}
+        <label class="checkbox--blue" for="{{form.is_org_admin.id_for_label}}">{{form.is_org_admin.label}}</label>
+      </div>
+      <div class="input__help-text mt-5 mb-20">{{form.is_org_admin.help_text}}</div>
+      {% include 'rights/form_fields.html' with field=form.username %}
+      {% include 'rights/form_fields.html' with field=form.first_name %}
+      {% include 'rights/form_fields.html' with field=form.last_name %}
+    {% endif %}
 
-        <div class="box {% if not object.is_active and not object.is_new_account %}box-danger{% else %}box-primary{% endif %}">
-            <div class="box-body">
-                <form role="form" action="" method="post">
-                    {% csrf_token %}
+    {% include 'rights/form_fields.html' with field=form.email %}
 
-                    {% if request.user.is_manager or request.user.is_superuser %}
-                      {% include 'rights/form_fields.html' with field=form.is_active %}
-                      {% include 'rights/form_fields.html' with field=form.is_org_admin %}
-                      {% include 'rights/form_fields.html' with field=form.username %}
-                      {% include 'rights/form_fields.html' with field=form.first_name %}
-                      {% include 'rights/form_fields.html' with field=form.last_name %}
-                    {% endif %}
+    {% if request.user.is_manager or request.user.is_superuser %}
 
-                    {% include 'rights/form_fields.html' with field=form.email %}
+        {% if not object.is_staff %}
+          {% include 'rights/form_fields.html' with field=form.organization %}
+        {% endif %}
 
-                    {% if request.user.is_manager or request.user.is_superuser %}
-
-                        {% if not object.is_staff %}
-                          {% include 'rights/form_fields.html' with field=form.organization %}
-                        {% endif %}
-
-                        <div class="form-group">
-                            <label>Groups</label>
-                            {% for group in form.fields.groups.choices %}
-                            <div class="checkbox">
-                              <label for="id_groups">
-                                <input id="id_groups" name="groups" type="checkbox" value="{{group.0}}" {% if object|has_group:group.1 %}checked="checked"{% endif %}>
-                                {{group.1}}
-                              </label>
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                    {% endif %}
-
-                    <div class="box-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
+        <fieldset class="mb-20">
+          <legend>Groups</legend>
+          {% if form.fields.groups.choices %}
+            {% for group in form.fields.groups.choices %}
+            <div class="input-group">
+              <input id="id_groups-{{ group.0 }}" class="checkbox checkbox--blue" name="groups" type="checkbox" value="{{group.0}}" {% if object|has_group:group.1 %}checked="checked"{% endif %}/>
+              <label for="id_groups-{{ group.0 }}" class="checkbox--blue">{{group.1}}</label>
             </div>
-        </div>
-    </div>
-</div>
+            {% endfor %}
+          {% endif %}
+        </fieldset>
+
+    {% endif %}
+
+    <div class="input--full-width">
+			<button type="submit" class="btn btn--md btn--blue">Save</button>
+			<button type="reset" class="btn btn--md btn--orange" onclick="window.open('{% url 'users:list' %}','_self')">Cancel</button>
+		</div>
+  </div>
+</form>
 
 {% endblock %}

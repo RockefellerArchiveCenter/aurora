@@ -27,11 +27,13 @@ class OrgUserCreateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
-            "username": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
-            "organization": forms.widgets.Select(attrs={"class": "form-control"}),
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "username": forms.widgets.TextInput(),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
+            "organization": forms.widgets.Select(),
         }
 
 
@@ -52,13 +54,15 @@ class OrgUserUpdateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "username": forms.widgets.TextInput(
-                attrs={"class": "form-control", "readonly": "readonly"}
+                attrs={"readonly": "readonly"}
             ),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
-            "organization": forms.widgets.Select(attrs={"class": "form-control"}),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
+            "organization": forms.widgets.Select(),
         }
 
 
@@ -70,12 +74,14 @@ class RACSuperUserUpdateForm(forms.ModelForm):
             "is_org_admin": "Should this user be assigned organization administrator privileges?"
         }
         widgets = {
+            "is_active": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "is_org_admin": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "username": forms.widgets.TextInput(
-                attrs={"class": "form-control", "readonly": "readonly"}
+                attrs={"readonly": "readonly"}
             ),
-            "first_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "last_name": forms.widgets.TextInput(attrs={"class": "form-control"}),
-            "email": forms.widgets.EmailInput(attrs={"class": "form-control"}),
+            "first_name": forms.widgets.TextInput(),
+            "last_name": forms.widgets.TextInput(),
+            "email": forms.widgets.EmailInput(),
         }
 
 
@@ -88,22 +94,22 @@ class UserPasswordChangeForm(PasswordChangeForm):
     )
 
     old_password = forms.CharField(
-        required=False,
+        required=True,
         label="Current Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please enter your current password"},
     )
 
     new_password1 = forms.CharField(
         required=True,
         label="New Password",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please enter your new password"},
     )
     new_password2 = forms.CharField(
         required=True,
         label="New Password (repeat)",
-        widget=forms.PasswordInput(attrs={"class": "form-control"}),
+        widget=forms.PasswordInput(),
         error_messages={"required": "Please confirm your new password"},
     )
 
@@ -155,7 +161,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
 class UserPasswordResetForm(PasswordResetForm):
     email = forms.EmailField(
         required=True,
-        widget=forms.EmailInput(attrs={"class": "form-control has-feedback"}),
+        widget=forms.EmailInput(attrs={"class": "input"}),
         error_messages={"required": "Please enter your email"},
     )
 

@@ -4,13 +4,14 @@
 
 {% block h1_title %}
   {{page_title}}: <span id="orgName"></span>
-    <select id="context-switcher" aria-label="Select organizational context">
+{% endblock %}
 
-      {% for org in sorted_org_list %}
-      <option value="{{org.0}}">{{org.1}}</option>
-      {% endfor %}
-
-    </select>
+{% block title_actions %}
+<select id="context-switcher" aria-label="Select organizational context">
+  {% for org in sorted_org_list %}
+  <option value="{{org.0}}">{{org.1}}</option>
+  {% endfor %}
+</select>
 {% endblock %}
 
 {% block content %}

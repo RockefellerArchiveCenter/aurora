@@ -114,7 +114,7 @@ instead:
 
 ## API
 
-Aurora comes with a RESTful API, built using the Django Rest Framework. In addition to interacting with the API via your favorite command-line client, you can also use the browsable API interface available in the application.
+Aurora comes with a RESTful API, built using the Django Rest Framework, accessible via any command-line client.
 
 ### Authentication
 
@@ -153,7 +153,7 @@ contains code which demonstrates this flow (see the `authorize` method in
 
 ## Django Admin Configuration
 
-Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, which can be accessed by clicking on the profile menu and selecting "Administration".
+Aurora comes with the default [Django admin site](https://docs.djangoproject.com/en/1.11/ref/contrib/admin/). Only users with superuser privileges are able to view this interface, available via the "Admin" navigation menu.
 
 In addition to allowing for the manual creation and deletion of certain objects, this interface also allows authorized users to edit system values which are used by the application, including the human-readable strings associated with Bag Log Codes. Care should be taken when making changes in the Django admin interface, particularly the creation or deletion of objects, since they can have unintended consequences.
 

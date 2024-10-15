@@ -1,19 +1,21 @@
 {% if messages %}
-<div class="row">
-	<div class="col-md-12">
 		{% for message in messages %}
-		<div class="alert alert-{% if message.tags == 'error' %}danger{% else %}success{% endif %} {% if message.tags != 'error' %}alert-dismissible{% endif %}">
-			{% if message.tags != 'error' %}
-				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-			{% endif %}
-			{% if message.tags == 'success' %}
-				<i class="icon fa fa-check"></i>
-			{% else %}
-				<i class="icon fa fa-times"></i>
-			{% endif %}
-			{{ message }}
-		</div>
+			<div class="alert alert--{% if message.tags == 'error' %}orange{% else %}blue{% endif %} alert-dismissible">
+				<button type="button" class="alert__button" data-dismiss="alert" aria-label="Close">
+					<span class="material-icon" aria-hidden="true">close</span>
+				</button>
+				<div class="alert__icon-wrapper">
+					<span class="alert__icon" aria-hidden="true">
+						{% if message.tags == 'success' %}
+							check_circle_outline
+						{% else %}
+							error_outline
+						{% endif %}
+					</span>
+				</div>
+				<div class="alert__text-wrapper">
+					<p class="alert__text">{{ message }}</p>
+				</div>
+			</div>
 		{% endfor %}
-	</div>
-</div>
 {% endif %}

@@ -1,30 +1,32 @@
 {% if org.rights_statements %}
-  <table class="table table-striped rights-statement-table">
-    <thead>
-      <tr>
-        <th>Record Type</th>
-        <th>Basis</th>
-        <th>Rights Notes</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for statement in org.rights_statements %}
-      <tr rel="{{ statement.pk }}">
-        <td><ul>{% for t in statement.applies_to_type.all %}<li>{{t.name}}</li>{% endfor %}</ul></td>
-        <td>{{statement.rights_basis}}</td>
-        <td>{{statement.rights_info_notes}}</td>
-        <td class="text-right col-md-4">
-          <a href="{% url 'rights:detail' statement.pk %}" class="btn btn-primary btn-sm">View</a>
-          {% if request.user.is_manager or request.user.is_superuser %}
-            <a href="{% url 'rights:edit' statement.pk %}" class="btn btn-warning btn-sm">Edit</a>
-            <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn-danger btn-sm object-delete-button" data-object="rights-statement">Delete</a>
-          {% endif %}
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Record Type</th>
+          <th>Basis</th>
+          <th>Rights Notes</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for statement in org.rights_statements %}
+        <tr rel="{{ statement.pk }}">
+          <td><ul>{% for t in statement.applies_to_type.all %}<li>{{t.name}}</li>{% endfor %}</ul></td>
+          <td>{{statement.rights_basis}}</td>
+          <td>{{statement.rights_info_notes}}</td>
+          <td>
+            <a href="{% url 'rights:detail' statement.pk %}" class="btn btn--blue btn--xs">View</a>
+            {% if request.user.is_manager or request.user.is_superuser %}
+              <a href="{% url 'rights:edit' statement.pk %}" class="btn btn--orange btn--xs">Edit</a>
+              <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn--light-blue btn--xs object-delete-button" data-object="rights-statement">Delete</a>
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endif %}
 
-<p class="has-no-rights-statement-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
+<p {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>

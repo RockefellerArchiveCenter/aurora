@@ -1,7 +1,11 @@
 {% extends 'transfers/base.html' %}
 {% load util %}
 
-{% block h1_title %}{{page_title}} <small>{{organization}}</small> <span class="badge">Version {{form.version.value}}</span>{% endblock %}
+{% block h1_title %}{{page_title}}: {{organization}}{% endblock %}
+
+{% block title_actions %}
+<span class="badge badge--blue">Version {{form.version.value}}</span>
+{% endblock %}
 
 {% block content %}
 <div class="row">

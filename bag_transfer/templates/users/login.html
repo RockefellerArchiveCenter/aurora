@@ -1,35 +1,25 @@
 {% extends 'transfers/login_base.html' %}
-
 {% block content %}
-<div class="login-box-body">
-  <p class="login-box-msg">Sign in to start your session</p>
-
+<div class="card card--container flex--column py-30 px-60">
   <form action="." method="post">
     {{ form.non_field_errors }}
 
     {% csrf_token %}
-
-    <div class="form-group has-feedback">
+    <p>Sign in to start your session</p>
+    <div class="input mb-10">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      <input type="text" name="username" id="{{ form.username.id_for_label }}" class="input" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" />
       {{ form.username.errors }}
-      <input type="text" name="username" id="{{ form.username.id_for_label }}" class="form-control" placeholder="Username" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" />
-      <span class="glyphicon glyphicon-user form-control-feedback"></span>
     </div>
-    <div class="form-group has-feedback">
+    <div class="input mb-10">
+      <label for="{{ form.password.id_for_label }}">Password</label>
+      <input autocomplete="off" name="password" id="{{ form.password.id_for_label }}" type="password" class="input" value="{% if form.password.value %}{{ form.password.value }}{% endif %}" />
       {{ form.password.errors}}
-      <input autocomplete="off" name="password" id="{{ form.password.id_for_label }}" type="password" class="form-control" placeholder="Password" value="{% if form.password.value %}{{ form.password.value }}{% endif %}" />
-      <span class="glyphicon glyphicon-lock form-control-feedback"></span>
     </div>
-    <div class="row">
-      <div class="col-xs-8">
-        <a href="{% url 'password_reset' %}">I forgot my password</a>
-      </div>
-      <!-- /.col -->
-      <div class="col-xs-4">
-        <button type="submit" class="btn btn-primary btn-block">Sign In</button>
-      </div>
-      <!-- /.col -->
+    <a href="{% url 'password_reset' %}">I forgot my password</a>
+    <div class="input--full-width">
+      <button type="submit" class="mt-10 btn btn--sm btn--blue">Sign In</button>
     </div>
   </form>
-
 </div>
 {% endblock %}
