@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Satisfy');
+/* Font for Aurora logo */
+@font-face {
+  font-family: 'Satisfy';
+  src: url('../fonts/satisfy/Satisfy-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
 
 .container {
 	max-width: 1600px;
@@ -27,18 +33,12 @@ main .container {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
+	justify-content: space-between;
+	min-height: 100vh;
 }
 
-.login-logo {
+.login-logo, .login-credit {
 	color: #fff;
-}
-
-.login-credit {
-	color: #fff;
-	position: fixed;
-	bottom: 10px;
-	left: 0;
-	right: 0;
 	text-align: center;
 }
 
@@ -48,10 +48,9 @@ main .container {
 }
 
 header {
-	position: sticky;
 	top: 0;
   z-index: 999;
-	background-color: #ebeff4;
+	background-color: #182D48;
 }
 
 /**
@@ -75,6 +74,31 @@ header {
   @media screen and (min-width: 1024px) {
     margin-left: 33px;
   }
+}
+
+a.header__brand-title {
+	font-family: "Satisfy", cursive;
+	font-size: 30px;
+	text-transform: none;
+}
+
+a.header__brand-title:focus {
+	outline: 0;
+}
+
+.nav__btn--dropdown,
+.nav__btn--dropdown[aria-expanded='true'],
+#nav-toggle-menu,
+a.header__brand-title {
+	color: #fff;
+
+	:hover, :focus, :active {
+		color: #fff;
+	}
+}
+
+.nav__btn--dropdown:focus {
+	outline-color: #fff;
 }
 
 /**
