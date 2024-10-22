@@ -4,153 +4,110 @@
 {% block h1_title %}{{page_title}}: {{organization}}{% endblock %}
 
 {% block title_actions %}
-<span class="badge badge--blue">Version {{form.version.value}}</span>
+<div class="badge badge--blue">Version {{form.version.value}}</div>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="box box-info">
-			<div class="box-body">
-				<form action="" method="post">
-					{% csrf_token %}
 
-					<h2>General Information</h2>
+<form action="" method="post" novalidate>
+	{% csrf_token %}
 
-					{{form.management_form}}
-					{{form.non_form_errors}}
-					{% for hidden in form.hidden_fields %}
-						{{ hidden }}
+	<div class="card card--container flex--column mt-20">
+		<h2>General Information</h2>
+		{{form.management_form}}
+		{{form.non_form_errors}}
+		{% for hidden in form.hidden_fields %}
+			{{ hidden }}
+		{% endfor %}
+		<div class="input input__form-layout mb-20">
+			<label for="{{form.external_description.id_for_label}}">{{ form.external_description.label }}</label>
+			{{ form.external_description }}
+			<div class="input__help-text" id="{{form.external_description.id_for_label}}-help">{{ form.external_description.help_text }}</div>
+		</div>
+		<div class="input-group mb-20">
+			{{ form.allow_fetch }}
+			<label class="checkbox--blue" for="{{form.allow_fetch.id_for_label}}">{{form.allow_fetch.label}}</label>
+		</div>
+
+		<fieldset class="mb-20" aria-required="true">
+			<legend>Serialization Allowed? *</legend>
+
+			{% if form.non_field_errors %}
+					{% for error in form.non_field_errors %}
+							<div class="input__error">{{ error }}</div>
 					{% endfor %}
-					<div class="row">
-						<div class="col-md-6">
-						{% include 'bagit_profiles/baginfo_form_fields.html' %}
-					</div>
-					</div>
-					<div class="row">
-						<div class="form-group {% if manifests_allowed_formset.errors %}has-error{% endif %} col-md-12">
-							<label id="{{manifests_allowed_formset.prefix}}-label" for="id_{{manifests_allowed_formset.prefix}}-0-name">Manifests Allowed *</label>
-							{{ manifests_allowed_formset.management_form }}
-							{% for form in manifests_allowed_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							{% if manifests_allowed_formset.non_form_errors %}
-  								{% for error in manifests_allowed_formset.non_form_errors %}
-    								<p class="help-block">{{ error }}</p>
-  								{% endfor %}
-							{% endif %}
-							<p class="help-block">Select allowed algorithm(s) for manifest files. At least one value must be selected for bags to be valid.</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<label id="{{manifests_formset.prefix}}-label" for="id_{{manifests_formset.prefix}}-0-name">Manifests Required</label>
-							{{ manifests_formset.management_form }}
-							{{ manifests_formset.non_form_errors }}
-							{% for form in manifests_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							<p class="help-block">Select a required algorithm for manifest files. If no value is selected any algorithm is valid.</p>
-						</div>
-					</div>
+			{% endif %}
 
-					<div class="row">
-						<div class="col-md-12">
-							<label id="{{serialization_formset.prefix}}-label" for="id_{{serialization_formset.prefix}}-0-name">Serializations Accepted</label>
-							{{ serialization_formset.management_form }}
-							{{ serialization_formset.non_form_errors }}
-							{% for form in serialization_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							<p class="help-block">If serialization is allowed, add all formats accepted. If no values are selected, the serialization format will not be checked.</p>
-						</div>
+			{% for checkbox in form.serialization %}
+					<div class="input-group">
+							{{ checkbox.tag }}
+							<label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
 					</div>
+			{% endfor %}
 
-					<div class="row">
-						<div class="col-md-12">
-							<label id="{{version_formset.prefix}}-label" for="id_{{version_formset.prefix}}-0-name">BagIt Versions Accepted</label>
-							{{ version_formset.management_form }}
-							{{ version_formset.non_form_errors }}
-							{% for form in version_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							<p class="help-block">Add all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked.</p>
-						</div>
-					</div>
+			{% for error in form.serialization.errors %}
+					<div class="input__error">{{ error }}</div>
+			{% endfor %}
+		</fieldset>
 
-					<div class="row">
-						<div class="col-md-12">
-							<label id="{{tag_manifests_formset.prefix}}-label" for="id_{{tag_manifests_formset.prefix}}-0-name">Tag Manifests Required</label>
-							{{ tag_manifests_formset.management_form }}
-							{{ tag_manifests_formset.non_form_errors }}
-							{% for form in tag_manifests_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							<p class="help-block">Add all tag manifest algorithms accepted. If no values are selected, the tag format algorithm will not be checked.</p>
-						</div>
-					</div>
+		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=manifests_allowed_formset %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=manifests_formset %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=serialization_formset %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=version_formset %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=tag_manifests_formset %}
 
-					<div class="row">
-						<div class="col-md-12">
-							<label id="{{tag_files_formset.prefix}}-label" for="id_{{tag_files_formset.prefix}}-0-name">Tag Files Required</label>
-							{{ tag_files_formset.management_form }}
-							{{ tag_files_formset.non_form_errors }}
-							{% for form in tag_files_formset %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-							<p class="help-block">List required tag files, if any.</p>
-						</div>
-					</div>
-
-					<h2>Metadata</h2>
-					{{ bag_info_formset.management_form }}
-					{{ bag_info_formset.non_form_errors }}
-					{% for form in bag_info_formset %}
-					<div id="{{ form.prefix }}-row" class="{{ form.prefix | trim_form_prefix }} well dynamic-form">
-						{% for hidden in form.hidden_fields %}
-					    {{ hidden }}
-						{% endfor %}
-						<div class="row">
-							<div class="col-xs-5">
-								{% include 'bagit_profiles/baginfo_form_fields.html' %}
-							</div>
-							<div class="col-xs-7">
-								{% if form.nested %}
-								<div class="nested-form">
-									{{ form.nested.management_form }}
-									{{ form.nested.non_form_errors }}
-									<a id="remove-{{ form.prefix }}-row" href="javascript:void(0)" class="delete-row btn btn-sm btn-danger pull-right" data-target="{{ form.prefix | trim_form_prefix }}"><i class="fa fa-times"></i> Delete Field</a>
-									<label id="values-label">Values</label>
-									<div class="show-values-inputs">
-										<a href="javascript:void(0)" class="btn btn-primary btn-sm add-values">Add Controlled Values</a>
-									</div>
-									<div class="values-inputs" style="display:none;">
-										{% for form in form.nested.forms %}
-							        {% include 'bagit_profiles/repeating_form.html' %}
-						        {% endfor %}
-									</div>
-								</div>
-								{% endif %}
-							</div>
-						</div>
-					</div>
-					{% endfor %}
-
-					<a href="javascript:void(0)" class="add-row btn btn-sm btn-primary" data-target="bag_info"><i class="fa fa-plus"></i> Add Metadata Field</a>
-
-				<div class="row mar-top20">
-					<div class="col-md-12">
-						<button type="submit" class="btn btn-primary">Submit</button>
-						<a href="{% url 'orgs:detail' organization.pk %}" class="btn btn-danger">Cancel</a>
-					</div>
-				</div>
-
-			</form>
+		<div class="input__form-layout">
+			<label id="{{tag_files_formset.prefix}}-label">Tag Files Required</label>
+			{{ tag_files_formset.management_form }}
+			{{ tag_files_formset.non_form_errors }}
+			{% for form in tag_files_formset %}
+				{% include 'bagit_profiles/repeating_form.html' %}
+			{% endfor %}
+			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">List required tag files, if any.</div>
 		</div>
 	</div>
-</div>
 
+	<div class="card card--container flex--column mt-30">
+		<h2>Metadata</h2>
+		{{ bag_info_formset.management_form }}
+		{{ bag_info_formset.non_form_errors }}
+		{% for form in bag_info_formset %}
+		<div id="{{ form.prefix }}-row" class="{{ form.prefix | trim_form_prefix }} card card--container card--blue dynamic-form container--full-width mb-20">
+			{% for hidden in form.hidden_fields %}
+				{{ hidden }}
+			{% endfor %}
+			{% include 'bagit_profiles/baginfo_form_fields.html' %}
+			{% if form.nested %}
+				<div class="nested-form flex">
+					{{ form.nested.management_form }}
+					{{ form.nested.non_form_errors }}
+					<div class="values-form__input mr-10">
+						<label id="values-label">Controlled Values (if applicable)</label>
+						<div class="values-inputs">
+							{% for form in form.nested.forms %}
+								{% include 'bagit_profiles/repeating_form.html' %}
+							{% endfor %}
+						</div>
+					</div>
+					<button id="remove-{{ form.prefix }}-row" class="delete-row delete-field__btn btn btn--sm btn--orange" type="button" 
+						data-target="{{ form.prefix | trim_form_prefix }}">
+						<span class="material-icon material-icon--space-after" aria-hidden="true">close</span> 
+						Delete Field
+					</button>
+				</div>
+			{% endif %}
+		</div>
+		{% endfor %}
 
+		<button class="add-row btn btn--sm btn--blue" type="button" data-target="bag_info"><span class="material-icon material-icon--space-after" aria-hidden="true">add</span>Add Metadata Field</button>
+	</div>
+
+	<div class="mt-30">
+		<button type="submit" class="btn btn--md btn--blue">Submit</button>
+		<a href="{% url 'orgs:detail' organization.pk %}" class="btn btn--md btn--gray">Cancel</a>
+	</div>
+
+</form>
 {% endblock %}
 
 {% block extra_js %}
@@ -158,17 +115,31 @@
   function updateElementIndex(el, prefix, ndx) {
 		var id_regex = new RegExp('(' + prefix + '-\\d+)');
 		var replacement = prefix + '-' + ndx;
+
+		console.log('Updating element:', el, 'with prefix:', prefix, 'and index:', ndx);
+
 		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+		console.log('Updating for attribute:', $(el).attr("for"));
+
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
+		console.log('Updating id:', el.id);
+
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
+		console.log('Updating name:', el.name);
+
 		if (el.className) el.className = el.className.replace(id_regex, replacement);
+		console.log('Updating className:', el.className);
+
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
+		console.log('Updating data-target:', $(el).attr('data-target'));
 	}
 	function renumberForms(prefix) {
 		forms = $('[class^='+prefix+']')
-		console.log(prefix)
+		console.log('Renumbering forms with prefix:', prefix, 'Total forms:', forms.length);
+
 		for (var i=0, formCount=forms.length; i<formCount; i++) {
 			updateElementIndex(forms.get(i), prefix, i)
+			console.log('Renumbering form index:', i);
 			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
 					updateElementIndex(this, prefix, i);
 					if ($(forms.get(i)).find('.nested-form').length) {
@@ -185,17 +156,18 @@
 	}
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+		console.log('Adding form. Current count:', formCount);
+
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 		if ($(btn).closest('.dynamic-form').length) {
 			var appendAfter = $(btn).closest('.dynamic-form:visible')
 		} else {
 			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
 		}
+		console.log('Cloning form after:', appendAfter);
 		var row = $(appendAfter).clone(true).get(0);
 		$(row).find("input:not([type='hidden'], [type='checkbox'])").val('');
 		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
-		$(row).find('.values-inputs').hide()
-		$(row).find('.show-values-inputs').show()
     $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
@@ -206,6 +178,8 @@
 		if ($(btn).attr('data-target') != 'bag_info') {
 			$(btn).hide()
 		}
+		console.log('New form added:', row);
+
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$(row).find('.add-row').attr("disabled", "disabled");
@@ -276,19 +250,6 @@
 			};
 			return false
 		});
-		$('[class^="bag_info"] .nested-form').each(function(){
-			if ($(this).children('[name$=INITIAL_FORMS]')[0].value != 0 || $(this).children('[name$=TOTAL_FORMS]')[0].value > 1) {
-				$(this).children('div.show-values-inputs').hide()
-				$(this).children('div.values-inputs').show()
-			} else {
-				$(this).children('div.show-values-inputs').show()
-				$(this).children('div.values-inputs').hide()
-			}
-		})
-		$('.add-values').on('click', function() {
-			$(this).parent('div.show-values-inputs').hide();
-			$(this).parent().next('div.values-inputs').show()
-		})
   });
 </script>
 {% endblock %}

@@ -14,7 +14,7 @@ class BagItProfileForm(forms.ModelForm):
         labels = {
             "external_description": "Description",
             "allow_fetch": "Allow Fetch.txt?",
-            "serialization": "Serialization allowed?",
+            "serialization": "Serialization Allowed?",
         }
         widgets = {
             "organization": forms.widgets.HiddenInput(),
@@ -23,20 +23,24 @@ class BagItProfileForm(forms.ModelForm):
             "version": forms.widgets.HiddenInput(),
             "bagit_profile_identifier": forms.widgets.HiddenInput(),
             "external_description": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
-            ),
-            "serialization": forms.widgets.Select(
                 attrs={
-                    "class": "form-control",
-                    "aria-labelledby": "id_serialization-label",
+                    "rows": 3,
+                    "aria-describedby": "id_external_description-help"
                 }
             ),
+            "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "serialization": forms.widgets.RadioSelect(),
         }
         help_texts = {
             "external_description": "A short description of this BagIt Profile.",
             "serialization": "Specify whether serialization of bags is required, forbidden, or optional.",
         }
+    # Set most common initial values
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
+        self.fields['external_description'].initial = f"BagIt Profile for transferring records to the Rockefeller Archive Center."
+        self.fields['serialization'].required = True
 
 class BagItProfileBagInfoForm(forms.ModelForm):
     class Meta:
@@ -48,9 +52,9 @@ class BagItProfileBagInfoForm(forms.ModelForm):
             "repeatable": "Repeatable?",
         }
         widgets = {
-            "field": forms.widgets.Select(attrs={"class": "form-control multi-value"}),
-            "required": forms.widgets.CheckboxInput(),
-            "repeatable": forms.widgets.CheckboxInput(),
+            "field": forms.widgets.Select(),
+            "required": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "repeatable": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
         }
 
 
@@ -60,40 +64,43 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
         fields = ("name",)
         widgets = {
             "name": forms.widgets.TextInput(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "values-label",
-                }
-            )
+                attrs={"aria-labelledby": "values-label",})
         }
-
 
 class ManifestsAllowedForm(forms.ModelForm):
     class Meta:
         model = ManifestsAllowed
         fields = ("name",)
         widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "manifests_allowed-label",
-                }
-            )
+            "name": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"})
+        }
+        help_texts = {
+            "name": "Select at least one."
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legend_text = "Allowed algorithm(s) for manifest files *"
+        self.help_text_id = "manifests_allowed-help"
+        self.fields['name'].required = True
 
 class ManifestsRequiredForm(forms.ModelForm):
     class Meta:
         model = ManifestsRequired
         fields = ("name",)
         widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "manifests-label",
-                }
-            )
+            "name": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"})
         }
+        help_texts = {
+            "name": "If no value is selected, any algorithm is valid."
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legend_text = "Manifests Required"
+        self.help_text_id = "manifests_required-help"
 
 
 class AcceptSerializationForm(forms.ModelForm):
@@ -101,13 +108,17 @@ class AcceptSerializationForm(forms.ModelForm):
         model = AcceptSerialization
         fields = ("name",)
         widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "serialization-label",
-                }
-            )
+            "name": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"})
         }
+        help_texts = {
+            "name": "Select all accepted formats. If no values are selected, the serialization format will not be checked."
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legend_text = "Serializations Accepted"
+        self.help_text_id = "serializations_accepted-help"
 
 
 class AcceptBagItVersionForm(forms.ModelForm):
@@ -115,13 +126,17 @@ class AcceptBagItVersionForm(forms.ModelForm):
         model = AcceptBagItVersion
         fields = ("name",)
         widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "version-label",
-                }
-            )
+            "name": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"})
         }
+        help_texts = {
+            "name": "Select all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked."
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legend_text = "BagIt Versions Accepted"
+        self.help_text_id = "bagit_versions_accepted-help"
 
 
 class TagManifestsRequiredForm(forms.ModelForm):
@@ -129,13 +144,17 @@ class TagManifestsRequiredForm(forms.ModelForm):
         model = TagManifestsRequired
         fields = ("name",)
         widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "tag_manifests-label",
-                }
-            )
+            "name": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"})
         }
+        help_texts = {
+            "name": "If no values are selected, the tag format algorithm will not be checked."
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legend_text = "Tag Manifests Required"
+        self.help_text_id = "tag_manifests_required-help"
 
 
 class TagFilesRequiredForm(forms.ModelForm):
@@ -144,8 +163,7 @@ class TagFilesRequiredForm(forms.ModelForm):
         fields = ("name",)
         widgets = {
             "name": forms.widgets.TextInput(
-                attrs={"class": "form-control", "aria-labelledby": "tag_files-label"}
-            )
+                attrs={"aria-describedby": "tag_files-help", "aria-labelledby": "tag_files-label"})
         }
 
 

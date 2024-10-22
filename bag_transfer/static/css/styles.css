@@ -196,7 +196,10 @@ h1 {
 	line-height: 16px;
 	padding: 3px;
 	font-weight: bold;
-	margin-bottom: 3px;
+}
+
+.btn--xs .material-icon {
+	font-size: 18px;
 }
 
 /**
@@ -303,6 +306,53 @@ form, .input input, .input textarea, .input select {
 	display: block;
 }
 
+.dynamic-form {
+	flex-wrap: flex;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+	}
+}
+
+.dynamic-form__btns {
+	display: flex;
+	margin: 5px 0;
+
+	@media screen and (min-width: 1024px) {
+		margin: 3px 0 0 5px;
+	}
+}
+
+.dynamic-form__input {
+	flex-basis: 80%;
+}
+
+.nested-form {
+	align-items: center;
+	flex-grow: 1;
+	flex-wrap: wrap;
+}
+
+.values-form__input {
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+		width: 75%;
+	}
+}
+
+.values-inputs div, .tag-files {
+	align-items: center;
+	margin-bottom: 5px;
+}
+
+.delete-field__btn {
+	@media screen and (min-width: 1024px) {
+		margin-left: auto;
+		align-self: flex-start;
+	}
+}
+
 /**
 * Accession form layout
 **/
@@ -347,6 +397,21 @@ form, .input input, .input textarea, .input select {
 	}
 }
 
+.input__form-layout {
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+		width: 50%;
+	}
+}
+
+/**
+* Enable javascript ability to hide form elements
+**/
+.hidden {
+	display: none;
+}
+
 /**
 * Accession form AS resource name and dismiss button styles
 **/
@@ -361,21 +426,6 @@ form, .input input, .input textarea, .input select {
 
 #resource_title_dismiss:focus {
 	outline-color: #f6f6f4;
-}
-
-/**
-* User/Org create form input layout
-**/
-.input__form-layout {
-	width: 100%;
-
-	@media screen and (min-width: 580px) {
-		width: 50%;
-	}
-
-	@media screen and (min-width: 1024px) {
-		width: 33%;
-	}
 }
 
 

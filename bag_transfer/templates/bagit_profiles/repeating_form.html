@@ -1,15 +1,21 @@
 {% load util %}
 
-<div id="{{ form.prefix }}-row" class="{{form.prefix| trim_form_prefix}} dynamic-form">
-  <div class="row">
-    <div class="col-xs-6">
-      {% for field in form %}
-      {{field}}
-      {% endfor %}
-    </div>
-    <div class="col-xs-4">
-      <a href="javascript:void(0)" class="delete-row btn btn-sm btn-danger" data-target="{{form.prefix | trim_form_prefix }}"><i class="fa fa-times"></i> Delete</a>
-      <a {% if not forloop.last %}style="display:none;"{% endif %} href="javascript:void(0)" class="add-row btn btn-sm btn-primary" data-target="{{form.prefix| trim_form_prefix }}"><i class="fa fa-plus"></i> Add</a>
-    </div>
+<div id="{{ form.prefix }}-row" class="dynamic-form tag-files input">
+  {% for field in form %}
+    {{field}}
+  {% endfor %}
+  <div class="dynamic-form__btns">
+    <button class="delete-row btn btn--xs btn--orange" type="button"
+    data-target="{{form.prefix | trim_form_prefix }}"
+    aria-label="delete single form field">
+      <span class="material-icon" aria-hidden="true">close</span>
+      Delete
+    </button>
+    <button {% if not forloop.last %}style="display:none;"{% endif %}
+      class="add-row btn btn--xs btn--blue ml-5" type="button" data-target="{{form.prefix| trim_form_prefix }}"
+      aria-label="add a new form field">
+      <span class="material-icon" aria-hidden="true">add</span>
+      Add
+    </button>
   </div>
 </div>

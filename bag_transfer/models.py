@@ -775,13 +775,13 @@ class BagItProfile(models.Model):
 
 class ManifestsAllowed(models.Model):
     MANIFESTS_ALLOWED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=MANIFESTS_ALLOWED_CHOICES, max_length=20)
+    name = models.CharField(choices=MANIFESTS_ALLOWED_CHOICES, max_length=20, default=("sha256", "sha512"))
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_allowed")
 
 
 class ManifestsRequired(models.Model):
     MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20, default=(None))
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_required")
 
 
@@ -791,7 +791,7 @@ class AcceptSerialization(models.Model):
         ("application/x-tar", "application/x-tar"),
         ("application/x-gzip", "application/x-gzip"),
     )
-    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
+    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25, default=("application/zip", "application/x-tar", "application/x-gzip"))
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="accept_serialization")
 
 
@@ -801,13 +801,13 @@ class AcceptBagItVersion(models.Model):
         ("0.97", "0.97"),
         ("1.0", "1.0"),
     )
-    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
+    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5, default=("0.97"))
     bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="accept_bagit_version")
 
 
 class TagManifestsRequired(models.Model):
     TAG_MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
+    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20, default=(None))
     bagit_profile = models.ForeignKey(
         BagItProfile, on_delete=models.CASCADE, related_name="tag_manifests_required"
     )
