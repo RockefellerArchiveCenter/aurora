@@ -1,6 +1,6 @@
 {% load util %}
 
-<div id="{{ form.prefix }}-row" class="dynamic-form tag-files input">
+<div id="{{ form.prefix }}-row" class="{{form.prefix| trim_form_prefix}} dynamic-form input-repeat input">
   {% for field in form %}
     {{field}}
   {% endfor %}

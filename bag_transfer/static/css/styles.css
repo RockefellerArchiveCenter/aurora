@@ -341,7 +341,7 @@ form, .input input, .input textarea, .input select {
 	}
 }
 
-.values-inputs div, .tag-files {
+.input-repeat {
 	align-items: center;
 	margin-bottom: 5px;
 }

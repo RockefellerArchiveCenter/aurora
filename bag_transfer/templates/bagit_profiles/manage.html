@@ -57,7 +57,7 @@
 		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=tag_manifests_formset %}
 
 		<div class="input__form-layout">
-			<label id="{{tag_files_formset.prefix}}-label">Tag Files Required</label>
+			<label id="tag_files-label">Tag Files Required</label>
 			{{ tag_files_formset.management_form }}
 			{{ tag_files_formset.non_form_errors }}
 			{% for form in tag_files_formset %}
@@ -83,11 +83,10 @@
 					{{ form.nested.non_form_errors }}
 					<div class="values-form__input mr-10">
 						<label id="values-label">Controlled Values (if applicable)</label>
-						<div class="values-inputs">
-							{% for form in form.nested.forms %}
-								{% include 'bagit_profiles/repeating_form.html' %}
-							{% endfor %}
-						</div>
+						{% for form in form.nested.forms %}
+							{% include 'bagit_profiles/repeating_form.html' %}
+						{% endfor %}
+
 					</div>
 					<button id="remove-{{ form.prefix }}-row" class="delete-row delete-field__btn btn btn--sm btn--orange" type="button" 
 						data-target="{{ form.prefix | trim_form_prefix }}">
@@ -116,47 +115,37 @@
 		var id_regex = new RegExp('(' + prefix + '-\\d+)');
 		var replacement = prefix + '-' + ndx;
 
-		console.log('Updating element:', el, 'with prefix:', prefix, 'and index:', ndx);
-
-		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
-		console.log('Updating for attribute:', $(el).attr("for"));
-
 		if (el.id) el.id = el.id.replace(id_regex, replacement);
-		console.log('Updating id:', el.id);
-
+		if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
-		console.log('Updating name:', el.name);
-
 		if (el.className) el.className = el.className.replace(id_regex, replacement);
-		console.log('Updating className:', el.className);
-
 		if ($(el).attr('data-target')) $(el).attr('data-target', $(el).attr('data-target').replace(id_regex, replacement));
-		console.log('Updating data-target:', $(el).attr('data-target'));
 	}
 	function renumberForms(prefix) {
-		forms = $('[class^='+prefix+']')
-		console.log('Renumbering forms with prefix:', prefix, 'Total forms:', forms.length);
-
-		for (var i=0, formCount=forms.length; i<formCount; i++) {
-			updateElementIndex(forms.get(i), prefix, i)
-			console.log('Renumbering form index:', i);
-			$(forms.get(i)).find('[name^='+prefix+']').each(function() {
-					updateElementIndex(this, prefix, i);
-					if ($(forms.get(i)).find('.nested-form').length) {
-						nestedForm = $(forms.get(i)).find('.nested-form')
-						selector = $(nestedForm).children().attr('id')
-						nestedPrefix = selector.substring(selector.indexOf('_')+1, selector.lastIndexOf('-'))
-						$(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).find('[class^=nested_bag_info]').length)
-						$(forms.get(i)).find('[data-target^=nested_], input[name^=nested_], div[id^=nested_]').each(function() {
-							updateElementIndex(this, prefix, i);
-						});
-					}
-			});
-		}
+    forms = $('[class^=' + prefix + ']');
+    for (var i = 0, formCount = forms.length; i < formCount; i++) {
+        updateElementIndex(forms.get(i), prefix, i);
+        // Update input fields
+        $(forms.get(i)).find('[name^=' + prefix + ']').each(function () {
+            updateElementIndex(this, prefix, i);
+        });
+        // Update labels associated with inputs
+        $(forms.get(i)).find('label[for]').each(function () {
+            updateElementIndex(this, prefix, i);
+        });
+        if ($(forms.get(i)).find('.nested-form').length) {
+            nestedForm = $(forms.get(i)).find('.nested-form');
+            selector = $(nestedForm).children().attr('id');
+            nestedPrefix = selector.substring(selector.indexOf('_') + 1, selector.lastIndexOf('-'));
+            $(nestedForm).find('#id_' + nestedPrefix + '-TOTAL_FORMS').val($(nestedForm).find('[class^=nested_bag_info]').length);
+            $(forms.get(i)).find('[data-target^=nested_], input[name^=nested_], div[id^=nested_]').each(function () {
+                updateElementIndex(this, prefix, i);
+            });
+        }
+    }
 	}
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
-		console.log('Adding form. Current count:', formCount);
 
 		$('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
 		if ($(btn).closest('.dynamic-form').length) {
@@ -164,7 +153,6 @@
 		} else {
 			var appendAfter = $(btn).siblings('.dynamic-form:visible')[$(btn).siblings('.dynamic-form:visible').length-1]
 		}
-		console.log('Cloning form after:', appendAfter);
 		var row = $(appendAfter).clone(true).get(0);
 		$(row).find("input:not([type='hidden'], [type='checkbox'])").val('');
 		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
@@ -178,7 +166,6 @@
 		if ($(btn).attr('data-target') != 'bag_info') {
 			$(btn).hide()
 		}
-		console.log('New form added:', row);
 
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
