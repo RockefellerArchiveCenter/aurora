@@ -36,11 +36,13 @@ class BagItProfileForm(forms.ModelForm):
             "serialization": "Specify whether serialization of bags is required, forbidden, or optional.",
         }
     # Set most common initial values
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields['external_description'].initial = f"BagIt Profile for transferring records to the Rockefeller Archive Center."
+        self.fields['external_description'].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
         self.fields['serialization'].required = True
+
 
 class BagItProfileBagInfoForm(forms.ModelForm):
     class Meta:
@@ -64,8 +66,9 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
         fields = ("name",)
         widgets = {
             "name": forms.widgets.TextInput(
-                attrs={"aria-labelledby": "values-label",})
+                attrs={"aria-labelledby": "values-label", })
         }
+
 
 class ManifestsAllowedForm(forms.ModelForm):
     class Meta:
@@ -84,6 +87,7 @@ class ManifestsAllowedForm(forms.ModelForm):
         self.legend_text = "Allowed algorithm(s) for manifest files *"
         self.help_text_id = "manifests_allowed-help"
         self.fields['name'].required = True
+
 
 class ManifestsRequiredForm(forms.ModelForm):
     class Meta:
