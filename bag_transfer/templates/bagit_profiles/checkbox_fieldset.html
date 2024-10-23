@@ -12,7 +12,7 @@
   {% endfor %}
 
   {% if formset.forms.0.name.help_text %}
-    <div id="{{ formset.forms.0.help_text_id }}" class="input__help-text mt-5">{{ formset.forms.0.name.help_text }}</div>
+    <div id="{{ formset.forms.0.help_text_id }}" class="input__help-text">{{ formset.forms.0.name.help_text }}</div>
   {% endif %}
 
   {% for form in formset.forms %}

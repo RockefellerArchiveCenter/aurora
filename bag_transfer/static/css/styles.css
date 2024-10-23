@@ -306,11 +306,11 @@ form, .input input, .input textarea, .input select {
 	display: block;
 }
 
-.dynamic-form {
-	flex-wrap: flex;
+.input__form-layout {
+	width: 100%;
 
 	@media screen and (min-width: 1024px) {
-		display: flex;
+		width: 50%;
 	}
 }
 
@@ -344,6 +344,10 @@ form, .input input, .input textarea, .input select {
 .input-repeat {
 	align-items: center;
 	margin-bottom: 5px;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+	}
 }
 
 .delete-field__btn {
@@ -351,6 +355,26 @@ form, .input input, .input textarea, .input select {
 		margin-left: auto;
 		align-self: flex-start;
 	}
+}
+
+/**
+* Rights Form Dates Layout
+**/
+.dates__container {
+	display: block;
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: 20px;
+	}
+}
+
+.dates__help-text {
+	line-height: 15px;
+	font-style: normal;
+	margin-bottom: 10px;
 }
 
 /**
@@ -397,19 +421,15 @@ form, .input input, .input textarea, .input select {
 	}
 }
 
-.input__form-layout {
-	width: 100%;
-
-	@media screen and (min-width: 1024px) {
-		width: 50%;
-	}
-}
-
 /**
 * Enable javascript ability to hide form elements
 **/
 .hidden {
 	display: none;
+}
+
+.pull-right {
+	margin-left: auto;
 }
 
 /**

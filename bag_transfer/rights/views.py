@@ -26,7 +26,7 @@ class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
     form_class = RightsForm
 
     def get_page_title(self, context):
-        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create New Rights Statement"
+        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create Rights Statement"
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.organization.pk})
