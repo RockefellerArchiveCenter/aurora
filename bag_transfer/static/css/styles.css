@@ -6,6 +6,24 @@
   font-style: normal;
 }
 
+/* Modals */
+.modal__overlay {
+	display: none;
+}
+
+.modal__overlay.is-open {
+	display: block;
+}
+
+.modal--md {
+	@media screen and (min-width: 580px) {
+		bottom: 20%;
+		left: 20%;
+		right: 20%;
+		top: 20%;
+	}
+}
+
 .container {
 	max-width: 1600px;
 }
@@ -426,10 +444,6 @@ form, .input input, .input textarea, .input select {
 **/
 .hidden {
 	display: none;
-}
-
-.pull-right {
-	margin-left: auto;
 }
 
 /**

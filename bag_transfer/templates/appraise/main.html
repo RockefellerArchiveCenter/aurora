@@ -94,7 +94,7 @@ $(function () {
     var bagData = getDataFromAttributes($(this).closest('tr'))
     cmodal.find('.transfer-name').text(bagData.transfer_name);
     cmodal.find('.upload_id').val(bagData.upload_id)
-    cmodal.modal('show');
+    MicroModal.show("modal-confirm");
     return false;
   })
 
@@ -104,6 +104,7 @@ $(function () {
     var data = prepareNoteData($('#appraisal-note-form'), 'delete')
     saveNote(data, amodal);
     resolveRowCallback(data.upload_id, 'delete')
+    MicroModal.close("modal-appraisal-note");
     return false;
   });
 
@@ -113,6 +114,7 @@ $(function () {
     var data = prepareNoteData($(this), 'submit')
     saveNote(data, amodal);
     resolveRowCallback(data.upload_id, 'add')
+    MicroModal.close("modal-appraisal-note");
     return false;
   });
 
@@ -131,6 +133,7 @@ $(function () {
     var upload_row = $("#appraise_table tbody").find('tr[data-transfer-id='+data.upload_id+']');
     saveNote(data, cmodal);
     handleAppraisalDecision(upload_row, data.upload_id, 0);
+    MicroModal.close("modal-confirm");
   });
 })
 
@@ -178,7 +181,7 @@ function saveNote(data, modal) {
   if (checkNoteLength(data.appraisal_note)) {
     $.get(url,data,function(resp){
       if (resp.success){
-        modal.modal('hide');
+        MicroModal.close("modal-confirm");
         return true;
       } else {
         return false;
@@ -196,7 +199,7 @@ function checkNoteLength(note) {
     }
 }
 
-// setups up and opens appraisal note modal
+// sets up and opens appraisal note modal
 function activateModal(uid, label, transfer_name, appraisal_note) {
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);
@@ -207,7 +210,7 @@ function activateModal(uid, label, transfer_name, appraisal_note) {
   } else {
     amodal.find('#delete-note').hide()
   }
-  amodal.modal('show');
+  MicroModal.show("modal-appraisal-note");
 }
 
 function resolveRowCallback(uid, action) {

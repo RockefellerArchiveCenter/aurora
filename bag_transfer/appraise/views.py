@@ -104,7 +104,7 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 note_text = "Add"
             buttons = '<button class="btn btn--xs btn--blue appraisal-accept">Accept</button>\
                        <button class="btn btn--xs btn--orange appraisal-reject">Reject</button>\
-                       <button class="btn btn--xs btn--light-blue appraisal-note {} {}" data-toggle="modal" data-target="#modal-appraisal-note" {}>{} Note</button>'.format(
+                       <button class="btn btn--xs btn--light-blue appraisal-note {} {}" "data-target="#modal-appraisal-note" {}>{} Note</button>'.format(
                 btn_class, note_class, aria_label, note_text
             )
         return buttons
