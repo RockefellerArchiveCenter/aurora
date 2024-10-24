@@ -35,13 +35,13 @@ class BagItProfileForm(forms.ModelForm):
             "external_description": "A short description of this BagIt Profile.",
             "serialization": "Specify whether serialization of bags is required, forbidden, or optional.",
         }
-    # Set most common initial values
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.fields['external_description'].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
         self.fields['serialization'].required = True
+        self.fields['serialization'].choices = [choice for choice in self.fields['serialization'].choices if choice[0]]  # Exclude blank choice
 
 
 class BagItProfileBagInfoForm(forms.ModelForm):
@@ -87,6 +87,7 @@ class ManifestsAllowedForm(forms.ModelForm):
         self.legend_text = "Allowed algorithm(s) for manifest files *"
         self.help_text_id = "manifests_allowed-help"
         self.fields['name'].required = True
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class ManifestsRequiredForm(forms.ModelForm):
@@ -105,6 +106,7 @@ class ManifestsRequiredForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.legend_text = "Manifests Required"
         self.help_text_id = "manifests_required-help"
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class AcceptSerializationForm(forms.ModelForm):
@@ -123,6 +125,7 @@ class AcceptSerializationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.legend_text = "Serializations Accepted"
         self.help_text_id = "serializations_accepted-help"
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class AcceptBagItVersionForm(forms.ModelForm):
@@ -141,6 +144,7 @@ class AcceptBagItVersionForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.legend_text = "BagIt Versions Accepted"
         self.help_text_id = "bagit_versions_accepted-help"
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class TagManifestsRequiredForm(forms.ModelForm):
@@ -159,6 +163,7 @@ class TagManifestsRequiredForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.legend_text = "Tag Manifests Required"
         self.help_text_id = "tag_manifests_required-help"
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class TagFilesRequiredForm(forms.ModelForm):
@@ -228,7 +233,6 @@ ManifestsAllowedFormset = forms.inlineformset_factory(
     BagItProfile,
     ManifestsAllowed,
     fields=("name",),
-    extra=1,
     max_num=len(ManifestsAllowed.MANIFESTS_ALLOWED_CHOICES),
     min_num=1,
     validate_min=True,
@@ -239,7 +243,6 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
     BagItProfile,
     ManifestsRequired,
     fields=("name",),
-    extra=1,
     max_num=len(ManifestsRequired.MANIFESTS_REQUIRED_CHOICES),
     form=ManifestsRequiredForm,
 )
@@ -248,7 +251,6 @@ AcceptSerializationFormset = forms.inlineformset_factory(
     BagItProfile,
     AcceptSerialization,
     fields=("name",),
-    extra=1,
     max_num=len(AcceptSerialization.ACCEPT_SERIALIZATION_CHOICES),
     form=AcceptSerializationForm,
 )
@@ -257,7 +259,6 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
     BagItProfile,
     AcceptBagItVersion,
     fields=("name",),
-    extra=1,
     max_num=len(AcceptBagItVersion.BAGIT_VERSION_NAME_CHOICES),
     form=AcceptBagItVersionForm,
 )
@@ -266,7 +267,6 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
     BagItProfile,
     TagManifestsRequired,
     fields=("name",),
-    extra=1,
     max_num=len(TagManifestsRequired.TAG_MANIFESTS_REQUIRED_CHOICES),
     form=TagManifestsRequiredForm,
 )

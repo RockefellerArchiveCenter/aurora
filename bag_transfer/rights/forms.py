@@ -93,7 +93,7 @@ class RightsGrantedForm(forms.ModelForm):
             ),
             "start_date_period": forms.widgets.NumberInput(),
             "end_date_period": forms.widgets.NumberInput(),
-            "end_date_open": forms.widgets.CheckboxInput(attrs={"class":"checkbox checkbox--blue"}),
+            "end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "rights_granted_note": forms.widgets.Textarea(
                 attrs={"rows": 3}
             ),
@@ -156,7 +156,7 @@ class RightsCopyrightForm(RightsBasisForm):
             ),
             "copyright_start_date_period": forms.widgets.NumberInput(),
             "copyright_end_date_period": forms.widgets.NumberInput(),
-            "copyright_end_date_open": forms.widgets.CheckboxInput(attrs={"class":"checkbox checkbox--blue"}),
+            "copyright_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "copyright_note": forms.widgets.Textarea(
                 attrs={"rows": 3}
             ),
@@ -213,7 +213,7 @@ class RightsStatuteForm(RightsBasisForm):
             ),
             "statute_start_date_period": forms.widgets.NumberInput(),
             "statute_end_date_period": forms.widgets.NumberInput(),
-            "statute_end_date_open": forms.widgets.CheckboxInput(attrs={"class":"checkbox checkbox--blue"}),
+            "statute_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "statute_note": forms.widgets.Textarea(
                 attrs={"rows": 3}
             ),
@@ -260,7 +260,7 @@ class RightsOtherRightsForm(RightsBasisForm):
             ),
             "other_rights_start_date_period": forms.widgets.NumberInput(),
             "other_rights_end_date_period": forms.widgets.NumberInput(),
-            "other_rights_end_date_open": forms.widgets.CheckboxInput(attrs={"class":"checkbox checkbox--blue"}),
+            "other_rights_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "other_rights_note": forms.widgets.Textarea(
                 attrs={"rows": 3}
             ),
@@ -307,7 +307,7 @@ class RightsLicenseForm(RightsBasisForm):
             ),
             "license_start_date_period": forms.widgets.NumberInput(),
             "license_end_date_period": forms.widgets.NumberInput(),
-            "license_end_date_open": forms.widgets.CheckboxInput(attrs={"class":"checkbox checkbox--blue"}),
+            "license_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "license_note": forms.widgets.Textarea(
                 attrs={"rows": 3}
             ),

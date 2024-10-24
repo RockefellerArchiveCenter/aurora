@@ -5,10 +5,10 @@
   {% for form in formset.forms %}
     {% for checkbox in form.name %}
       <div class="input-group">
-          {{ checkbox.tag }}
-          <label for="{{ checkbox.id_for_label }}" class="checkbox--blue">{{ checkbox.choice_label }}</label>
+        {{ checkbox.tag }}
+        <label for="{{ checkbox.id_for_label }}" class="checkbox--blue">{{ checkbox.choice_label }}</label>
       </div>
-      {% endfor %}
+    {% endfor %}
   {% endfor %}
 
   {% if formset.forms.0.name.help_text %}
@@ -17,7 +17,7 @@
 
   {% for form in formset.forms %}
     {% if form.name.errors %}
-        <div class="input__error">{{ form.name.errors }}</div>
+      <div class="input__error">{{ form.name.errors }}</div>
     {% endif %}
   {% endfor %}
 </fieldset>
