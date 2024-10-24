@@ -1,0 +1,49 @@
+/*
+ * Custom local styles for datatables
+ */
+
+input, fieldset, select, textarea {
+  width: auto;
+ }
+
+ /* Increase cell padding to match RAC Style Library */
+table.dataTable > tbody > tr > th,
+table.dataTable > tbody > tr > td {
+  padding: 20px;
+}
+
+table.dataTable > thead > tr > th,
+table.dataTable > thead > tr > td {
+  padding: 10px 20px;
+}
+
+/* Darken hover styles */
+table.dataTable thead > tr > th.dt-orderable-asc:hover, table.dataTable thead > tr > th.dt-orderable-desc:hover,
+table.dataTable thead > tr > td.dt-orderable-asc:hover,
+table.dataTable thead > tr > td.dt-orderable-desc:hover {
+  outline: 2px solid rgba(0, 0, 0, 0.1);
+}
+
+/* Adjust loading indicator color */
+div.dt-processing > div:last-child > div {
+  background: #192d48;
+}
+
+.dt-layout-row label {
+  font-size: 16px;
+}
+
+div.dt-container .dt-search input {
+  appearance: none;
+  border: 1px solid #2e2e2e;
+  border-radius: 0;
+  font-size: 18px;
+  padding: 10px;
+  min-width: 300px
+}
+
+/* Pagination font styles */
+.dt-paging {
+  font-family: 'Lato', sans-serif;
+  font-size: 17px;
+}

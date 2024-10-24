@@ -1,126 +1,136 @@
 {% extends 'transfers/base.html' %}
+{% load static %}
 
 {% block h1_title %}
   {% regroup uploads by transfer_group as upload_groups %}
-  {{page_title}} <small>{{upload_groups|length}} accessions</small>
+  {{page_title}}
 {% endblock %}
 
 {% block content %}
 {% regroup uploads by transfer_group as upload_groups %}
-<div class="row">
-  <div class="col-md-12">
-    <div class="nav-tabs-custom">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="#pending" data-toggle="tab">Pending Accessions {% if upload_groups|length %}({{ upload_groups|length }}){% endif %}</a></li>
-        {% if accessions.count %}
-				<li class=""><a href="#saved" data-toggle="tab">Saved Accessions ({{ accessions.count }})</a></li>
-        {% endif %}
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active table-responsive" id="pending">
-          {% if not uploads %}
-        <div>No pending accessions</div>
-          {% else %}
-        <table id="pending_accession_table" class="table table-striped dataTable">
-          <thead>
-            <tr>
-              <th>Organization</th>
-              <th>Record Creator(s)</th>
-              <th>Record Type</th>
-              <th>Action</th>
-            </tr>
-          </thead>
 
-          <tbody>
-            {% for group in upload_groups %}
-            <tr>
-              <td>{{group.list.0.organization}}</td>
-              <td>{% for r in group.list.0.bag_data.record_creators %}
-      						{{ r }} <br />
-      					{% endfor %}
-              </td>
-              <td>{{group.list.0.bag_data.record_type}}</td>
-              <td>
-                {% if request.user.can_accession %}
-                <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn-primary pull-right accession-button">Accession <span class="badge">{{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</span></a>
-                {% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-        {% endif %}
-				</div>
-        {% if accessions.count %}
-				<div class="tab-pane table-responsive" id="saved">
-          {% if not accessions %}
-        <div>No saved accessions</div>
-          {% else %}
-          <table id="saved_accession_table" class="table table-striped dataTable" style="width:100%">
-            <thead>
-              <tr>
-                <th>Title</th>
-                <th>Date Created</th>
-                <th>Extent</th>
-                <th>Transfers</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-          </table>
-        {% endif %}
-				</div>
-        {% endif %}
-			</div>
-		</div>
+<div class="tabs">
+  <ul class="tabs__list" role="tablist">
+    <li class="tabs__list-item tabs__list-item--selected" role="presentation">
+      <a
+        class="tabs__tab"
+        href="#pending-accessions"
+        id="tab_pending-accessions"
+        role="tab"
+        aria-controls="pending-accessions"
+        aria-selected="true"
+        tabindex="0"
+      >
+      Pending Accessions {% if upload_groups|length %}({{ upload_groups|length }}){% endif %}
+      </a>
+    </li>
+    <li class="tabs__list-item" role="presentation">
+      <a
+        class="tabs__tab"
+        href="#saved-accessions"
+        id="tab_saved-accessions"
+        role="tab"
+        aria-controls="saved-accessions"
+        aria-selected="false"
+        tabindex="-1"
+      >
+      Saved Accessions ({{ accessions.count }})
+      </a>
+    </li>
+  </ul>
+  <div
+    class="tabs__panel"
+    id="pending-accessions"
+    role="tabpanel"
+    aria-labelledby="tab_pending-accessions"
+  >
+    <h2>Pending Accessions</h2>
+    {% if not uploads %}
+    <p>There are no accessions in the queue.</p>
+    {% else %}
+    <div class="table-responsive">
+      <table id="pending_accession_table" class="table table-striped dataTable">
+        <thead>
+          <tr>
+            <th>Organization</th>
+            <th>Record Creator(s)</th>
+            <th>Record Type</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for group in upload_groups %}
+          <tr>
+            <td>{{group.list.0.organization}}</td>
+            <td>{% for r in group.list.0.bag_data.record_creators %}
+                {{ r }} <br />
+              {% endfor %}
+            </td>
+            <td>{{group.list.0.bag_data.record_type}}</td>
+            <td>
+              {% if request.user.can_accession %}
+              <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn--sm btn--blue">Accession: {{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+  <div
+    class="tabs__panel tabs__panel--hidden"
+    id="saved-accessions"
+    role="tabpanel"
+    aria-labelledby="tab_saved-accessions"
+  >
+    <h2>Saved Accessions</h2>
+    {% if accessions.count %}
+    <div class="table-responsive">
+      <table id="saved_accession_table" class="table table-striped dataTable">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Date Created</th>
+            <th>Extent</th>
+            <th>Transfers</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+    {% else %}
+    <p>There are no accessions currently in progress or completed.</p>
+    {% endif %}
   </div>
 </div>
-
 {% endblock %}
 
 {% block extra_js %}
+<script src="{% static 'js/tablist.js' %}"></script>
 <script type="text/javascript">
   $(function () {
     $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     saved = $('#saved_accession_table').DataTable({
-      'createdRow': function(row, data, dataIndex) {
+      createdRow: function(row, data, dataIndex) {
           $(row).attr('data-accession-id', data[5]);
       },
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      'pageLength'  : 25,
-      'processing': true,
-      'serverSide': true,
-      fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
-	    },
-      'ajax': '{% url "accession:saved-datatable" %}'
+      stateSave: true,
+      processing: true,
+      serverSide: true,
+      fixedHeader: true,
+      ajax: '{% url "accession:saved-datatable" %}'
     });
     saved.draw();
     pending = $('#pending_accession_table').DataTable({
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
-	    },
-      'pageLength'  : 25
+      stateSave: true,
+      fixedHeader: true,
     })
     pending.draw()
 
-    $("ul.nav-tabs").on("click", function(e) {
-      saved.draw()
-      pending.draw()
-    })
-
+    // Handle click event for delivering saved accessions
     $("#saved_accession_table tbody").on("click", ".deliver", function(e){
       e.preventDefault();
       url = '{% url 'accession:list' %}';
@@ -131,9 +141,9 @@
       $.get(url, data, function(resp){
         if (resp.success){
           button.replaceWith('<p class="pull-right" style="margin-right:.7em;">Accession transfers delivered to queue</p>');
-          displayMessage('success', 'Accession delivered.', true);
+          displayMessage('blue', 'Accession delivered.', true);
         } else {
-          displayMessage('danger', 'Something went wrong! '+resp.error+'Please try again.', false);
+          displayMessage('orange', 'Something went wrong! '+resp.error+'Please try again.', false);
         }
       });
 

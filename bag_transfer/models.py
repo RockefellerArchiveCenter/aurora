@@ -770,7 +770,7 @@ class BagItProfile(models.Model):
         ("optional", "optional"),
     )
     serialization = models.CharField(
-        choices=SERIALIZATION_CHOICES, max_length=25, default="optional")
+        choices=SERIALIZATION_CHOICES, max_length=25)
 
 
 class ManifestsAllowed(models.Model):

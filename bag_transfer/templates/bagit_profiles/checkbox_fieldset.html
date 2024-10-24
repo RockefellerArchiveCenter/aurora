@@ -1,0 +1,23 @@
+<fieldset aria-describedby="{{ formset.forms.0.help_text_id }}" class="mb-20">
+  <legend>{{ formset.forms.0.legend_text }}</legend>
+  {{ formset.management_form }}
+
+  {% for form in formset.forms %}
+    {% for checkbox in form.name %}
+      <div class="input-group">
+        {{ checkbox.tag }}
+        <label for="{{ checkbox.id_for_label }}" class="checkbox--blue">{{ checkbox.choice_label }}</label>
+      </div>
+    {% endfor %}
+  {% endfor %}
+
+  {% if formset.forms.0.name.help_text %}
+    <div id="{{ formset.forms.0.help_text_id }}" class="input__help-text">{{ formset.forms.0.name.help_text }}</div>
+  {% endif %}
+
+  {% for form in formset.forms %}
+    {% if form.name.errors %}
+      <div class="input__error">{{ form.name.errors }}</div>
+    {% endif %}
+  {% endfor %}
+</fieldset>

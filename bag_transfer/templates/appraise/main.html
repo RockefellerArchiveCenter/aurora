@@ -1,40 +1,31 @@
 {% extends 'transfers/base.html' %}
 
-{% block h1_title %}{{page_title}} <small>{{uploads_count}} transfers</small>{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-12">
-    <div class="box box-default">
-      <div class="box-body">
-        <div class="table-responsive">
-         {% if not uploads_count %}
-  				<div>No transfers to appraise</div>
-  			 {% else %}
-  				<table id="appraise_table" class="table table-striped dataTable">
-  					<thead>
-  						<tr>
-  							<th>Name</th>
-                <th>Organization</th>
-  							<th>Record Creators</th>
-  							<th>Record Type</th>
-  							<th>Transfer Time</th>
-                <th>Action</th>
-  						</tr>
-  					</thead>
-  				</table>
-  			{% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
+{% if not uploads_count %}
+<p>No transfers to appraise</p>
+{% else %}
+<div class="table-responsive">
+  <table id="appraise_table" class="table table-striped dataTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Organization</th>
+        <th>Record Creators</th>
+        <th>Record Type</th>
+        <th>Transfer Time</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+  </table>
 </div>
+{% endif %}
 
 {% endblock %}
 
 {% block modals %}
   {% include 'appraise/edit_note.html' %}
-  {% include 'appraise/detail_modal.html' %}
   {% include 'appraise/confirm_modal.html' %}
 {% endblock %}
 
@@ -42,38 +33,36 @@
 <script type="text/javascript">
 var amodal = $("#modal-appraisal-note");
 var cmodal = $("#modal-confirm");
-var dmodal = $("#modal-detail");
 var url = '{% url 'appraise:list' %}';
 var appraise_table = '';
 
 $(function () {
   $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
   $('#appraise_table').DataTable({
-      'columnDefs': [
+      columnDefs: [
         {
           width: "20%",
           targets: [5]
         }
       ],
-      'createdRow': function(row, data, dataIndex) {
-          $(row).attr('data-transfer-id', data[6]);
-          $(row).attr('data-transfer-name', data[0]);
+      createdRow: function(row, data, dataIndex) {
+        var nameCell = $('td', row).eq(0);
+        var transferPk = data[6];
+        var transferName = data[0];
+        var transferUrl = '{% url "transfers:detail" 0 %}'.replace('0', transferPk);
+
+        // Set the Name cell content as a clickable link to the transfer detail page
+        $('td', row).eq(0).html('<a href="' + transferUrl + '">' + transferName + '</a>');
+
+        $(row).attr('data-transfer-id', data[6]);
+        $(row).attr('data-transfer-name', data[0]);
       },
-      'order'       : [[4, 'desc']],
-      'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      'pageLength'  : 25,
-      'processing': true,
-      'serverSide': true,
-      fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
-	    },
-      'ajax': '{% url "appraise:datatable" %}'
+      order: [[4, 'desc']],
+      stateSave: true,
+      processing: true,
+      serverSide: true,
+      fixedHeader: true,
+      ajax: '{% url "appraise:datatable" %}'
     })
 
   // Open appraisal note modal
@@ -99,37 +88,13 @@ $(function () {
       return false;
   });
 
-  // Show transfer details modal
-  $("#appraise_table tbody").on("click", ".transfer-detail", function(e) {
-      e.preventDefault();
-      var bagData = getDataFromAttributes($(this).closest('tr'))
-      var data = {
-        'req_form' : 'detail',
-        'upload_id': bagData.upload_id
-      };
-      $.get(url, data, function(resp){
-        if (resp.success){
-          dmodal.find('.transfer-name').text(bagData.transfer_name);
-          transfer_url = '{% url "transfers:detail" pk=1 %}';
-          transfer_url = transfer_url.replace('1', bagData.upload_id);
-          $.get(transfer_url, function(resp){
-            dmodal.find('.content').replaceWith($(resp).find('main.content'))
-            dmodal.modal('show');
-          })
-        } else {
-          alert('Something went wrong.. Please try again.');
-        }
-      });
-      return false;
-  });
-
   // Confirm reject transfer
   $("#appraise_table tbody").on("click", ".appraisal-reject", function(e) {
     e.preventDefault();
     var bagData = getDataFromAttributes($(this).closest('tr'))
     cmodal.find('.transfer-name').text(bagData.transfer_name);
     cmodal.find('.upload_id').val(bagData.upload_id)
-    cmodal.modal('show');
+    MicroModal.show("modal-confirm");
     return false;
   })
 
@@ -139,6 +104,7 @@ $(function () {
     var data = prepareNoteData($('#appraisal-note-form'), 'delete')
     saveNote(data, amodal);
     resolveRowCallback(data.upload_id, 'delete')
+    MicroModal.close("modal-appraisal-note");
     return false;
   });
 
@@ -148,6 +114,7 @@ $(function () {
     var data = prepareNoteData($(this), 'submit')
     saveNote(data, amodal);
     resolveRowCallback(data.upload_id, 'add')
+    MicroModal.close("modal-appraisal-note");
     return false;
   });
 
@@ -166,6 +133,7 @@ $(function () {
     var upload_row = $("#appraise_table tbody").find('tr[data-transfer-id='+data.upload_id+']');
     saveNote(data, cmodal);
     handleAppraisalDecision(upload_row, data.upload_id, 0);
+    MicroModal.close("modal-confirm");
   });
 })
 
@@ -181,7 +149,7 @@ function handleAppraisalDecision(upload_row, upload_id, code) {
     if (resp.success){
       handleRemoveRow(upload_row, decision)
     } else {
-      displayMessage('danger', 'Something went wrong! Please try again.', false);
+      displayMessage('orange', 'Something went wrong! Please try again.', false);
     }
   });
 }
@@ -203,7 +171,7 @@ function getDataFromAttributes(rootElement) {
 }
 
 function handleRemoveRow(row, action) {
-  var cls = (action == 'accepted') ? 'success':'danger'
+  var cls = (action == 'accepted') ? 'blue':'orange'
   var name = $(row).children('td').first().text()
   $(row).remove()
   displayMessage(cls, 'Transfer <b>'+name+'</b> '+action+'.', true);
@@ -213,7 +181,7 @@ function saveNote(data, modal) {
   if (checkNoteLength(data.appraisal_note)) {
     $.get(url,data,function(resp){
       if (resp.success){
-        modal.modal('hide');
+        MicroModal.close("modal-confirm");
         return true;
       } else {
         return false;
@@ -231,7 +199,7 @@ function checkNoteLength(note) {
     }
 }
 
-// setups up and opens appraisal note modal
+// sets up and opens appraisal note modal
 function activateModal(uid, label, transfer_name, appraisal_note) {
   amodal.find('.upload_id').val(uid);
   amodal.find('.add-or-edit-label').text(label);
@@ -242,7 +210,7 @@ function activateModal(uid, label, transfer_name, appraisal_note) {
   } else {
     amodal.find('#delete-note').hide()
   }
-  amodal.modal('show');
+  MicroModal.show("modal-appraisal-note");
 }
 
 function resolveRowCallback(uid, action) {
@@ -250,14 +218,13 @@ function resolveRowCallback(uid, action) {
     if (action == 'add') {
       if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Edit Note');
-        $(this).removeClass('btn-info');
-        $(this).addClass('edit-note btn-primary');
+        $(this).addClass('edit-note');
         $(this).attr('aria-label', 'Edit existing note');
       }
     } else {
       if ($(this).parents('tr').data('transfer-id') == uid){
         $(this).text('Add Note');
-        $(this).removeClass('edit-note btn-primary');
+        $(this).removeClass('edit-note');
         $(this).addClass('btn-info');
         $(this).removeAttr('aria-label')
       }

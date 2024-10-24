@@ -3,13 +3,19 @@
 {% load util %}
 
 {% block h1_title %}
-  <a href="{% url 'accession:list' %}" class="btn btn-primary pull-right"><i class="fa fa-arrow-left"></i> View all Accessions</a>
-	{{page_title}}
-	<small>{{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}</small>
-	<span class="label label-{% if object.process_status == 40 %}success{% else %}warning{% endif %}">{{ object.get_process_status_display }}</span>
+{{page_title}}: {{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}
+{% endblock %}
+
+{% block title_actions %}
+  <a href="{% url 'accession:list' %}" class="btn btn--md btn--gray">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
+    View All Accessions
+  </a>
 {% endblock %}
 
 {% block content %}
+<div class="mb-30">
+	<span class="badge badge-{% if object.process_status == 40 %}green{% else %}red{% endif %}">{{ object.get_process_status_display }}</span>
 <div class="row">
     <div class="col-md-12">
 			<div class="row">

@@ -4,41 +4,38 @@
     {% include 'transfers/head.html' %}
     {% block extra_css %}{% endblock %}
   </head>
-  <body class="hold-transition fixed skin-blue sidebar-mini">
-    <div class="wrapper">
-      <!-- Main Header -->
-      {% include 'transfers/header.html' %}
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <!-- Main Header -->
+    {% include 'transfers/header.html' %}
 
-      <!-- Left Sidebar -->
-      {% include 'transfers/left_sidebar.html' %}
+    <!-- Content Wrapper. Contains page content -->
+    <main id="main">
+      <div class="wrapper">
+        <div class="container">
+          {% block title_section %}
+          <div class="title__container">
+            <h1>{% block h1_title %}Default Title{% endblock %}</h1>
+            <div class="title__actions">{% block title_actions %}{% endblock %}</div>
+          </div>
+          {% endblock %}
+          <div id="messages" role="status">{% include 'transfers/messages.html' %}</div>
 
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          <h1>{% block h1_title %}{% endblock %}</h1>
-        </section>
-
-
-        <!-- Main content -->
-        <main class="content">
-
-          <div id="messages">{% include 'transfers/messages.html' %}</div>
-
-          {% block content %}{% endblock %}
-        </main>
+            {% block content %}{% endblock %}
+          </div>
+        </div>
       </div>
+    </main>
 
-      <!-- Main Footer -->
-      {% include 'transfers/footer.html' %}
+    <!-- Main Footer -->
+    {% include 'transfers/footer.html' %}
 
-      <!-- Modals -->
-      {% block modals %}{% endblock %}
+    <!-- Modals -->
+    {% block modals %}{% endblock %}
 
-      <!-- REQUIRED JS SCRIPTS -->
-      {% include 'transfers/js_scripts.html' %}
-      {% block extra_js %}{% endblock %}
+    <!-- REQUIRED JS SCRIPTS -->
+    {% include 'transfers/js_scripts.html' %}
+    {% block extra_js %}{% endblock %}
 
-    </div>
   </body>
 </html>

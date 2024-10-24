@@ -216,9 +216,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
 
     def process_status_tag(self, status):
         percentage = int(round(status / Transfer.ACCESSIONING_COMPLETE * 100))
-        return "{label} <div class='progress progress-xs'>\
-                    <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
-                </div>".format(
+        return "{label} <progress class='progress-bar--{label_class}' max='100' value='{percentage}' aria-label='{percentage}% complete'></progress>".format(
             label=self.process_status_display(status),
             label_class=label_class(status),
             percentage=percentage)

@@ -3,86 +3,38 @@
 {% load static %}
 
 {% block h1_title %}
-{{page_title}}
-<a href="{% url 'transfers:data' %}" class="btn btn-primary pull-right"><i class="fa fa-download"></i> Download CSV</a>
+  {% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} {{page_title}}
+{% endblock %}
+
+{% block title_actions %}
+  <a href="{% url 'transfers:data' %}" class="btn btn--md btn--blue">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">download</span>
+    Download CSV
+  </a>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-	<div class="col-md-12">
-		<div class="nav-tabs-custom">
-			<ul class="nav nav-tabs">
-				<li class="active"><a href="#tab_org" data-toggle="tab">{% if request.user.is_archivist %}All{% else %}{{ request.user.organization }}{% endif %} Transfers ({{ org_uploads_count }})</a></li>
-				{% if user_uploads_count %}
-				<li class=""><a href="#tab_user" data-toggle="tab">My Transfers ({{ user_uploads_count }})</a></li>
-				{% endif %}
-			</ul>
-			<div class="tab-content">
-				<div class="tab-pane active table-responsive" id="tab_org">
-					{% include 'parts/transfer_table.html' with uploads_count=org_uploads_count table_id='org_transfers' %}
-				</div>
-				{% if user_uploads_count %}
-				<div class="tab-pane table-responsive" id="tab_user">
-					{% include 'parts/transfer_table.html' with uploads_count=user_uploads_count table_id='user_transfers' %}
-				</div>
-				{% endif %}
-			</div>
-		</div>
-	</div>
+<div class="table-responsive">
+	{% include 'parts/transfer_table.html' with uploads_count=org_uploads_count table_id='all_transfers' %}
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script type="text/javascript">
   $(document).ready(function() {
-
-		$('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
-        $.fn.dataTable.tables( {visible: true, api: true} ).columns.adjust();
-    } );
-
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
-    $('#org_transfers').DataTable({
-			'createdRow': function(row, data, dataIndex) {
+    new DataTable('#all_transfers', {
+			createdRow: function(row, data, dataIndex) {
 					$(row).attr('data-url', data[{% if request.user.is_archivist %}9{% else %}8{% endif %}]);
 					$(row).addClass('pointer-row');
 					$(row).attr('tabindex', 0)
   		},
-      'order'       : [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
-			'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : true,
-      'pageLength'  : 25,
-			'processing': true,
-      'serverSide': true,
-			fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
-	    },
-      'ajax': '{% url "transfers:datatable" %}'
-    })
-		$('#user_transfers').DataTable({
-			'createdRow': function(row, data, dataIndex) {
-				$(row).attr('data-url', data[{% if request.user.is_archivist %}9{% else %}8	{% endif %}]);
-				$(row).addClass('pointer-row');
-  		},
-			'order'       : [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
-			'stateSave'   : true,
-      'paging'      : true,
-      'lengthChange': false,
-      'searching'   : true,
-      'ordering'    : true,
-      'info'        : true,
-      'autoWidth'   : false,
-      'pageLength'  : 25,
-			'processing': true,
-      'serverSide': true,
-			fixedHeader: {
-        headerOffset: $('.navbar').outerHeight()
-	    },
-      'ajax': '{% url "transfers:datatable" %}?q=user'
+      order: [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
+			stateSave: true,
+			processing: true,
+      serverSide: true,
+			fixedHeader: true,
+      ajax: '{% url "transfers:datatable" %}'
     })
   })
 </script>

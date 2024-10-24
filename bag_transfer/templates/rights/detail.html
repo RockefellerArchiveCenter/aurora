@@ -2,59 +2,41 @@
 {% load tz %}
 
 {% block h1_title %}
-  {{page_title}} <small>{{object.organization}}</small>
-  <div class="pull-right">
-    <a href="{% url 'orgs:detail' object.organization.pk %}" class="btn btn-primary"><i class="fa fa-arrow-left"></i> Back To Organization</a>
-    {% if request.user.is_manager or request.user.is_superuser %}
-      <a href="{% url 'rights:edit' object.pk %}" class="btn btn-warning">Edit Rights Statement</a>
-    {% endif %}
-  </div>
+  {{page_title}}: {{object.organization}}
+{% endblock %}
+
+{% block title_actions %}
+<div>
+  <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn--md btn--gray mr-10">
+    <span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
+    Back to Organization
+  </a>
+  {% if request.user.is_manager or request.user.is_superuser %}
+  <a href="{% url 'rights:edit' object.pk %}" class="btn btn--md btn--blue">
+    Edit Rights Statement
+  </a>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block content %}
-<div class="row">
-  <div class="col-md-12">
-
-    <div class="box box-info">
-    	<div class="box-header with-border">
-    		<h2 class="box-title">Applies to Record Type(s)</h2>
-      </div>
-      <div class="box-body">
-        {% for t in object.applies_to_type.all %}<span class="label label-default">{{t}}</span> {% endfor %}
-      </div>
-    </div>
-
-    <ul class="timeline">
-      <li class="time-label">
-        <span class="bg-blue">Rights Basis</span>
-      </li>
-      <li>
-        <i class="fa fa-info bg-blue"></i>
-        <div class="timeline-item">
-
-          <h2 class="timeline-header">{{object.rights_basis}}</h2>
-
-          <div class="timeline-body">
-            {% include 'rights/rights_basis_info.html' %}
-          </div>
-
-        </div>
-      </li>
-
-      <li class="time-label">
-        <span class="bg-teal">Rights Granted or Restricted</span>
-      </li>
-
-      {% for rights_granted in object.rights_granted.all %}
-        {% include 'rights/rights_granted_info.html' %}
-      {% endfor %}
-
-      <li>
-        <i class="fa fa-stop bg-gray"></i>
-      </li>
-    </ul>
-  </div>
+<div class="card card--container flex--column mt-30 mb-60">
+  <h2>Applies to Record Type(s)</h2>
+  <ol class="list--unstyled list__badge">
+    {% for t in object.applies_to_type.all %}<li><span class="badge badge--light-blue">{{t}}</span></li> {% endfor %}
+  </ol>
 </div>
 
+<h2>Rights Basis</h2>
+<div class="card card--container flex--column ml-30 mb-60">
+  <h3 class="heading--dotted-border pb-8 mb-20">{{object.rights_basis}}</h3>
+  {% include 'rights/rights_basis_info.html' %}
+</div>
 
+<h2>Rights Granted or Restricted</h2>
+{% for rights_granted in object.rights_granted.all %}
+  <div class="card card--container card--blue flex--column ml-30 mb-30">
+    {% include 'rights/rights_granted_info.html' %}
+  </div>
+{% endfor %}
 {% endblock %}

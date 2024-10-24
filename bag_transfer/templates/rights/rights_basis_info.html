@@ -1,93 +1,150 @@
-<dl class="dl-horizontal">
+<div class="summary-list ml-20">
   {% if object.rights_basis == 'Copyright' %}
-    <dt>Copyright status</dt>
-    <dd>{{ object.rights_info.copyright_status }}</dd>
-    <dt>Determination date</dt>
-    <dd>{{ object.rights_info.copyright_status_determination_date }}</dd>
-    <dt>Jurisdiction</dt>
-    <dd>{{ object.rights_info.copyright_jurisdiction }}</dd>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Copyright status</dt>
+      <dd class="summary-list__value">{{ object.rights_info.copyright_status }}</dd>
+    </div>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Determination date</dt>
+      <dd class="summary-list__value">{{ object.rights_info.copyright_status_determination_date }}</dd>
+    </div>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Jurisdiction</dt>
+      <dd class="summary-list__value">{{ object.rights_info.copyright_jurisdiction }}</dd>
+    </div>
+
     {% if object.rights_info.copyright_applicable_start_date %}
-      <dt>Applicable Dates</dt>
-      {% if object.rights_info.copyright_applicable_end_date %}
-        <dd>{{ object.rights_info.copyright_applicable_start_date }} - {{ object.rights_info.copyright_applicable_end_date }}</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Dates</dt>
+        {% if object.rights_info.copyright_applicable_end_date %}
+          <dd class="summary-list__value">{{ object.rights_info.copyright_applicable_start_date }} - {{ object.rights_info.copyright_applicable_end_date }}</dd>
         {% elif object.rights_info.copyright_end_date_open %}
-        <dd>{{ object.rights_info.copyright_applicable_start_date }} - OPEN</dd>
+          <dd class="summary-list__value">{{ object.rights_info.copyright_applicable_start_date }} - OPEN</dd>
         {% else %}
-        <dd>{{ object.rights_info.copyright_applicable_start_date }}</dd>
-      {% endif %}
+          <dd class="summary-list__value">{{ object.rights_info.copyright_applicable_start_date }}</dd>
+        {% endif %}
+      </div>
     {% elif object.rights_info.copyright_end_date_period %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.copyright_end_date_period }} years after end date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.copyright_end_date_period }} years after end date</dd>
+      </div>
     {% else %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.copyright_start_date_period }} years after start date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.copyright_start_date_period }} years after start date</dd>
+      </div>
     {% endif %}
-    <dt>Copyright Note</dt>
-    <dd>{{ object.rights_info.copyright_note }}</dd>
+
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Copyright Note</dt>
+      <dd class="summary-list__value">{{ object.rights_info.copyright_note }}</dd>
+    </div>
+
   {% elif object.rights_basis == 'License' %}
-    <dt>License Terms</dt>
-    <dd>{{ object.rights_info.license_terms }}</dd>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">License Terms</dt>
+      <dd class="summary-list__value">{{ object.rights_info.license_terms }}</dd>
+    </div>
+
     {% if object.rights_info.license_applicable_start_date %}
-      <dt>Applicable Dates</dt>
-      {% if object.rights_info.license_applicable_end_date %}
-        <dd>{{ object.rights_info.license_applicable_start_date }} - {{ object.rights_info.license_applicable_end_date }}</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Dates</dt>
+        {% if object.rights_info.license_applicable_end_date %}
+          <dd class="summary-list__value">{{ object.rights_info.license_applicable_start_date }} - {{ object.rights_info.license_applicable_end_date }}</dd>
         {% elif object.rights_info.license_end_date_open %}
-        <dd>{{ object.rights_info.license_applicable_start_date }} - OPEN</dd>
+          <dd class="summary-list__value">{{ object.rights_info.license_applicable_start_date }} - OPEN</dd>
         {% else %}
-        <dd>{{ object.rights_info.license_applicable_start_date }}</dd>
-      {% endif %}
+          <dd class="summary-list__value">{{ object.rights_info.license_applicable_start_date }}</dd>
+        {% endif %}
+      </div>
     {% elif object.rights_info.license_end_date_period %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.license_end_date_period }} years after end date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.license_end_date_period }} years after end date</dd>
+      </div>
     {% else %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.license_start_date_period }} years after start date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.license_start_date_period }} years after start date</dd>
+      </div>
     {% endif %}
-    <dt>License Note</dt>
-    <dd>{{ object.rights_info.license_note }}</dd>
+
+    <div class="summary-list__row">
+      <dt class="summary-list__key">License Note</dt>
+      <dd class="summary-list__value">{{ object.rights_info.license_note }}</dd>
+    </div>
+
   {% elif object.rights_basis == 'Statute' %}
-    <dt>Jurisdiction</dt>
-    <dd>{{ object.rights_info.statute_jurisdiction }}</dd>
-    <dt>Statute Citation</dt>
-    <dd>{{ object.rights_info.statute_citation }}</dd>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Jurisdiction</dt>
+      <dd class="summary-list__value">{{ object.rights_info.statute_jurisdiction }}</dd>
+    </div>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Statute Citation</dt>
+      <dd class="summary-list__value">{{ object.rights_info.statute_citation }}</dd>
+    </div>
+
     {% if object.rights_info.statute_applicable_start_date %}
-      <dt>Applicable Dates</dt>
-      {% if object.rights_info.statute_applicable_end_date %}
-        <dd>{{ object.rights_info.statute_applicable_start_date }} - {{ object.rights_info.statute_applicable_end_date }}</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Dates</dt>
+        {% if object.rights_info.statute_applicable_end_date %}
+          <dd class="summary-list__value">{{ object.rights_info.statute_applicable_start_date }} - {{ object.rights_info.statute_applicable_end_date }}</dd>
         {% elif object.rights_info.statute_end_date_open %}
-        <dd>{{ object.rights_info.statute_applicable_start_date }} - OPEN</dd>
+          <dd class="summary-list__value">{{ object.rights_info.statute_applicable_start_date }} - OPEN</dd>
         {% else %}
-        <dd>{{ object.rights_info.statute_applicable_start_date }}</dd>
-      {% endif %}
+          <dd class="summary-list__value">{{ object.rights_info.statute_applicable_start_date }}</dd>
+        {% endif %}
+      </div>
     {% elif object.rights_info.statute_end_date_period %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.statute_end_date_period }} years after end date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.statute_end_date_period }} years after end date</dd>
+      </div>
     {% else %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.statute_start_date_period }} years after start date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.statute_start_date_period }} years after start date</dd>
+      </div>
     {% endif %}
-    <dt>Statute Note</dt>
-    <dd>{{ object.rights_info.statute_note }}</dd>
+
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Statute Note</dt>
+      <dd class="summary-list__value">{{ object.rights_info.statute_note }}</dd>
+    </div>
+
   {% elif object.rights_basis == 'Other' %}
-    <dt>Rights Basis</dt>
-    <dd>{{ object.rights_info.other_rights_basis }}</dd>
+    <div class="summary-list__row">
+      <dt class="summary-list__key">Rights Basis</dt>
+      <dd class="summary-list__value">{{ object.rights_info.other_rights_basis }}</dd>
+    </div>
+
     {% if object.rights_info.other_rights_applicable_start_date %}
-      <dt>Applicable Dates</dt>
-      {% if object.rights_info.other_rights_applicable_end_date %}
-      <dd>{{ object.rights_info.other_rights_applicable_start_date }} - {{ object.rights_info.other_rights_applicable_end_date }}</dd>
-      {% elif object.rights_info.other_rights_end_date_open %}
-      <dd>{{ object.rights_info.other_rights_applicable_start_date }} - OPEN</dd>
-      {% else %}
-      <dd>{{ object.rights_info.other_rights_applicable_start_date }}</dd>
-      {% endif %}
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Dates</dt>
+        {% if object.rights_info.other_rights_applicable_end_date %}
+          <dd class="summary-list__value">{{ object.rights_info.other_rights_applicable_start_date }} - {{ object.rights_info.other_rights_applicable_end_date }}</dd>
+        {% elif object.rights_info.other_rights_end_date_open %}
+          <dd class="summary-list__value">{{ object.rights_info.other_rights_applicable_start_date }} - OPEN</dd>
+        {% else %}
+          <dd class="summary-list__value">{{ object.rights_info.other_rights_applicable_start_date }}</dd>
+        {% endif %}
+      </div>
     {% elif object.rights_info.other_rights_end_date_period %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.other_rights_end_date_period }} years after end date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.other_rights_end_date_period }} years after end date</dd>
+      </div>
     {% else %}
-      <dt>Applicable Date Rules</dt>
-      <dd>{{ object.rights_info.other_rights_start_date_period }} years after start date</dd>
+      <div class="summary-list__row">
+        <dt class="summary-list__key">Applicable Date Rules</dt>
+        <dd class="summary-list__value">{{ object.rights_info.other_rights_start_date_period }} years after start date</dd>
+      </div>
     {% endif %}
-    <dt>{{ object.rights_info.other_rights_basis }} Note</dt>
-    <dd>{{ object.rights_info.other_rights_note }}</dd>
+
+    <div class="summary-list__row">
+      <dt class="summary-list__key">{{ object.rights_info.other_rights_basis }} Note</dt>
+      <dd class="summary-list__value">{{ object.rights_info.other_rights_note }}</dd>
+    </div>
   {% endif %}
-</dl>
+</div>

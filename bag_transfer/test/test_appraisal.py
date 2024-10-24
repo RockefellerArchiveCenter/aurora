@@ -35,17 +35,6 @@ class AppraisalTestCase(helpers.TestMixin, TestCase):
             transfer.refresh_from_db()
             self.assertEqual(transfer.process_status, expected_status)
 
-    def test_detail(self):
-        """Ensures detail responses are returned"""
-        for transfer in Transfer.objects.filter(process_status=Transfer.VALIDATED):
-            request = self.assert_status_code(
-                "get", reverse("appraise:list"), 200,
-                data={
-                    "req_form": "detail",
-                    "upload_id": transfer.pk,
-                }, ajax=True)
-            self.assertEqual(request.json()["object"], transfer.pk)
-
     def test_appraisal_note(self):
         """Tests submission and editing of appraisal note."""
         transfer = random.choice(

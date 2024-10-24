@@ -4,69 +4,57 @@
 {% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-3">
+<div class="grid">
+  <div class="org-detail">
+    <div class="card card--container flex--column mb-30">
+      <h2>{{ object.name }}</h2>
 
-        <div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
-            <div class="box-body box-profile">
-
-                <h2 class="profile-username text-center">{{ object.name }}</h2>
-
-                <ul class="list-group list-group-unbordered">
-										<li class="list-group-item">
-											<span class="list-label">Active?</span> <span class="pull-right">{% if object.is_active %}yes{% else %}no{% endif %}</span>
-                    <li class="list-group-item">
-                      <span class="list-label">Total Uploads</span> <span class="pull-right">{{ uploads_count }}</span>
-                    </li>
-										<li class="list-group-item">
-                      <span class="list-label">Users</span> <span class="pull-right">{{ object.org_users|length }}</span>
-                    </li>
-										{% if object.acquisition_type %}
-										<li class="list-group-item">
-											<span class="list-label">Acquisition Type</span> <span class="pull-right">{{object.get_acquisition_type_display}}</span>
-										</li>
-										{% endif %}
-                </ul>
-
-                {% if request.user.is_manager or request.user.is_superuser %}
-                  <p><a href="{% url 'orgs:edit' object.pk %}" class="btn btn-{% if object.is_active %}primary{% else %}danger{% endif %} btn-block">Edit Organization</a></p>
-                {% endif %}
-
-                {% if request.user.is_org_admin or request.user.is_superuser %}
-                  <p><button class="btn btn-default btn-block" data-toggle="modal" data-target="#modal-transfer-settings">Show Transfer Settings</button></p>
-                {% endif %}
-
-            </div>
+      <dl class="summary-list">
+        <div class="summary-list__row">
+          <dt class="summary-list__key">Active?</dt>
+          <dd class="summary-list__value">{% if object.is_active %}yes{% else %}no{% endif %}</dd>
         </div>
+        <div class="summary-list__row">
+          <dt class="summary-list__key">Total Uploads</dt>
+          <dd class="summary-list__value">{{ uploads_count }}</dd>
+        </div>
+        <div class="summary-list__row">
+          <dt class="summary-list__key">Users</dt>
+          <dd class="summary-list__value">{{ object.org_users|length }}</dd>
+        </div>
+        {% if object.acquisition_type %}
+        <div class="summary-list__row">
+          <dt class="summary-list__key">Acquisition Type</dt>
+          <dd class="summary-list__value">{{object.get_acquisition_type_display}}</dd>
+        </div>
+        {% endif %}
+      </dl>
+      {% if request.user.is_manager or request.user.is_superuser %}
+      <a href="{% url 'orgs:edit' object.pk %}" class="btn btn--md btn--blue mr-10">Edit Organization</a>
+      {% endif %}
 
-				<div class="box box-{% if object.is_active %}primary{% else %}danger{% endif %}">
-						<div class="box-header with-border">
-								<h2 class="box-title">Users</h2>
-						</div>
-						<div class="box-body">
-							{% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
-							{% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
-              {% include 'parts/user_table.html' with users=object.org_admins switch='Org Admin' %}
-						</div>
-				</div>
-
+      {% if request.user.is_org_admin or request.user.is_superuser %}
+      <button class="btn btn--md btn--orange mt-10" data-toggle="modal" data-target="#modal-transfer-settings">Show Transfer Settings</button>
+      {% endif %}
     </div>
-
-		<div class="col-md-9">
-			{% include 'parts/profiles_box.html' %}
-
-			{% include 'parts/rights_box.html' %}
-
-      <div class="box box-primary">
-          <div class="box-header with-border">
-              <h2 class="box-title">Recent Transfers</h2>
-          </div>
-          <div class="box-body">
-            {% include 'parts/recent_transfer_table.html' with org=object %}
-          </div>
+    <div class="card card--container flex--column">
+      <h2>Users</h2>
+      <div>
+        {% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
+        {% include 'parts/user_table.html' with users=object.inactive_users switch='Inactive' %}
+        {% include 'parts/user_table.html' with users=object.org_admins switch='Org Admin' %}
       </div>
-		</div>
-	</div>
+    </div>
+  </div>
+  <div class="org-settings">
+    <div class="card card--container flex--column mb-30">
+      {% include 'parts/profiles_box.html' %}
+    </div>
+    <div class="card card--container flex--column mb-30">
+      {% include 'parts/rights_box.html' %}
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block modals %}
@@ -78,5 +66,4 @@
 
 {% block extra_js %}
 <script type="text/javascript" src="{% static 'js/delete_object_js.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
 {% endblock %}

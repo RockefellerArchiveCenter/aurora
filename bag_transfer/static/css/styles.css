@@ -1,4 +1,469 @@
-@import url('https://fonts.googleapis.com/css?family=Satisfy');
+/* Font for Aurora logo */
+@font-face {
+  font-family: 'Satisfy';
+  src: url('../fonts/satisfy/Satisfy-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Modals */
+.modal__overlay {
+	display: none;
+}
+
+.modal__overlay.is-open {
+	display: block;
+}
+
+.modal--md {
+	@media screen and (min-width: 580px) {
+		bottom: 20%;
+		left: 20%;
+		right: 20%;
+		top: 20%;
+	}
+}
+
+.container {
+	max-width: 1600px;
+}
+
+main .container {
+	margin: 0 15px 30px;
+
+	@media screen and (min-width: 580px) {
+    margin: 0 30px 30px;
+  }
+}
+
+/**
+* Login page styles
+**/
+.login-page {
+	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+}
+
+.login-box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 100vh;
+}
+
+.login-logo, .login-credit {
+	color: #fff;
+	text-align: center;
+}
+
+.login-logo {
+	font-family: "Satisfy", cursive;
+	font-size: 60px;
+}
+
+header {
+	top: 0;
+  z-index: 999;
+	background-color: #182D48;
+}
+
+/**
+* Adjust top position so that skip link is more visible in the header
+**/
+.skip-link {
+  top: 0;
+}
+
+.header__brand {
+  margin-left: 10px;
+  margin-top: 23px;
+  padding: 0;
+  position: absolute;
+  z-index: 3;
+
+  @media screen and (min-width: 580px) {
+    margin-left: 15px;
+  }
+
+  @media screen and (min-width: 1024px) {
+    margin-left: 33px;
+  }
+}
+
+a.header__brand-title {
+	font-family: "Satisfy", cursive;
+	font-size: 30px;
+	text-transform: none;
+}
+
+a.header__brand-title:focus {
+	outline: 0;
+}
+
+.nav__btn--dropdown,
+.nav__btn--dropdown[aria-expanded='true'],
+#nav-toggle-menu,
+a.header__brand-title {
+	color: #fff;
+
+	:hover, :focus, :active {
+		color: #fff;
+	}
+}
+
+.nav__btn--dropdown:focus {
+	outline-color: #fff;
+}
+
+/**
+* Smaller h1 on large screens that better matches layout of this site
+**/
+h1 {
+  font-size: 42px;
+}
+
+/**
+* h1 div container to allow buttons or other elements to be positioned
+* on the same line has the page title
+**/
+.title__container {
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+	width: 100%;
+  }
+}
+
+.title__actions {
+	@media screen and (min-width: 1024px) {
+		margin-left: 20px;
+		}
+	}
+
+.card {
+	min-height: auto;
+}
+
+.card-list {
+	grid-gap: 30px;
+
+	@media screen and (min-width: 1024px) {
+		grid-template-columns: repeat(2, 1fr);
+	}
+}
+
+.user__actions {
+	display: flex;
+	margin-top: auto;
+}
+
+/* Layout for organization details page */
+.org-detail {
+	grid-column: 1 / span 12;
+	margin-right: 0;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 1 / span 3;
+		margin-right: 30px;
+	}
+}
+
+.org-settings {
+	grid-column: 1 / span 12;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 4 / span 9;
+  }
+}
+
+.org-detail .summary-list__key {
+	width: 60%;
+}
+
+/**
+* Styles for clickable table rows
+**/
+.pointer-row {
+	cursor: pointer;
+}
+
+.pointer-row:hover {
+	background-color: #bcbab3 !important;
+	outline: #2e2e2e 1px solid;
+}
+
+/**
+* Prevent button label text from wrapping
+**/
+.btn {
+	white-space: nowrap;
+}
+
+/**
+* Extra small button for tables shrinks padding from btn--sm styles
+**/
+.btn--xs {
+	font-size: 10px;
+	line-height: 16px;
+	padding: 3px;
+	font-weight: bold;
+}
+
+.btn--xs .material-icon {
+	font-size: 18px;
+}
+
+/**
+* Override table styles for links that are styled as buttons
+**/
+table a.btn {
+	font-size: 10px;
+	line-height: 16px;
+}
+
+/**
+* Progress label-class color styles
+**/
+.progress-bar--green {
+	accent-color: #026d3a;
+}
+
+.progress-bar--red {
+	accent-color: #d63924;
+}
+
+.progress-bar--yellow {
+	accent-color: #ffc107;
+}
+
+/**
+* Badge colors and layout styles
+**/
+.badge--green {
+	background-color: #026d3a;
+}
+
+.badge--red {
+	background-color: #d63924;
+}
+
+.badge--yellow {
+	background-color: #ffc107;
+	color: #2e2e2e;
+}
+
+.badge--light-blue {
+	background-color: #ebeff4;
+	color: #2e2e2e;
+	border: 1px solid #2e2e2e;
+}
+
+.badge__bagit-version {
+	display: inline-block;
+	margin-top: 3px;
+
+	@media screen and (min-width: 1024px) {
+    margin-top: 0px;
+  }
+}
+
+div.badge {
+	width: fit-content;
+}
+
+.list__badge li, h3 .badge {
+	display: inline-block;
+	vertical-align: middle;
+	margin-bottom: 6px;
+}
+
+/**
+* Style headings for layout cards
+**/
+.card--container h2, .card--container h3 {
+ margin-top: 0;
+ width: 100%;
+}
+
+/**
+* Reduce padding for layout cards
+**/
+.card--container {
+	padding: 18px;
+}
+
+/**
+* Add option for a container card with a blue background
+**/
+.card--blue {
+	background-color: #ebeff4;
+}
+
+/**
+* Add functionality to hide tabs in tablist
+**/
+.tabs__panel--hidden {
+  display: none;
+}
+
+/**
+* Form styles
+**/
+form, .input input, .input textarea, .input select {
+	width: 100%;
+}
+
+.input label {
+	display: block;
+}
+
+.input__form-layout {
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+		width: 50%;
+	}
+}
+
+.dynamic-form__btns {
+	display: flex;
+	margin: 5px 0;
+
+	@media screen and (min-width: 1024px) {
+		margin: 3px 0 0 5px;
+	}
+}
+
+.dynamic-form__input {
+	flex-basis: 80%;
+}
+
+.nested-form {
+	align-items: center;
+	flex-grow: 1;
+	flex-wrap: wrap;
+}
+
+.values-form__input {
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+		width: 75%;
+	}
+}
+
+.input-repeat {
+	align-items: center;
+	margin-bottom: 5px;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+	}
+}
+
+.delete-field__btn {
+	@media screen and (min-width: 1024px) {
+		margin-left: auto;
+		align-self: flex-start;
+	}
+}
+
+/**
+* Rights Form Dates Layout
+**/
+.dates__container {
+	display: block;
+	width: 100%;
+
+	@media screen and (min-width: 1024px) {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: 20px;
+	}
+}
+
+.dates__help-text {
+	line-height: 15px;
+	font-style: normal;
+	margin-bottom: 10px;
+}
+
+/**
+* Accession form layout
+**/
+.card--grid-container {
+	display: grid;
+	column-gap: 20px;
+	grid-template-columns: repeat(5, 1fr)
+}
+
+.input--full-width {
+	grid-column: 1 / span 5;
+}
+
+.accession__card {
+	grid-column: 1 / span 5;
+	column-gap: 20px;
+	padding-bottom: 0;
+	margin-bottom: 20px;
+}
+
+.accession__dates {
+	@media screen and (min-width: 1024px) {
+		grid-column: 1 / span 2;
+	}
+
+	.input {
+		flex: 1;
+	}
+}
+
+.accession__creators {
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+		grid-column: 3 / span 3;
+	}
+
+	div.input {
+		flex: 1;
+		margin-bottom: 20px;
+	}
+}
+
+/**
+* Enable javascript ability to hide form elements
+**/
+.hidden {
+	display: none;
+}
+
+/**
+* Accession form AS resource name and dismiss button styles
+**/
+#resource_title {
+	font-size: 16px;
+	padding: 6px 18px;
+}
+
+#resource_title_dismiss {
+	margin-left: 5px;
+}
+
+#resource_title_dismiss:focus {
+	outline-color: #f6f6f4;
+}
+
+
+/* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 
 a:focus, .dropdown-toggle:focus {
 	outline: auto;
@@ -23,14 +488,6 @@ h5 .small, h5 small, h6 .small, h6 small {
 
 h5.description-text {
     margin-top: 0;
-}
-
-.pointer-row {
-	cursor: pointer;
-}
-
-.pointer-row:hover {
-	background-color: #ccc !important;
 }
 
 .mar-top20 {
@@ -164,17 +621,17 @@ h5.description-text {
 }
 
 /* Scroll within modal */
-#appraisal-note-form .modal-body {
+/* #appraisal-note-form .modal-body {
     overflow: scroll;
     max-height: 600px;
-}
+} */
 
 /* Increases contrast of table striping */
-.table-striped>tbody>tr:nth-of-type(odd) {
+/* .table-striped>tbody>tr:nth-of-type(odd) {
     background-color: rgba(0,0,0,.06);
-}
+} */
 
-div.dataTables_wrapper div.dataTables_filter {
+/* div.dataTables_wrapper div.dataTables_filter {
     background: rgba(0, 0, 0, .12);
     padding: 1rem;
     border-radius: 3px;
@@ -211,4 +668,4 @@ div.dataTables_wrapper div.dataTables_filter input {
 
 .force-wrap {
 	overflow-wrap: break-word;
-}
+} */
