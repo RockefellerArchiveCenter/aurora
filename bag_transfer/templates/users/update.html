@@ -30,12 +30,16 @@
       </div>
     {% endif %}
 
-    {% include 'rights/form_fields.html' with field=form.email %}
+    <div class="input__form-layout">
+      {% include 'rights/form_fields.html' with field=form.email %}
+    </div>
 
     {% if request.user.is_manager or request.user.is_superuser %}
 
         {% if not object.is_staff %}
+        <div class="input__form-layout">
           {% include 'rights/form_fields.html' with field=form.organization %}
+        </div>
         {% endif %}
 
         <fieldset class="mb-20">
@@ -49,10 +53,9 @@
             {% endfor %}
           {% endif %}
         </fieldset>
-
     {% endif %}
 
-    <div class="input--full-width">
+    <div>
 			<button type="submit" class="btn btn--md btn--blue">Save</button>
 			<button type="reset" class="btn btn--md btn--gray" onclick="window.open('{% url 'users:list' %}','_self')">Cancel</button>
 		</div>
