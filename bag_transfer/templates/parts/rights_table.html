@@ -1,6 +1,6 @@
 {% if org.rights_statements %}
   <div class="table-responsive">
-    <table class="table table-striped">
+    <table class="table table-striped rights-statement-table">
       <thead>
         <tr>
           <th>Record Type</th>
@@ -16,10 +16,10 @@
           <td>{{statement.rights_basis}}</td>
           <td>{{statement.rights_info_notes}}</td>
           <td>
-            <a href="{% url 'rights:detail' statement.pk %}" class="btn btn--blue btn--xs">View</a>
+            <a href="{% url 'rights:detail' statement.pk %}" class="btn btn--light-blue btn--xs">View</a>
             {% if request.user.is_manager or request.user.is_superuser %}
-              <a href="{% url 'rights:edit' statement.pk %}" class="btn btn--orange btn--xs">Edit</a>
-              <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn--light-blue btn--xs object-delete-button" data-object="rights-statement">Delete</a>
+              <a href="{% url 'rights:edit' statement.pk %}" class="btn btn--blue btn--xs">Edit</a>
+              <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn--orange btn--xs object-delete-button" data-object="rights-statement">Delete</a>
             {% endif %}
           </td>
         </tr>
@@ -29,4 +29,4 @@
   </div>
 {% endif %}
 
-<p {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>
+<p class="has-no-rights-statement-p" {% if org.rights_statements %}style="display:none"{% endif %}>{{org.name}} has no rights statements.</p>

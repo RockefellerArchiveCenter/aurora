@@ -1,5 +1,5 @@
 {% if object_list %}
-  <table class="table table-striped">
+  <table class="table table-striped bagit-profile-table">
     <thead>
       <tr>
         <th>Identifier</th>
@@ -23,6 +23,6 @@
     </tbody>
   </table>
 {% else %}
-  <p>No BagIt Profile for this organization.</p>
+  <p class="has-no-bagit-profile-p">No BagIt Profile for this organization.</p>
 {% endif %}
 

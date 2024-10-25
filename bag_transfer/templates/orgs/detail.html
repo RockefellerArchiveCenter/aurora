@@ -34,10 +34,10 @@
       {% endif %}
 
       {% if request.user.is_org_admin or request.user.is_superuser %}
-      <button class="btn btn--md btn--orange mt-10" data-toggle="modal" data-target="#modal-transfer-settings">Show Transfer Settings</button>
+      <button class="btn btn--md btn--orange mt-10" id="show-transfer-settings">Show Transfer Settings</button>
       {% endif %}
     </div>
-    <div class="card card--container flex--column">
+    <div class="card card--container flex--column mb-30">
       <h2>Users</h2>
       <div>
         {% include 'parts/user_table.html' with users=object.active_users switch='Active' %}
@@ -65,5 +65,10 @@
 {% endblock %}
 
 {% block extra_js %}
+<script type="text/javascript">
+  document.getElementById("show-transfer-settings").addEventListener("click", function () {
+      MicroModal.show("modal-transfer-settings");
+});
+</script>
 <script type="text/javascript" src="{% static 'js/delete_object_js.js' %}"></script>
 {% endblock %}
