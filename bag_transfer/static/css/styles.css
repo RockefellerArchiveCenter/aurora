@@ -6,6 +6,39 @@
   font-style: normal;
 }
 
+.wrapper__hero {
+	background-color: #182D48;
+	border-top: solid 1px #FFFFFF;
+}
+
+.hero {
+  margin: 10px 0 10px;
+
+  @media screen and (min-width: 580px) {
+    margin: 80px 0 80px;
+		max-width: 60%;
+  }
+
+  img {
+    @media screen and (min-width: 1024px) {
+      width: 120px;
+    }
+  }
+
+	a {
+		font-size: inherit;
+		color: white;
+	}
+}
+
+.hero__text {
+	color: #FFFFFF;
+}
+
+.hero__text--cta {
+	align-self: flex-end;
+}
+
 /* Modals */
 .modal__overlay {
 	display: none;
@@ -237,6 +270,94 @@ table a.btn {
 	line-height: 16px;
 }
 
+/* Styles for Dashboard */
+#context-switcher {
+	padding: 5px;
+	font-size: 18px;
+
+	@media screen and (min-width: 580px) {
+		min-width: 500px;
+	}
+}
+
+.dashboard__flex-container {
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+	display: flex;
+	gap: 20px;
+	}
+}
+
+.dashboard__summary-lists .summary-list__key {
+	width: 60%;
+}
+
+.dashboard__recent-transfers {
+	@media screen and (min-width: 1024px) {
+		min-width: 67%;
+		}
+}
+
+.dashboard__record-types {
+	margin-top: 30px;
+	@media screen and (min-width: 1024px) {
+		width: 33%;
+		margin-top: 0;
+		}
+}
+
+.recent-transfers {
+	border-bottom: 1px solid #A8A8A8;
+}
+
+.recent-transfers__title-block {
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+		display: flex;
+		justify-content: space-between;
+		width: 100%;
+		}
+}
+
+.recent-transfers__icon {
+	float: left;
+	display: inline;
+}
+
+.recent-transfers__text {
+	margin: 15px 10px 15px 60px;
+}
+
+.recent-transfers__text p, .recent-transfers__text a {
+	line-height: 1.15;
+}
+
+.recent-transfers__date {
+	float: right;
+}
+
+.dashboard__icon {
+	font-size: 50px;
+}
+
+.icon--white {
+	color: #FFFFFF;
+}
+
+.icon--maroon {
+	color: #652700;
+}
+
+.icon--green {
+	color: #026d3a;
+}
+
+.icon--red {
+	color: #d63924;
+}
+
 /**
 * Progress label-class color styles
 **/
@@ -294,7 +415,7 @@ div.badge {
 }
 
 /**
-* Style headings for layout cards
+* Styles for layout cards
 **/
 .card--container h2, .card--container h3 {
  margin-top: 0;
@@ -309,10 +430,14 @@ div.badge {
 }
 
 /**
-* Add option for a container card with a blue background
+* Add options for container cards with other background colors
 **/
 .card--blue {
 	background-color: #ebeff4;
+}
+
+.card--midnight-blue {
+	background-color: #123769;
 }
 
 /**
@@ -470,7 +595,6 @@ form, .input input, .input textarea, .input select {
 #resource_title_dismiss:focus {
 	outline-color: #f6f6f4;
 }
-
 
 /* @import url('https://fonts.googleapis.com/css?family=Satisfy');
 

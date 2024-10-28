@@ -9,7 +9,21 @@
     <!-- Main Header -->
     {% include 'transfers/header.html' %}
 
-    <!-- Content Wrapper. Contains page content -->
+    <!-- Hero section (only on the homepage) -->
+    {% if request.path == '/app/' %}
+    <div class="wrapper wrapper__hero">
+      <div class="hero">
+        <div class="hero__logo">
+          <img alt="Rockefeller Archive Center logo" src="https://assets.rockarch.org/assets/img/hero_logo.png" />
+        </div>
+        <div class="hero__text">
+          An archival tool to receive <a href="https://docs.rockarch.org/digital-transfer-guide">transfers of digital records</a> and allow archivists to appraise and accession those records.
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Content Wrapper. Contains main page content -->
     <main id="main">
       <div class="wrapper">
         <div class="container">

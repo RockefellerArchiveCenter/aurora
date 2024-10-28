@@ -228,27 +228,6 @@ ASPACE = {
 # Matomo Analytics configs
 MTM_ID = config.MTM_ID
 
-# List of colors used in dashboard for record types
-RECORD_TYPE_COLORS = [
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
