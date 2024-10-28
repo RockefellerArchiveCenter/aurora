@@ -14,7 +14,7 @@
 .hero {
   margin: 10px 0 10px;
 
-  @media screen and (min-width: 580px) {
+  @media screen and (min-width: 1024px) {
     margin: 80px 0 80px;
 		max-width: 60%;
   }
@@ -194,7 +194,7 @@ h1 {
 }
 
 .card-list {
-	grid-gap: 30px;
+	gap: 30px;
 
 	@media screen and (min-width: 1024px) {
 		grid-template-columns: repeat(2, 1fr);
@@ -225,7 +225,8 @@ h1 {
   }
 }
 
-.org-detail .summary-list__key {
+.org-detail .summary-list__key,
+.dashboard__summary-lists .summary-list__key{
 	width: 60%;
 }
 
@@ -287,10 +288,6 @@ table a.btn {
 	display: flex;
 	gap: 20px;
 	}
-}
-
-.dashboard__summary-lists .summary-list__key {
-	width: 60%;
 }
 
 .dashboard__recent-transfers {
@@ -357,6 +354,30 @@ table a.btn {
 .icon--red {
 	color: #d63924;
 }
+
+/* Transfer Details Page Layout Styles */
+.transfer-data__grid {
+	column-gap: 30px;
+}
+
+.transfer-details {
+	grid-column: 1 / span 12;
+	@media screen and (min-width: 1024px) {
+		grid-column: 1 / span 6;
+	}
+}
+
+.transfer-log {
+	grid-column: 1 / span 12;
+	@media screen and (min-width: 1024px) {
+		grid-column: 7 / span 6;
+	}
+}
+
+.file-manifest {
+	overflow-x: auto;
+}
+
 
 /**
 * Progress label-class color styles
