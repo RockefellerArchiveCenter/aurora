@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block title_actions %}
-  <a href="{% url 'transfers:data' %}" class="btn btn--md btn--blue">
+  <a href="{% url 'transfers:data' %}" class="btn btn--md btn--blue" aria-label="Download all transfers data as CSV">
     <span class="material-icon material-icon--space-after" aria-hidden="true">download</span>
     Download CSV
   </a>
@@ -23,9 +23,11 @@
 		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     new DataTable('#all_transfers', {
 			createdRow: function(row, data, dataIndex) {
-					$(row).attr('data-url', data[{% if request.user.is_archivist %}9{% else %}8{% endif %}]);
-					$(row).addClass('pointer-row');
-					$(row).attr('tabindex', 0)
+          var transferPk = data[{% if request.user.is_archivist %}9{% else %}8{% endif %}];
+          var transferName = data[0];
+
+          // Set the Name cell content as a clickable link to the transfer detail page
+          $('td', row).eq(0).html('<a href="' + transferPk + '">' + transferName + '</a>');
   		},
       order: [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
 			stateSave: true,
@@ -36,5 +38,4 @@
     })
   })
 </script>
-<script type="text/javascript" src="{% static 'js/pointer_row.js' %}"></script>
 {% endblock %}

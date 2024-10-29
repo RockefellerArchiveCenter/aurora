@@ -36,14 +36,8 @@ var appraise_table = '';
 $(function () {
   $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
   $('#appraise_table').DataTable({
-      columnDefs: [
-        {
-          width: "20%",
-          targets: [5]
-        }
-      ],
+      columnDefs: [ { width: "20%", targets: [5]} ],
       createdRow: function(row, data, dataIndex) {
-        var nameCell = $('td', row).eq(0);
         var transferPk = data[6];
         var transferName = data[0];
         var transferUrl = '{% url "transfers:detail" 0 %}'.replace('0', transferPk);

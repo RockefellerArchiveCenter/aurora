@@ -257,18 +257,6 @@ h1 {
 }
 
 /**
-* Styles for clickable table rows
-**/
-.pointer-row {
-	cursor: pointer;
-}
-
-.pointer-row:hover {
-	background-color: #bcbab3 !important;
-	outline: #2e2e2e 1px solid;
-}
-
-/**
 * Prevent button label text from wrapping
 **/
 .btn {
@@ -295,6 +283,14 @@ h1 {
 table a.btn {
 	font-size: 10px;
 	line-height: 16px;
+}
+
+/**
+* Make Org Rights Statement table wider to contain buttons
+**/
+.rights-statement-table th:nth-child(4),
+.rights-statement-table td:nth-child(4) {
+    width: 20%;
 }
 
 /* Styles for Dashboard */
@@ -406,8 +402,12 @@ table a.btn {
 
 
 /**
-* Progress label-class color styles
+* Progress bar width and color styles for transfers table
 **/
+progress {
+	width: 75px;
+}
+
 .progress-bar--green {
 	accent-color: #026d3a;
 }
