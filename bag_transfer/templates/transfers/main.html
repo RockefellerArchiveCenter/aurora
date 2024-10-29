@@ -44,7 +44,7 @@
             </div>
           </dl>
         </div>
-        
+
         <div class="card card--container card--blue mb-30">
           <div class="material-icon dashboard__icon icon--maroon" aria-hidden="true">calendar_month</div>
           <dl class="summary-list">
@@ -70,14 +70,7 @@
 
       <div class="dashboard__flex-container">
         <div class="dashboard__recent-transfers card card--container flex--column">
-          <div class="recent-transfers__title-block">
-            <h2>Recent Transfers</h2>
-            <a class="btn btn--md btn--gray" href="{% url 'transfers:list' %}">
-              <span class="material-icon material-icon--space-after" aria-hidden="true">visibility</span>
-              View all transfers
-          </a>
-          </div>
-
+          <h2>Recent Transfers</h2>
           {% if org.uploads %}
             <ol class="list--unstyled container--full-width">
               {% for upload in org.uploads|slice:":10" %}

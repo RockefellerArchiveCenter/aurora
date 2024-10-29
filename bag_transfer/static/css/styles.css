@@ -9,13 +9,16 @@
 .wrapper__hero {
 	background-color: #182D48;
 	border-top: solid 1px #FFFFFF;
+	flex-direction: column;
+	align-items: center;
 }
 
 .hero {
+	width: 100%;
   margin: 10px 0 10px;
 
   @media screen and (min-width: 1024px) {
-    margin: 80px 0 80px;
+    margin: 80px 0 0;
 		max-width: 60%;
   }
 
@@ -35,8 +38,8 @@
 	color: #FFFFFF;
 }
 
-.hero__text--cta {
-	align-self: flex-end;
+.cta__buttons {
+	
 }
 
 /* Modals */
