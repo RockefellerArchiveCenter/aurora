@@ -20,13 +20,13 @@
           An archival tool to receive <a href="https://docs.rockarch.org/digital-transfer-guide">transfers of digital records</a> and allow archivists to appraise and accession those records.
         </div>
       </div>
-      <div class="cta__buttons mt-30 mb-60">
-        <a href="{% url 'transfers:list' %}" class="btn btn--lg btn--orange mr-10">
+      <div class="mt-20 mb-60 ml-30">
+        <a href="{% url 'transfers:list' %}" class="btn btn--lg btn--orange mt-10 mr-10">
           <span class="material-icon material-icon--space-after" aria-hidden="true">visibility</span>
           View All Transfers
         </a>
         <a href="{% if not request.user.is_staff %}{% url 'orgs:detail' pk=request.user.organization.pk %}{% elif request.user.is_staff %}{% url 'orgs:list' %}{% endif %}" 
-          class="btn btn--lg btn--orange mr-10">
+          class="btn btn--lg btn--orange mr-10 mt-10">
           <span class="material-icon material-icon--space-after" aria-hidden="true">account_balance</span>
           Access Organization Settings
         </a>
