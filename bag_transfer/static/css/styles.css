@@ -165,7 +165,9 @@ a.header__brand-title {
 * Smaller h1 on large screens that better matches layout of this site
 **/
 h1 {
-  font-size: 42px;
+	@media screen and (min-width: 1024px) {
+  	font-size: 42px;
+	}
 }
 
 /**
@@ -176,10 +178,10 @@ h1 {
 	display: block;
 
 	@media screen and (min-width: 1024px) {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-	width: 100%;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		width: 100%;
   }
 }
 
@@ -189,6 +191,9 @@ h1 {
 		}
 	}
 
+/**
+* Styles for cards
+**/
 .card {
 	min-height: auto;
 }
@@ -200,6 +205,27 @@ h1 {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
+
+.card--container h2, .card--container h3 {
+	margin-top: 0;
+	width: 100%;
+ }
+
+ /**
+ * Reduce padding for layout cards and allow tables inside of flex cards to
+ * scroll horizontally for responsiveness.
+ **/
+ .card--container {
+	 padding: 18px;
+	 overflow-x: auto;
+ }
+
+ /**
+ * Add options for container cards with other background colors
+ **/
+ .card--blue {
+	 background-color: #ebeff4;
+ }
 
 .user__actions {
 	display: flex;
@@ -433,32 +459,6 @@ div.badge {
 	display: inline-block;
 	vertical-align: middle;
 	margin-bottom: 6px;
-}
-
-/**
-* Styles for layout cards
-**/
-.card--container h2, .card--container h3 {
- margin-top: 0;
- width: 100%;
-}
-
-/**
-* Reduce padding for layout cards
-**/
-.card--container {
-	padding: 18px;
-}
-
-/**
-* Add options for container cards with other background colors
-**/
-.card--blue {
-	background-color: #ebeff4;
-}
-
-.card--midnight-blue {
-	background-color: #123769;
 }
 
 /**

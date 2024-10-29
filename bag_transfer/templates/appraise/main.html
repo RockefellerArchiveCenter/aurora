@@ -4,9 +4,8 @@
 
 {% block content %}
 {% if not uploads_count %}
-<p>No transfers to appraise</p>
+  <p>No transfers to appraise</p>
 {% else %}
-<div class="table-responsive">
   <table id="appraise_table" class="table table-striped dataTable">
     <thead>
       <tr>
@@ -19,9 +18,7 @@
       </tr>
     </thead>
   </table>
-</div>
 {% endif %}
-
 {% endblock %}
 
 {% block modals %}
@@ -61,7 +58,6 @@ $(function () {
       stateSave: true,
       processing: true,
       serverSide: true,
-      fixedHeader: true,
       ajax: '{% url "appraise:datatable" %}'
     })
 

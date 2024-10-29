@@ -14,24 +14,26 @@
 {% endblock %}
 
 {% block content %}
-<table class="table table-striped" id="org-admin-table">
-  <thead>
+<div class="table-responsive">
+  <table class="table table-striped" id="org-admin-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Acquisition Type</th>
+        <th>Created</th>
+        <th>Active?</th>
+      </tr>
+    <thead>
+    <tbody>
+    {% for org in object_list %}
     <tr>
-      <th>Name</th>
-      <th>Acquisition Type</th>
-      <th>Created</th>
-      <th>Active?</th>
+      <td><a href="{% url 'orgs:detail' org.pk %}">{{ org.name }}</a></td>
+      <td>{{ org.acquisition_type }}</td>
+      <td>{{ org.created_time }}</td>
+      <td>{% if org.is_active %}Yes{% else %}No{% endif %}</td>
     </tr>
-  <thead>
-  <tbody>
-  {% for org in object_list %}
-  <tr>
-    <td><a href="{% url 'orgs:detail' org.pk %}">{{ org.name }}</a></td>
-    <td>{{ org.acquisition_type }}</td>
-    <td>{{ org.created_time }}</td>
-    <td>{% if org.is_active %}Yes{% else %}No{% endif %}</td>
-  </tr>
-  {% endfor %}
-  </tbody>
-</table>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
