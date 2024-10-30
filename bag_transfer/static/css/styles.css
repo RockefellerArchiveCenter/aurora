@@ -80,7 +80,7 @@ main .container {
 /**
 * Login page styles
 **/
-.login-page {
+.login__page {
 	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
 	background-size: cover;
 	-webkit-background-size: cover;
@@ -88,7 +88,7 @@ main .container {
 	-o-background-size: cover;
 }
 
-.login-box {
+.login__box {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
@@ -96,14 +96,21 @@ main .container {
 	min-height: 100vh;
 }
 
-.login-logo, .login-credit {
+.login__logo, .login__credit {
 	color: #fff;
 	text-align: center;
 }
 
-.login-logo {
+.login__logo {
 	font-family: "Satisfy", cursive;
 	font-size: 60px;
+}
+
+.login__form {
+	width: 100%;
+	@media screen and (min-width: 580px) {
+    width: 500px;
+  }
 }
 
 header {
