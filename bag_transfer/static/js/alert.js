@@ -5,6 +5,7 @@ $(document).ready(function() {
   $('#messages').on('click', '.alert__button', function() {
     $(this).closest('.alert').fadeOut(global_fade_time, function() {
       $(this).remove();
+      $('h1').first().focus(); //after removal, move focus to the h1
     });
   });
 });

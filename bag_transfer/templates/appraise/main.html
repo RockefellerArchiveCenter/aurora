@@ -4,7 +4,7 @@
 
 {% block content %}
 {% if not uploads_count %}
-  <p>No transfers to appraise</p>
+  <p>No transfers to appraise.</p>
 {% else %}
   <table id="appraise_table" class="table table-striped dataTable">
     <thead>
@@ -164,6 +164,7 @@ function handleRemoveRow(row, action) {
   var cls = (action == 'accepted') ? 'blue':'orange'
   var name = $(row).children('td').first().text()
   $(row).remove()
+  $('h1').first().focus(); //after removal, move focus to the h1
   displayMessage(cls, 'Transfer <b>'+name+'</b> '+action+'.', true);
 }
 

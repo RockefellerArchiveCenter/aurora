@@ -1,5 +1,5 @@
 <div class="title__container">
-	<h2>Rights Statements</h2>
+	<h2 id="rights-statement-title" tabindex="-1">Rights Statements</h2>
 	{% if request.user.is_manager or request.user.is_superuser %}
 		<a href="{% url 'rights:add' %}?org={{object.pk}}" class="btn btn--sm btn--blue mb-20">
 		<span class="material-icon material-icon--space-after" aria-hidden="true">add</span>

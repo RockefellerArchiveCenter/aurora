@@ -1,5 +1,5 @@
 <div class="title__container">
-	<h2>BagIt Profiles</h2>
+	<h2 id="bagit-profile-title" tabindex="-1">BagIt Profiles</h2>
 	{% if request.user.is_manager or request.user.is_superuser and not object.profile.all %}
 	<a href="{% url 'bagit-profiles:add' %}?org={{object.pk}}" class="btn btn--blue btn--sm mb-20">
 		<span class="material-icon material-icon--space-after" aria-hidden="true">add</span>
