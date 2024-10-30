@@ -1,7 +1,7 @@
 {% if messages %}
 		{% for message in messages %}
-			<div class="alert alert--{% if message.tags == 'error' %}orange{% else %}blue{% endif %} alert-dismissible">
-				<button type="button" class="alert__button" data-dismiss="alert" aria-label="Close">
+			<div class="alert alert--{% if message.tags == 'error' %}orange{% else %}blue{% endif %}">
+				<button type="button" class="alert__button" aria-label="Close alert message">
 					<span class="material-icon" aria-hidden="true">close</span>
 				</button>
 				<div class="alert__icon-wrapper">
