@@ -165,10 +165,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'", 'https://rockarch.matomo.cloud/')
-CSP_IMG_SRC = ("'self'")
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://fonts.googleapis.com/')
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
-CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com/')
+CSP_IMG_SRC = ("'self'", 'https://assets.rockarch.org/')
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://assets.rockarch.org/')
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
+CSP_FONT_SRC = ("'self'", 'https://cdnjs.cloudflare.com/', 'https://assets.rockarch.org/')
 
 # Transfer settings
 S3_USE = config.S3_USE
