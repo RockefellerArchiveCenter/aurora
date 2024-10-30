@@ -1,6 +1,6 @@
 
 <h3 class="heading--dotted-border mb-20">{{rights_granted.act}} <span class="mt-0 badge badge--{% if rights_granted.restriction == 'disallow' %}red{% elif rights_granted.restriction == 'allow' %}green{% else %}yellow{% endif %}">{{rights_granted.restriction}}</span></h3>
-<div class="summary-list ml-20">
+<div class="summary-list">
   {% if rights_granted.start_date %}
     <div class="summary-list__row">
       <dt class="summary-list__key">Applicable Dates</dt>

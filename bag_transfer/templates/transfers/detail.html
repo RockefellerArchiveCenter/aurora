@@ -14,8 +14,8 @@
 
 
 {% block content %}
-<div class="my-30">
-	<span class="badge badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
+<div class="transfer-details__badge">
+	<span class="badge badge--md badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
 </div>
 <div class="grid transfer-data__grid">
 	<div class="transfer-details card card--container flex--column mb-30">
@@ -132,7 +132,7 @@
 {% endif %}
 
 {% if object.manifest %}
-	<div class="file-manifest card card--container flex--column mb-30">
+	<div class="card card--container flex--column mb-30">
 		<h2>Manifest of Files</h2>
 		<pre>{{ object.manifest|linebreaks }}</pre>
 	</div>

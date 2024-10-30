@@ -6,65 +6,7 @@
   font-style: normal;
 }
 
-.wrapper__hero {
-	background-color: #182D48;
-	border-top: solid 1px #FFFFFF;
-	flex-direction: column;
-	align-items: center;
-}
-
-.hero {
-	width: 100%;
-  margin: 10px 0 10px;
-
-  @media screen and (min-width: 1024px) {
-    margin: 80px 0 0;
-		max-width: 60%;
-  }
-
-  img {
-    @media screen and (min-width: 1024px) {
-      width: 120px;
-    }
-  }
-
-	a {
-		font-size: inherit;
-		color: white;
-	}
-}
-
-.hero__text {
-	color: #FFFFFF;
-}
-
-/* Modals */
-.modal__overlay {
-	display: none;
-}
-
-.modal__overlay.is-open {
-	display: block;
-}
-
-.modal--md {
-	@media screen and (min-width: 580px) {
-		bottom: 20%;
-		left: 20%;
-		right: 20%;
-		top: 20%;
-	}
-}
-
-.modal--sm {
-	@media screen and (min-width: 1024px) {
-		left: 30%;
-		right: 30%;
-		top: 30%;
-		bottom: 30%;
-	}
-}
-
+/* Base styles */
 .container {
 	max-width: 1600px;
 }
@@ -77,51 +19,53 @@ main .container {
   }
 }
 
+/* Enable javascript to hide elements */
+.hidden {
+	display: none;
+}
+
+/* Add functionality to hide tabs in tablist */
+.tabs__panel--hidden {
+  display: none;
+}
+
+/* Base button styles */
+
+/* Prevent button label text from wrapping */
+.btn {
+	white-space: nowrap;
+}
+
 /**
-* Login page styles
+* Extra small button for tables shrinks padding from btn--sm styles
 **/
-.login__page {
-	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
-	background-size: cover;
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
+.btn--xs {
+	font-size: 10px;
+	line-height: 16px;
+	padding: 3px;
+	font-weight: bold;
 }
 
-.login__box {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: space-between;
-	min-height: 100vh;
+.btn--xs .material-icon {
+	font-size: 18px;
 }
 
-.login__logo, .login__credit {
-	color: #fff;
-	text-align: center;
+/**
+* Override table styles for links that are styled as buttons
+**/
+table a.btn {
+	font-size: 10px;
+	line-height: 16px;
 }
 
-.login__logo {
-	font-family: "Satisfy", cursive;
-	font-size: 60px;
-}
-
-.login__form {
-	width: 100%;
-	@media screen and (min-width: 580px) {
-    width: 500px;
-  }
-}
-
+/* Header and navigation styles */
 header {
 	top: 0;
   z-index: 999;
 	background-color: #182D48;
 }
 
-/**
-* Adjust top position so that skip link is more visible in the header
-**/
+/* Adjust top position so that skip link is more visible in the header */
 .skip-link {
   top: 0;
 }
@@ -167,18 +111,22 @@ a.header__brand-title {
 	outline-color: #fff;
 }
 
+/* Page titles and related action button layout styles */
+
 /**
-* Smaller h1 on large screens that better matches layout of this site
+* Smaller h1 and larger margin bottom on large screens that better
+* matches layout of this site
 **/
 h1 {
 	@media screen and (min-width: 1024px) {
   	font-size: 42px;
+		margin: 40px 0;
 	}
 }
 
 /**
 * h1 div container to allow buttons or other elements to be positioned
-* on the same line has the page title
+* on the same line as the page title
 **/
 .title__container {
 	display: block;
@@ -197,9 +145,43 @@ h1 {
 		}
 	}
 
-/**
-* Styles for cards
-**/
+.title__actions-btns {
+	margin-bottom: 30px;
+	display: block;
+
+	@media screen and (min-width: 1024px) {
+		margin-bottom: 0;
+		}
+}
+
+/* Modal styles */
+.modal__overlay {
+	display: none;
+}
+
+.modal__overlay.is-open {
+	display: block;
+}
+
+.modal--md {
+	@media screen and (min-width: 580px) {
+		bottom: 20%;
+		left: 20%;
+		right: 20%;
+		top: 20%;
+	}
+}
+
+.modal--sm {
+	@media screen and (min-width: 1024px) {
+		left: 30%;
+		right: 30%;
+		top: 30%;
+		bottom: 30%;
+	}
+}
+
+/* Card styles */
 .card {
 	min-height: auto;
 }
@@ -222,84 +204,126 @@ h1 {
  * scroll horizontally for responsiveness.
  **/
  .card--container {
-	 padding: 18px;
-	 overflow-x: auto;
- }
-
- /**
- * Add options for container cards with other background colors
- **/
- .card--blue {
-	 background-color: #ebeff4;
- }
-
-.user__actions {
-	display: flex;
-	margin-top: auto;
+	padding: 18px;
+	overflow-x: auto;
 }
 
-/* Layout for organization details page */
-.org-detail {
-	grid-column: 1 / span 12;
-	margin-right: 0;
-
-	@media screen and (min-width: 1024px) {
-    grid-column: 1 / span 3;
-		margin-right: 30px;
-	}
+/* Add an option for a blue card */
+.card--blue {
+	background-color: #ebeff4;
 }
 
-.org-settings {
-	grid-column: 1 / span 12;
+/* Badge colors and layout styles */
+.badge--green {
+	background-color: #026d3a;
+}
+
+.badge--red {
+	background-color: #d63924;
+}
+
+.badge--yellow {
+	background-color: #ffc107;
+	color: #2e2e2e;
+}
+
+.badge--light-blue {
+	background-color: #ebeff4;
+	color: #2e2e2e;
+	border: 1px solid #2e2e2e;
+}
+
+.badge--md {
+	font-size: 20px;
+}
+
+.badge__bagit-version {
+	display: inline-block;
+	margin-top: 3px;
 
 	@media screen and (min-width: 1024px) {
-    grid-column: 4 / span 9;
+    margin-top: 0px;
   }
 }
 
-.org-detail .summary-list__key,
-.dashboard__summary-lists .summary-list__key{
-	width: 60%;
+div.badge {
+	width: fit-content;
 }
 
-/**
-* Prevent button label text from wrapping
-**/
-.btn {
-	white-space: nowrap;
+.list__badge li, h3 .badge {
+	display: inline-block;
+	vertical-align: middle;
+	margin-bottom: 6px;
 }
 
-/**
-* Extra small button for tables shrinks padding from btn--sm styles
-**/
-.btn--xs {
-	font-size: 10px;
-	line-height: 16px;
-	padding: 3px;
-	font-weight: bold;
+/* Homepage hero styles */
+.wrapper__hero {
+	background-color: #182D48;
+	border-top: solid 1px #FFFFFF;
+	flex-direction: column;
+	align-items: center;
 }
 
-.btn--xs .material-icon {
-	font-size: 18px;
+.hero {
+	width: 100%;
+  margin: 10px 0 10px;
+
+  @media screen and (min-width: 1024px) {
+    margin: 80px 0 0;
+		max-width: 60%;
+  }
 }
 
-/**
-* Override table styles for links that are styled as buttons
-**/
-table a.btn {
-	font-size: 10px;
-	line-height: 16px;
+.hero img {
+	@media screen and (min-width: 1024px) {
+		width: 120px;
+	}
 }
 
-/**
-* Make Org Rights Statement table wider to contain buttons
-**/
-.rights-statement-table th:nth-child(4),
-.rights-statement-table td:nth-child(4) {
-    width: 20%;
+.hero	a {
+	font-size: inherit;
+	color: white;
 }
 
-/* Styles for Dashboard */
+.hero__text {
+	color: #FFFFFF;
+}
+
+/* Login and password reset page styles */
+.login__page {
+	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
+	background-size: cover;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+}
+
+.login__box {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+	min-height: 100vh;
+}
+
+.login__logo, .login__credit {
+	color: #fff;
+	text-align: center;
+}
+
+.login__logo {
+	font-family: "Satisfy", cursive;
+	font-size: 60px;
+}
+
+.login__form {
+	width: 100%;
+	@media screen and (min-width: 580px) {
+    width: 500px;
+  }
+}
+
+/* Dashboard styles */
 #context-switcher {
 	padding: 5px;
 	font-size: 18px;
@@ -383,9 +407,57 @@ table a.btn {
 	color: #d63924;
 }
 
-/* Transfer Details Page Layout Styles */
+ /* User edit page action styles */
+.user__actions {
+	display: flex;
+	margin-top: auto;
+}
+
+/* Organization details page layout */
+.org-detail {
+	grid-column: 1 / span 12;
+	margin-right: 0;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 1 / span 3;
+		margin-right: 30px;
+	}
+}
+
+.org-settings {
+	grid-column: 1 / span 12;
+
+	@media screen and (min-width: 1024px) {
+    grid-column: 4 / span 9;
+  }
+}
+
+/* Improve layout of summary list spacing on homepage and org detail page */
+.org-detail .summary-list__key,
+.dashboard__summary-lists .summary-list__key {
+	width: 60%;
+}
+
+/**
+* Make org rights statement table wider to contain buttons
+**/
+.rights-statement-table th:nth-child(4),
+.rights-statement-table td:nth-child(4) {
+    width: 20%;
+}
+
+/* Transfer details page layout styles */
 .transfer-data__grid {
 	column-gap: 30px;
+}
+
+.transfer-details__badge {
+ margin: 30px 0;
+
+ @media screen and (min-width: 1024px) {
+	margin: 5px 0 30px;
+}
+
 }
 
 .transfer-details {
@@ -402,14 +474,7 @@ table a.btn {
 	}
 }
 
-.file-manifest {
-	overflow-x: auto;
-}
-
-
-/**
-* Progress bar width and color styles for transfers table
-**/
+/* Progress bar width and color styles for transfers table */
 progress {
 	width: 75px;
 }
@@ -427,60 +492,19 @@ progress {
 }
 
 /**
-* Badge colors and layout styles
-**/
-.badge--green {
-	background-color: #026d3a;
-}
-
-.badge--red {
-	background-color: #d63924;
-}
-
-.badge--yellow {
-	background-color: #ffc107;
-	color: #2e2e2e;
-}
-
-.badge--light-blue {
-	background-color: #ebeff4;
-	color: #2e2e2e;
-	border: 1px solid #2e2e2e;
-}
-
-.badge__bagit-version {
-	display: inline-block;
-	margin-top: 3px;
-
-	@media screen and (min-width: 1024px) {
-    margin-top: 0px;
-  }
-}
-
-div.badge {
-	width: fit-content;
-}
-
-.list__badge li, h3 .badge {
-	display: inline-block;
-	vertical-align: middle;
-	margin-bottom: 6px;
-}
-
-/**
-* Add functionality to hide tabs in tablist
-**/
-.tabs__panel--hidden {
-  display: none;
-}
-
-/**
 * Form styles
 **/
-form, .input input, .input textarea, .input select {
+
+form {
 	width: 100%;
 }
 
+/* For radio buttons */
+fieldset input {
+	width: auto;
+}
+
+/* Keep label on top of input */
 .input label {
 	display: block;
 }
@@ -493,6 +517,7 @@ form, .input input, .input textarea, .input select {
 	}
 }
 
+/* Layout for buttons in dynamic and nested forms */
 .dynamic-form__btns {
 	display: flex;
 	margin: 5px 0;
@@ -536,9 +561,7 @@ form, .input input, .input textarea, .input select {
 	}
 }
 
-/**
-* Rights Form Dates Layout
-**/
+/* Rights form dates styles */
 .dates__container {
 	display: block;
 	width: 100%;
@@ -556,9 +579,7 @@ form, .input input, .input textarea, .input select {
 	margin-bottom: 10px;
 }
 
-/**
-* Accession form layout
-**/
+/* Accession form layout */
 .card--grid-container {
 	display: grid;
 	column-gap: 20px;
@@ -580,10 +601,10 @@ form, .input input, .input textarea, .input select {
 	@media screen and (min-width: 1024px) {
 		grid-column: 1 / span 2;
 	}
+}
 
-	.input {
-		flex: 1;
-	}
+.accession__dates .input {
+	flex: 1;
 }
 
 .accession__creators {
@@ -593,18 +614,11 @@ form, .input input, .input textarea, .input select {
 		display: flex;
 		grid-column: 3 / span 3;
 	}
-
-	div.input {
-		flex: 1;
-		margin-bottom: 20px;
-	}
 }
 
-/**
-* Enable javascript ability to hide form elements
-**/
-.hidden {
-	display: none;
+.accession__creators div.input {
+		flex: 1;
+		margin-bottom: 20px;
 }
 
 /**

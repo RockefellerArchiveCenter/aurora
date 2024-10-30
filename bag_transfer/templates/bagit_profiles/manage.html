@@ -12,7 +12,7 @@
 <form action="" method="post" novalidate>
 	{% csrf_token %}
 
-	<div class="card card--container flex--column mt-20">
+	<div class="card card--container flex--column">
 		<h2>General Information</h2>
 		{{form.management_form}}
 		{{form.non_form_errors}}
