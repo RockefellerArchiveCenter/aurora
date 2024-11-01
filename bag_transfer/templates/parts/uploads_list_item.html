@@ -1,6 +1,7 @@
 <div class="recent-transfers">
   <div class="recent-transfers__icon">
-    <div class="material-icon dashboard__icon {% if upload.bag_it_valid %}icon--green{% else %}icon--red{% endif %}" aria-label="{% if upload.bag_it_valid %}valid{% else %}invalid{% endif %} transfer">inventory</div>
+    <div class="material-icon dashboard__icon icon--{% if upload.process_status == 20 %}undefined{% elif upload.process_status == 30 %}red{% else %}green{% endif %}"
+    aria-hidden="true">inventory</div>
   </div>
   <div class="recent-transfers__text">
     <a href="{% url 'transfers:detail' pk=upload.pk %}">
@@ -8,7 +9,14 @@
     </a>
     <span class="recent-transfers__date">{{ upload.created_time }}</span>
     <p>
-      {% if upload.bag_it_valid %}Transfer successful{% else %}Transfer Failed{% endif %}
+      Transfer by {{ upload.organization.name }}  
+      {% if upload.process_status == 20 %}
+        is in progress.
+      {% elif upload.process_status == 30 %}
+        failed validation.
+      {% else %}
+        passed validation.
+      {% endif %}
     </p>
   </div>
 </div>

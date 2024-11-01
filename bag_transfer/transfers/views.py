@@ -71,7 +71,7 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
         data = {
             "name": org_name,
             "users": users,
-            "uploads": org_uploads.order_by("-created_time")[:15],
+            "uploads": org_uploads.order_by("-created_time")[:10],
             "uploads_count": org_uploads.count(),
             "validated_count": org_uploads.filter(process_status__gte=Transfer.VALIDATED).count(),
             "accepted_count": org_uploads.filter(process_status__gte=Transfer.ACCEPTED).count(),

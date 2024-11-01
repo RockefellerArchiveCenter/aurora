@@ -73,12 +73,12 @@
           <h2>Recent Transfers</h2>
           {% if org.uploads %}
             <ol class="list--unstyled container--full-width">
-              {% for upload in org.uploads|slice:":10" %}
+              {% for upload in org.uploads %}
                 <li>
                   {% include 'parts/uploads_list_item.html' %}
                 </li>
               {% endfor %}
-            </ul>
+            </ol>
           {% else %}
             <p>There are no recent transfers.</p>
           {% endif %}
