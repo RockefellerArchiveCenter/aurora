@@ -20,7 +20,6 @@
 {% block extra_js %}
 <script type="text/javascript">
   $(document).ready(function() {
-		$.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
     new DataTable('#all_transfers', {
 			createdRow: function(row, data, dataIndex) {
           var transferPk = data[{% if request.user.is_archivist %}9{% else %}8{% endif %}];

@@ -34,7 +34,6 @@ var url = '{% url 'appraise:list' %}';
 var appraise_table = '';
 
 $(function () {
-  $.fn.dataTable.moment( 'MMM D, YYYY h:mm A' );
   $('#appraise_table').DataTable({
       columnDefs: [ { width: "20%", targets: [5]} ],
       createdRow: function(row, data, dataIndex) {
