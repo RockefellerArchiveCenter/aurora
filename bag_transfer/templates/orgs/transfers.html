@@ -29,7 +29,6 @@
           $('td', row).eq(0).html('<a href="' + transferPk + '">' + transferName + '</a>');
   		},
       order: [[{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc']],
-			stateSave: true,
 			processing: true,
       serverSide: true,
 			fixedHeader: true,
