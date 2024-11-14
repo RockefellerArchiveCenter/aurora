@@ -32,6 +32,7 @@ main .container {
 /* Base button styles */
 
 /* Prevent button label text from wrapping */
+/* TODO: should this be part of style library? */
 .btn {
 	white-space: nowrap;
 }
@@ -39,6 +40,7 @@ main .container {
 /**
 * Extra small button for tables shrinks padding from btn--sm styles
 **/
+/* TODO: Add to style library */
 .btn--xs {
 	font-size: 10px;
 	line-height: 16px;
@@ -59,6 +61,7 @@ table a.btn {
 }
 
 /* Header and navigation styles */
+/* TODO: Add this blue version of header to style library */
 header {
 	top: 0;
   z-index: 999;
@@ -209,11 +212,13 @@ h1 {
 }
 
 /* Add an option for a blue card */
+/* TODO: add to style library? */
 .card--blue {
 	background-color: #ebeff4;
 }
 
 /* Badge colors and layout styles */
+/* TODO: add more badge color and size options to style library */
 .badge--green {
 	background-color: #026d3a;
 }
@@ -571,6 +576,30 @@ fieldset input {
 	grid-template-columns: repeat(2, 1fr);
 	column-gap: 20px;
 	}
+}
+
+/* Removes list styles from default Django forms error list element */
+.errorlist {
+  font-size: 14px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Adds .input__error class styles from RAC Style Library to error class
+used in crispy forms bootstrap4 templates */
+.errorlist li {
+  background-color: #fbe7e0;
+  border: 1px solid #D7521E;
+  border-radius: 3px;
+  color: #2E2E2E;
+  display: block;
+  font-weight: normal;
+  font-size: 14px;
+  font-style: italic;
+	line-height: 1.15;
+  margin: 10px 0;
+  padding: 10px;
 }
 
 .dates__help-text {
