@@ -87,7 +87,6 @@ class ManifestsAllowedForm(forms.ModelForm):
         self.legend_text = "Allowed algorithm(s) for manifest files *"
         self.help_text_id = "manifests_allowed-help"
         self.fields['name'].required = True
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class ManifestsRequiredForm(forms.ModelForm):
@@ -106,7 +105,7 @@ class ManifestsRequiredForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.legend_text = "Manifests Required"
         self.help_text_id = "manifests_required-help"
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
+        self.fields['name'].required = True
 
 
 class AcceptSerializationForm(forms.ModelForm):

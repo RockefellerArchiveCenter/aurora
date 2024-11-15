@@ -31,22 +31,11 @@
 
 		<fieldset class="mb-20" aria-required="true">
 			<legend>Serialization Allowed? *</legend>
-
-			{% if form.non_field_errors %}
-					{% for error in form.non_field_errors %}
-							<div class="input__error">{{ error }}</div>
-					{% endfor %}
-			{% endif %}
-
 			{% for checkbox in form.serialization %}
 					<div class="input-group">
 							{{ checkbox.tag }}
 							<label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
 					</div>
-			{% endfor %}
-
-			{% for error in form.serialization.errors %}
-					<div class="input__error">{{ error }}</div>
 			{% endfor %}
 		</fieldset>
 

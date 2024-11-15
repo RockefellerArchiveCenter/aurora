@@ -82,9 +82,23 @@ class BagItProfileManageView(PageTitleMixin):
         ]
         for formset in forms_to_save:
             if not formset.is_valid():
+                # TODO: added for troubleshooting - can remove/improve once issues are resolved
+                error_messages = []
+                for form in formset:
+                    for field, errors in form.errors.items():
+                        for error in errors:
+                            error_messages.append(f"{field}: {error}")
+
+                for error in formset.non_form_errors():
+                    error_messages.append(f"Form error: {error}")
+
+                detailed_errors = "; ".join(error_messages)
+
                 messages.error(
                     self.request,
-                    "There was a problem with your submission. Please correct the error(s) below and try again.")
+                    f"There was a problem with your submission: {detailed_errors} "
+                    "Please correct the error(s) and try again."
+                )
                 return super().form_invalid(form)
             else:
                 formset.save()
