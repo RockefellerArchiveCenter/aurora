@@ -587,7 +587,7 @@ fieldset input {
 }
 
 /* Adds .input__error class styles from RAC Style Library to error class
-used in crispy forms bootstrap4 templates */
+used in django forms */
 .errorlist li {
   background-color: #fbe7e0;
   border: 1px solid #D7521E;
