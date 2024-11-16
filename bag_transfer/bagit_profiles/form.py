@@ -87,6 +87,7 @@ class ManifestsAllowedForm(forms.ModelForm):
         self.legend_text = "Allowed algorithm(s) for manifest files *"
         self.help_text_id = "manifests_allowed-help"
         self.fields['name'].required = True
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class ManifestsRequiredForm(forms.ModelForm):
@@ -106,6 +107,7 @@ class ManifestsRequiredForm(forms.ModelForm):
         self.legend_text = "Manifests Required"
         self.help_text_id = "manifests_required-help"
         self.fields['name'].required = True
+        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
 
 
 class AcceptSerializationForm(forms.ModelForm):
@@ -232,9 +234,7 @@ ManifestsAllowedFormset = forms.inlineformset_factory(
     BagItProfile,
     ManifestsAllowed,
     fields=("name",),
-    max_num=len(ManifestsAllowed.MANIFESTS_ALLOWED_CHOICES),
-    min_num=1,
-    validate_min=True,
+    max_num=1,
     form=ManifestsAllowedForm,
 )
 
@@ -242,7 +242,7 @@ ManifestsRequiredFormset = forms.inlineformset_factory(
     BagItProfile,
     ManifestsRequired,
     fields=("name",),
-    max_num=len(ManifestsRequired.MANIFESTS_REQUIRED_CHOICES),
+    max_num=1,
     form=ManifestsRequiredForm,
 )
 
@@ -250,7 +250,7 @@ AcceptSerializationFormset = forms.inlineformset_factory(
     BagItProfile,
     AcceptSerialization,
     fields=("name",),
-    max_num=len(AcceptSerialization.ACCEPT_SERIALIZATION_CHOICES),
+    max_num=1,
     form=AcceptSerializationForm,
 )
 
@@ -258,7 +258,7 @@ AcceptBagItVersionFormset = forms.inlineformset_factory(
     BagItProfile,
     AcceptBagItVersion,
     fields=("name",),
-    max_num=len(AcceptBagItVersion.BAGIT_VERSION_NAME_CHOICES),
+    max_num=1,
     form=AcceptBagItVersionForm,
 )
 
@@ -266,7 +266,7 @@ TagManifestsRequiredFormset = forms.inlineformset_factory(
     BagItProfile,
     TagManifestsRequired,
     fields=("name",),
-    max_num=len(TagManifestsRequired.TAG_MANIFESTS_REQUIRED_CHOICES),
+    max_num=1,
     form=TagManifestsRequiredForm,
 )
 
