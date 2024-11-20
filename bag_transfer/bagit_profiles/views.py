@@ -13,10 +13,7 @@ from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin, is_ajax
 from bag_transfer.models import BagItProfile, Organization
 
-from .form import (AcceptBagItVersionFormset, AcceptSerializationFormset,
-                   BagItProfileBagInfoFormset, BagItProfileForm,
-                   ManifestsAllowedFormset, ManifestsRequiredFormset,
-                   TagFilesRequiredFormset, TagManifestsRequiredFormset)
+from .form import BagItProfileForm
 
 
 class BagItProfileManageView(PageTitleMixin):
@@ -41,13 +38,6 @@ class BagItProfileManageView(PageTitleMixin):
                     "contact_email": "archive@rockarch.org",
                     "organization": organization})
         context["form"] = form
-        context["bag_info_formset"] = BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
-        context["manifests_allowed_formset"] = ManifestsAllowedFormset(instance=self.object, prefix="manifests_allowed")
-        context["manifests_formset"] = ManifestsRequiredFormset(instance=self.object, prefix="manifests")
-        context["serialization_formset"] = AcceptSerializationFormset(instance=self.object, prefix="serialization")
-        context["version_formset"] = AcceptBagItVersionFormset(instance=self.object, prefix="version")
-        context["tag_manifests_formset"] = TagManifestsRequiredFormset(instance=self.object, prefix="tag_manifests")
-        context["tag_files_formset"] = TagFilesRequiredFormset(instance=self.object, prefix="tag_files")
         context["organization"] = organization
         return context
 
@@ -57,51 +47,6 @@ class BagItProfileManageView(PageTitleMixin):
     def form_valid(self, form):
         """Saves associated formsets."""
         bagit_profile = form.save()
-        bag_info_formset = BagItProfileBagInfoFormset(
-            self.request.POST, instance=bagit_profile, prefix="bag_info")
-        manifests_allowed_formset = ManifestsAllowedFormset(
-            self.request.POST, instance=bagit_profile, prefix="manifests_allowed")
-        manifests_formset = ManifestsRequiredFormset(
-            self.request.POST, instance=bagit_profile, prefix="manifests")
-        serialization_formset = AcceptSerializationFormset(
-            self.request.POST, instance=bagit_profile, prefix="serialization")
-        version_formset = AcceptBagItVersionFormset(
-            self.request.POST, instance=bagit_profile, prefix="version")
-        tag_manifests_formset = TagManifestsRequiredFormset(
-            self.request.POST, instance=bagit_profile, prefix="tag_manifests")
-        tag_files_formset = TagFilesRequiredFormset(
-            self.request.POST, instance=bagit_profile, prefix="tag_files")
-        forms_to_save = [
-            bag_info_formset,
-            manifests_allowed_formset,
-            manifests_formset,
-            serialization_formset,
-            version_formset,
-            tag_manifests_formset,
-            tag_files_formset,
-        ]
-        for formset in forms_to_save:
-            if not formset.is_valid():
-                # TODO: added for troubleshooting - can remove/improve once issues are resolved
-                error_messages = []
-                for form in formset:
-                    for field, errors in form.errors.items():
-                        for error in errors:
-                            error_messages.append(f"{field}: {error}")
-
-                for error in formset.non_form_errors():
-                    error_messages.append(f"Form error: {error}")
-
-                detailed_errors = "; ".join(error_messages)
-
-                messages.error(
-                    self.request,
-                    f"There was a problem with your submission: {detailed_errors} "
-                    "Please correct the error(s) and try again."
-                )
-                return super().form_invalid(form)
-            else:
-                formset.save()
         bagit_profile.version = bagit_profile.version + Decimal(1)
         bagit_profile.bagit_profile_identifier = self.request.build_absolute_uri(
             reverse(
