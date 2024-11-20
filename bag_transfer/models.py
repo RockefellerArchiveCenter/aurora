@@ -825,11 +825,6 @@ class BagItProfile(models.Model):
     accept_bagit_version = models.ManyToManyField(AcceptBagItVersion, blank=True)
     tag_manifests_required = models.ManyToManyField(TagManifestsRequired, blank=True)
     tag_files_required = models.TextField(blank=True)
-    manifests_allowed_names = models.CharField(max_length=25, blank=True, null=True)
-    manifests_required_names = models.CharField(max_length=25, blank=True, null=True)
-    accept_serialization_names = models.CharField(max_length=25, blank=True, null=True)
-    accept_bagit_version_names = models.CharField(max_length=25, blank=True, null=True)
-    tag_manifests_required_names = models.CharField(max_length=25, blank=True, null=True)
 
 
 class BagItProfileBagInfo(models.Model):
