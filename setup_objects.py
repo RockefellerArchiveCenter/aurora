@@ -91,24 +91,23 @@ if len(orgs) == 0:
         transfer_org = Organization.objects.get(name="Archival Repository")
 
         print("Creating BagIt Profile for {}".format(new_org))
+        for name in ["application/zip", "application/x-tar", "application/x-gzip"]:
+            AcceptSerialization.objects.get_or_create(name=name)
+        for name in ["sha256", "sha512"]:
+            ManifestsAllowed.objects.get_or_create(name=name)
+        for name in ["0.97", "1.0"]:
+            AcceptBagItVersion.objects.get_or_create(name=name)
+
         profile = BagItProfile.objects.create(
             source_organization=transfer_org,
             external_description="Test BagIt Profile",
             contact_email="archive@example.org",
-            organization=new_org
-        )
-        AcceptSerialization.objects.create(
-            name="application/zip", bagit_profile=profile
-        )
-        AcceptSerialization.objects.create(
-            name="application/x-tar", bagit_profile=profile
-        )
-        AcceptSerialization.objects.create(
-            name="application/x-gzip", bagit_profile=profile
-        )
-        ManifestsAllowed.objects.create(name="sha256", bagit_profile=profile)
-        ManifestsAllowed.objects.create(name="sha512", bagit_profile=profile)
-        AcceptBagItVersion.objects.create(name="0.97", bagit_profile=profile)
+            organization=new_org,)
+
+        profile.accept_serialization.set(AcceptSerialization.objects.all())
+        profile.manifests_allowed.set(ManifestsAllowed.objects.all())
+        profile.accept_bagit_version.set(AcceptBagItVersion.objects.all())
+
         for field in [
             "external_identifier",
             "internal_sender_description",

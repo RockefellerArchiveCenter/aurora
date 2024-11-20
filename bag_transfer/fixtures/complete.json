@@ -2833,7 +2833,10 @@
         "contact_email": "archive@example.org",
         "allow_fetch": false,
         "serialization": "optional",
-        "organization": 1
+        "organization": 1,
+        "manifests_allowed": [1, 2],
+        "accept_serialization": [1,2,3],
+        "accept_bagit_version": [1]
     }
 },
 {
@@ -2847,103 +2850,52 @@
         "contact_email": "archive@example.org",
         "allow_fetch": false,
         "serialization": "optional",
-        "organization": 2
+        "organization": 2,
+        "manifests_allowed": [1,2],
+        "accept_serialization": [1,2,3],
+        "accept_bagit_version": [1]
     }
 },
 {
     "model": "bag_transfer.manifestsallowed",
     "pk": 1,
     "fields": {
-        "name": "sha256",
-        "bagit_profile": 1
+        "name": "sha256"
     }
 },
 {
     "model": "bag_transfer.manifestsallowed",
     "pk": 2,
     "fields": {
-        "name": "sha512",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.manifestsallowed",
-    "pk": 3,
-    "fields": {
-        "name": "sha256",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.manifestsallowed",
-    "pk": 4,
-    "fields": {
-        "name": "sha512",
-        "bagit_profile": 2
+        "name": "sha512"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 1,
     "fields": {
-        "name": "application/zip",
-        "bagit_profile": 1
+        "name": "application/zip"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 2,
     "fields": {
-        "name": "application/x-tar",
-        "bagit_profile": 1
+        "name": "application/x-tar"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 3,
     "fields": {
-        "name": "application/x-gzip",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 4,
-    "fields": {
-        "name": "application/zip",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 5,
-    "fields": {
-        "name": "application/x-tar",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 6,
-    "fields": {
-        "name": "application/x-gzip",
-        "bagit_profile": 2
+        "name": "application/x-gzip"
     }
 },
 {
     "model": "bag_transfer.acceptbagitversion",
     "pk": 1,
     "fields": {
-        "name": "0.97",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.acceptbagitversion",
-    "pk": 2,
-    "fields": {
-        "name": "0.97",
-        "bagit_profile": 2
+        "name": "0.97"
     }
 },
 {
