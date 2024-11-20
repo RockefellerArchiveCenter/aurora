@@ -39,20 +39,16 @@
 			{% endfor %}
 		</fieldset>
 
-		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=manifests_allowed_formset %}
-		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=manifests_formset %}
-		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=serialization_formset %}
-		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=version_formset %}
-		{% include 'bagit_profiles/checkbox_fieldset.html' with formset=tag_manifests_formset %}
+		{{form.manifests_allowed}}
+		{{form.manifests_required}}
+		{{form.accept_serialization}}
+		{{form.accept_bagit_version}}
+		{{form.tag_manifests_required}}
 
 		<div class="input__form-layout">
 			<label id="tag_files-label">Tag Files Required</label>
-			{{ tag_files_formset.management_form }}
-			{{ tag_files_formset.non_form_errors }}
-			{% for form in tag_files_formset %}
-				{% include 'bagit_profiles/repeating_form.html' %}
-			{% endfor %}
-			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">List required tag files, if any.</div>
+			{{form.tag_files_required}}
+			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">List required tag files, if any, separated by commas.</div>
 		</div>
 	</div>
 
