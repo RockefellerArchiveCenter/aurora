@@ -1,10 +1,7 @@
 from django import forms
 
-from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 BagItProfile, BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, ManifestsAllowed,
-                                 ManifestsRequired, TagFilesRequired,
-                                 TagManifestsRequired)
+from bag_transfer.models import (BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues)
 
 
 class BagItProfileForm(forms.ModelForm):
@@ -70,113 +67,6 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
         }
 
 
-class ManifestsAllowedForm(forms.ModelForm):
-    class Meta:
-        model = ManifestsAllowed
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.CheckboxSelectMultiple(
-                attrs={"class": "checkbox checkbox--blue"})
-        }
-        help_texts = {
-            "name": "Select at least one."
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.legend_text = "Allowed algorithm(s) for manifest files *"
-        self.help_text_id = "manifests_allowed-help"
-        self.fields['name'].required = True
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
-
-
-class ManifestsRequiredForm(forms.ModelForm):
-    class Meta:
-        model = ManifestsRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.CheckboxSelectMultiple(
-                attrs={"class": "checkbox checkbox--blue"})
-        }
-        help_texts = {
-            "name": "If no value is selected, any algorithm is valid."
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.legend_text = "Manifests Required"
-        self.help_text_id = "manifests_required-help"
-        self.fields['name'].required = True
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
-
-
-class AcceptSerializationForm(forms.ModelForm):
-    class Meta:
-        model = AcceptSerialization
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.CheckboxSelectMultiple(
-                attrs={"class": "checkbox checkbox--blue"})
-        }
-        help_texts = {
-            "name": "Select all accepted formats. If no values are selected, the serialization format will not be checked."
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.legend_text = "Serializations Accepted"
-        self.help_text_id = "serializations_accepted-help"
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
-
-
-class AcceptBagItVersionForm(forms.ModelForm):
-    class Meta:
-        model = AcceptBagItVersion
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.CheckboxSelectMultiple(
-                attrs={"class": "checkbox checkbox--blue"})
-        }
-        help_texts = {
-            "name": "Select all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked."
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.legend_text = "BagIt Versions Accepted"
-        self.help_text_id = "bagit_versions_accepted-help"
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
-
-
-class TagManifestsRequiredForm(forms.ModelForm):
-    class Meta:
-        model = TagManifestsRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.CheckboxSelectMultiple(
-                attrs={"class": "checkbox checkbox--blue"})
-        }
-        help_texts = {
-            "name": "If no values are selected, the tag format algorithm will not be checked."
-        }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.legend_text = "Tag Manifests Required"
-        self.help_text_id = "tag_manifests_required-help"
-        self.fields['name'].choices = [choice for choice in self.fields['name'].choices if choice[0]]  # Exclude blank choice
-
-
-class TagFilesRequiredForm(forms.ModelForm):
-    class Meta:
-        model = TagFilesRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.TextInput(
-                attrs={"aria-describedby": "tag_files-help", "aria-labelledby": "tag_files-label"})
-        }
-
-
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
     BagItProfileBagInfo,
     BagItProfileBagInfoValues,
@@ -228,52 +118,4 @@ BagItProfileBagInfoFormset = forms.inlineformset_factory(
     extra=1,
     form=BagItProfileBagInfoForm,
     formset=BaseBagInfoFormset,
-)
-
-ManifestsAllowedFormset = forms.inlineformset_factory(
-    BagItProfile,
-    ManifestsAllowed,
-    fields=("name",),
-    max_num=1,
-    form=ManifestsAllowedForm,
-)
-
-ManifestsRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    ManifestsRequired,
-    fields=("name",),
-    max_num=1,
-    form=ManifestsRequiredForm,
-)
-
-AcceptSerializationFormset = forms.inlineformset_factory(
-    BagItProfile,
-    AcceptSerialization,
-    fields=("name",),
-    max_num=1,
-    form=AcceptSerializationForm,
-)
-
-AcceptBagItVersionFormset = forms.inlineformset_factory(
-    BagItProfile,
-    AcceptBagItVersion,
-    fields=("name",),
-    max_num=1,
-    form=AcceptBagItVersionForm,
-)
-
-TagManifestsRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    TagManifestsRequired,
-    fields=("name",),
-    max_num=1,
-    form=TagManifestsRequiredForm,
-)
-
-TagFilesRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    TagFilesRequired,
-    fields=("name",),
-    extra=1,
-    form=TagFilesRequiredForm,
 )
