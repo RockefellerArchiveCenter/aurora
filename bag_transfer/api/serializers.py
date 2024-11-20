@@ -1,14 +1,10 @@
 from rest_framework import serializers
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 BagInfoMetadata, BagItProfile,
+from bag_transfer.models import (BagInfoMetadata, BagItProfile,
                                  BagItProfileBagInfo,
                                  BagItProfileBagInfoValues, BAGLog,
-                                 ManifestsAllowed, ManifestsRequired,
-                                 Organization, RecordCreators,
-                                 TagFilesRequired, TagManifestsRequired,
-                                 Transfer, User)
+                                 Organization, RecordCreators, Transfer, User)
 from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementCopyright,
                                         RightsStatementLicense,
@@ -289,23 +285,21 @@ class BagItProfileSerializer(serializers.BaseSerializer):
         for bi in bag_info_values:
             bag_info.update(BagItProfileBagInfoSerializer(bi).data)
         accept_bagit_version = NameArraySerializer(
-            AcceptBagItVersion.objects.filter(bagit_profile=obj), many=True
+            obj.accept_bagit_version.all(), many=True
         ).data
         accept_serialization = NameArraySerializer(
-            AcceptSerialization.objects.filter(bagit_profile=obj), many=True
+            obj.accept_serialization.all(), many=True
         ).data
         manifests_allowed = NameArraySerializer(
-            ManifestsAllowed.objects.filter(bagit_profile=obj), many=True
+            obj.manifests_allowed.all(), many=True
         ).data
         manifests_required = NameArraySerializer(
-            ManifestsRequired.objects.filter(bagit_profile=obj), many=True
-        ).data
-        tag_files_required = NameArraySerializer(
-            TagFilesRequired.objects.filter(bagit_profile=obj), many=True
+            obj.manifests_required.all(), many=True
         ).data
         tag_manifests_required = NameArraySerializer(
-            TagManifestsRequired.objects.filter(bagit_profile=obj), many=True
+            obj.tag_manifests_required, many=True
         ).data
+        tag_files_required = [t.strip() for t in obj.tag_files_required.split(',')] if len(obj.tag_files_required) else []
         return {
             "BagIt-Profile-Info": {
                 "Version": obj.version,
