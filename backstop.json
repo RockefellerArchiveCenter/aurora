@@ -1,0 +1,156 @@
+{
+  "id": "backstop_default",
+  "viewports": [
+    {
+      "label": "phone",
+      "width": 320,
+      "height": 480
+    },
+    {
+      "label": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "label": "desktop",
+      "width": 1920,
+      "height": 1080
+    }
+  ],
+  "onBeforeScript": "puppet/onBefore.js",
+  "onReadyScript": "puppet/onReady.js",
+  "scenarios": [
+    {
+    "label": "Login",
+    "url": "http://localhost:8000/login/"
+    },
+    {
+      "label": "Reset Password",
+      "url": "http://localhost:8000/reset-password/"
+    },
+    {
+      "label": "Dashboard",
+      "url": "http://localhost:8000/app/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "All Transfers",
+      "url": "http://localhost:8000/app/transfers/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Transfer Detail",
+      "url": "http://localhost:8000/app/transfers/2",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Appraise",
+      "url": "http://localhost:8000/app/appraise/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Appraise Modal",
+      "url": "http://localhost:8000/app/appraise/",
+      "clickSelector": ".appraisal-note",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Accession",
+      "url": "http://localhost:8000/app/accession/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Organizations",
+      "url": "http://localhost:8000/app/orgs",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Add Organization",
+      "url": "http://localhost:8000/app/orgs/add",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Organization Admin",
+      "url": "http://localhost:8000/app/orgs/1",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Organization Admin Modal",
+      "url": "http://localhost:8000/app/orgs/1",
+      "clickSelector": ".object-delete-button",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Organization Admin Transfer Settings",
+      "url": "http://localhost:8000/app/orgs/1",
+      "clickSelector": "#show-transfer-settings",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Edit BagIt Profile",
+      "url": "http://localhost:8000/app/bagit-profiles/1/edit/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "View BagIt Profile",
+      "url": "http://localhost:8000/app/bagit-profiles/1/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Edit Rights",
+      "url": "http://localhost:8000/app/rights/1/edit",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "View Rights",
+      "url": "http://localhost:8000/app/rights/1/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Users",
+      "url": "http://localhost:8000/app/users/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Add User",
+      "url": "http://localhost:8000/app/users/add/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "User Details",
+      "url": "http://localhost:8000/app/users/5/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Edit User",
+      "url": "http://localhost:8000/app/users/5/edit/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "User Profile",
+      "url": "http://localhost:8000/app/users/1/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Change Password",
+      "url": "http://localhost:8000/app/users/change-password/",
+      "onBeforeScript": "puppet/login.js"
+    }
+  ],
+  "paths": {
+    "bitmaps_reference": "backstop_data/bitmaps_reference",
+    "bitmaps_test": "backstop_data/bitmaps_test",
+    "engine_scripts": "backstop_data/engine_scripts",
+    "html_report": "backstop_data/html_report",
+    "ci_report": "backstop_data/ci_report"
+  },
+  "report": ["browser"],
+  "engine": "puppeteer",
+  "engineOptions": {
+    "args": ["--no-sandbox"]
+  },
+  "asyncCaptureLimit": 1,
+  "asyncCompareLimit": 50,
+  "debug": false,
+  "debugWindow": false
+}

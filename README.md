@@ -157,6 +157,18 @@ Aurora comes with the default [Django admin site](https://docs.djangoproject.com
 
 In addition to allowing for the manual creation and deletion of certain objects, this interface also allows authorized users to edit system values which are used by the application, including the human-readable strings associated with Bag Log Codes. Care should be taken when making changes in the Django admin interface, particularly the creation or deletion of objects, since they can have unintended consequences.
 
+## Visual Regression Testing
+
+The repository includes [BackstopJS](https://github.com/garris/BackstopJS) to test visual changes to the site by comparing a set of reference images for different screen sizes. Anytime the CSS styles are changed, use BackstopJS to test locally:
+
+1. Follow the [installation instructions](#installation) to run the Aurora app locally and [add sample data](#sample-data).
+3. With Aurora running in Docker, open another terminal and run the BackstopJS tests: `yarn backstop-test`.
+4. Review the results in the browser and look at the diff of any failed tests.
+5. To update the reference image files with the results of the last test images use: `yarn backstop-approve`. Subsequent tests will be compared against these updated reference files.
+6. Commit any updated reference images to the repository so that future tests will be compared against the most recent images.
+
+To add or update reference images, edit the scenarios in `backstop.json` and run `yarn backstop-reference`.
+
 ## Contributing
 
 Aurora is an open source project and we welcome contributions! If you want to fix a bug, or have an idea of how to enhance the application, the process looks like this:

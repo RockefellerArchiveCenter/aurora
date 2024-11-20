@@ -1,0 +1,11 @@
+{
+  "devDependencies": {
+    "backstopjs": "^6.3.25"
+  },
+  "scripts": {
+    "backstop-approve": "backstop approve",
+    "backstop-test": "backstop test",
+    "backstop-reference": "backstop reference"
+  }
+}
+
