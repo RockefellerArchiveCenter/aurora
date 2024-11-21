@@ -14,7 +14,7 @@
 
 
 {% block content %}
-<div class="transfer-details__badge">
+<div class="status__badge">
 	<span class="badge badge--md badge--{% include 'parts/status_class.html' with status=object.process_status %}">{{ object.get_process_status_display }}</span>
 </div>
 <div class="grid transfer-data__grid">
