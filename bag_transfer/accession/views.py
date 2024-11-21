@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.shortcuts import reverse
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView
 
 from aurora import settings
 from bag_transfer.accession.db_functions import GroupConcat
@@ -24,7 +24,7 @@ from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.rights.models import RightsStatement
 
 
-class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
+class AccessionsPendingView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
     template_name = "accession/main.html"
     page_title = "Accessioning Queue"
     model = Accession
@@ -271,6 +271,16 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             transfer.save()
 
 
+class SavedAccessionsView(PageTitleMixin, ArchivistMixin, TemplateView):
+    template_name = "accession/saved.html"
+    page_title = "Saved Accessions"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['accessions'] = Accession.objects.all()
+        return context
+
+
 class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     """Handles processing of requests for Accessions in datatable, making page
     load time more performant."""
@@ -310,9 +320,9 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
         button = "Accession not delivered"
         if self.request.user.can_accession():
             button = (
-                '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>'
+                '<button class="btn btn--sm btn--blue deliver">Deliver Accession</button>'
                 if (accession.process_status < Accession.DELIVERED)
-                else '<p class="pull-right" style="margin-right:.7em;">' + accession.get_process_status_display() + "</p>"
+                else '<p>' + accession.get_process_status_display() + "</p>"
             )
         return button
 
