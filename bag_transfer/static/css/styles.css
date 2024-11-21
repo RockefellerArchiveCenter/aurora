@@ -93,10 +93,19 @@ a.header__brand-title {
 	font-family: "Satisfy", cursive;
 	font-size: 30px;
 	text-transform: none;
+	letter-spacing: 0;
 }
 
 a.header__brand-title:focus {
 	outline: 0;
+}
+
+.header__brand-subtitle {
+	margin-top: 3px;
+
+	@media screen and (min-width: 1024px) {
+    margin-top: 0;
+  }
 }
 
 .nav__btn--dropdown,

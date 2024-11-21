@@ -51,12 +51,12 @@
               {% if request.user.is_staff %}
               <li class="nav__list-item--dropdown">
                 <a class="nav__link" href="{% url 'appraise:list' %}">
-                  <div class="nav__link-title">Appraise</div>
+                  <div class="nav__link-title">Appraisal Queue</div>
                 </a>
               </li>
               <li class="nav__list-item--dropdown">
                 <a class="nav__link" href="{% url 'accession:list' %}">
-                  <div class="nav__link-title">Accession</div>
+                  <div class="nav__link-title">Accessioning Queue</div>
                 </a>
               </li>
               {% endif %}
