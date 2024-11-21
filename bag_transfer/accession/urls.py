@@ -1,10 +1,10 @@
 from django.urls import re_path
 
 from bag_transfer.accession.views import (AccessionCreateView,
-                                          AccessionDetailView, AccessionsPendingView,
+                                          AccessionDetailView,
+                                          AccessionsPendingView,
                                           SavedAccessionsDatatableView,
-                                          SavedAccessionsView,
-                                          )
+                                          SavedAccessionsView)
 
 app_name = 'accessions'
 
