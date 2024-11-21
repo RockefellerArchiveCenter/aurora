@@ -13,7 +13,7 @@ from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import PageTitleMixin, is_ajax
 from bag_transfer.models import BagItProfile, Organization
 
-from .form import BagItProfileForm
+from .form import BagItProfileBagInfoFormset, BagItProfileForm
 
 
 class BagItProfileManageView(PageTitleMixin):
@@ -38,6 +38,7 @@ class BagItProfileManageView(PageTitleMixin):
                     "contact_email": "archive@rockarch.org",
                     "organization": organization})
         context["form"] = form
+        context["bag_info_formset"] = BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
         context["organization"] = organization
         return context
 
@@ -47,6 +48,28 @@ class BagItProfileManageView(PageTitleMixin):
     def form_valid(self, form):
         """Saves associated formsets."""
         bagit_profile = form.save()
+        bag_info_formset = BagItProfileBagInfoFormset(
+            self.request.POST, instance=bagit_profile, prefix="bag_info")
+        if not bag_info_formset.is_valid():
+            error_messages = []
+            for form in bag_info_formset:
+                for field, errors in form.errors.items():
+                    for error in errors:
+                        error_messages.append(f"{field}: {error}")
+
+            for error in bag_info_formset.non_form_errors():
+                error_messages.append(f"Form error: {error}")
+
+            detailed_errors = "; ".join(error_messages)
+
+            messages.error(
+                self.request,
+                f"There was a problem with your submission: {detailed_errors} "
+                "Please correct the error(s) and try again."
+            )
+            return super().form_invalid(form)
+        else:
+            bag_info_formset.save()
         bagit_profile.version = bagit_profile.version + Decimal(1)
         bagit_profile.bagit_profile_identifier = self.request.build_absolute_uri(
             reverse(
