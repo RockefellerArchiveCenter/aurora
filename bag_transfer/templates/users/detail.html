@@ -5,57 +5,56 @@
 {% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
-<div class="card-list">
-    <div class="card card--container flex--column">
-        <h2>
-            {% if object.first_name %}{{object.first_name}} {{object.last_name}} ({{ object.username }})
-            {% else %}{{ object.username }}
+<dl class="summary-list">
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Username</dt>
+        <dd class="summary-list__value">{{ object.username }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Organization</dt>
+        <dd class="summary-list__value">
+            {% if object.organization %}
+                <a href="{% url 'orgs:detail' object.organization.pk %}">{{ object.organization.name }}</a>
             {% endif %}
-        </h2>
-
-        {% if object.organization %}
-        <a href="{% url 'orgs:detail' object.organization.pk %}">{{ object.organization.name }}</a>
+        </dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Active?</dt>
+        <dd class="summary-list__value">{% if object.is_active %}yes{% else %}no{% endif %}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Last login</dt>
+        <dd class="summary-list__value">{{ object.last_login }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Org Admin?</dt>
+        <dd class="summary-list__value">{% if object.is_org_admin %}yes{% else %}no{% endif %}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Email</dt>
+        <dd class="summary-list__value">{{ object.email }}</dd>
+    </div>
+    <div class="summary-list__row">
+        <dt class="summary-list__key">Groups</dt>
+        {% if object.groups.exists %}
+            {% for group in object.groups.all %}
+                <dd class="summary-list__value">{{ group.name }}</dd>
+            {% endfor %}
+        {% else %}
+            <dd class="summary-list__value">N/A</dd>
         {% endif %}
-        <p><span class="text--bold">Last login:</span> {{ object.last_login }}</p>
-        <div class="user__actions">
-            {% if request.user.is_manager or request.user.is_superuser %}
-                <a href="{% url 'users:edit' object.pk %}" class="btn btn--blue btn--md mr-10">Edit User</a>
-            {% endif %}
-            {% if object.cognito_status == 'FORCE_CHANGE_PASSWORD' %}
-                <button id="resend-invitation" class="btn btn--light-blue btn--md">Resend Invitation Email</button>
-            {% endif %}
-            {% if request.user.pk == object.pk %}
-                <a href="{% url 'users:password-change' %}" class="btn btn--light-blue btn--md">Change Password</a>
-            {% endif %}
-        </div>
     </div>
-    <div class="card card--container flex--column">
-        <h2>Details</h2>
-        <dl class="summary-list">
-            <div class="summary-list__row">
-                <dt class="summary-list__key">Active?</dt>
-                <dd class="summary-list__value">{% if object.is_active %}yes{% else %}no{% endif %}</dd>
-            </div>
-            <div class="summary-list__row">
-                <dt class="summary-list__key">Org Admin?</dt>
-                <dd class="summary-list__value">{% if object.is_org_admin %}yes{% else %}no{% endif %}</dd>
-            </div>
-            <div class="summary-list__row">
-                <dt class="summary-list__key">Email</dt>
-                <dd class="summary-list__value">{{ object.email }}</dd>
-            </div>
-            <div class="summary-list__row">
-                <dt class="summary-list__key">Groups</dt>
-                {% if object.groups.exists %}
-                    {% for group in object.groups.all %}
-                        <dd class="summary-list__value">{{ group.name }}</dd>
-                    {% endfor %}
-                {% else %}
-                    <dd class="summary-list__value">N/A</dd>
-                {% endif %}
-            </div>
-        </dl>
-    </div>
+</dl>
+<div class="user__actions">
+    {% if request.user.is_manager or request.user.is_superuser %}
+        <a href="{% url 'users:edit' object.pk %}" class="btn btn--blue btn--md mr-10">Edit User</a>
+    {% endif %}
+    {% if object.cognito_status == 'FORCE_CHANGE_PASSWORD' %}
+        <button id="resend-invitation" class="btn btn--light-blue btn--md">Resend Invitation Email</button>
+    {% endif %}
+    {% if request.user.pk == object.pk %}
+        <a href="{% url 'users:password-change' %}" class="btn btn--light-blue btn--md">Change Password</a>
+    {% endif %}
 </div>
 {% endblock %}
 

@@ -77,7 +77,6 @@ class UsersCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixi
 
 class UsersDetailView(PageTitleMixin, JSONResponseMixin, OrgReadViewMixin, DetailView):
     template_name = "users/detail.html"
-    page_title = "User Profile"
     model = User
 
     def get(self, request, *args, **kwargs):
@@ -91,6 +90,9 @@ class UsersDetailView(PageTitleMixin, JSONResponseMixin, OrgReadViewMixin, Detai
             return self.render_to_json_response(rdata)
         """Handles all other GET requests"""
         return super().get(self, request, *args, **kwargs)
+
+    def get_page_title(self, context):
+        return "User Profile: {}".format(context["object"].get_full_name())
 
 
 class UsersEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):

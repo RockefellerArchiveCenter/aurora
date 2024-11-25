@@ -6,35 +6,33 @@
 {% block content %}
 
 <form action="" method="post">{% csrf_token %}
-	<div class="card card--container flex--column">
-		<div class="mb-20">
-			<input
-				type="checkbox"
-				class="checkbox checkbox--blue"
-				id="id_is_active"
-				name="is_active"
-				{% if object.is_active %}checked{% endif %}
-			/>
-			<label for="id_is_active" class="checkbox--blue">Active?</label>
-		</div>
-		<div class="input input__form-layout mb-20">
-			<label for="id_name">Organization Name*</label>
-			<input type="text" name="name" value="{{ object.name }}" id="id_name" maxlength="60" required>
-		</div>
+	<div class="mb-20">
+		<input
+			type="checkbox"
+			class="checkbox checkbox--blue"
+			id="id_is_active"
+			name="is_active"
+			{% if object.is_active %}checked{% endif %}
+		/>
+		<label for="id_is_active" class="checkbox--blue">Active?</label>
+	</div>
+	<div class="input input__form-layout mb-20">
+		<label for="id_name">Organization Name*</label>
+		<input type="text" name="name" value="{{ object.name }}" id="id_name" maxlength="60" required>
+	</div>
 
-		<div class="input input__form-layout mb-20">
-			<label for="id_acquisition_type">Acquisition Type</label>
-			<select id="id_acquisition_type" name="acquisition_type">
-				<option value=""> --- Select an acquisition type --- </option>
-				{% for x,y in view.model.ACQUISITION_TYPE_CHOICES %}
-					<option value="{{ x }}"{% if object.acquisition_type == x %} selected{% endif %}>{{ y }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<div class="input--full-width">
-			<button type="submit" class="btn btn--md btn--blue">Save</button>
-			<a class="btn btn--md btn--gray" href="{% url 'orgs:list' %}">Cancel</a>
-		</div>
+	<div class="input input__form-layout mb-20">
+		<label for="id_acquisition_type">Acquisition Type</label>
+		<select id="id_acquisition_type" name="acquisition_type">
+			<option value=""> --- Select an acquisition type --- </option>
+			{% for x,y in view.model.ACQUISITION_TYPE_CHOICES %}
+				<option value="{{ x }}"{% if object.acquisition_type == x %} selected{% endif %}>{{ y }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="input--full-width">
+		<button type="submit" class="btn btn--md btn--blue">Save</button>
+		<a class="btn btn--md btn--gray" href="{% url 'orgs:list' %}">Cancel</a>
 	</div>
 </form>
 {% endblock %}

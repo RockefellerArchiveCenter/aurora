@@ -6,27 +6,25 @@
 <form action="" method="post">
 	{% csrf_token %}
 
-	<div class="card card--container flex--column">
-		<div class="input input__form-layout mb-20">
-			<label for="id_name">Organization Name*</label>
-			<input type="text" name="name" value="{{ object.name }}" id="id_name" maxlength="60" required>
-		</div>
-
-		<div class="input input__form-layout mb-20">
-			<label for="id_acquisition_type">Acquisition Type</label>
-			<select id="id_acquisition_type" name="acquisition_type">
-				<option value=""> --- Select an acquisition type --- </option>
-				{% for value,label in view.model.ACQUISITION_TYPE_CHOICES %}
-					<option value="{{ value }}"{% if object.acquisition_type == value %} selected{% endif %}>{{ label }}</option>
-				{% endfor %}
-			</select>
-		</div>
-		<div class="input--full-width">
-			<button type="submit" class="btn btn--md btn--blue">Create</button>
-			<button type="reset" class="btn btn--md btn--gray" onclick="window.open('{% url 'orgs:list' %}','_self')">Cancel</button>
-		</div>
-
+	<div class="input input__form-layout mb-20">
+		<label for="id_name">Organization Name*</label>
+		<input type="text" name="name" value="{{ object.name }}" id="id_name" maxlength="60" required>
 	</div>
+
+	<div class="input input__form-layout mb-20">
+		<label for="id_acquisition_type">Acquisition Type</label>
+		<select id="id_acquisition_type" name="acquisition_type">
+			<option value=""> --- Select an acquisition type --- </option>
+			{% for value,label in view.model.ACQUISITION_TYPE_CHOICES %}
+				<option value="{{ value }}"{% if object.acquisition_type == value %} selected{% endif %}>{{ label }}</option>
+			{% endfor %}
+		</select>
+	</div>
+	<div class="input--full-width">
+		<button type="submit" class="btn btn--md btn--blue">Create</button>
+		<button type="reset" class="btn btn--md btn--gray" onclick="window.open('{% url 'orgs:list' %}','_self')">Cancel</button>
+	</div>
+
 </form>
 
 {% endblock %}
