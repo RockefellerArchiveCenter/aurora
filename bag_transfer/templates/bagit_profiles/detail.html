@@ -67,10 +67,10 @@
           <dd class="summary-list__value">{% for s in object.accept_serialization.all %}{{s.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
         </div>
           {% endif %}
-      {% if object.bagit_versions_accepted.all %}
+      {% if object.accept_bagit_version.all %}
         <div class="summary-list__row">
           <dt class="summary-list__key">BagIt Versions Accepted</dt>
-          <dd class="summary-list__value">{% for v in object.bagit_versions_accepted.all %}{{v.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
+          <dd class="summary-list__value">{% for v in object.accept_bagit_version.all %}{{v.name}}{% if not forloop.last %}<br/>{% endif %}{% endfor %}</dd>
         </div>
       {% endif %}
       {% if object.tag_manifests_required.all %}
