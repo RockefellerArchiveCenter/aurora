@@ -4,10 +4,15 @@
 {% block h1_title %}{{ page_title }}{% endblock %}
 
 {% block title_actions %}
-{% if request.user.is_staff %}
+{% if request.GET.referrer == '/appraise' and request.user.is_staff %}
 	<a href="{% url 'appraise:list' %}" class="btn btn--md btn--gray">
 		<span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
 		Appraisal Queue
+	</a>
+{% elif '/accession/' in request.GET.referrer %}
+	<a href="{{ request.GET.referrer }}" class="btn btn--md btn--gray">
+		<span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
+		Accession Details
 	</a>
 {% endif %}
 {% endblock %}

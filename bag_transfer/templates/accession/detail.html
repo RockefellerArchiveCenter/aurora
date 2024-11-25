@@ -7,9 +7,9 @@
 {% endblock %}
 
 {% block title_actions %}
-  <a href="{% url 'accession:list' %}" class="btn btn--md btn--gray">
+  <a href="{% url 'accession:saved' %}" class="btn btn--md btn--gray">
     <span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
-    View All Accessions
+    Saved Accessions
   </a>
 {% endblock %}
 
@@ -69,7 +69,7 @@
 			<tbody>
 				{% for t in object.accession_transfers.all %}
 				<tr>
-					<td><a href="{% url 'transfers:detail' t.pk %}">{{t.bag_or_failed_name}}</a></td>
+					<td><a href="{% url 'transfers:detail' t.pk %}?referrer={% url 'accession:detail' accession.pk %}">{{t.bag_or_failed_name}}</a></td>
 					<td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
 					<td>{{t.machine_file_size|filesizeformat}}</td>
 					<td>

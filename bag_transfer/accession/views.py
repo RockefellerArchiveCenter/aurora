@@ -331,7 +331,7 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
         for accession in qs:
             json_data.append(
                 [
-                    "<a href='{}'>{}</a.".format(
+                    "<a href='{}'>{}</a>".format(
                         reverse("accession:detail", kwargs={"pk": accession.pk}),
                         self.title(accession),
                     ),

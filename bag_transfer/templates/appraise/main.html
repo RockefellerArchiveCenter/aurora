@@ -39,7 +39,7 @@ $(function () {
       createdRow: function(row, data, dataIndex) {
         var transferPk = data[6];
         var transferName = data[0];
-        var transferUrl = '{% url "transfers:detail" 0 %}'.replace('0', transferPk);
+        var transferUrl = '{% url "transfers:detail" 0 %}?referrer=/appraise'.replace('0', transferPk);
 
         // Set the Name cell content as a clickable link to the transfer detail page
         $('td', row).eq(0).html('<a href="' + transferUrl + '">' + transferName + '</a>');
