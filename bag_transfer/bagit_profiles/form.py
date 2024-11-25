@@ -40,7 +40,7 @@ class BagItProfileForm(forms.ModelForm):
             "accept_serialization": "Serializations Accepted",
             "accept_bagit_version": "BagIt Versions Accepted",
             "tag_manifests_required": "Tag Manifests Required"
-    }
+        }
         help_texts = {
             "external_description": "A short description of this BagIt Profile.",
             "tag_files_required": "List required tag files, if any, separated by commas.",
@@ -56,8 +56,8 @@ class BagItProfileForm(forms.ModelForm):
         self.legends = self.Meta.legends  # Make legends accessible
         self.help_texts = self.Meta.help_texts  # Make help_texts accessible
         self.fields["external_description"].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
-        self.fields["manifests_allowed"].initial = [1,2]
-        self.fields["accept_serialization"].initial = [1,2,3]
+        self.fields["manifests_allowed"].initial = [1, 2]
+        self.fields["accept_serialization"].initial = [1, 2, 3]
         self.fields["accept_bagit_version"].initial = [2]
 
 
