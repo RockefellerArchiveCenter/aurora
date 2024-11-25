@@ -95,7 +95,7 @@ if len(orgs) == 0:
             AcceptSerialization.objects.get_or_create(name=name)
         for name in ["sha256", "sha512"]:
             ManifestsAllowed.objects.get_or_create(name=name)
-        for name in ["0.97", "1.0"]:
+        for name in ["0.96", "0.97", "1.0"]:
             AcceptBagItVersion.objects.get_or_create(name=name)
 
         profile = BagItProfile.objects.create(
