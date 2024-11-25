@@ -9,7 +9,7 @@
 
 {% block content %}
 
-<form action="" method="post" novalidate>
+<form action="" method="post">
 	{% csrf_token %}
 
 	<div class="card card--container flex--column">
@@ -29,7 +29,7 @@
 			<label class="checkbox--blue" for="{{form.allow_fetch.id_for_label}}">{{form.allow_fetch.label}}</label>
 		</div>
 
-		<fieldset class="mb-20">
+		<fieldset class="mb-20" aria-required="true" role="radiogroup">
 			<legend>Serialization Allowed? *</legend>
 			{% for checkbox in form.serialization %}
 					<div class="input-group">
@@ -39,16 +39,16 @@
 			{% endfor %}
 		</fieldset>
 
-		{{form.manifests_allowed}}
-		{{form.manifests_required}}
-		{{form.accept_serialization}}
-		{{form.accept_bagit_version}}
-		{{form.tag_manifests_required}}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.manifests_allowed legend=form.legends.manifests_allowed help_text=form.help_texts.manifests_allowed %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.manifests_required legend=form.legends.manifests_required help_text=form.help_texts.manifests_required %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.accept_serialization legend=form.legends.accept_serialization help_text=form.help_texts.accept_serialization %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.accept_bagit_version legend=form.legends.accept_bagit_version help_text=form.help_texts.accept_bagit_version %}
+		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.tag_manifests_required legend=form.legends.tag_manifests_required help_text=form.help_texts.tag_manifests_required %}
 
-		<div class="input__form-layout">
-			<label id="tag_files-label">Tag Files Required</label>
+		<div class="input input__form-layout">
+			<label id="tag_files-label">{{form.tag_files_required.label}}</label>
 			{{form.tag_files_required}}
-			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">List required tag files, if any, separated by commas.</div>
+			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">{{ form.tag_files_required.help_text }}</div>
 		</div>
 	</div>
 
@@ -160,6 +160,7 @@
   function deleteForm(btn, prefix) {
     form = $(btn).closest('.dynamic-form')
 		inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
+		$(form).find(':input').removeAttr('required');
 		$(form).append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
     var forms = $('.'+prefix);
     $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);

@@ -11,7 +11,7 @@ class BagItProfileForm(forms.ModelForm):
         labels = {
             "external_description": "Description",
             "allow_fetch": "Allow Fetch.txt?",
-            "serialization": "Serialization Allowed?",
+            "tag_files_required": "Tag Files Required"
         }
         widgets = {
             "organization": forms.widgets.HiddenInput(),
@@ -27,18 +27,35 @@ class BagItProfileForm(forms.ModelForm):
             ),
             "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "serialization": forms.widgets.RadioSelect(),
+            "manifests_allowed": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "manifests_required": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "accept_serialization": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "accept_bagit_version": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "tag_manifests_required": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "tag_files_required": forms.widgets.Textarea(attrs={"rows": 3}),
         }
+        legends = {
+            "manifests_allowed": "Allowed Algorithm(s) for Manifest Files *",
+            "manifests_required": "Manifests Required",
+            "accept_serialization": "Serializations Accepted",
+            "accept_bagit_version": "BagIt Versions Accepted",
+            "tag_manifests_required": "Tag Manifests Required"
+    }
         help_texts = {
             "external_description": "A short description of this BagIt Profile.",
-            "serialization": "Specify whether serialization of bags is required, forbidden, or optional.",
+            "tag_files_required": "List required tag files, if any, separated by commas.",
+            "manifests_allowed": "Select at least one.",
+            "manifests_required": "If no value is selected, any algorithm is valid.",
+            "accept_serialization": "Select all accepted formats. If no values are selected, the serialization format will not be checked.",
+            "accept_bagit_version": "Select all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked.",
+            "tag_manifests_required": "If no values are selected, the tag format algorithm will not be checked."
         }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
+        self.legends = self.Meta.legends  # Make legends accessible
+        self.help_texts = self.Meta.help_texts  # Make help_texts accessible
         self.fields['external_description'].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
-        self.fields['serialization'].required = True
-        self.fields['serialization'].choices = [choice for choice in self.fields['serialization'].choices if choice[0]]  # Exclude blank choice
 
 
 class BagItProfileBagInfoForm(forms.ModelForm):
@@ -51,7 +68,11 @@ class BagItProfileBagInfoForm(forms.ModelForm):
             "repeatable": "Repeatable?",
         }
         widgets = {
-            "field": forms.widgets.Select(),
+            "field": forms.widgets.Select(
+                attrs={
+                    "required": "required",
+                }
+            ),
             "required": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "repeatable": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
         }
