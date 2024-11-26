@@ -27,7 +27,6 @@ class BagItProfileTestCase(TestMixin, TestCase):
             "allow_fetch": random.choice([True, False]),
             "serialization": random.choice(["forbidden", "required", "optional"]),
             "manifests_allowed": random.choice([1, 2]),
-            "manifests_allowed": random.choice([1, 2]),
             "manifests_required": random.choice([1, 2]),
             "accept_serialization": random.choice([1, 2, 3]),
             "accept_bagit_version": random.choice([1, 2, 3]),
