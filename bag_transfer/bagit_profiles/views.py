@@ -81,9 +81,14 @@ class BagItProfileManageView(PageTitleMixin):
         return super().form_valid(form)
 
     def form_invalid(self, form):
+        detailed_errors = "; ".join(
+            [f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()]
+        )
         messages.error(
             self.request,
-            "There was a problem with your submission. Please correct the error(s) below and try again.")
+            f"There was a problem with your submission: {detailed_errors} "
+            "Please correct the error(s) below and try again."
+        )
         return super().form_invalid(form)
 
 
