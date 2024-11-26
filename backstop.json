@@ -55,8 +55,18 @@
       "onBeforeScript": "puppet/login.js"
     },
     {
-      "label": "Accession",
+      "label": "Accessioning Queue",
       "url": "http://localhost:8000/app/accession/",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Saved Accessions",
+      "url": "http://localhost:8000/app/accession/saved",
+      "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Accession Details",
+      "url": "http://localhost:8000/app/accession/3",
       "onBeforeScript": "puppet/login.js"
     },
     {

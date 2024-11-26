@@ -34,7 +34,7 @@ $ docker-compose exec web import_sample_data
 
 If you'd like to transfer your own bags, note that bags must be serialized as either a TAR (compressed or uncompressed) or ZIP file.
 
-If you'er using S3 storage (see [Transferring digital records](#transferring-digital-records)), you'll need to upload a bag to an S3 bucket configured as an upload bucket for one of your organizations. 
+If you're using Amazon S3 storage (see [Transferring digital records](#transferring-digital-records)), you'll need to upload a bag to an S3 bucket configured as an upload bucket for one of your organizations. 
 
 If you're using local storage you can then transfer those bags by SFTPing them into the local container using the credentials below:
 - Protocol: `SFTP`
@@ -100,13 +100,11 @@ At a high level, transfers are processed as follows:
 - Relevant PREMIS rights statements are assigned to transfers (see Organization
   Management section for details).
 
-### Disabling S3 Storage
+### Disabling Amazon S3 Storage
 
-By default, Aurora is configured to use [Amazon S3](https://aws.amazon.com/s3/) to
-store uploaded and validated transfers.
+By default, Aurora is configured to use [Amazon S3](https://aws.amazon.com/s3/) to store uploaded and validated transfers.
 
-If you don't want to use S3, you can configure Aurora to use the local file system
-instead:
+If you don't want to use S3, you can configure Aurora to use the local file system instead:
 
 1. Set the `S3_USE` config value to `False`.
 2. Ensure that the `TRANSFER_UPLOADS_ROOT` is properly set and that the filepath
@@ -120,10 +118,7 @@ Aurora comes with a RESTful API, built using the Django Rest Framework, accessib
 
 #### Using OAuth
 
-In order to make requests against the Aurora API when using an OAuth provider, you
-will first need to add an application to your OAuth provider, then make a request
-against the provider's token endpoint using the client credentials flow. The token
-returned from the provider should then be attached as a Bearer token to requests.
+In order to make requests against the Aurora API when using an OAuth provider, you will first need to add an application to your OAuth provider, then make a request against the provider's token endpoint using the client credentials flow. The token returned from the provider should then be attached as a Bearer token to requests.
 
 The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/electronbonder)
 contains code which demonstrates this flow (see the `authorize_oauth` method in
@@ -161,7 +156,8 @@ In addition to allowing for the manual creation and deletion of certain objects,
 
 The repository includes [BackstopJS](https://github.com/garris/BackstopJS) to test visual changes to the site by comparing a set of reference images for different screen sizes. Anytime the CSS styles are changed, use BackstopJS to test locally:
 
-1. Follow the [installation instructions](#installation) to run the Aurora app locally and [add sample data](#sample-data).
+1. Follow the [installation instructions](#installation) to run the Aurora app locally.
+2. Add sample data and accessions by running: `docker compose exec web python manage.py loaddata complete`
 3. With Aurora running in Docker, open another terminal and run the BackstopJS tests: `yarn backstop-test`.
 4. Review the results in the browser and look at the diff of any failed tests.
 5. To update the reference image files with the results of the last test images use: `yarn backstop-approve`. Subsequent tests will be compared against these updated reference files.
