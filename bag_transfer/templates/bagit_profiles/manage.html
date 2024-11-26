@@ -170,20 +170,6 @@
 		}
 		$('.dynamic-form.'+prefix+':visible').last().find('.add-row[data-target='+prefix+']').show()
   }
-	function isFormEmpty(form) {
-    var empty = true
-		if ($(form).find('.has-error').length) {
-			return false
-		}
-    $(form).find(':input[type!="hidden"][type!="checkbox"]').each(function(){
-      if ($(this).val()) {
-        $(this).find('.delete-row').removeClass("hidden")
-          empty = false
-          return false
-      }
-    })
-    return empty
-  }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()
 		$('input[name$=-TOTAL_FORMS]').each(function(){
@@ -194,11 +180,6 @@
 				$('.add-row[data-target='+formPrefix+']').removeAttr("disabled");
 			}
 		});
-		$('.dynamic-form').each(function(){
-			if (isFormEmpty(this)) {
-				$(this).find('.delete-row').addClass("hidden")
-			};
-		})
     $('.add-row').on('click', function() {
 			if (!($(this).attr('disabled'))) {
 				addForm(this, $(this).attr('data-target'));
@@ -211,9 +192,6 @@
 			if ($(e.target).attr("type") == "text") {
 				addForm($(this).find('.add-row'), $(this).find('.add-row').attr('data-target'));
 				$(this).next('.dynamic-form').find('.delete-row').addClass('hidden')
-			}
-			if (isFormEmpty(this)) {
-				$(this).find('.delete-row').addClass("hidden")
 			} else {
 				if ($(this).attr('id').startsWith('nested')) {
 					$(this).find('.delete-row').removeClass("hidden")
