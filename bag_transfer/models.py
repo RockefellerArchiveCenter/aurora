@@ -64,7 +64,9 @@ class Organization(models.Model):
     @property
     def upload_target(self):
         if settings.S3_USE:
-            return f"{settings.S3_PREFIX}-{self.machine_name}-upload"
+            max_len = 63 - len(settings.S3_PREFIX) - 8  # ensure bucket name will not exceed max length
+            machine_name_truncated = self.machine_name[:max_len]
+            return f"{settings.S3_PREFIX}-{machine_name_truncated}-upload"
         else:
             return join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name, "upload")
 
