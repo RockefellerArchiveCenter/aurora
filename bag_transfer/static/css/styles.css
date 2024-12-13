@@ -29,29 +29,6 @@ main .container {
   display: none;
 }
 
-/* Base button styles */
-
-/* Prevent button label text from wrapping */
-/* TODO: should this be part of style library? */
-.btn {
-	white-space: nowrap;
-}
-
-/**
-* Extra small button for tables shrinks padding from btn--sm styles
-**/
-/* TODO: Add to style library */
-.btn--xs {
-	font-size: 10px;
-	line-height: 16px;
-	padding: 3px;
-	font-weight: bold;
-}
-
-.btn--xs .material-icon {
-	font-size: 18px;
-}
-
 /**
 * Override table styles for links that are styled as buttons
 **/
@@ -61,11 +38,9 @@ table a.btn {
 }
 
 /* Header and navigation styles */
-/* TODO: Add this blue version of header to style library */
 header {
 	top: 0;
   z-index: 999;
-	background-color: #182D48;
 }
 
 /* Adjust top position so that skip link is more visible in the header */
@@ -106,21 +81,6 @@ a.header__brand-title:focus {
 	@media screen and (min-width: 1024px) {
     margin-top: 0;
   }
-}
-
-.nav__btn--dropdown,
-.nav__btn--dropdown[aria-expanded='true'],
-#nav-toggle-menu,
-a.header__brand-title {
-	color: #fff;
-
-	:hover, :focus, :active {
-		color: #fff;
-	}
-}
-
-.nav__btn--dropdown:focus {
-	outline-color: #fff;
 }
 
 /* Page titles and related action button layout styles */
@@ -220,14 +180,7 @@ h1 {
 	overflow-x: auto;
 }
 
-/* Add an option for a blue card */
-/* TODO: add to style library? */
-.card--blue {
-	background-color: #ebeff4;
-}
-
 /* Badge colors and layout styles */
-/* TODO: add more badge color and size options to style library */
 .badge--green {
 	background-color: #026d3a;
 }
@@ -347,27 +300,50 @@ div.badge {
 	}
 }
 
+.dashboard__summary-lists {
+	@media screen and (min-width: 1024px) {
+		column-gap: 20px;
+	}
+}
+
+.dashboard__transferred {
+	grid-column: 1 / span 12;
+
+	@media screen and (min-width: 1024px) {
+		grid-column: 1 / span 6;
+	}
+}
+
+.dashboard__accessioned {
+	grid-column: 1 / span 12;
+
+	@media screen and (min-width: 1024px) {
+		grid-column: 7 / span 6;
+	}
+}
+
 .dashboard__flex-container {
 	display: block;
 
 	@media screen and (min-width: 1024px) {
-	display: flex;
-	gap: 20px;
+		display: flex;
+		gap: 20px;
 	}
 }
 
 .dashboard__recent-transfers {
 	@media screen and (min-width: 1024px) {
 		min-width: 67%;
-		}
+	}
 }
 
 .dashboard__record-types {
 	margin-top: 30px;
+
 	@media screen and (min-width: 1024px) {
 		width: 33%;
 		margin-top: 0;
-		}
+	}
 }
 
 .recent-transfers {
@@ -449,7 +425,9 @@ div.badge {
 /* Improve layout of summary list spacing on homepage and org detail page */
 .org-detail .summary-list__key,
 .dashboard__summary-lists .summary-list__key {
-	width: 60%;
+	@media screen and (min-width: 580px) {
+		flex-basis: 60%;
+	}
 }
 
 /**
@@ -476,6 +454,7 @@ div.badge {
 
 .transfer-details {
 	grid-column: 1 / span 12;
+
 	@media screen and (min-width: 1024px) {
 		grid-column: 1 / span 6;
 	}
@@ -675,4 +654,3 @@ used in django forms */
 #resource_title_dismiss:focus {
 	outline-color: #f6f6f4;
 }
-
