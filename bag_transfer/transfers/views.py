@@ -181,30 +181,38 @@ class TransferDataView(CSVResponseMixin, View):
 
 class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
     model = Transfer
-    columns = [
-        "metadata__external_identifier",
-        "title",
-        "machine_file_identifier",
-        "process_status",
-        "metadata__date_start",
-        "organization__name",
-        "metadata__record_creators__name",
-        "metadata__record_type",
-        "machine_file_size",
-        "machine_file_upload_time",
-    ]
-    order_columns = [
-        "title",
-        "machine_file_identifier",
-        "process_status",
-        "metadata__date_start",
-        "organization__name",
-        "metadata__record_creators__name",
-        "metadata__record_type",
-        "machine_file_size",
-        "machine_file_upload_time",
-    ]
-    max_display_length = 500
+    max_display_length: 500
+
+    def get_columns(self):
+        columns = [
+            "metadata__external_identifier",
+            "title",
+            "machine_file_identifier",
+            "process_status",
+            "metadata__date_start",
+            "metadata__record_creators__name",
+            "metadata__record_type",
+            "machine_file_size",
+            "machine_file_upload_time",
+        ]
+        if self.request.user.is_archivist():
+            columns.insert(5, "organization__name")
+        return columns
+
+    def get_order_columns(self):
+        order_columns = [
+            "title",
+            "machine_file_identifier",
+            "process_status",
+            "metadata__date_start",
+            "metadata__record_creators__name",
+            "metadata__record_type",
+            "machine_file_size",
+            "machine_file_upload_time",
+        ]
+        if self.request.user.is_archivist():
+            order_columns.insert(4, "organization__name")
+        return order_columns
 
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
