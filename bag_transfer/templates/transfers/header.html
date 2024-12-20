@@ -41,13 +41,6 @@
                   <div class="nav__link-title">All Transfers</div>
                 </a>
               </li>
-              {% if not request.user.is_staff %}
-              <li class="nav__list-item--dropdown">
-                <a class="nav__link" href="{% url 'orgs:detail' pk=request.user.organization.pk %}">
-                  <div class="nav__link-title">My Organization</div>
-                </a>
-              </li>
-              {% endif %}
               {% if request.user.is_staff %}
               <li class="nav__list-item--dropdown">
                 <a class="nav__link" href="{% url 'appraise:list' %}">
@@ -122,6 +115,13 @@
               class="list--unstyled nav__list--dropdown"
               hidden
             >
+            {% if not request.user.is_staff %}
+              <li class="nav__list-item--dropdown">
+                <a class="nav__link" href="{% url 'orgs:detail' pk=request.user.organization.pk %}">
+                  <div class="nav__link-title">My Organization</div>
+                </a>
+              </li>
+              {% endif %}
               <li class="nav__list-item--dropdown">
                 <a class="nav__link" href="{% url 'users:detail' pk=request.user.id %}">
                   <div class="nav__link-title">User Profile</div>
