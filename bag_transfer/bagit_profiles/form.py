@@ -71,11 +71,7 @@ class BagItProfileBagInfoForm(forms.ModelForm):
             "repeatable": "Repeatable?",
         }
         widgets = {
-            "field": forms.widgets.Select(
-                attrs={
-                    "required": "required",
-                }
-            ),
+            "field": forms.widgets.Select(),
             "required": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "repeatable": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
         }
