@@ -52,8 +52,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "bag_transfer.middleware.cognito.CognitoMiddleware",
-    # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
+    # "bag_transfer.middleware.cognito.CognitoMiddleware",
+    "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
     'csp.middleware.CSPMiddleware',
 ]
 
@@ -167,7 +167,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 CSP_DEFAULT_SRC = ("'self'", 'https://rockarch.matomo.cloud/')
 CSP_IMG_SRC = ("'self'", 'https://assets.rockarch.org/')
 CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://assets.rockarch.org/')
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.matomo.cloud/')
 CSP_FONT_SRC = ("'self'", 'https://assets.rockarch.org/')
 
 # Transfer settings
