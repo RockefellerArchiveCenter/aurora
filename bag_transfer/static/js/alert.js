@@ -21,11 +21,7 @@ function displayMessage(color, message) {
       <button type="button" class="alert__button" aria-label="Close alert message">\
         <span class="material-icon" aria-hidden="true">close</span>\
       </button>\
-      <div class="alert__icon-wrapper">\
-        <span class="alert__icon" aria-hidden="true">'+iconClass+'</span>\
-      </div>\
-      <div class="alert__text-wrapper">\
-        <p class="alert__text">'+message+'</p>\
-      </div>\
+      <span class="alert__icon" aria-hidden="true">'+iconClass+'</span>\
+      <p class="alert__text">'+message+'</p>\
     </div>').fadeIn(global_fade_time);
 }

@@ -4,18 +4,14 @@
 				<button type="button" class="alert__button" aria-label="Close alert message">
 					<span class="material-icon" aria-hidden="true">close</span>
 				</button>
-				<div class="alert__icon-wrapper">
-					<span class="alert__icon" aria-hidden="true">
-						{% if message.tags == 'success' %}
-							check_circle_outline
-						{% else %}
-							error_outline
-						{% endif %}
-					</span>
-				</div>
-				<div class="alert__text-wrapper">
-					<p class="alert__text">{{ message }}</p>
-				</div>
+				<span class="alert__icon" aria-hidden="true">
+					{% if message.tags == 'success' %}
+						check_circle_outline
+					{% else %}
+						error_outline
+					{% endif %}
+				</span>
+				<p class="alert__text">{{ message }}</p>
 			</div>
 		{% endfor %}
 {% endif %}
