@@ -256,6 +256,10 @@ div.badge {
 	color: #FFFFFF;
 }
 
+.hero__btn--wrap {
+	white-space: wrap;
+}
+
 /* Login and password reset page styles */
 .login__page {
 	background: url('/static/img/login-bg.jpg') no-repeat center center fixed;
