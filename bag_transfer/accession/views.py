@@ -16,7 +16,7 @@ from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
-                                            ArchivistMixin)
+                                            ArchivistMixin, OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import (BaseDatatableView, PageTitleMixin,
                                             is_ajax)
@@ -78,7 +78,7 @@ class AccessionsPendingView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, L
         return self.render_to_json_response(rdata)
 
 
-class AccessionDetailView(PageTitleMixin, DetailView):
+class AccessionDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "accession/detail.html"
     model = Accession
 
