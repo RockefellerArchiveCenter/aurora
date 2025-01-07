@@ -78,7 +78,7 @@ class AccessionsPendingView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, L
         return self.render_to_json_response(rdata)
 
 
-class AccessionDetailView(PageTitleMixin, AccessioningArchivistMixin, DetailView):
+class AccessionDetailView(PageTitleMixin, DetailView):
     template_name = "accession/detail.html"
     model = Accession
 
@@ -271,7 +271,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             transfer.save()
 
 
-class SavedAccessionsView(PageTitleMixin, ArchivistMixin, TemplateView):
+class SavedAccessionsView(PageTitleMixin, TemplateView):
     template_name = "accession/saved.html"
     page_title = "Saved Accessions"
 
@@ -281,7 +281,7 @@ class SavedAccessionsView(PageTitleMixin, ArchivistMixin, TemplateView):
         return context
 
 
-class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
+class SavedAccessionsDatatableView(BaseDatatableView):
     """Handles processing of requests for Accessions in datatable, making page
     load time more performant."""
     model = Accession
@@ -303,6 +303,13 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
 
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
+
+    def get_initial_queryset(self):
+        """Filters queryset to only show accessions for the user's organization.
+        Staff users can see all accessions."""
+        if self.request.user.is_staff:
+            return Accession.objects.all()
+        return Accession.objects.filter(organization=self.request.user.organization)
 
     def title(self, accession):
         return (
