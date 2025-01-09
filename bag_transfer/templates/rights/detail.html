@@ -28,14 +28,14 @@
 </div>
 
 <h2>Rights Basis</h2>
-<div class="card card--container flex--column ml-30 mb-40">
+<div class="card card--container flex--column mb-40">
   <h3 class="heading--dotted-border pb-8 mb-20">{{object.rights_basis}}</h3>
   {% include 'rights/rights_basis_info.html' %}
 </div>
 
 <h2>Rights Granted or Restricted</h2>
 {% for rights_granted in object.rights_granted.all %}
-  <div class="card card--container card--blue flex--column ml-30 mb-30">
+  <div class="card card--container card--blue flex--column mb-30">
     {% include 'rights/rights_granted_info.html' %}
   </div>
 {% endfor %}
