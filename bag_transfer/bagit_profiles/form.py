@@ -26,7 +26,7 @@ class BagItProfileForm(forms.ModelForm):
                 }
             ),
             "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
-            "serialization": forms.widgets.RadioSelect(),
+            "serialization": forms.widgets.RadioSelect(attrs={"class": "radiobutton radiobutton--blue"}),
             "manifests_allowed": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
             "manifests_required": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
             "accept_serialization": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
