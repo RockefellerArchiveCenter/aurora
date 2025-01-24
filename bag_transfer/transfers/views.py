@@ -255,7 +255,10 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 self.get_dates(bag_info_data),
                 self.get_creators(bag_info_data),
                 bag_info_data.get("record_type"),
-                file_size(int(transfer.machine_file_size)),
+                {
+                    "display": file_size(int(transfer.machine_file_size)), 
+                    "order": int(transfer.machine_file_size),
+                },
                 transfer.upload_time_display,
                 "/app/transfers/{}".format(transfer.pk),
             ]

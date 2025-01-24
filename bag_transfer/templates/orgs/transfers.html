@@ -24,12 +24,23 @@
 			createdRow: function(row, data, dataIndex) {
           var transferPk = data[{% if request.user.is_archivist %}9{% else %}8{% endif %}];
           var transferName = data[0];
+          console.log(data)
 
           // Set the Name cell content as a clickable link to the transfer detail page
           $('td', row).eq(0).html('<a href="' + transferPk + '">' + transferName + '</a>');
   		},
       order: [{% if request.user.is_archivist %}8{% else %}7{% endif %}, 'desc'],
-      columnDefs: [{ orderable: false, targets: {% if request.user.is_archivist %}7{% else %}6{% endif %} }],
+      columnDefs: [
+        {
+          targets: {% if request.user.is_archivist %}7{% else %}6{% endif %}, // File size column
+          render: function (data, type) {
+            if (type === 'display' || type === 'filter') {
+              return data.display; // Use file_size(int(transfer.machine_file_size)) for display and filter
+            }
+            return data.order; // Use int(transfer.machine_file_size) for sorting
+          },
+        }
+      ],
 			processing: true,
       serverSide: true,
 			fixedHeader: true,
