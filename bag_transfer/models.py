@@ -471,7 +471,7 @@ class Transfer(models.Model):
         "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="transfers")
     machine_file_path = models.CharField(max_length=191)
-    machine_file_size = models.CharField(max_length=30)
+    machine_file_size = models.BigIntegerField()
     machine_file_upload_time = models.DateTimeField()
     machine_file_identifier = models.CharField(max_length=191, unique=True)
     machine_file_type = models.CharField(max_length=5, choices=machine_file_types)
