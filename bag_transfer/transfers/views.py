@@ -5,7 +5,6 @@ from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, TemplateView, View
 
-from aurora import settings
 from bag_transfer.lib.view_helpers import file_size, label_class
 from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
                                             OrgReadViewMixin)
@@ -50,16 +49,14 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
                 data["upload_size_by_month"].append(0)
             prev_year += relativedelta(months=1)
 
-        for (n, label) in enumerate(set(DashboardRecordTypeData.objects.filter(organization__in=orgs).values_list("label", flat=True))):
+        labels = set(DashboardRecordTypeData.objects.filter(organization__in=orgs).values_list("label", flat=True))
+        for label in labels:
             record_type_count = 0
-            color_index = n
-            while color_index >= len(settings.RECORD_TYPE_COLORS):
-                color_index = color_index - len(settings.RECORD_TYPE_COLORS)
             for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=orgs).values_list("count", flat=True):
                 record_type_count += count
             if record_type_count > 0:
                 data["record_types_by_year"].append(
-                    {"label": label, "value": record_type_count, "color": settings.RECORD_TYPE_COLORS[color_index]})
+                    {"label": label, "value": record_type_count})
         return data
 
     def compile_data(self, orgs, org_name, users):
@@ -74,7 +71,7 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
         data = {
             "name": org_name,
             "users": users,
-            "uploads": org_uploads.order_by("-created_time")[:15],
+            "uploads": org_uploads.order_by("-created_time")[:10],
             "uploads_count": org_uploads.count(),
             "validated_count": org_uploads.filter(process_status__gte=Transfer.VALIDATED).count(),
             "accepted_count": org_uploads.filter(process_status__gte=Transfer.ACCEPTED).count(),
@@ -172,7 +169,7 @@ class TransferDataView(CSVResponseMixin, View):
                     transfer.organization.name,
                     self.get_creators(bag_info_data),
                     bag_info_data.get("record_type"),
-                    file_size(int(transfer.machine_file_size)),
+                    file_size(transfer.machine_file_size),
                     transfer.upload_time_display,
                 )
             )
@@ -224,9 +221,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
 
     def process_status_tag(self, status):
         percentage = int(round(status / Transfer.ACCESSIONING_COMPLETE * 100))
-        return "{label} <div class='progress progress-xs'>\
-                    <div class='progress-bar progress-bar-{label_class}' style='width: {percentage}%' aria-label='{percentage}% complete'></div>\
-                </div>".format(
+        return "{label} <progress class='progress-bar--{label_class}' max='100' value='{percentage}' aria-label='{percentage}% complete'></progress>".format(
             label=self.process_status_display(status),
             label_class=label_class(status),
             percentage=percentage)
@@ -260,7 +255,7 @@ class TransferDataTableView(LoggedInMixinDefaults, BaseDatatableView):
                 self.get_dates(bag_info_data),
                 self.get_creators(bag_info_data),
                 bag_info_data.get("record_type"),
-                file_size(int(transfer.machine_file_size)),
+                file_size(transfer.machine_file_size),
                 transfer.upload_time_display,
                 "/app/transfers/{}".format(transfer.pk),
             ]

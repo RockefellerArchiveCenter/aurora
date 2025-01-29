@@ -26,7 +26,7 @@ class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
     form_class = RightsForm
 
     def get_page_title(self, context):
-        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create New Rights Statement"
+        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create Rights Statement"
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.organization.pk})
@@ -63,9 +63,14 @@ class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
 
         for formset in [rights_granted_formset, basis_formset]:
             if not formset.is_valid():
+                detailed_errors = "; ".join(
+                    [f"{field}: {', '.join(errors)}" for form in formset.forms for field, errors in form.errors.items()]
+                )
                 messages.error(
                     self.request,
-                    "There was a problem with your submission. Please correct the error(s) below and try again.")
+                    f"There was a problem with your submission: {detailed_errors} "
+                    "Please correct the error(s) below and try again."
+                )
                 return super().form_invalid(form)
 
         rights_statement.save()
@@ -106,6 +111,18 @@ class RightsCreateView(RightsManageView, CreateView):
         rights_statement = form.save(commit=False)
         organization = Organization.objects.get(pk=self.request.GET.get("org"))
         return self.save_formsets(form, rights_statement, organization)
+
+    def form_invalid(self, form):
+        """Handle invalid form with detailed error messages."""
+        detailed_errors = "; ".join(
+            [f"{field}: {', '.join(errors)}" for field, errors in form.errors.items()]
+        )
+        messages.error(
+            self.request,
+            f"There was an error with your submission: {detailed_errors} "
+            "Please correct the error(s) below and try again."
+        )
+        return super().form_invalid(form)
 
 
 class RightsUpdateView(RightsManageView, UpdateView):

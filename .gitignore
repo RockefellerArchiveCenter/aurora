@@ -10,3 +10,8 @@ local_settings.py
 db.sqlite3
 media
 config.py
+
+# BackstopJS
+/node_modules
+backstop_data/html_report/
+bitmaps_test/

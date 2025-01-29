@@ -9,13 +9,6 @@ from bag_transfer.rights.models import (RightsStatement,
                                         RightsStatementStatute)
 
 
-class SelectAllCheckboxSelectMultiple(forms.widgets.CheckboxSelectMultiple):
-
-    def render(self, name, value, *args, **kwargs):
-        output = super(forms.widgets.CheckboxSelectMultiple, self).render(name, value, *args, **kwargs)
-        return '<div><button id="toggle-all" type="button" class="btn btn-primary btn-sm">Select all</button></div>' + output
-
-
 class RightsForm(forms.ModelForm):
     class Meta:
         model = RightsStatement
@@ -28,9 +21,9 @@ class RightsForm(forms.ModelForm):
             "applies_to_type": "The record types for which this rights statement applies. If no options are available here, values must first be added in this organization's BagIt Profile."
         }
         widgets = {
-            "rights_basis": forms.widgets.Select(attrs={"class": "form-control"}),
-            "applies_to_type": SelectAllCheckboxSelectMultiple(
-                attrs={"class": "list-unstyled"}
+            "rights_basis": forms.widgets.Select(),
+            "applies_to_type": forms.widgets.CheckboxSelectMultiple(
+                attrs={"class": "checkbox checkbox--blue"}
             ),
             "organization": forms.widgets.HiddenInput(),
         }
@@ -90,22 +83,19 @@ class RightsGrantedForm(forms.ModelForm):
             "rights_granted_note": "A prose description of the action or restriction.",
         }
         widgets = {
-            "act": forms.widgets.Select(attrs={"class": "form-control"}),
-            "restriction": forms.widgets.Select(attrs={"class": "form-control"}),
+            "act": forms.widgets.Select(),
+            "restriction": forms.widgets.Select(),
             "start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
-            "start_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
-            "end_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
+            "start_date_period": forms.widgets.NumberInput(),
+            "end_date_period": forms.widgets.NumberInput(),
+            "end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "rights_granted_note": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
         }
 
@@ -153,27 +143,22 @@ class RightsCopyrightForm(RightsBasisForm):
             "copyright_note": "A prose description of the copyright.",
         }
         widgets = {
-            "copyright_status": forms.widgets.Select(attrs={"class": "form-control"}),
-            "copyright_jurisdiction": forms.widgets.TextInput(
-                attrs={"class": "form-control"}
-            ),
+            "copyright_status": forms.widgets.Select(),
+            "copyright_jurisdiction": forms.widgets.TextInput(),
             "copyright_status_determination_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "copyright_applicable_start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "copyright_applicable_end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
-            "copyright_start_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
-            "copyright_end_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
+            "copyright_start_date_period": forms.widgets.NumberInput(),
+            "copyright_end_date_period": forms.widgets.NumberInput(),
+            "copyright_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "copyright_note": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
         }
 
@@ -215,29 +200,22 @@ class RightsStatuteForm(RightsBasisForm):
             "statute_note": "A prose description of the statute.",
         }
         widgets = {
-            "statute_jurisdiction": forms.widgets.TextInput(
-                attrs={"class": "form-control"}
-            ),
-            "statute_citation": forms.widgets.TextInput(
-                attrs={"class": "form-control"}
-            ),
+            "statute_jurisdiction": forms.widgets.TextInput(),
+            "statute_citation": forms.widgets.TextInput(),
             "statute_determination_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "statute_applicable_start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "statute_applicable_end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
-            "statute_start_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
-            "statute_end_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
+            "statute_start_date_period": forms.widgets.NumberInput(),
+            "statute_end_date_period": forms.widgets.NumberInput(),
+            "statute_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "statute_note": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
         }
 
@@ -273,21 +251,18 @@ class RightsOtherRightsForm(RightsBasisForm):
             "other_rights_note": "A prose description of the rights.",
         }
         widgets = {
-            "other_rights_basis": forms.widgets.Select(attrs={"class": "form-control"}),
+            "other_rights_basis": forms.widgets.Select(),
             "other_rights_applicable_start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "other_rights_applicable_end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
-            "other_rights_start_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
-            "other_rights_end_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
+            "other_rights_start_date_period": forms.widgets.NumberInput(),
+            "other_rights_end_date_period": forms.widgets.NumberInput(),
+            "other_rights_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "other_rights_note": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
         }
 
@@ -323,21 +298,18 @@ class RightsLicenseForm(RightsBasisForm):
             "license_note": "A prose description of the license.",
         }
         widgets = {
-            "license_terms": forms.widgets.TextInput(attrs={"class": "form-control"}),
+            "license_terms": forms.widgets.TextInput(),
             "license_applicable_start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "license_applicable_end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
-            "license_start_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
-            "license_end_date_period": forms.widgets.NumberInput(
-                attrs={"class": "form-control"}
-            ),
+            "license_start_date_period": forms.widgets.NumberInput(),
+            "license_end_date_period": forms.widgets.NumberInput(),
+            "license_end_date_open": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "license_note": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
         }
 

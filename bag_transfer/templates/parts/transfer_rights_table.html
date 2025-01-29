@@ -1,5 +1,5 @@
 {% if rights_statements %}
-  <table class="table table-striped rights-statement-table">
+  <table class="table table-striped">
     <thead>
       <tr>
         <th>Basis</th>
@@ -19,4 +19,4 @@
   </table>
 {% endif %}
 
-<p class="has-no-rights-statement-p" {% if rights_statements %}style="display:none"{% endif %}>No rights statements.</p>
+<p {% if rights_statements %}style="display:none"{% endif %}>No rights statements.</p>

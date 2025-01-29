@@ -4,41 +4,63 @@
     {% include 'transfers/head.html' %}
     {% block extra_css %}{% endblock %}
   </head>
-  <body class="hold-transition fixed skin-blue sidebar-mini">
-    <div class="wrapper">
-      <!-- Main Header -->
-      {% include 'transfers/header.html' %}
+  <body>
+    <a href="#main" class="skip-link">Skip to main content</a>
+    <!-- Main Header -->
+    {% include 'transfers/header.html' %}
 
-      <!-- Left Sidebar -->
-      {% include 'transfers/left_sidebar.html' %}
-
-      <!-- Content Wrapper. Contains page content -->
-      <div class="content-wrapper">
-        <!-- Content Header (Page header) -->
-        <section class="content-header">
-          <h1>{% block h1_title %}{% endblock %}</h1>
-        </section>
-
-
-        <!-- Main content -->
-        <main class="content">
-
-          <div id="messages">{% include 'transfers/messages.html' %}</div>
-
-          {% block content %}{% endblock %}
-        </main>
+    <!-- Hero section (only on the homepage) -->
+    {% if request.path == '/app/' %}
+    <div class="wrapper wrapper__hero">
+      <div class="hero">
+        <div class="hero__logo">
+          <img alt="Rockefeller Archive Center logo" src="https://assets.rockarch.org/assets/img/hero_logo.png" />
+        </div>
+        <div class="hero__text">
+          An archival tool for the Rockefeller Archive Center to receive <a href="https://docs.rockarch.org/digital-transfer-guide">transfers of digital records</a> and allow archivists to appraise and accession those records.
+        </div>
       </div>
-
-      <!-- Main Footer -->
-      {% include 'transfers/footer.html' %}
-
-      <!-- Modals -->
-      {% block modals %}{% endblock %}
-
-      <!-- REQUIRED JS SCRIPTS -->
-      {% include 'transfers/js_scripts.html' %}
-      {% block extra_js %}{% endblock %}
-
+      <div class="mt-20 mb-60 ml-30">
+        <a href="{% url 'transfers:list' %}" class="btn btn--lg btn--orange mt-10 mr-10">
+          <span class="material-icon material-icon--space-after" aria-hidden="true">visibility</span>
+          View All Transfers
+        </a>
+        <a href="{% if not request.user.is_staff %}{% url 'orgs:detail' pk=request.user.organization.pk %}{% elif request.user.is_staff %}{% url 'orgs:list' %}{% endif %}" 
+          class="btn btn--lg btn--orange mr-10 mt-10 hero__btn--wrap">
+          <span class="material-icon material-icon--space-after" aria-hidden="true">account_balance</span>
+          Access Organization Settings
+        </a>
+      </div>
     </div>
+    {% endif %}
+
+    <!-- Content Wrapper. Contains main page content -->
+    <main id="main">
+      <div class="wrapper">
+        <div class="container">
+          {% block title_section %}
+          <div class="title__container">
+            <h1 tabindex="-1">{% block h1_title %}Default Title{% endblock %}</h1>
+            <div class="title__actions">{% block title_actions %}{% endblock %}</div>
+          </div>
+          {% endblock %}
+          <div id="messages" role="status">{% include 'transfers/messages.html' %}</div>
+
+            {% block content %}{% endblock %}
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Main Footer -->
+    {% include 'transfers/footer.html' %}
+
+    <!-- Modals -->
+    {% block modals %}{% endblock %}
+
+    <!-- REQUIRED JS SCRIPTS -->
+    {% include 'transfers/js_scripts.html' %}
+    {% block extra_js %}{% endblock %}
+
   </body>
 </html>

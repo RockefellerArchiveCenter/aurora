@@ -1,15 +1,22 @@
-<div class="box-comment">
-  <div class="box-comment-icon">
-    <span class="fa fa-archive fa-3x {% if upload.bag_it_valid %}green-transfer{% else %}red-transfer{% endif %}" aria-label="{% if upload.bag_it_valid %}valid{% else %}invalid{% endif %} transfer"></span>
+<div class="recent-transfers">
+  <div class="recent-transfers__icon">
+    <div class="material-icon dashboard__icon icon--{% if upload.process_status == 20 %}undefined{% elif upload.process_status == 30 %}red{% else %}green{% endif %}"
+    aria-hidden="true">inventory</div>
   </div>
-
-  <div class="comment-text">
-    <a class="upload-title" href="{% url 'transfers:detail' pk=upload.pk %}">
+  <div class="recent-transfers__text">
+    <a href="{% url 'transfers:detail' pk=upload.pk %}">
         {{ upload.bag_or_failed_name }}
     </a>
-    <span class="pull-right">{{ upload.created_time }}</span>
+    <span class="recent-transfers__date">{{ upload.created_time }}</span>
     <p>
-      {% if upload.bag_it_valid %}Transfer successful{% else %}Transfer Failed{% endif %}
+      Transfer by {{ upload.organization.name }}  
+      {% if upload.process_status == 20 %}
+        is in progress.
+      {% elif upload.process_status == 30 %}
+        failed validation.
+      {% else %}
+        passed validation.
+      {% endif %}
     </p>
   </div>
 </div>
