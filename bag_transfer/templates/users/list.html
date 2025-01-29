@@ -54,6 +54,8 @@
 
 {% block extra_js %}
 <script type="text/javascript">
-  new DataTable('#user-table')
+  new DataTable('#user-table', {
+    ordering: false
+  });
 </script>
 {% endblock %}
