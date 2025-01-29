@@ -36,12 +36,14 @@
     </div>
     <div class="summary-list__row">
         <dt class="summary-list__key">Groups</dt>
+        <dd class="summary-list__value">
         {% if object.groups.exists %}
             {% for group in object.groups.all %}
-                <dd class="summary-list__value">{{ group.name }}</dd>
+                {{ group.name }}{% if not forloop.last %}, {% endif %}
             {% endfor %}
         {% else %}
-            <dd class="summary-list__value">N/A</dd>
+            N/A
+        </dd>
         {% endif %}
     </div>
 </dl>
