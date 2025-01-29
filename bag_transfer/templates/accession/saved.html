@@ -30,6 +30,9 @@
       createdRow: function(row, data, dataIndex) {
           $(row).attr('data-accession-id', data[5]);
       },
+      columnDefs: [
+        { orderable: false, targets: [3, 4] } // Disable sorting for transfers and status
+      ],
       order: [1, 'desc'],
       processing: true,
       serverSide: true,
