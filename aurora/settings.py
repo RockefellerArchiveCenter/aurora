@@ -52,8 +52,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # "bag_transfer.middleware.cognito.CognitoMiddleware",
-    "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
+    "bag_transfer.middleware.cognito.CognitoMiddleware",
+    # "bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT",
     'csp.middleware.CSPMiddleware',
 ]
 
