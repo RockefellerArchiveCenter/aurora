@@ -48,7 +48,7 @@ jobs:
 
       - name: Install pre-commit
         run: |
-          pip install "pre-commit===2.13.0"
+          pip install pre-commit
           pre-commit install
 
       - name: Run pre-commit checks
