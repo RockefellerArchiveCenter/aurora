@@ -1,0 +1,12 @@
+<fieldset class="mb-20">
+  <legend aria-describedby="{{ legend|slugify }}-help">{{ legend }}</legend>
+  {% for checkbox in fields %}
+      <div class="input-group">
+          {{ checkbox.tag }}
+          <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+      </div>
+  {% endfor %}
+  {% if help_text %}
+    <div class="input__help-text" id="{{ legend|slugify }}-help">{{ help_text }}</div>
+  {% endif %}
+</fieldset>

@@ -19,21 +19,21 @@ class AccessionForm(forms.ModelForm):
         }
         help_texts = {}
         widgets = {
-            "title": forms.widgets.TextInput(attrs={"class": "form-control"}),
+            "title": forms.widgets.TextInput(),
             "start_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "end_date": forms.widgets.DateInput(
-                attrs={"class": "form-control", "type": "date"}
+                attrs={"type": "date"}
             ),
             "description": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
             "access_restrictions": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
             "use_restrictions": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
+                attrs={"rows": 3}
             ),
             "resource": forms.widgets.HiddenInput(),
             "accession_number": forms.widgets.HiddenInput(),
@@ -52,7 +52,7 @@ CreatorsFormSet = forms.modelformset_factory(
     fields=("name", "type"),
     extra=0,
     widgets={
-        "name": forms.widgets.TextInput(attrs={"class": "form-control col-sm-8"}),
-        "type": forms.widgets.Select(attrs={"class": "form-control"}),
+        "name": forms.widgets.TextInput(),
+        "type": forms.widgets.Select(),
     },
 )

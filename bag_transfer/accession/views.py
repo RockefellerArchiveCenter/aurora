@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.shortcuts import reverse
-from django.views.generic import CreateView, DetailView, ListView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView
 
 from aurora import settings
 from bag_transfer.accession.db_functions import GroupConcat
@@ -16,7 +16,7 @@ from bag_transfer.api.serializers import AccessionSerializer
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
-                                            ArchivistMixin)
+                                            ArchivistMixin, OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
 from bag_transfer.mixins.viewmixins import (BaseDatatableView, PageTitleMixin,
                                             is_ajax)
@@ -24,7 +24,7 @@ from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.rights.models import RightsStatement
 
 
-class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
+class AccessionsPendingView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
     template_name = "accession/main.html"
     page_title = "Accessioning Queue"
     model = Accession
@@ -78,7 +78,7 @@ class AccessionView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView)
         return self.render_to_json_response(rdata)
 
 
-class AccessionDetailView(PageTitleMixin, AccessioningArchivistMixin, DetailView):
+class AccessionDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "accession/detail.html"
     model = Accession
 
@@ -271,7 +271,17 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             transfer.save()
 
 
-class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
+class SavedAccessionsView(PageTitleMixin, TemplateView):
+    template_name = "accession/saved.html"
+    page_title = "Saved Accessions"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['accessions'] = Accession.objects.all()
+        return context
+
+
+class SavedAccessionsDatatableView(BaseDatatableView):
     """Handles processing of requests for Accessions in datatable, making page
     load time more performant."""
     model = Accession
@@ -294,6 +304,13 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
     def get_filter_method(self):
         return self.FILTER_ICONTAINS
 
+    def get_initial_queryset(self):
+        """Filters queryset to only show accessions for the user's organization.
+        Staff users can see all accessions."""
+        if self.request.user.is_staff:
+            return Accession.objects.all()
+        return Accession.objects.filter(organization=self.request.user.organization)
+
     def title(self, accession):
         return (
             "{} ({})".format(accession.title, accession.accession_number)
@@ -310,9 +327,9 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
         button = "Accession not delivered"
         if self.request.user.can_accession():
             button = (
-                '<a href="#" class="btn btn-primary pull-right deliver">Deliver Accession</a>'
+                '<button class="btn btn--sm btn--blue deliver">Deliver Accession</button>'
                 if (accession.process_status < Accession.DELIVERED)
-                else '<p class="pull-right" style="margin-right:.7em;">' + accession.get_process_status_display() + "</p>"
+                else '<p>' + accession.get_process_status_display() + "</p>"
             )
         return button
 
@@ -321,7 +338,7 @@ class SavedAccessionsDatatableView(ArchivistMixin, BaseDatatableView):
         for accession in qs:
             json_data.append(
                 [
-                    "<a href='{}'>{}</a.".format(
+                    "<a href='{}'>{}</a>".format(
                         reverse("accession:detail", kwargs={"pk": accession.pk}),
                         self.title(accession),
                     ),

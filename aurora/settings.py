@@ -83,13 +83,14 @@ LOGIN_REDIRECT_URL = "app_home"
 WSGI_APPLICATION = "aurora.wsgi.application"
 
 REST_FRAMEWORK = {
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 50,
     "DEFAULT_AUTHENTICATION_CLASSES": (
         # "rest_framework_jwt.authentication.JSONWebTokenAuthentication",
         "bag_transfer.authentication.CognitoAppAuthentication",
         "rest_framework.authentication.SessionAuthentication",
     ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
 }
 
 # Database
@@ -164,10 +165,10 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Content Security Policy
 CSP_DEFAULT_SRC = ("'self'", 'https://rockarch.matomo.cloud/')
-CSP_IMG_SRC = ("'self'")
-CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://cdnjs.cloudflare.com/', 'https://fonts.googleapis.com/')
-CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdnjs.cloudflare.com/', 'https://oss.maxcdn.com/', 'https://cdn.matomo.cloud/', 'https://cdn.datatables.net/')
-CSP_FONT_SRC = ("'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com/')
+CSP_IMG_SRC = ("'self'", 'https://assets.rockarch.org/')
+CSP_STYLE_SRC = ("'self'", "'unsafe-inline'", 'https://assets.rockarch.org/')
+CSP_SCRIPT_SRC = ("'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://cdn.matomo.cloud/')
+CSP_FONT_SRC = ("'self'", 'https://assets.rockarch.org/')
 
 # Transfer settings
 S3_USE = config.S3_USE
@@ -227,27 +228,6 @@ ASPACE = {
 # Matomo Analytics configs
 MTM_ID = config.MTM_ID
 
-# List of colors used in dashboard for record types
-RECORD_TYPE_COLORS = [
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-    "#f56954",
-    "#00a65a",
-    "#f39c12",
-    "#00c0ef",
-    "#3c8dbc",
-    "#d2d6de",
-]
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 

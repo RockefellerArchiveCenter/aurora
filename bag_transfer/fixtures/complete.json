@@ -170,7 +170,7 @@
     "model": "bag_transfer.recordcreators",
     "pk": 5,
     "fields": {
-        "name": "Office of Important Affairs adminstrators",
+        "name": "Office of Important Affairs administrators",
         "type": "organization"
     }
 },
@@ -200,7 +200,7 @@
     "pk": 1,
     "fields": {
         "accession": 3,
-        "organization": 1,
+        "organization": 2,
         "machine_file_path": "/data1/d21c72bb-6381-4768-819f-fb460bed14fa",
         "machine_file_size": "256727",
         "machine_file_upload_time": "2021-06-27T17:14:09.940Z",
@@ -338,7 +338,7 @@
     "pk": 7,
     "fields": {
         "accession": 2,
-        "organization": 2,
+        "organization": 1,
         "machine_file_path": "/data1/66a19383-2d40-4bbf-906b-6c75fbedca04",
         "machine_file_size": "107781",
         "machine_file_upload_time": "2021-06-27T17:14:09.936Z",
@@ -2459,7 +2459,7 @@
     "pk": 7,
     "fields": {
         "transfer": 7,
-        "source_organization": 2,
+        "source_organization": 1,
         "external_identifier": "records-2017-12-11T20:10:49.171065",
         "internal_sender_description": "Grant awarded to the Village Green Preservation Society for the purpose of \"preserving the old ways from being abused, protecting the new ways for me and for you\"",
         "title": "Grant to the Village Green Preservation Society",
@@ -2470,7 +2470,7 @@
         "bag_count": "",
         "bag_group_identifier": "",
         "payload_oxum": "41838.5",
-        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/2/",
+        "bagit_profile_identifier": "http://localhost:8000/api/bagit_profiles/1/",
         "origin": "aurora",
         "record_creators": [
             2
@@ -2833,7 +2833,10 @@
         "contact_email": "archive@example.org",
         "allow_fetch": false,
         "serialization": "optional",
-        "organization": 1
+        "organization": 1,
+        "manifests_allowed": [1, 2],
+        "accept_serialization": [1,2,3],
+        "accept_bagit_version": [1]
     }
 },
 {
@@ -2847,103 +2850,52 @@
         "contact_email": "archive@example.org",
         "allow_fetch": false,
         "serialization": "optional",
-        "organization": 2
+        "organization": 2,
+        "manifests_allowed": [1,2],
+        "accept_serialization": [1,2,3],
+        "accept_bagit_version": [1]
     }
 },
 {
     "model": "bag_transfer.manifestsallowed",
     "pk": 1,
     "fields": {
-        "name": "sha256",
-        "bagit_profile": 1
+        "name": "sha256"
     }
 },
 {
     "model": "bag_transfer.manifestsallowed",
     "pk": 2,
     "fields": {
-        "name": "sha512",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.manifestsallowed",
-    "pk": 3,
-    "fields": {
-        "name": "sha256",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.manifestsallowed",
-    "pk": 4,
-    "fields": {
-        "name": "sha512",
-        "bagit_profile": 2
+        "name": "sha512"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 1,
     "fields": {
-        "name": "application/zip",
-        "bagit_profile": 1
+        "name": "application/zip"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 2,
     "fields": {
-        "name": "application/x-tar",
-        "bagit_profile": 1
+        "name": "application/x-tar"
     }
 },
 {
     "model": "bag_transfer.acceptserialization",
     "pk": 3,
     "fields": {
-        "name": "application/x-gzip",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 4,
-    "fields": {
-        "name": "application/zip",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 5,
-    "fields": {
-        "name": "application/x-tar",
-        "bagit_profile": 2
-    }
-},
-{
-    "model": "bag_transfer.acceptserialization",
-    "pk": 6,
-    "fields": {
-        "name": "application/x-gzip",
-        "bagit_profile": 2
+        "name": "application/x-gzip"
     }
 },
 {
     "model": "bag_transfer.acceptbagitversion",
     "pk": 1,
     "fields": {
-        "name": "0.97",
-        "bagit_profile": 1
-    }
-},
-{
-    "model": "bag_transfer.acceptbagitversion",
-    "pk": 2,
-    "fields": {
-        "name": "0.97",
-        "bagit_profile": 2
+        "name": "0.97"
     }
 },
 {
@@ -3620,7 +3572,7 @@
     "fields": {
         "organization": 1,
         "label": "grant records",
-        "count": 0
+        "count": 1
     }
 },
 {
@@ -3708,7 +3660,7 @@
     "model": "bag_transfer.accession",
     "pk": 1,
     "fields": {
-        "title": "Donor Organization, Office of Important Affairs adminstrators administrative records",
+        "title": "Donor Organization, Office of Important Affairs administrators administrative records",
         "accession_number": null,
         "accession_date": "2021-06-27T18:45:03.842Z",
         "start_date": "1999-05-13T04:00:00Z",
@@ -3736,7 +3688,7 @@
     "model": "bag_transfer.accession",
     "pk": 2,
     "fields": {
-        "title": "Donor Organization, Desperate Dan Appreciation Society grant records",
+        "title": "Archival Repository, Desperate Dan Appreciation Society grant records",
         "accession_number": null,
         "accession_date": "2021-06-27T18:45:22.136Z",
         "start_date": "1994-05-13T04:00:00Z",
@@ -3749,7 +3701,7 @@
         "resource": "/repositories/2/resources/123",
         "acquisition_type": "deposit",
         "appraisal_note": "",
-        "organization": 2,
+        "organization": 1,
         "language": 3,
         "created": "2021-06-27T18:45:22.136Z",
         "last_modified": "2021-06-27T18:45:22.136Z",

@@ -473,7 +473,7 @@ class Transfer(models.Model):
         "Accession", related_name="accession_transfers", null=True, blank=True, on_delete=models.SET_NULL)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="transfers")
     machine_file_path = models.CharField(max_length=191)
-    machine_file_size = models.CharField(max_length=30)
+    machine_file_size = models.BigIntegerField()
     machine_file_upload_time = models.DateTimeField()
     machine_file_identifier = models.CharField(max_length=191, unique=True)
     machine_file_type = models.CharField(max_length=5, choices=machine_file_types)
@@ -758,6 +758,54 @@ class BagInfoMetadata(models.Model):
     origin = models.CharField(max_length=10, default="aurora")
 
 
+class ManifestsAllowed(models.Model):
+    MANIFESTS_ALLOWED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
+    name = models.CharField(choices=MANIFESTS_ALLOWED_CHOICES, max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class ManifestsRequired(models.Model):
+    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
+    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
+class AcceptSerialization(models.Model):
+    ACCEPT_SERIALIZATION_CHOICES = (
+        ("application/zip", "application/zip"),
+        ("application/x-tar", "application/x-tar"),
+        ("application/x-gzip", "application/x-gzip"),
+    )
+    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
+
+    def __str__(self):
+        return self.name
+
+
+class AcceptBagItVersion(models.Model):
+    BAGIT_VERSION_NAME_CHOICES = (
+        ("0.96", "0.96"),
+        ("0.97", "0.97"),
+        ("1.0", "1.0"),
+    )
+    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
+
+    def __str__(self):
+        return self.name
+
+
+class TagManifestsRequired(models.Model):
+    TAG_MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
+    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
+
+    def __str__(self):
+        return self.name
+
+
 class BagItProfile(models.Model):
     source_organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE, related_name="profile")
@@ -773,51 +821,12 @@ class BagItProfile(models.Model):
     )
     serialization = models.CharField(
         choices=SERIALIZATION_CHOICES, max_length=25, default="optional")
-
-
-class ManifestsAllowed(models.Model):
-    MANIFESTS_ALLOWED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=MANIFESTS_ALLOWED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_allowed")
-
-
-class ManifestsRequired(models.Model):
-    MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=MANIFESTS_REQUIRED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="manifests_required")
-
-
-class AcceptSerialization(models.Model):
-    ACCEPT_SERIALIZATION_CHOICES = (
-        ("application/zip", "application/zip"),
-        ("application/x-tar", "application/x-tar"),
-        ("application/x-gzip", "application/x-gzip"),
-    )
-    name = models.CharField(choices=ACCEPT_SERIALIZATION_CHOICES, max_length=25)
-    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="accept_serialization")
-
-
-class AcceptBagItVersion(models.Model):
-    BAGIT_VERSION_NAME_CHOICES = (
-        ("0.96", "0.96"),
-        ("0.97", "0.97"),
-        ("1.0", "1.0"),
-    )
-    name = models.CharField(choices=BAGIT_VERSION_NAME_CHOICES, max_length=5)
-    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="accept_bagit_version")
-
-
-class TagManifestsRequired(models.Model):
-    TAG_MANIFESTS_REQUIRED_CHOICES = (("sha256", "sha256"), ("sha512", "sha512"))
-    name = models.CharField(choices=TAG_MANIFESTS_REQUIRED_CHOICES, max_length=20)
-    bagit_profile = models.ForeignKey(
-        BagItProfile, on_delete=models.CASCADE, related_name="tag_manifests_required"
-    )
-
-
-class TagFilesRequired(models.Model):
-    name = models.CharField(max_length=256)
-    bagit_profile = models.ForeignKey(BagItProfile, on_delete=models.CASCADE, related_name="tag_files_required")
+    manifests_allowed = models.ManyToManyField(ManifestsAllowed)
+    manifests_required = models.ManyToManyField(ManifestsRequired, blank=True)
+    accept_serialization = models.ManyToManyField(AcceptSerialization, blank=True)
+    accept_bagit_version = models.ManyToManyField(AcceptBagItVersion, blank=True)
+    tag_manifests_required = models.ManyToManyField(TagManifestsRequired, blank=True)
+    tag_files_required = models.TextField(blank=True)
 
 
 class BagItProfileBagInfo(models.Model):

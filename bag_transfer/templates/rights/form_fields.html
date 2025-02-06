@@ -1,14 +1,38 @@
-<div class="form-group {% if field.errors %}has-error{% endif %}">
+
+<div class="input mb-20">
   {% if field.label != "Delete" %}
-  <label for="{{field.id_for_label}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
-  {{ field }}
+  {% if 'end_date_open' in field.name %}
+    <div class="input-group">
+      {{ field }}
+      <label for="{{ field.id_for_label }}" class="checkbox--blue">{{ field.label }}</label>
+      <div class="input__help-text mt-5">{{ field.help_text }}</div>
+    </div>
+    {% elif field.name == 'applies_to_type' %}
+      <fieldset>
+        <legend>{{ field.label }}{% if field.field.required %} *{% endif %}</legend>
+        <button id="toggle-all" type="button" class="btn btn--blue btn--sm my-5">Select all</button>
+        {% for checkbox in field %}
+          <div class="input-group">
+            {{ checkbox.tag }}
+            <label for="{{ checkbox.id_for_label }}" class="checkbox--blue">{{ checkbox.choice_label }}</label>
+          </div>
+        {% endfor %}
+        {% if field.help_text %}
+          <div class="input__help-text">{{ field.help_text }}</div>
+        {% endif %}
+      </fieldset>
+    {% else %}
+      <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
+      {{ field }}
+      {% if field.help_text %}
+        <div class="input__help-text">{{ field.help_text }}</div>
+      {% endif %}
+    {% endif %}
   {% endif %}
-  {% if field.help_text %}
-  <p class="help-block">{{field.help_text}}</p>
-  {% endif %}
+  
   {% if field.errors %}
-  {% for error in field.errors %}
-    <p class="help-block">{{error}}</p>
-  {% endfor %}
+    {% for error in field.errors %}
+      <div class="input__error">{{ error }}</div>
+    {% endfor %}
   {% endif %}
 </div>

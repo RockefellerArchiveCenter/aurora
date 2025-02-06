@@ -1,0 +1,17 @@
+[
+  {
+    "name": "csrftoken",
+    "value": "ctpnLQi2uWMkzYnMBdlNjsf4cCvlExAz",
+    "domain": "host.docker.internal",
+    "path": "/",
+    "expires": 1763582119.050928,
+    "size": 41,
+    "httpOnly": false,
+    "secure": false,
+    "session": false,
+    "sameSite": "Lax",
+    "priority": "Medium",
+    "sameParty": false,
+    "sourceScheme": "NonSecure"
+  }
+]

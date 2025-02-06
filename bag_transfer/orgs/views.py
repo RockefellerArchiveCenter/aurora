@@ -11,7 +11,7 @@ from bag_transfer.models import Organization, Transfer
 
 class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = "orgs/create.html"
-    page_title = "Add an Organization"
+    page_title = "Add Organization"
     model = Organization
     fields = ["name", "acquisition_type"]
     success_message = "New Organization Saved!"
@@ -22,7 +22,6 @@ class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMess
 
 class OrganizationDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "orgs/detail.html"
-    page_title = "Organization Profile"
     model = Organization
 
     def get_context_data(self, **kwargs):
@@ -40,6 +39,9 @@ class OrganizationDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
             organization=context["object"],
         ).count()
         return context
+
+    def get_page_title(self, context):
+        return "Organization Profile: {}".format(context["object"].name)
 
 
 class OrganizationEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):

@@ -1,10 +1,7 @@
 from django import forms
 
-from bag_transfer.models import (AcceptBagItVersion, AcceptSerialization,
-                                 BagItProfile, BagItProfileBagInfo,
-                                 BagItProfileBagInfoValues, ManifestsAllowed,
-                                 ManifestsRequired, TagFilesRequired,
-                                 TagManifestsRequired)
+from bag_transfer.models import (BagItProfile, BagItProfileBagInfo,
+                                 BagItProfileBagInfoValues)
 
 
 class BagItProfileForm(forms.ModelForm):
@@ -14,7 +11,7 @@ class BagItProfileForm(forms.ModelForm):
         labels = {
             "external_description": "Description",
             "allow_fetch": "Allow Fetch.txt?",
-            "serialization": "Serialization allowed?",
+            "tag_files_required": "Tag Files Required"
         }
         widgets = {
             "organization": forms.widgets.HiddenInput(),
@@ -23,19 +20,45 @@ class BagItProfileForm(forms.ModelForm):
             "version": forms.widgets.HiddenInput(),
             "bagit_profile_identifier": forms.widgets.HiddenInput(),
             "external_description": forms.widgets.Textarea(
-                attrs={"class": "form-control", "rows": 3}
-            ),
-            "serialization": forms.widgets.Select(
                 attrs={
-                    "class": "form-control",
-                    "aria-labelledby": "id_serialization-label",
+                    "rows": 3,
+                    "aria-describedby": "id_external_description-help"
                 }
             ),
+            "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "serialization": forms.widgets.RadioSelect(attrs={"class": "radiobutton radiobutton--blue"}),
+            "manifests_allowed": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "manifests_required": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "accept_serialization": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "accept_bagit_version": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "tag_manifests_required": forms.CheckboxSelectMultiple(attrs={"class": "checkbox checkbox--blue"}),
+            "tag_files_required": forms.widgets.Textarea(attrs={"rows": 3}),
+        }
+        legends = {
+            "manifests_allowed": "Allowed Algorithm(s) for Manifest Files *",
+            "manifests_required": "Manifests Required",
+            "accept_serialization": "Serializations Accepted",
+            "accept_bagit_version": "BagIt Versions Accepted",
+            "tag_manifests_required": "Tag Manifests Required"
         }
         help_texts = {
             "external_description": "A short description of this BagIt Profile.",
-            "serialization": "Specify whether serialization of bags is required, forbidden, or optional.",
+            "tag_files_required": "List required tag files, if any, separated by commas.",
+            "manifests_allowed": "Select at least one.",
+            "manifests_required": "If no value is selected, any algorithm is valid.",
+            "accept_serialization": "Select all accepted formats. If no values are selected, the serialization format will not be checked.",
+            "accept_bagit_version": "Select all versions of the BagIt Specification accepted. If no values are selected, the BagIt version will not be checked.",
+            "tag_manifests_required": "If no values are selected, the tag format algorithm will not be checked."
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.legends = self.Meta.legends  # Make legends accessible
+        self.help_texts = self.Meta.help_texts  # Make help_texts accessible
+        self.fields["external_description"].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
+        self.fields["manifests_allowed"].initial = [1, 2]
+        self.fields["accept_serialization"].initial = [1, 2, 3]
+        self.fields["accept_bagit_version"].initial = [2]
 
 
 class BagItProfileBagInfoForm(forms.ModelForm):
@@ -48,9 +71,9 @@ class BagItProfileBagInfoForm(forms.ModelForm):
             "repeatable": "Repeatable?",
         }
         widgets = {
-            "field": forms.widgets.Select(attrs={"class": "form-control multi-value"}),
-            "required": forms.widgets.CheckboxInput(),
-            "repeatable": forms.widgets.CheckboxInput(),
+            "field": forms.widgets.Select(),
+            "required": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
+            "repeatable": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
         }
 
 
@@ -60,92 +83,7 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
         fields = ("name",)
         widgets = {
             "name": forms.widgets.TextInput(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "values-label",
-                }
-            )
-        }
-
-
-class ManifestsAllowedForm(forms.ModelForm):
-    class Meta:
-        model = ManifestsAllowed
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "manifests_allowed-label",
-                }
-            )
-        }
-
-
-class ManifestsRequiredForm(forms.ModelForm):
-    class Meta:
-        model = ManifestsRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "manifests-label",
-                }
-            )
-        }
-
-
-class AcceptSerializationForm(forms.ModelForm):
-    class Meta:
-        model = AcceptSerialization
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "serialization-label",
-                }
-            )
-        }
-
-
-class AcceptBagItVersionForm(forms.ModelForm):
-    class Meta:
-        model = AcceptBagItVersion
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "version-label",
-                }
-            )
-        }
-
-
-class TagManifestsRequiredForm(forms.ModelForm):
-    class Meta:
-        model = TagManifestsRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.Select(
-                attrs={
-                    "class": "form-control multi-value",
-                    "aria-labelledby": "tag_manifests-label",
-                }
-            )
-        }
-
-
-class TagFilesRequiredForm(forms.ModelForm):
-    class Meta:
-        model = TagFilesRequired
-        fields = ("name",)
-        widgets = {
-            "name": forms.widgets.TextInput(
-                attrs={"class": "form-control", "aria-labelledby": "tag_files-label"}
-            )
+                attrs={"aria-labelledby": "values-label", })
         }
 
 
@@ -200,59 +138,4 @@ BagItProfileBagInfoFormset = forms.inlineformset_factory(
     extra=1,
     form=BagItProfileBagInfoForm,
     formset=BaseBagInfoFormset,
-)
-
-ManifestsAllowedFormset = forms.inlineformset_factory(
-    BagItProfile,
-    ManifestsAllowed,
-    fields=("name",),
-    extra=1,
-    max_num=len(ManifestsAllowed.MANIFESTS_ALLOWED_CHOICES),
-    min_num=1,
-    validate_min=True,
-    form=ManifestsAllowedForm,
-)
-
-ManifestsRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    ManifestsRequired,
-    fields=("name",),
-    extra=1,
-    max_num=len(ManifestsRequired.MANIFESTS_REQUIRED_CHOICES),
-    form=ManifestsRequiredForm,
-)
-
-AcceptSerializationFormset = forms.inlineformset_factory(
-    BagItProfile,
-    AcceptSerialization,
-    fields=("name",),
-    extra=1,
-    max_num=len(AcceptSerialization.ACCEPT_SERIALIZATION_CHOICES),
-    form=AcceptSerializationForm,
-)
-
-AcceptBagItVersionFormset = forms.inlineformset_factory(
-    BagItProfile,
-    AcceptBagItVersion,
-    fields=("name",),
-    extra=1,
-    max_num=len(AcceptBagItVersion.BAGIT_VERSION_NAME_CHOICES),
-    form=AcceptBagItVersionForm,
-)
-
-TagManifestsRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    TagManifestsRequired,
-    fields=("name",),
-    extra=1,
-    max_num=len(TagManifestsRequired.TAG_MANIFESTS_REQUIRED_CHOICES),
-    form=TagManifestsRequiredForm,
-)
-
-TagFilesRequiredFormset = forms.inlineformset_factory(
-    BagItProfile,
-    TagFilesRequired,
-    fields=("name",),
-    extra=1,
-    form=TagFilesRequiredForm,
 )
