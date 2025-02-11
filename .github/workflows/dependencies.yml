@@ -14,20 +14,13 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/create-github-app-token@v1
-        id: app-token
+      - uses: actions/checkout@v4.2.2
         with:
-          app-id: ${{ vars.APP_ID }}
-          private-key: ${{ secrets.PRIVATE_KEY }}
-
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ steps.app-token.outputs.token }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           ref: development
-          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5.4.0
         with:
           python-version: '3.10'
           cache: pip
@@ -41,12 +34,10 @@ jobs:
       - name: Run pip-compile
         run: pip-compile --upgrade
 
-      - name: Create Pull Request
-        uses: peter-evans/create-pull-request@v6.0.2
+      - name: Run GitHub Actions Version Updater
+        uses: saadmk11/github-actions-version-updater@v0.8.1
         with:
-          token: ${{ steps.app-token.outputs.token }}
-          base: development
-          branch: dependency-updates
-          delete-branch: true
-          title: Dependency Updates
-          commit-message: Dependency updates
+          token: ${{ secrets.ACCESS_TOKEN }}
+          committer_username: 'p-galligan'
+          pull_request_branch: 'dependency-updates'
+          pull_request_title: 'Dependency Updates'
