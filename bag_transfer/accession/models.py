@@ -42,3 +42,4 @@ class Accession(models.Model):
         choices=PROCESS_STATUS_CHOICES, default=10, null=True, blank=True
     )
     archivesspace_identifier = models.CharField(max_length=255, blank=True, null=True)
+    archivesspace_group_identifier = models.CharField(max_length=255, blank=True, null=True)
