@@ -239,6 +239,7 @@ class TransferSerializer(serializers.HyperlinkedModelSerializer):
             "events",
             "archivesspace_identifier",
             "archivesspace_parent_identifier",
+            "accession",
             "created_time",
             "modified_time",
         )
