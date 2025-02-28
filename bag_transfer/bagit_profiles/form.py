@@ -58,7 +58,6 @@ class BagItProfileForm(forms.ModelForm):
         self.fields["external_description"].initial = "BagIt Profile for transferring records to the Rockefeller Archive Center."
         self.fields["manifests_allowed"].initial = [1, 2]
         self.fields["accept_serialization"].initial = [1, 2, 3]
-        self.fields["accept_bagit_version"].initial = [2]
 
 
 class BagItProfileBagInfoForm(forms.ModelForm):
