@@ -38,6 +38,23 @@ jobs:
         uses: saadmk11/github-actions-version-updater@v0.8.1
         with:
           token: ${{ secrets.ACCESS_TOKEN }}
-          committer_username: 'p-galligan'
-          pull_request_branch: 'dependency-updates'
-          pull_request_title: 'Dependency Updates'
+          skip_pull_request: "true"
+
+      - name: Create patch
+        if: always()
+        run: |
+          git diff > changes.patch
+          git apply --allow-empty "changes.patch"
+      
+      - name: Delete patch file
+        if: always()
+        run: rm -f changes.patch
+
+      - name: Create Pull Request
+        if: always()
+        uses: peter-evans/create-pull-request@v7.0.7
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          branch: dependency-updates
+          title: "Dependency Updates"
+          commit-message: "Scheduled dependency updates"
