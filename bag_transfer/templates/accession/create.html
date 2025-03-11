@@ -141,8 +141,7 @@
     $('form').on('submit', function(e){
         if (!$('#id_resource').val().trim()) {
             e.preventDefault(); // Stop form submission
-            displayMessage('orange', 'No ArchiveSpace resource target specified.');
-            $('#resource_input').focus();
+            displayMessage('orange', 'No ArchivesSpace resource target specified.');
         }
     });
   });
