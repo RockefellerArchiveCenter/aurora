@@ -136,6 +136,15 @@
       $('#id_resource').val("")
       $('#resource_input').fadeTo(0, 1).show()
     });
+
+    // Form validation before submit
+    $('form').on('submit', function(e){
+        if (!$('#id_resource').val().trim()) {
+            e.preventDefault(); // Stop form submission
+            displayMessage('orange', 'No ArchiveSpace resource target specified.');
+            $('#resource_input').focus();
+        }
+    });
   });
 </script>
 {% endblock %}
