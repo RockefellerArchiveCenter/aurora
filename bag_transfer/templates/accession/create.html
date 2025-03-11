@@ -8,7 +8,6 @@
   {% for hidden in form.hidden_fields %}
     {{hidden}}
   {% endfor %}
-  {{form.resource}}
   <div class="card card--container card--grid-container mb-30">
     <div class="input--full-width">
       <h2>Target ArchivesSpace Resource</h2>
@@ -21,14 +20,12 @@
         </div>
       </div>
       <div id="resource_result" style="display: none;">
-        <h3>
-          <div class="badge badge--blue" id="resource_title">
-            Resource name
-            <button id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="remove resource">
-              <span class="material-icon" aria-hidden="true">close</span>
-            </button>
-          </div>
-        </h3>
+        <div class="badge badge--blue" id="resource_title">
+          Resource name
+          <button id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="remove resource">
+            <span class="material-icon" aria-hidden="true">close</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -116,11 +113,11 @@
       // Make GET request to find the resource
       $.get(url, {'resource_id': $('#resource_id').val()}, function(resp){
         if (resp.success){
-          // Hide input one resource is found
+          // Hide input once resource is found
           $('#resource_input_wrapper').hide()
 
           // Display the resource title and success alert
-          $('#resource_title').text(resp.title)
+          $('#resource_title').contents().first().replaceWith(resp.title); //only replace the title text, but keep  the dismiss button
           $('#id_resource').val(resp.uri) // store URI in hidden field
           $('#resource_result').show()
           displayMessage('blue', resp.title + ' was added as the target ArchiveSpace resource');
