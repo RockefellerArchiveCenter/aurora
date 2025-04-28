@@ -33,6 +33,7 @@ SQL_HOST = "db"  # host for the application database (string)
 SQL_PORT = 3306  # port on which the application database can be reached (integer)
 
 S3_USE = False  # Use Amazon S3 as a storage layer (boolean)
+S3_DELIVER = False # Deliver to Amazon S3 bucket after processing (boolean)
 S3_ACCESS_KEY = "12345" # AWS Access Key for user with permissions to create S3 buckets (string)
 S3_SECRET_KEY = "54321df" # AWS Secret Key for user with permissions to create S3 buckets (string)
 S3_REGION = "us-east-1"  # Region in which S3 buckets should be created (string)

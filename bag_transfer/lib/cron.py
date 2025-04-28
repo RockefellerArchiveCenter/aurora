@@ -166,7 +166,21 @@ class DeliverTransfers(CronJobBase):
                 with open(join(target_dir, "{}.json".format(transfer.machine_file_identifier)), "w") as f:
                     json.dump(transfer_json, f, indent=4, sort_keys=True, default=str)
 
-                make_tarfile(target_dir, join(settings.DELIVERY_QUEUE_DIR, tar_filename))
+                if settings.S3_DELIVER:
+                    delivery_tar_filename = join(settings.DELIVERY_QUEUE_DIR, tar_filename)
+                    make_tarfile(target_dir, delivery_tar_filename)
+                    s3_client = boto3.client(
+                        's3',
+                        aws_access_key_id=settings.S3_ACCESS_KEY,
+                        aws_secret_access_key=settings.S3_SECRET_KEY,
+                        region_name=settings.S3_REGION)
+                    s3_client.upload_file(
+                        delivery_tar_filename,
+                        settings.DELIVERY_BUCKET,
+                        tar_filename)
+                    remove_file_or_dir(delivery_tar_filename)
+                else:
+                    make_tarfile(target_dir, join(settings.DELIVERY_QUEUE_DIR, tar_filename))
 
                 remove_file_or_dir(target_dir)
 
