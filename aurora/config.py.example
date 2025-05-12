@@ -44,6 +44,7 @@ IAM_REGION = "us-east-1"  # Region in which IAM user for organization should be 
 IAM_PATH = "auroradev"  # Path at which to create IAM user (see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html) (string)
 TRANSFER_STORAGE_ROOT_DIR = "/data1/"  # directory in which transfers are stored (string)
 TRANSFER_DELIVERY_QUEUE_DIR = "/delivery/"  # directory in which transfers waiting for delivery are stored (string)
+TRANSFER_DELIVERY_BUCKET = "rac-dev-digital-ingest-upload" # name of S3 bucket to deliver transfers (string)
 TRANSFER_FILESIZE_MAX = 2000000000 # Maximium size (in bytes) of transfers (integer)
 TRANSFER_UPLOADS_ROOT = "/data/"  # directory in which uploads are stored
 TRANSFER_EXTRACT_TMP = "/data/tmp/"  # directory to which transfers are extracted
