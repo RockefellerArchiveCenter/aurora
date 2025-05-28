@@ -108,31 +108,18 @@
 {% if object.archivesspace_identifier or object.archivesspace_parent_identifier %}
 	<div class="card card--container flex--column mb-30">
 		<h2>External Identifiers</h2>
-		<dl class="summary-list">
-			<div class="summary-list__row">
-					<dt class="summary-list__key">File size</dt>
-					<dd class="summary-list__value">{{ object.machine_file_size|filesizeformat }}</dd>
-			</div>
 			{% if object.archivesspace_identifier %}
 			<div class="summary-list__row">
-					<dt class="summary-list__key">ArchivesSpace Component</dt>
-					<dd class="summary-list__value">{{ object.archivesspace_identifier }}</dd>
+				<dt class="summary-list__key">ArchivesSpace Component</dt>
+				<dd class="summary-list__value">{{ object.archivesspace_identifier }}</dd>
 			</div>
 			{% endif %}
 			{% if object.archivesspace_parent_identifier %}
 			<div class="summary-list__row">
-					<dt class="summary-list__key">ArchivesSpace Parent Component</dt>
-					<dd class="summary-list__value">{{ object.archivesspace_parent_identifier }}</dd>
+				<dt class="summary-list__key">ArchivesSpace Parent Component</dt>
+				<dd class="summary-list__value">{{ object.archivesspace_parent_identifier }}</dd>
 			</div>
 			{% endif %}
-			<div class="summary-list__row">
-					<dt class="summary-list__key">Identifier</dt>
-					<dd class="summary-list__value">{{ object.machine_file_identifier }}</dd>
-			</div>
-			<div class="summary-list__row">
-					<dt class="summary-list__key">Uploaded</dt>
-					<dd class="summary-list__value">{{ object.machine_file_upload_time }} and processed at {{ object.created_time }}</dd>
-			</div>
 	</dl>
 {% endif %}
 
