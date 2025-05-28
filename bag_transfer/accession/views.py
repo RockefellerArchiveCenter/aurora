@@ -59,17 +59,18 @@ class AccessionsPendingView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, L
                     accession_data = AccessionSerializer(
                         accession, context={"request": request}
                     )
-                    resp = requests.post(
-                        settings.DELIVERY_URL,
-                        data=json.dumps(
-                            accession_data.data, indent=4, sort_keys=True, default=str
-                        ),
-                        headers={
-                            "Content-Type": "application/json",
-                            "apikey": settings.DELIVERY_API_KEY,
-                        },
-                    )
-                    resp.raise_for_status()
+                    if not settings.S3_DELIVER:
+                        resp = requests.post(
+                            settings.DELIVERY_URL,
+                            data=json.dumps(
+                                accession_data.data, indent=4, sort_keys=True, default=str
+                            ),
+                            headers={
+                                "Content-Type": "application/json",
+                                "apikey": settings.DELIVERY_API_KEY,
+                            },
+                        )
+                        resp.raise_for_status()
                     accession.process_status = Accession.DELIVERED
                     accession.save()
                     rdata["success"] = 1
