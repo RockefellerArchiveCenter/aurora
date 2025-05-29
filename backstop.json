@@ -36,6 +36,7 @@
     {
       "label": "All Transfers",
       "url": "http://localhost:8000/app/transfers/",
+      "delay": 3000,
       "onBeforeScript": "puppet/login.js"
     },
     {
@@ -46,6 +47,7 @@
     {
       "label": "Appraise",
       "url": "http://localhost:8000/app/appraise/",
+      "delay": 1000,
       "onBeforeScript": "puppet/login.js"
     },
     {
@@ -145,7 +147,15 @@
       "label": "Change Password",
       "url": "http://localhost:8000/app/users/change-password/",
       "onBeforeScript": "puppet/login.js"
+    },
+    {
+      "label": "Save User Alert",
+      "url": "http://localhost:8000/app/users/1/edit",
+      "clickSelector": ".btn--blue",
+      "postInteractionWait": 3000,
+      "onBeforeScript": "puppet/login.js"
     }
+
   ],
   "paths": {
     "bitmaps_reference": "backstop_data/bitmaps_reference",
