@@ -11,7 +11,7 @@ from bag_transfer.models import Organization, Transfer
 # https://github.com/artefactual/archivematica/blob/stable/1.6.x/src/dashboard/src/main/models.py#L475-L675
 class RecordType(models.Model):
     class Meta:
-        ordering = ["name"]
+        ordering = [models.functions.Lower("name")]
 
     name = models.CharField(max_length=100)
 
