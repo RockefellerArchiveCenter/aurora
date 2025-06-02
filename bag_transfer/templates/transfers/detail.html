@@ -108,6 +108,7 @@
 {% if object.archivesspace_identifier or object.archivesspace_parent_identifier %}
 	<div class="card card--container flex--column mb-30">
 		<h2>External Identifiers</h2>
+		<dl class="summary-list">
 			{% if object.archivesspace_identifier %}
 			<div class="summary-list__row">
 				<dt class="summary-list__key">ArchivesSpace Component</dt>
@@ -120,7 +121,8 @@
 				<dd class="summary-list__value">{{ object.archivesspace_parent_identifier }}</dd>
 			</div>
 			{% endif %}
-	</dl>
+		</dl>
+	</div>
 {% endif %}
 
 {% if object.manifest %}
