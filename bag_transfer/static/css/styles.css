@@ -583,7 +583,7 @@ fieldset input {
 used in django forms */
 .errorlist li {
   background-color: #fbe7e0;
-  border: 1px solid #D7521E;
+  border: 1px solid #B63C0C;
   border-radius: 3px;
   color: #2E2E2E;
   display: block;
