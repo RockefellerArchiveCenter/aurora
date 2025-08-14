@@ -4,22 +4,12 @@ from django.urls import reverse
 
 
 class Mailer:
-    def __init__(self, subject="", to=[], text_content=""):
+    def __init__(self, subject="", to_emails=[], text_content=""):
         self.subject = subject
         self.from_email = CF.EMAIL_HOST_USER
-        self.to = to
+        self.to_emails = to_emails
         self.text_content = text_content
-
-        self.email = {}
-
-    def send(self):
-        if not all([self.subject, self.from_email, self.to, self.text_content]):
-            print("Unable to send email. One or more of the following fields were missing: subject, from email, to email or text content.")
-            return False
-
-        send_to = self.to
-
-        footer = "\r\n".join(
+        self.footer = "\r\n".join(
             [
                 "Rockefeller Archive Center",
                 "15 Dayton Avenue, Sleepy Hollow, NY 10591",
@@ -29,80 +19,54 @@ class Mailer:
             ]
         )
 
-        self.text_content += "\r\n\r\n\r\n{}".format(footer)
+    def send(self):
+        if not all([self.subject, self.from_email, self.to_emails, self.text_content]):
+            raise Exception("Unable to send email. One or more of the following fields were missing: subject, from email, to email or text content.")
 
-        self.email = EmailMessage(
+        self.text_content += f"\r\n\r\n\r\n{self.footer}"
+        email = EmailMessage(
             self.subject,
             self.text_content,
             self.from_email,
-            send_to,
+            self.to_emails,
             reply_to=[self.from_email],
         )
-
-        try:
-            self.email.send(fail_silently=False)
-        except Exception as e:
-            print(e)
-            return False
-        else:
-            return True
+        email.send(fail_silently=False)
 
     def setup_message(self, mess_code, transfer={}):
         if mess_code == "TRANS_PASS_ALL":
-            self.subject = "Transfer {} passed all validation".format(
-                transfer.bag_or_failed_name
-            )
+            self.subject = f"Transfer {transfer.bag_or_failed_name} passed all validation"
 
             eparts = [
-                "The transfer {} with the bag name {} was received at {} and has passed all automated validation checks:",
+                f"The transfer {transfer.bag_or_failed_name} with the bag name {transfer.bag_it_name} was received at {transfer.machine_file_upload_time} and has passed all automated validation checks:",
                 "This transfer is now awaiting archival appraisal and accessioning.",
-                "You can view the current status of this transfer at {}",
+                f"You can view the current status of this transfer at {CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': transfer.pk})}",
             ]
-            self.text_content = "\r\n\r\n".join(eparts).format(
-                transfer.bag_or_failed_name,
-                transfer.bag_it_name,
-                transfer.machine_file_upload_time,
-                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": transfer.pk}),
-            )
+            self.text_content = "\r\n\r\n".join(eparts)
         elif mess_code == "TRANS_FAIL_VAL":
-            self.subject = "Transfer {} failed validation".format(
-                transfer.bag_or_failed_name
-            )
-
-            eparts = [
-                "An error occurred for the transfer with bag name {} during {} at {}.",
-                "The transfer has been deleted from our systems.",
-                "Please review the complete error log at {}, correct any errors, and try sending the transfer again.",
-            ]
-
             error_obj = transfer.last_failure
-
-            self.text_content = "\r\n\r\n".join(eparts).format(
-                transfer.bag_or_failed_name,
-                (error_obj.code.code_desc if error_obj else "--"),
-                (error_obj.created_time if error_obj else "--"),
-                CF.BASE_URL + reverse("transfers:detail", kwargs={"pk": transfer.pk}),
-            )
-
+            self.subject = f"Transfer {transfer.bag_or_failed_name} failed validation"
+            eparts = [
+                f"An error occurred for the transfer with bag name {transfer.bag_or_failed_name,} during {error_obj.code.code_desc if error_obj else '--'} at {error_obj.created_time if error_obj else '--'}.",
+                "The transfer has been deleted from our systems.",
+                f"Please review the complete error log at {CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': transfer.pk})}, correct any errors, and try sending the transfer again.",
+            ]
+            self.text_content = "\r\n\r\n".join(eparts)
             if transfer.additional_errors:
                 self.text_content += "\r\n\r\nAdditional Error Information:\r\n\r\n"
                 for err in transfer.additional_errors:
-                    self.text_content += "{}\r\n\r\n".format(err)
+                    self.text_content += f"{err}\r\n\r\n"
 
         elif mess_code == "TRANS_REJECT":
-            self.subject = "Transfer {} was rejected".format(transfer.bag_or_failed_name)
+            self.subject = f"Transfer {transfer.bag_or_failed_name} was rejected"
 
             eparts = [
-                "An appraisal archivist rejected transfer {}. The transfer has been deleted from our systems.".format(
-                    transfer.bag_or_failed_name
-                )
+                f"An appraisal archivist rejected transfer {transfer.bag_or_failed_name}. The transfer has been deleted from our systems."
             ]
 
             if transfer.appraisal_note:
                 eparts.append(
-                    "The reason for this action was: {}".format(
-                        transfer.appraisal_note
-                    )
+                    f"The reason for this action was: {transfer.appraisal_note}"
                 )
 
             self.text_content = "\r\n\r\n".join(eparts)
