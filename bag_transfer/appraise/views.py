@@ -33,7 +33,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         if not appraisal_decision:
             remove_file_or_dir(upload.machine_file_path)
             email = Mailer()
-            email.to = [u.email for u in upload.organization.admin_users]
+            email.to_emails = [u.email for u in upload.organization.admin_users]
             email.setup_message("TRANS_REJECT", upload)
             email.send()
 
