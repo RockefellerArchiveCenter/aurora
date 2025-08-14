@@ -50,7 +50,7 @@ class DiscoverTransfers(CronJobBase):
 
                 org = Organization.is_org_active(transfer_dict["org"])
 
-                email.to = [u.email for u in org.admin_users]
+                email.to_emails = [u.email for u in org.admin_users]
 
                 new_transfer = Transfer.objects.create(
                     organization=org,
