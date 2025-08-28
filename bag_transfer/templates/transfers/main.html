@@ -49,56 +49,37 @@
           <div class="material-icon dashboard__icon icon--maroon" aria-hidden="true">calendar_month</div>
           <dl class="summary-list">
             <div class="summary-list__row">
-              <dt class="summary-list__key">Transfers in {% now "F Y" %}</dt>
-              <dd class="summary-list__value">{{ org.upload_count_by_month|last }}</dd>
+              <dt class="summary-list__key">Total size</dt>
+              <dd class="summary-list__value">{{ org.uploads_size }}</dd>
             </div>
             <div class="summary-list__row">
-              <dt class="summary-list__key">Gigabytes in {% now "F Y" %}</dt>
-              <dd class="summary-list__value">{{ org.upload_size_by_month|last|floatformat:"2" }}</dd>
+              <dt class="summary-list__key">Validated size</dt>
+              <dd class="summary-list__value">{{ org.validated_size }}</dd>
             </div>
             <div class="summary-list__row">
-              <dt class="summary-list__key">Transfers in last 12 months</dt>
-              <dd class="summary-list__value">{{ org.upload_count_by_year }}</dd>
+              <dt class="summary-list__key">Accepted size</dt>
+              <dd class="summary-list__value">{{ org.accepted_size }}</dd>
             </div>
             <div class="summary-list__row">
-              <dt class="summary-list__key">Gigabytes in last 12 months</dt>
-              <dd class="summary-list__value">{{ org.upload_size_by_year|floatformat:"2" }}</dd>
+              <dt class="summary-list__key">Accessioned size</dt>
+              <dd class="summary-list__value">{{ org.accessioned_size }}</dd>
             </div>
-          </dl>
         </div>
       </div>
 
-      <div class="dashboard__flex-container">
-        <div class="dashboard__recent-transfers card card--container flex--column">
-          <h2>Recent Transfers</h2>
-          {% if org.uploads %}
-            <ol class="list--unstyled container--full-width">
-              {% for upload in org.uploads %}
-                <li>
-                  {% include 'parts/uploads_list_item.html' %}
-                </li>
-              {% endfor %}
-            </ol>
-          {% else %}
-            <p>There are no recent transfers.</p>
-          {% endif %}
-        </div>
-
-        <div class="dashboard__record-types card card--container flex--column">
-          <h2>Record types transferred (last 12 months)</h2>
-          <div class="material-icon dashboard__icon icon--maroon" aria-hidden="true">description</div>
-          {% if org.record_types_by_year %}
-            <ul>
-              {% for record_type in org.record_types_by_year|dictsort:"label" %}
-                <li>
-                  {{ record_type.label }}: {{ record_type.value }}
-                </li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p>There is no record type data available.</p>
-          {% endif %}
-        </div>
+      <div class="dashboard__flex-container card card--container">
+        <h2>Recent Transfers</h2>
+        {% if org.uploads %}
+          <ol class="list--unstyled container--full-width">
+            {% for upload in org.uploads %}
+              <li>
+                {% include 'parts/uploads_list_item.html' %}
+              </li>
+            {% endfor %}
+          </ol>
+        {% else %}
+          <p>There are no recent transfers.</p>
+        {% endif %}
       </div>
   </div>
   {% endfor %}

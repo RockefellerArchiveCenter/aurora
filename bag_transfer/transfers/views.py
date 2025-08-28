@@ -1,6 +1,4 @@
-from datetime import date
-
-from dateutil.relativedelta import relativedelta
+from django.db.models import Sum
 from django.db.models.functions import Concat
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, TemplateView, View
@@ -10,54 +8,15 @@ from bag_transfer.mixins.authmixins import (LoggedInMixinDefaults,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.formatmixins import CSVResponseMixin
 from bag_transfer.mixins.viewmixins import BaseDatatableView, PageTitleMixin
-from bag_transfer.models import (DashboardMonthData, DashboardRecordTypeData,
-                                 Organization, Transfer, User)
+from bag_transfer.models import Organization, Transfer, User
 
 
 class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
     template_name = "transfers/main.html"
     page_title = "Dashboard"
 
-    def org_uploads_by_month(self, orgs):
-        """Compiles monthly upload data for a list of organizations."""
-        data = {
-            "month_labels": [],
-            "upload_count_by_month": [],
-            "upload_count_by_year": 0,
-            "upload_size_by_month": [],
-            "upload_size_by_year": 0,
-            "record_types_by_year": [],
-        }
-        today = date.today()
-        prev_year = today - relativedelta(years=1)
-        while prev_year <= today:
-            sort_date = int(str(prev_year.year) + str(prev_year.month))
-            if DashboardMonthData.objects.filter(
-                organization__in=orgs, sort_date=sort_date
-            ).exists():
-                month_datas = DashboardMonthData.objects.filter(organization__in=orgs, sort_date=sort_date)
-                upload_count = sum(month.upload_count for month in month_datas)
-                upload_size = sum(month.upload_size for month in month_datas)
-                data["month_labels"].append(str(month_datas[0].month_label))
-                data["upload_count_by_month"].append(upload_count)
-                data["upload_count_by_year"] += upload_count
-                data["upload_size_by_month"].append(upload_size)
-                data["upload_size_by_year"] += upload_size
-            else:
-                data["month_labels"].append(prev_year.strftime("%B"))
-                data["upload_count_by_month"].append(0)
-                data["upload_size_by_month"].append(0)
-            prev_year += relativedelta(months=1)
-
-        labels = set(DashboardRecordTypeData.objects.filter(organization__in=orgs).values_list("label", flat=True))
-        for label in labels:
-            record_type_count = 0
-            for count in DashboardRecordTypeData.objects.filter(label=label, organization__in=orgs).values_list("count", flat=True):
-                record_type_count += count
-            if record_type_count > 0:
-                data["record_types_by_year"].append(
-                    {"label": label, "value": record_type_count})
-        return data
+    def get_upload_size(self, queryset):
+        return file_size(queryset.aggregate(Sum('machine_file_size'))['machine_file_size__sum'] or 0)
 
     def compile_data(self, orgs, org_name, users):
         """Compiles dashboard data for a list of organizations.
@@ -76,10 +35,11 @@ class DashboardView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
             "validated_count": org_uploads.filter(process_status__gte=Transfer.VALIDATED).count(),
             "accepted_count": org_uploads.filter(process_status__gte=Transfer.ACCEPTED).count(),
             "accessioned_count": org_uploads.filter(process_status__gte=Transfer.ACCESSIONING_COMPLETE).count(),
+            "uploads_size": self.get_upload_size(org_uploads),
+            "validated_size": self.get_upload_size(org_uploads.filter(process_status__gte=Transfer.VALIDATED)),
+            "accepted_size": self.get_upload_size(org_uploads.filter(process_status__gte=Transfer.ACCEPTED)),
+            "accessioned_size": self.get_upload_size(org_uploads.filter(process_status__gte=Transfer.ACCESSIONING_COMPLETE)),
         }
-        data.update(self.org_uploads_by_month(orgs))
-        data["size_trend"] = round((data["upload_size_by_month"][-1] - (data["upload_size_by_year"] / 12)) / 100, 2,)
-        data["count_trend"] = round((data["upload_count_by_month"][-1] - (data["upload_count_by_year"] / 12)) / 100, 2,)
         return data
 
     def get_context_data(self, **kwargs):
