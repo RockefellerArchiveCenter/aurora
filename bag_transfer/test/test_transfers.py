@@ -39,6 +39,8 @@ class TransferTestCase(TestMixin, TestCase):
         self.add_autofail_information()
         self.get_or_create_mtm_objects()
         self.save_bag_data()
+        self.handle_start_date()
+        self.handle_end_date()
         self.records_creators()
         self.assign_rights()
 
@@ -132,6 +134,18 @@ class TransferTestCase(TestMixin, TestCase):
         transfer.save_bag_data(metadata)
         self.assertEqual(len(BagInfoMetadata.objects.filter(transfer=transfer)), 1)
         self.assertFalse(transfer.save_bag_data(None))
+
+    def handle_start_date(self):
+        transfer = random.choice(Transfer.objects.all())
+        for input, expected in [('2021', '2021-01-01'), ('2021-03', '2021-03-01'), ('2021-02-02', '2021-02-02')]:
+            output = transfer.handle_start_date(input)
+            self.assertEqual(output, expected)
+
+    def handle_end_date(self):
+        transfer = random.choice(Transfer.objects.all())
+        for input, expected in [('2021', '2021-12-31'), ('2021-04', '2021-04-30'), ('2021-02-02', '2021-02-02')]:
+            output = transfer.handle_end_date(input)
+            self.assertEqual(output, expected)
 
     def records_creators(self):
         transfer = random.choice(Transfer.objects.all())
