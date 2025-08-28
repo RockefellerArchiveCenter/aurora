@@ -864,18 +864,3 @@ class BagItProfileBagInfoValues(models.Model):
 
     class Meta:
         ordering = ["name"]
-
-
-class DashboardMonthData(models.Model):
-    year = models.PositiveSmallIntegerField()
-    month_label = models.CharField(max_length=15)
-    sort_date = models.PositiveIntegerField()
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    upload_count = models.PositiveSmallIntegerField(default=0)
-    upload_size = models.FloatField(default=0)
-
-
-class DashboardRecordTypeData(models.Model):
-    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
-    label = models.CharField(max_length=255)
-    count = models.PositiveSmallIntegerField(default=0)
