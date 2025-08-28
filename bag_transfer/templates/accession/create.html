@@ -118,12 +118,11 @@
 
           // Display the resource title and success alert
           $('#resource_title').contents().first().replaceWith(resp.title); //only replace the title text, but keep  the dismiss button
-          $('#id_resource').val(resp.uri) // store URI in hidden field
           $('#resource_result').show()
           displayMessage('blue', resp.title + ' was added as the target ArchiveSpace resource');
 
         } else {
-          $('#resource_input').fadeTo(0, 1).show()
+          $('#resource_input_wrapper').fadeTo(0, 1).show()
           displayMessage('orange', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
         }
       })
@@ -133,7 +132,9 @@
     $('#resource_title_dismiss').on('click', function(){
       $('#resource_result').hide()
       $('#resource_title').text("")
-      $('#id_resource').val("")
+      $('#resource_id').val("")
+      $('#resource_input').fadeTo(0, 1);
+      $('#resource_input_wrapper').fadeTo(0, 1).show()
     });
 
     // Form validation before submit
