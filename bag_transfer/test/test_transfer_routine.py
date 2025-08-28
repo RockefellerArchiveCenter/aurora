@@ -11,8 +11,7 @@ from bag_transfer.lib.bag_checker import BagChecker
 from bag_transfer.lib.transfer_routine import (TransferFileObject,
                                                TransferRoutine,
                                                TransferRoutineException)
-from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
-                                 User)
+from bag_transfer.models import Organization, Transfer, User
 from bag_transfer.test import helpers
 
 
@@ -21,7 +20,6 @@ class TransferRoutineTestCase(helpers.TestMixin, TestCase):
 
     def setUp(self):
         Transfer.objects.all().delete()
-        DashboardMonthData.objects.all().delete()
         self.reset_org_dirs(Organization.objects.all())
 
     def test_passes_filename(self):

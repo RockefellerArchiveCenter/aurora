@@ -9,8 +9,7 @@ from django.conf import settings
 from django.test import TransactionTestCase
 
 from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
-from bag_transfer.models import (DashboardMonthData, Organization, Transfer,
-                                 User)
+from bag_transfer.models import Organization, Transfer, User
 from bag_transfer.test import helpers
 
 
@@ -19,11 +18,10 @@ class CronTestCase(helpers.TestMixin, TransactionTestCase):
 
     def setUp(self):
         """
-        Delete existing Archive and DashboardMonthData objects and remove any
+        Delete existing Archive objects and remove any
         stray objects from the organization upload directory.
         """
         Transfer.objects.all().delete()
-        DashboardMonthData.objects.all().delete()
         self.org = random.choice(Organization.objects.all())
         self.remove_delivery_queue()
         self.empty_org_upload_paths()

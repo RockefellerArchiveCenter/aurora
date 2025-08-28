@@ -3,7 +3,7 @@ import random
 from django.test import TestCase
 from django.urls import reverse
 
-from bag_transfer.models import DashboardMonthData, Transfer
+from bag_transfer.models import Transfer
 from bag_transfer.test import helpers
 
 
@@ -11,7 +11,6 @@ class AppraisalTestCase(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
-        DashboardMonthData.objects.all().delete()
         self.to_appraise = Transfer.objects.filter(process_status=Transfer.VALIDATED)
         super().setUp()
 

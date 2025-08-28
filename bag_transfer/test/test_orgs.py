@@ -88,8 +88,7 @@ class OrgTestCase(helpers.TestMixin, TestCase):
     @patch("bag_transfer.signals.chown_path_to_root")
     @patch("bag_transfer.signals.delete_system_group")
     @patch("bag_transfer.models.Organization.deactivate_iam_user")
-    @patch("bag_transfer.signals.set_count")
-    def test_delete(self, mock_signal, mock_deactivate, mock_delete_group, mock_chown_path):
+    def test_delete(self, mock_deactivate, mock_delete_group, mock_chown_path):
         """Asserts custom behaviors on organization delete."""
         org = random.choice(Organization.objects.all())
         upload_path = org.upload_target

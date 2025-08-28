@@ -3,14 +3,11 @@ import random
 from django.test import TestCase
 
 from bag_transfer.accession.models import Accession
-from bag_transfer.models import DashboardMonthData, Transfer
+from bag_transfer.models import Transfer
 
 
 class SignalsTestCase(TestCase):
     fixtures = ["complete.json"]
-
-    def setUp(self):
-        DashboardMonthData.objects.all().delete()
 
     def test_update_accession_status(self):
         """
