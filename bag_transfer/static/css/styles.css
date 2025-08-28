@@ -326,42 +326,8 @@ div.badge {
 	}
 }
 
-.dashboard__flex-container {
-	display: block;
-
-	@media screen and (min-width: 1024px) {
-		display: flex;
-		gap: 20px;
-	}
-}
-
-.dashboard__recent-transfers {
-	@media screen and (min-width: 1024px) {
-		min-width: 67%;
-	}
-}
-
-.dashboard__record-types {
-	margin-top: 30px;
-
-	@media screen and (min-width: 1024px) {
-		width: 33%;
-		margin-top: 0;
-	}
-}
-
 .recent-transfers {
 	border-bottom: 1px solid #A8A8A8;
-}
-
-.recent-transfers__title-block {
-	display: block;
-
-	@media screen and (min-width: 1024px) {
-		display: flex;
-		justify-content: space-between;
-		width: 100%;
-		}
 }
 
 .recent-transfers__icon {
