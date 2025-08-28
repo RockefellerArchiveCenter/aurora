@@ -9,8 +9,8 @@ from rac_schema_validator import is_valid
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.authentication import CognitoAppAuthentication
-from bag_transfer.models import (Application, BAGLog, DashboardMonthData,
-                                 Organization, Transfer, User)
+from bag_transfer.models import (Application, BAGLog, Organization, Transfer,
+                                 User)
 from bag_transfer.test.helpers import TestMixin
 
 
@@ -19,7 +19,6 @@ class APITest(TestMixin, TestCase):
 
     def setUp(self):
         super().setUp()
-        DashboardMonthData.objects.all().delete()
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
