@@ -3,6 +3,7 @@ from django.urls import re_path
 from bag_transfer.accession.views import (AccessionCreateView,
                                           AccessionDetailView,
                                           AccessionsPendingView,
+                                          SavedAccessionsCsvView,
                                           SavedAccessionsDatatableView,
                                           SavedAccessionsView)
 
@@ -18,4 +19,5 @@ urlpatterns = [
         SavedAccessionsDatatableView.as_view(),
         name="saved-datatable",
     ),
+    re_path(r"^saved/csv/$", SavedAccessionsCsvView.as_view(), name="data"),
 ]
