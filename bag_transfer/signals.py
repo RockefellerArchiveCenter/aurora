@@ -1,17 +1,11 @@
-from datetime import date
-
-from dateutil.relativedelta import relativedelta
 from django.conf import settings
-from django.db.models.signals import (m2m_changed, post_delete, post_save,
-                                      pre_delete)
+from django.db.models.signals import m2m_changed, post_save, pre_delete
 from django.dispatch import receiver
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.lib.files_helper import chown_path_to_root
 from bag_transfer.lib.RAC_CMD import delete_system_group
-from bag_transfer.models import (BagInfoMetadata, DashboardMonthData,
-                                 DashboardRecordTypeData, Organization,
-                                 Transfer, User)
+from bag_transfer.models import Organization, Transfer, User
 
 
 @receiver(pre_delete, sender=Organization)
@@ -32,86 +26,6 @@ def set_is_staff(sender, instance, **kwargs):
              for name in instance.groups.values_list("name", flat=True)) or (instance.is_superuser)))
     instance.is_staff = is_staff_user
     instance.save()
-
-
-@receiver(post_save, sender=Transfer)
-def add_dashboard_data(sender, instance, **kwargs):
-    """
-    Adds dashboard data each time a transfer is saved, which
-    avoids expensive data operations on the database.
-    """
-    today = date.today()
-    current = today - relativedelta(years=1)
-    if instance.process_status >= sender.TRANSFER_COMPLETED:
-        while current <= today:
-            for organization in Organization.objects.all():
-                data = DashboardMonthData.objects.get_or_create(
-                    month_label=current.strftime("%B"),
-                    sort_date=int(str(current.year) + str(current.month)),
-                    year=current.year,
-                    organization=organization)[0]
-                set_uploads(current, data, organization)
-            current += relativedelta(months=1)
-    set_count(sender, instance, organization)
-
-
-@receiver(post_delete, sender=Transfer)
-def remove_dashboard_data(sender, instance, **kwargs):
-    """
-    Removes dashboard data each time a transfer is deleted, which
-    avoids expensive data operations on the database.
-    """
-    today = date.today()
-    current = today - relativedelta(years=1)
-    if instance.process_status >= sender.TRANSFER_COMPLETED:
-        while current <= today:
-            for organization in Organization.objects.all():
-                if DashboardMonthData.objects.filter(
-                        month_label=current.strftime("%B"),
-                        sort_date=int(str(current.year) + str(current.month)),
-                        year=current.year,
-                        organization=organization).exists():
-                    data = DashboardMonthData.objects.filter(
-                        month_label=current.strftime("%B"),
-                        sort_date=int(str(current.year) + str(current.month)),
-                        year=current.year,
-                        organization=organization)[0]
-                    set_uploads(current, data, organization)
-            current += relativedelta(months=1)
-    set_count(sender, instance, organization)
-
-
-def set_count(sender, instance, organization):
-    """
-    Updates dashboard data counts.
-    """
-    if instance.process_status >= sender.VALIDATED:
-        for organization in Organization.objects.all():
-            for label in set(
-                    BagInfoMetadata.objects.all().values_list("record_type", flat=True)):
-                data = DashboardRecordTypeData.objects.get_or_create(
-                    organization=organization, label=label)[0]
-                data.count = Transfer.objects.filter(
-                    organization=organization, metadata__record_type=label).count()
-                data.save()
-
-
-def set_uploads(current, data, organization):
-    """
-    Updates dashboard data upload information.
-    """
-    data.upload_count = Transfer.objects.filter(
-        organization=organization,
-        machine_file_upload_time__year=current.year,
-        machine_file_upload_time__month=current.month,
-    ).count()
-    data.upload_size = (
-        sum(map(int, Transfer.objects.filter(
-            organization=organization,
-            machine_file_upload_time__year=current.year,
-            machine_file_upload_time__month=current.month,
-        ).values_list("machine_file_size", flat=True),)) / 1000000000)
-    data.save()
 
 
 @receiver(post_save, sender=Transfer)
