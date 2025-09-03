@@ -15,7 +15,7 @@ attrs==25.3.0
     #   archivessnake
     #   jsonschema
     #   referencing
-authlib==1.6.1
+authlib==1.6.3
     # via -r requirements.in
 bagit==1.9.0
     # via
@@ -26,23 +26,23 @@ bagit-profile==1.3.1
     # via -r requirements.in
 boltons==25.0.0
     # via archivessnake
-boto3==1.40.0
+boto3==1.40.22
     # via -r requirements.in
-botocore==1.40.0
+botocore==1.40.22
     # via
     #   boto3
     #   s3transfer
-certifi==2025.7.14
+certifi==2025.8.3
     # via requests
 cffi==1.17.1
     # via cryptography
-charset-normalizer==3.4.2
+charset-normalizer==3.4.3
     # via requests
-cryptography==45.0.5
+cryptography==45.0.7
     # via
     #   authlib
     #   pyjwt
-django==4.2.23
+django==4.2.24
     # via
     #   -r requirements.in
     #   asterism
@@ -57,7 +57,7 @@ django-cron==0.6.0
     # via -r requirements.in
 django-csp==3.8
     # via -r requirements.in
-djangorestframework==3.16.0
+djangorestframework==3.16.1
     # via
     #   -r requirements.in
     #   asterism
@@ -78,13 +78,13 @@ jmespath==1.0.1
     # via
     #   boto3
     #   botocore
-jsonschema==4.25.0
+jsonschema==4.25.1
     # via
     #   -r requirements.in
     #   rac-schema-validator
 jsonschema-specifications==2025.4.1
     # via jsonschema
-more-itertools==10.7.0
+more-itertools==10.8.0
     # via archivessnake
 mysqlclient==2.2.7
     # via -r requirements.in
@@ -112,18 +112,18 @@ pyyaml==6.0.2
     #   archivessnake
 rac-schema-validator==1.0
     # via -r requirements.in
-rapidfuzz==3.13.0
+rapidfuzz==3.14.0
     # via archivessnake
 referencing==0.36.2
     # via
     #   jsonschema
     #   jsonschema-specifications
-requests==2.32.4
+requests==2.32.5
     # via
     #   -r requirements.in
     #   archivessnake
     #   bagit-profile
-rpds-py==0.26.0
+rpds-py==0.27.1
     # via
     #   jsonschema
     #   referencing
@@ -139,7 +139,7 @@ sqlparse==0.5.3
     # via django
 structlog==25.4.0
     # via archivessnake
-typing-extensions==4.14.1
+typing-extensions==4.15.0
     # via
     #   asgiref
     #   referencing
