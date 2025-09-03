@@ -91,6 +91,7 @@ class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
 
 class TransferDataView(CSVResponseMixin, View):
     model = Transfer
+    prefix = 'transfers'
 
     def process_status_display(self, status):
         for s in Transfer.processing_statuses:

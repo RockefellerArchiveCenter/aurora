@@ -3,9 +3,9 @@ import json
 import logging
 from os.path import isfile, join
 
+import arrow
 import bagit
 import bagit_profile
-import iso8601
 from asterism.bagit_helpers import get_bag_info_fields
 from iso639 import languages
 
@@ -83,7 +83,7 @@ class BagChecker:
         if dates:
             for date in dates:
                 try:
-                    iso8601.parse_date(date)
+                    arrow.get(date)
                 except Exception:
                     raise BagCheckerException("DTERR", f"Invalid date value: {date}")
         if langz:

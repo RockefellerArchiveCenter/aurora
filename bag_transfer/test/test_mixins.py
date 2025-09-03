@@ -13,7 +13,9 @@ class MixinTestCase(TestCase):
 
     def test_csv_mixin(self):
         """Asserts that the CSV mixin returns a streaming CSV response."""
-        csv = CSVResponseMixin().render_to_csv(["foo", "bar", "baz"])
+        view = CSVResponseMixin()
+        view.prefix = 'transfers'
+        csv = view.render_to_csv(["foo", "bar", "baz"])
         self.assertTrue(isinstance(csv, HttpResponse))
 
     def test_archivist_mixin(self):

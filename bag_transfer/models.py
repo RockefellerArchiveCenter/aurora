@@ -1,8 +1,8 @@
 import json
 from os.path import join
 
+import arrow
 import boto3
-import iso8601
 from dateutil import relativedelta, tz
 from django.apps import apps
 from django.conf import settings
@@ -581,6 +581,22 @@ class Transfer(models.Model):
         field_as_list = field_data if isinstance(field_data, list) else [field_data.strip()]
         return [cls.objects.get_or_create(**{model_field: f})[0] for f in field_as_list]
 
+    def handle_start_date(self, date_string):
+        if len(date_string) == 4:
+            return arrow.get(date_string).floor('year').format('YYYY-MM-DD')
+        elif len(date_string) == 7:
+            return arrow.get(date_string).floor('month').format('YYYY-MM-DD')
+        else:
+            return date_string
+
+    def handle_end_date(self, date_string):
+        if len(date_string) == 4:
+            return arrow.get(date_string).ceil('year').format('YYYY-MM-DD')
+        elif len(date_string) == 7:
+            return arrow.get(date_string).ceil('month').format('YYYY-MM-DD')
+        else:
+            return date_string
+
     def save_bag_data(self, metadata):
         """Saves data from a bag-info.txt file, passed as a dict."""
         if not metadata:
@@ -592,10 +608,10 @@ class Transfer(models.Model):
                 external_identifier=metadata.get("External_Identifier", ""),
                 internal_sender_description=metadata.get("Internal_Sender_Description", ""),
                 title=metadata.get("Title", ""),
-                date_start=iso8601.parse_date(metadata.get("Date_Start", "")),
-                date_end=iso8601.parse_date(metadata.get("Date_End", "")),
+                date_start=self.handle_start_date(metadata.get("Date_Start", "")),
+                date_end=self.handle_end_date(metadata.get("Date_End", "")),
                 record_type=metadata.get("Record_Type", ""),
-                bagging_date=iso8601.parse_date(metadata.get("Bagging_Date", "")),
+                bagging_date=arrow.get(metadata.get("Bagging_Date", "")).format('YYYY-MM-DD'),
                 bag_count=metadata.get("Bag_Count", ""),
                 bag_group_identifier=metadata.get("Bag_Group_Identifier", ""),
                 payload_oxum=metadata.get("Payload_Oxum", ""),
