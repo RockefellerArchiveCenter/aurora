@@ -6,7 +6,8 @@ from django.contrib import messages
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
 from django.shortcuts import reverse
-from django.views.generic import CreateView, DetailView, ListView, TemplateView
+from django.views.generic import (CreateView, DetailView, ListView,
+                                  TemplateView, View)
 
 from aurora import settings
 from bag_transfer.accession.db_functions import GroupConcat
@@ -17,7 +18,8 @@ from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
                                             ArchivistMixin, OrgReadViewMixin)
-from bag_transfer.mixins.formatmixins import JSONResponseMixin
+from bag_transfer.mixins.formatmixins import (CSVResponseMixin,
+                                              JSONResponseMixin)
 from bag_transfer.mixins.viewmixins import (BaseDatatableView, PageTitleMixin,
                                             is_ajax)
 from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
@@ -355,3 +357,39 @@ class SavedAccessionsDatatableView(BaseDatatableView):
                 ]
             )
         return json_data
+
+
+class SavedAccessionsCsvView(CSVResponseMixin, View):
+    model = Transfer
+    prefix = 'accessions'
+
+    def format_size(self, raw_size):
+        return round(raw_size / (1024 * 1024 * 1024), 2)
+
+    def get(self, request, *args, **kwargs):
+        data = [
+            (
+                "Title",
+                "Date created",
+                "Size (GB)",
+                "Status",
+                "AS Accession ID",
+                "AS Resource",
+            )
+        ]
+
+        accessions = Accession.objects.all()
+        if not self.request.user.is_archivist():
+            accessions.filter(organization=self.request.user.organization)
+        for accession in accessions.order_by("-created"):
+            data.append(
+                (
+                    accession.title,
+                    accession.created,
+                    self.format_size(accession.extent_size),
+                    accession.get_process_status_display(),
+                    accession.archivesspace_identifier,
+                    accession.resource,
+                )
+            )
+        return self.render_to_csv(data)
