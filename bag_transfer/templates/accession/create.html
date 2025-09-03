@@ -123,7 +123,7 @@
           displayMessage('blue', resp.title + ' was added as the target ArchiveSpace resource');
 
         } else {
-          $('#resource_input').fadeTo(0, 1).show()
+          $('#resource_input_wrapper').fadeTo(0, 1).show()
           displayMessage('orange', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
         }
       })
@@ -134,6 +134,9 @@
       $('#resource_result').hide()
       $('#resource_title').text("")
       $('#id_resource').val("")
+      $('#resource_id').val("")
+      $('#resource_input').fadeTo(0, 1);
+      $('#resource_input_wrapper').fadeTo(0, 1).show()
     });
 
     // Form validation before submit
