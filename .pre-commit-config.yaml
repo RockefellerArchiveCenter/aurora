@@ -18,3 +18,5 @@ repos:
   rev: v7.5.0
   hooks:
     - id: pip-compile
+      args:
+        - --no-header
