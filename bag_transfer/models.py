@@ -74,7 +74,10 @@ class Organization(models.Model):
 
     @property
     def s3_credential_rotation_date(self):
-        return self.s3_credentials_updated + timedelta(days=settings.S3_KEY_ROTATION_PERIOD)
+        if self.s3_credentials_updated:
+            return self.s3_credentials_updated + timedelta(days=settings.S3_KEY_ROTATION_PERIOD)
+        else:
+            None
 
     def _construct_machine_name(self, org_name):
         """Constructs machine name from organization by lowercasing and removing non-alpanumeric characters."""
