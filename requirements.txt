@@ -103,9 +103,7 @@ pyclamd==0.4.0
 pycparser==2.23
     # via cffi
 pyjwt[crypto]==2.10.1
-    # via
-    #   drf-jwt
-    #   pyjwt
+    # via drf-jwt
 python-dateutil==2.9.0.post0
     # via
     #   -r requirements.in
@@ -155,13 +153,13 @@ sqlparse==0.5.3
 structlog==25.4.0
     # via archivessnake
 types-python-dateutil==2.9.0.20250822
+    # via arrow
+typing-extensions==4.15.0
     # via
     #   asgiref
     #   cryptography
     #   referencing
     #   structlog
-typing-extensions==4.15.0
-    # via referencing
 uritemplate==4.2.0
     # via -r requirements.in
 urllib3==2.5.0
