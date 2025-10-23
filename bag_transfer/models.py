@@ -1,4 +1,5 @@
 import json
+from datetime import timedelta
 from os.path import join
 
 import arrow
@@ -32,6 +33,7 @@ class Organization(models.Model):
     s3_access_key_id = models.CharField(max_length=191, null=True, blank=True)
     s3_secret_access_key = models.CharField(max_length=191, null=True, blank=True)
     s3_username = models.CharField(max_length=191, null=True, blank=True)
+    s3_credentials_updated = models.DateTimeField(blank=True, null=True)
 
     class Meta:
         ordering = ["name"]
@@ -69,6 +71,10 @@ class Organization(models.Model):
             return f"{settings.S3_PREFIX}-{machine_name_truncated}-upload"
         else:
             return join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name, "upload")
+
+    @property
+    def s3_credential_rotation_date(self):
+        return self.s3_credentials_updated + timedelta(days=settings.S3_KEY_ROTATION_PERIOD)
 
     def _construct_machine_name(self, org_name):
         """Constructs machine name from organization by lowercasing and removing non-alpanumeric characters."""
