@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from os import mkdir
 from os.path import isdir, join
 from subprocess import CalledProcessError, check_output
@@ -9,6 +10,7 @@ from asterism.file_helpers import (make_tarfile, move_file_or_dir,
                                    remove_file_or_dir)
 from django.conf import settings
 from django_cron import CronJobBase, Schedule
+from pytz import timezone
 
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.api.serializers import TransferSerializer
@@ -194,3 +196,35 @@ class DeliverTransfers(CronJobBase):
 
         Pter.cron_close(self.code)
         return result
+
+
+class RotateKeys(CronJobBase):
+    RUN_AT_TIMES = ['00:00']
+
+    schedule = Schedule(run_at_times=RUN_AT_TIMES)
+    code = "orgs.rotate_keys"
+
+    def do(self):
+        """Rotates keys older than a specified period."""
+        tz = timezone(settings.TIME_ZONE)
+        current_date = datetime.now(tz)
+        iam_client = boto3.client(
+            'iam',
+            aws_access_key_id=settings.IAM_ACCESS_KEY,
+            aws_secret_access_key=settings.IAM_SECRET_KEY,
+            region_name=settings.IAM_REGION)
+        for org in Organization.objects.all():
+            if org.s3_credentials_updated:
+                date_difference = current_date - org.s3_credentials_updated
+                if date_difference.days > settings.S3_KEY_ROTATION_PERIOD - 1:
+                    """Create new access key pair."""
+                    access_key = iam_client.create_access_key(UserName=org.s3_username)['AccessKey']
+                    org.s3_secret_access_key = access_key['SecretAccessKey']
+                    org.s3_access_key_id = access_key['AccessKeyId']
+                    org.s3_credentials_updated = current_date
+                    org.save()
+
+                    """Delete expired access key(s)."""
+                    for k in iam_client.list_access_keys(UserName=org.s3_username)['AccessKeyMetadata']:
+                        if k['AccessKeyId'] != access_key['AccessKeyId']:
+                            iam_client.delete_access_key(UserName=org.s3_username, AccessKeyId=k['AccessKeyId'])
