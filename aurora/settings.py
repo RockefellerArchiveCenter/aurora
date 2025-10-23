@@ -172,6 +172,7 @@ CSP_FONT_SRC = ("'self'", 'https://assets.rockarch.org/')
 
 # Transfer settings
 S3_USE = config.S3_USE
+S3_KEY_ROTATION_PERIOD = int(config.S3_KEY_ROTATION_PERIOD)
 S3_DELIVER = config.S3_DELIVER
 S3_ACCESS_KEY = config.S3_ACCESS_KEY
 S3_SECRET_KEY = config.S3_SECRET_KEY
