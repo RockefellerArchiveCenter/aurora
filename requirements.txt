@@ -103,7 +103,9 @@ pyclamd==0.4.0
 pycparser==2.23
     # via cffi
 pyjwt[crypto]==2.10.1
-    # via drf-jwt
+    # via
+    #   drf-jwt
+    #   pyjwt
 python-dateutil==2.9.0.post0
     # via
     #   -r requirements.in
