@@ -203,6 +203,7 @@ class RotateKeys(CronJobBase):
 
     def do(self):
         """Rotates keys older than a specified period."""
+        Pter.cron_open(self.code)
         tz = timezone(settings.TIME_ZONE)
         current_date = datetime.now(tz)
         iam_client = boto3.client(
@@ -215,6 +216,7 @@ class RotateKeys(CronJobBase):
             date_difference = current_date - last_updated
             if date_difference.days > settings.S3_KEY_ROTATION_PERIOD - 1:
                 """Create new access key pair."""
+                print(f"Rotating access key for organization {org.name}")
                 access_key = iam_client.create_access_key(UserName=org.s3_username)['AccessKey']
                 org.s3_secret_access_key = access_key['SecretAccessKey']
                 org.s3_access_key_id = access_key['AccessKeyId']
@@ -225,3 +227,4 @@ class RotateKeys(CronJobBase):
                 for k in iam_client.list_access_keys(UserName=org.s3_username)['AccessKeyMetadata']:
                     if k['AccessKeyId'] != access_key['AccessKeyId']:
                         iam_client.delete_access_key(UserName=org.s3_username, AccessKeyId=k['AccessKeyId'])
+        Pter.cron_close(self.code)
