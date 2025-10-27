@@ -1,14 +1,19 @@
 import os
 import random
 import shutil
+from datetime import datetime, timedelta
 from unittest.mock import patch
 
 import bagit
+import boto3
 from asterism.file_helpers import remove_file_or_dir, tar_extract_all
 from django.conf import settings
 from django.test import TransactionTestCase
+from moto import mock_aws
+from pytz import timezone
 
-from bag_transfer.lib.cron import DeliverTransfers, DiscoverTransfers
+from bag_transfer.lib.cron import (DeliverTransfers, DiscoverTransfers,
+                                   RotateKeys)
 from bag_transfer.models import Organization, Transfer, User
 from bag_transfer.test import helpers
 
@@ -75,3 +80,30 @@ class CronTestCase(helpers.TestMixin, TransactionTestCase):
 
     def tearDown(self):
         self.remove_delivery_queue()
+
+
+class RotateKeysCronTest(TransactionTestCase):
+    fixtures = ["complete.json"]
+
+    @mock_aws
+    def test_rotate_keys(self):
+        s3_username = 'org_user'
+        initial_access_key_id = 'ABCD12345'
+        initial_secret_access_key = '987654321'
+        tz = timezone(settings.TIME_ZONE)
+        initial_updated = datetime.now(tz) - timedelta(days=settings.S3_KEY_ROTATION_PERIOD)
+        org = random.choice(Organization.objects.all())
+        org.s3_username = s3_username
+        org.s3_access_key_id = initial_access_key_id
+        org.s3_secret_access_key = initial_secret_access_key
+        org.s3_credentials_updated = initial_updated
+        org.save()
+        iam_client = boto3.client('iam')
+        iam_client.create_user(UserName=s3_username)
+
+        RotateKeys().do()
+
+        org.refresh_from_db()
+        self.assertNotEqual(org.s3_access_key_id, initial_access_key_id)
+        self.assertNotEqual(org.s3_secret_access_key, initial_secret_access_key)
+        self.assertGreater(org.s3_credentials_updated, initial_updated)
