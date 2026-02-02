@@ -22,22 +22,22 @@ bagit-profile==1.3.1
     # via -r requirements.in
 boltons==25.0.0
     # via archivessnake
-boto3==1.42.19
+boto3==1.42.39
     # via
     #   -r requirements.in
     #   moto
-botocore==1.42.19
+botocore==1.42.39
     # via
     #   boto3
     #   moto
     #   s3transfer
-certifi==2025.11.12
+certifi==2026.1.4
     # via requests
 cffi==2.0.0
     # via cryptography
 charset-normalizer==3.4.4
     # via requests
-cryptography==46.0.3
+cryptography==46.0.4
     # via
     #   authlib
     #   moto
@@ -74,11 +74,11 @@ iso-639==0.4.5
     # via -r requirements.in
 jinja2==3.1.6
     # via moto
-jmespath==1.0.1
+jmespath==1.1.0
     # via
     #   boto3
     #   botocore
-jsonschema==4.25.1
+jsonschema==4.26.0
     # via
     #   -r requirements.in
     #   rac-schema-validator
@@ -90,19 +90,19 @@ markupsafe==3.0.3
     #   werkzeug
 more-itertools==10.8.0
     # via archivessnake
-moto==5.1.19
+moto==5.1.20
     # via -r requirements.in
 mysqlclient==2.2.7
     # via -r requirements.in
-pyasn1==0.6.1
+pyasn1==0.6.2
     # via
     #   python-jose
     #   rsa
 pyclamd==0.4.0
     # via -r requirements.in
-pycparser==2.23
+pycparser==3.0
     # via cffi
-pyjwt[crypto]==2.10.1
+pyjwt[crypto]==2.11.0
     # via
     #   drf-jwt
     #   pyjwt
@@ -164,12 +164,12 @@ tzdata==2025.3
     # via arrow
 uritemplate==4.2.0
     # via -r requirements.in
-urllib3==2.6.2
+urllib3==2.6.3
     # via
     #   botocore
     #   requests
     #   responses
-werkzeug==3.1.4
+werkzeug==3.1.5
     # via moto
 xmltodict==1.0.2
     # via moto
