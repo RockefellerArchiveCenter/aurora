@@ -66,7 +66,7 @@
 				<div class="nested-form flex">
 					{{ form.nested.management_form }}
 					{{ form.nested.non_form_errors }}
-					<div class="values-form__input mr-10">
+					<div class="values-form__input input mr-10">
 						<label id="values-label">Controlled Values (if applicable)</label>
 						{% for form in form.nested.forms %}
 							{% include 'bagit_profiles/repeating_form.html' %}
