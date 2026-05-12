@@ -1,9 +1,9 @@
 /* Font for Aurora logo */
 @font-face {
-  font-family: 'Satisfy';
-  src: url('../fonts/satisfy/Satisfy-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
+	font-family: 'Satisfy';
+	src: url('../fonts/satisfy/Satisfy-Regular.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
 }
 
 /* Base styles */
@@ -14,8 +14,8 @@
 main .container {
 	margin: 0 15px 30px;
 
-	@media screen and (min-width: 580px) {
-    margin: 0 30px 30px;
+	@media screen and (min-width: 36.25em) {
+  		margin: 0 30px 30px;
   }
 }
 
@@ -26,7 +26,7 @@ main .container {
 
 /* Add functionality to hide tabs in tablist */
 .tabs__panel--hidden {
-  display: none;
+	display: none;
 }
 
 /**
@@ -40,47 +40,40 @@ table a.btn {
 /* Header and navigation styles */
 header {
 	top: 0;
-  z-index: 999;
+  	z-index: 999;
 }
 
 /* Adjust top position so that skip link is more visible in the header */
 .skip-link {
-  top: 0;
+  	top: 0;
 }
 
 .header__brand {
-  margin-left: 10px;
-  margin-top: 23px;
-  padding: 0;
-  position: absolute;
-  z-index: 3;
+	margin: 5px 0 0 10px;
+	padding: 5px;
+	position: absolute;
+	z-index: 3;
 
-  @media screen and (min-width: 580px) {
-    margin-left: 15px;
+  	@media screen and (min-width: 36.25em) {
+		margin-left: 15px;
   }
 
-  @media screen and (min-width: 1024px) {
-    margin-left: 33px;
+	@media screen and (min-width: 64em) {
+		margin: 10px 0px 0px 33px;
   }
 }
 
 a.header__brand-title {
 	font-family: "Satisfy", cursive;
 	font-size: 30px;
+	padding: 10px 5px;
 	text-transform: none;
 	letter-spacing: 0;
-}
-
-a.header__brand-title:focus {
-	outline: 0;
+	margin-bottom: 0px;
 }
 
 .header__brand-subtitle {
-	margin-top: 3px;
-
-	@media screen and (min-width: 1024px) {
-    margin-top: 0;
-  }
+	margin-top: 0;
 }
 
 /* Page titles and related action button layout styles */
@@ -90,7 +83,7 @@ a.header__brand-title:focus {
 * matches layout of this site
 **/
 h1 {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		font-size: 42px;
 		margin: 40px 0;
 	}
@@ -103,27 +96,27 @@ h1 {
 .title__container {
 	display: block;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		width: 100%;
-  }
+  	}
 }
 
 .title__actions {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		margin-left: 20px;
-		}
 	}
+}
 
 .title__actions-btns {
 	margin-bottom: 30px;
 	display: block;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		margin-bottom: 0;
-		}
+	}
 }
 
 /* Modal styles */
@@ -136,7 +129,7 @@ h1 {
 }
 
 .modal--md {
-	@media screen and (min-width: 580px) {
+	@media screen and (min-width: 36.25em) {
 		bottom: 20%;
 		left: 20%;
 		right: 20%;
@@ -145,7 +138,7 @@ h1 {
 }
 
 .modal--sm {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		left: 30%;
 		right: 30%;
 		top: 30%;
@@ -161,7 +154,7 @@ h1 {
 .card-list {
 	gap: 30px;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-template-columns: repeat(2, 1fr);
 	}
 }
@@ -208,8 +201,8 @@ h1 {
 	display: inline-block;
 	margin-top: 3px;
 
-	@media screen and (min-width: 1024px) {
-    margin-top: 0px;
+	@media screen and (min-width: 64em) {
+    	margin-top: 0px;
   }
 }
 
@@ -233,16 +226,16 @@ div.badge {
 
 .hero {
 	width: 100%;
-  margin: 10px 0 10px;
+  	margin: 10px 0 10px;
 
-  @media screen and (min-width: 1024px) {
-    margin: 80px 0 0;
+  	@media screen and (min-width: 64em) {
+    	margin: 80px 0 0;
 		max-width: 60%;
-  }
+  	}
 }
 
 .hero img {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		width: 120px;
 	}
 }
@@ -289,8 +282,9 @@ div.badge {
 
 .login__form {
 	width: 100%;
-	@media screen and (min-width: 580px) {
-    width: 500px;
+
+	@media screen and (min-width: 36.25em) {
+    	width: 500px;
   }
 }
 
@@ -299,13 +293,13 @@ div.badge {
 	padding: 5px;
 	font-size: 18px;
 
-	@media screen and (min-width: 580px) {
+	@media screen and (min-width: 36.25em) {
 		min-width: 500px;
 	}
 }
 
 .dashboard__summary-lists {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		column-gap: 20px;
 	}
 }
@@ -313,7 +307,7 @@ div.badge {
 .dashboard__transferred {
 	grid-column: 1 / span 12;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-column: 1 / span 6;
 	}
 }
@@ -321,7 +315,7 @@ div.badge {
 .dashboard__accessioned {
 	grid-column: 1 / span 12;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-column: 7 / span 6;
 	}
 }
@@ -378,8 +372,8 @@ div.badge {
 	grid-column: 1 / span 12;
 	margin-right: 0;
 
-	@media screen and (min-width: 1024px) {
-    grid-column: 1 / span 3;
+	@media screen and (min-width: 64em) {
+		grid-column: 1 / span 3;
 		margin-right: 30px;
 	}
 }
@@ -387,15 +381,15 @@ div.badge {
 .org-settings {
 	grid-column: 1 / span 12;
 
-	@media screen and (min-width: 1024px) {
-    grid-column: 4 / span 9;
+	@media screen and (min-width: 64em) {
+    	grid-column: 4 / span 9;
   }
 }
 
 /* Improve layout of summary list spacing on homepage and org detail page */
 .org-detail .summary-list__key,
 .dashboard__summary-lists .summary-list__key {
-	@media screen and (min-width: 580px) {
+	@media screen and (min-width: 36.25em) {
 		flex-basis: 60%;
 	}
 }
@@ -416,23 +410,23 @@ div.badge {
 .status__badge {
 	margin: 30px 0;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		margin: 5px 0 30px;
-}
+	}
 
 }
 
 .transfer-details {
 	grid-column: 1 / span 12;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-column: 1 / span 6;
 	}
 }
 
 .transfer-log {
 	grid-column: 1 / span 12;
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-column: 7 / span 6;
 	}
 }
@@ -476,7 +470,7 @@ fieldset input {
 .input__form-layout {
 	width: 100%;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		width: 50%;
 	}
 }
@@ -486,7 +480,7 @@ fieldset input {
 	display: flex;
 	margin: 5px 0;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		margin: 3px 0 0 5px;
 	}
 }
@@ -504,7 +498,7 @@ fieldset input {
 .values-form__input {
 	width: 100%;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		width: 75%;
 	}
 }
@@ -513,13 +507,13 @@ fieldset input {
 	align-items: center;
 	margin-bottom: 5px;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		display: flex;
 	}
 }
 
 .delete-field__btn {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		margin-left: auto;
 		align-self: flex-start;
 	}
@@ -530,35 +524,35 @@ fieldset input {
 	display: block;
 	width: 100%;
 
-	@media screen and (min-width: 1024px) {
-	display: grid;
-	grid-template-columns: repeat(2, 1fr);
-	column-gap: 20px;
+	@media screen and (min-width: 64em) {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		column-gap: 20px;
 	}
 }
 
 /* Removes list styles from default Django forms error list element */
 .errorlist {
-  font-size: 14px;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+  	font-size: 14px;
+  	list-style: none;
+  	margin: 0;
+  	padding: 0;
 }
 
 /* Adds .input__error class styles from RAC Style Library to error class
 used in django forms */
 .errorlist li {
-  background-color: #fbe7e0;
-  border: 1px solid #B63C0C;
-  border-radius: 3px;
-  color: #2E2E2E;
-  display: block;
-  font-weight: normal;
-  font-size: 14px;
-  font-style: italic;
+	background-color: #fbe7e0;
+	border: 1px solid #B63C0C;
+	border-radius: 3px;
+	color: #2E2E2E;
+	display: block;
+	font-weight: normal;
+	font-size: 14px;
+	font-style: italic;
 	line-height: 1.15;
-  margin: 10px 0;
-  padding: 10px;
+	margin: 10px 0;
+	padding: 10px;
 }
 
 .dates__help-text {
@@ -571,7 +565,7 @@ used in django forms */
 .card--grid-container {
 	display: grid;
 	column-gap: 20px;
-	grid-template-columns: repeat(5, 1fr)
+	grid-template-columns: repeat(5, 1fr);
 }
 
 .input--full-width {
@@ -586,7 +580,7 @@ used in django forms */
 }
 
 .accession__dates {
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		grid-column: 1 / span 2;
 	}
 }
@@ -598,15 +592,15 @@ used in django forms */
 .accession__creators {
 	display: block;
 
-	@media screen and (min-width: 1024px) {
+	@media screen and (min-width: 64em) {
 		display: flex;
 		grid-column: 3 / span 3;
 	}
 }
 
 .accession__creators div.input {
-		flex: 1;
-		margin-bottom: 20px;
+	flex: 1;
+	margin-bottom: 20px;
 }
 
 /**
@@ -619,8 +613,4 @@ used in django forms */
 
 #resource_title_dismiss {
 	margin-left: 5px;
-}
-
-#resource_title_dismiss:focus {
-	outline-color: #f6f6f4;
 }

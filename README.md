@@ -15,7 +15,7 @@ $ git clone https://github.com/RockefellerArchiveCenter/aurora.git
 4. Build and run Aurora. The initial build may take some time, so be patient!
 ```
 $ cd aurora
-$ docker-compose up
+$ docker compose up
 ```
 5. Once this process has completed, Aurora is available in your web browser at `http://localhost:8000`.
 6. Log in using one of the default user accounts (see [User accounts](#user-accounts) below).
@@ -27,7 +27,7 @@ If desired, you can import a set of sample bags (not all of which are valid) by 
 Open up a new terminal window and navigate to the root of the application, then run
 
 ```
-$ docker-compose exec web import_sample_data
+$ docker compose exec web import_sample_data
 ```
 
 ### Transferring Your Own Bags
@@ -45,7 +45,7 @@ If you're using local storage you can then transfer those bags by SFTPing them i
 
 ### Data Persistence
 
-The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker-compose down` all the data in the application will still be there the next time you run `docker-compose up`. If you want to wipe out the database at shut down, simply run `docker-compose down -v`.
+The Docker container is currently configured to persist the MySQL database in local storage. This means that when you shut down the container using `docker compose down` all the data in the application will still be there the next time you run `docker compose up`. If you want to wipe out the database at shut down, simply run `docker compose down -v`.
 
 
 ## Authentication
@@ -63,7 +63,7 @@ you will need to make a few changes:
   - Enable `bag_transfer.middleware.jwt.AuthenticationMiddlewareJWT`.
 2. Ensure that the `COGNITO_USE` config value is set to `False`.
 
-### User accounts
+### User Accounts
 
 By default, Aurora comes with five user accounts:
 
@@ -79,7 +79,7 @@ See the Aurora User Documentation for more information about permissions associa
 
 Note that in the Docker container, all user passwords are reset to "password" each time the container is restarted. This behavior can be changed by editing `setup_objects.py`, but note that this change will impact your ability to SFTP bags into the container.
 
-## Transferring digital records
+## Transferring Digital Records
 
 ### Transfer Validation
 
@@ -124,7 +124,7 @@ The [`ElectronBonder` library](https://github.com/RockefellerArchiveCenter/elect
 contains code which demonstrates this flow (see the `authorize_oauth` method in
 `/electronbonder/client.py`).
 
-#### Using local authentication
+#### Using Local Authentication
 If OAuth is disabled (see above), Aurora can use JSON Web Tokens for validation. As with all token-based authentication, you should ensure the application is only available over SSL/TLS in order to avoid token tampering and replay attacks.
 
 To get your token, send a POST request to the `/get-token/` endpoint, passing your username and password:
