@@ -11,3 +11,5 @@ permissions:
 jobs:
   automatic-release:
     uses: RockefellerArchiveCenter/.github/.github/workflows/python-full-suite-dependencies.yml@base
+    secrets:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
