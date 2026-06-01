@@ -1,0 +1,8 @@
+{
+  "release-type": "simple",
+  "packages": {
+    ".": {
+      "package-name": "aurora"
+    }
+  }
+}
