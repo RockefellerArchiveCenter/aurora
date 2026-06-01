@@ -11,5 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  automatic-release:
+  release-please:
     uses: RockefellerArchiveCenter/.github/.github/workflows/automatic-release.yml@base
+    with:
+      use-manifest: true
