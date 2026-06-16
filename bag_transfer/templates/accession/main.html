@@ -1,10 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load static %}
 
-{% block h1_title %}
-  {% regroup uploads by transfer_group as upload_groups %}
-  {{page_title}}
-{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
 {% regroup uploads by transfer_group as upload_groups %}

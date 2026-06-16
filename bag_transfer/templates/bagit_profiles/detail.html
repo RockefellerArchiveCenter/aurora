@@ -1,9 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load tz %}
 
-{% block h1_title %}
-  {{page_title}}: {{object.source_organization.name}}
-{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block title_actions %}
   <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn--md btn--gray">

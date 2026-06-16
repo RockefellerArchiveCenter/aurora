@@ -21,17 +21,26 @@ class BagItProfileManageView(PageTitleMixin):
     model = BagItProfile
     form_class = BagItProfileForm
 
+    def get_organization(self):
+        if self.object:
+            return self.object.organization
+        else:
+            return get_object_or_404(Organization, pk=self.request.GET.get("org"))
+
     def get_page_title(self, context):
-        return "Edit BagIt Profile" if self.object else "Create BagIt Profile"
+        org = self.get_organization()
+        if self.object:
+            return "Edit BagIt Profile: {}".format(org)
+        else:
+            return "Create BagIt Profile: {}".format(org)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        organization = self.get_organization()
         if self.object:
             form = BagItProfileForm(instance=self.object)
-            organization = self.object.organization
         else:
             source_organization = self.request.user.organization
-            organization = get_object_or_404(Organization, pk=self.request.GET.get("org"))
             form = BagItProfileForm(
                 initial={
                     "source_organization": source_organization,
@@ -102,8 +111,10 @@ class BagItProfileUpdateView(BagItProfileManageView, UpdateView):
 
 class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "bagit_profiles/detail.html"
-    page_title = "BagIt Profile"
     model = BagItProfile
+
+    def get_page_title(self, context):
+        return "BagIt Profile: {}".format(context["object"].organization)
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):

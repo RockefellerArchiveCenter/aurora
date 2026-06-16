@@ -2,9 +2,7 @@
 {% load tz static %}
 {% load util %}
 
-{% block h1_title %}
-{{page_title}}: {{object.accession_transfers.count }} transfer{% if object.accession_transfers.count > 1%}s{% endif %}
-{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block title_actions %}
   <a href="{% url 'accession:saved' %}" class="btn btn--md btn--gray">
@@ -18,7 +16,7 @@
 	<span class="badge badge--md badge--{% if object.process_status == 40 %}green{% else %}red{% endif %}">{{ object.get_process_status_display }}</span>
 </div>
 <div class="card card--container flex--column mb-30">
-	<h2>Accession Details</h2>
+	<h2>Accession Details: {{object.accession_transfers.count }} Transfer{% if object.accession_transfers.count > 1%}s{% endif %}</h2>
 	<dl class="summary-list">
 		<div class="summary-list__row">
 			<dt class="summary-list__key">Description</dt>

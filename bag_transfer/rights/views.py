@@ -25,8 +25,22 @@ class RightsManageView(PageTitleMixin, ManagingArchivistMixin):
     model = RightsStatement
     form_class = RightsForm
 
+    def get_organization(self):
+        if self.kwargs.get("pk"):
+            return RightsStatement.objects.get(pk=self.kwargs.get("pk")).organization
+        else:
+            return Organization.objects.get(pk=self.request.GET.get("org"))
+
     def get_page_title(self, context):
-        return "Edit Rights Statement" if self.kwargs.get("pk") else "Create Rights Statement"
+        if self.kwargs.get("pk"):
+            obj = context["object"]
+            return "Rights Statement #{} ({}): {}".format(
+                obj.pk,
+                obj.rights_basis,
+                obj.organization,
+            )
+        else:
+            return "Create Rights Statement: {}".format(self.get_organization())
 
     def get_success_url(self):
         return reverse("orgs:detail", kwargs={"pk": self.object.organization.pk})
@@ -92,7 +106,7 @@ class RightsCreateView(RightsManageView, CreateView):
     def get_context_data(self, **kwargs):
         """Adds formsets to context data."""
         context = super().get_context_data(**kwargs)
-        organization = Organization.objects.get(pk=self.request.GET.get("org"))
+        organization = self.get_organization()
         applies_to_type_choices = self.get_applies_to_type_choices(organization)
         basis_form = RightsForm(
             applies_to_type_choices=applies_to_type_choices,
@@ -109,7 +123,7 @@ class RightsCreateView(RightsManageView, CreateView):
     def form_valid(self, form):
         """Sets variables needed in formsets."""
         rights_statement = form.save(commit=False)
-        organization = Organization.objects.get(pk=self.request.GET.get("org"))
+        organization = self.get_organization()
         return self.save_formsets(form, rights_statement, organization)
 
     def form_invalid(self, form):
@@ -131,8 +145,8 @@ class RightsUpdateView(RightsManageView, UpdateView):
     def get_context_data(self, **kwargs):
         """Adds formsets to context data."""
         context = super().get_context_data(**kwargs)
+        organization = self.get_organization()
         rights_statement = RightsStatement.objects.get(pk=self.kwargs.get("pk"))
-        organization = rights_statement.organization
         applies_to_type_choices = self.get_applies_to_type_choices(organization)
         formset_data = self.get_formset(rights_statement.rights_basis)
         formset = formset_data["class"](instance=rights_statement)
@@ -149,7 +163,7 @@ class RightsUpdateView(RightsManageView, UpdateView):
     def form_valid(self, form):
         """Sets variables needed in formsets."""
         rights_statement = RightsStatement.objects.get(pk=self.kwargs.get("pk"))
-        organization = rights_statement.organization
+        organization = self.get_organization()
         return self.save_formsets(form, rights_statement, organization)
 
 
@@ -170,5 +184,12 @@ class RightsAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView
 
 class RightsDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "rights/detail.html"
-    page_title = "Rights Statement"
     model = RightsStatement
+
+    def get_page_title(self, context):
+        obj = context["object"]
+        return "Rights Statement #{} ({}): {}".format(
+            obj.pk,
+            obj.rights_basis,
+            obj.organization,
+        )
