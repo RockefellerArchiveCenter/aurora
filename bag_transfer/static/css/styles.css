@@ -105,7 +105,10 @@ h1 {
 }
 
 .title__actions {
+	margin-bottom: 30px;
+	
 	@media screen and (min-width: 64em) {
+		margin-bottom: 0;
 		margin-left: 20px;
 	}
 }
@@ -115,6 +118,7 @@ h1 {
 	display: block;
 
 	@media screen and (min-width: 64em) {
+		display: flex;
 		margin-bottom: 0;
 	}
 }
