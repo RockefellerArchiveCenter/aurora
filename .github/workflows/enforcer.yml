@@ -1,16 +1,14 @@
-name: 'Check Branch'
+name: Check Branch
 
 on:
   pull_request:
     branches:
       - base
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  check_branch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check branch
-        if: github.head_ref != 'development'
-        run: |
-          echo "ERROR: You can only merge to base from the development branch."
-          exit 1
+  enforcer:
+    uses: RockefellerArchiveCenter/.github/.github/workflows/enforcer.yml@base
