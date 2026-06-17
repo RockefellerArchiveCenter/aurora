@@ -86,7 +86,7 @@ class AccessionDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     model = Accession
 
     def get_page_title(self, context):
-        return "Accession Details: {}".format(context["object"].title)
+        return "Accession: {}".format(context["object"].title)
 
 
 class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONResponseMixin, CreateView):
