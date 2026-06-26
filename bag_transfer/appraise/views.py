@@ -96,14 +96,16 @@ class AppraiseDataTableView(ArchivistMixin, BaseDatatableView):
                 btn_class = "btn btn--xs btn--light-blue"
                 note_class = "edit-note"
                 note_text = "Edit"
+                note_label = "Edit note for {}".format(transfer.bag_or_failed_name)
             else:
                 btn_class = "btn-info"
                 note_class = ""
                 note_text = "Add"
-            buttons = '<button class="btn btn--xs btn--blue appraisal-accept">Accept</button>\
-                       <button class="btn btn--xs btn--orange appraisal-reject">Reject</button>\
-                       <button class="btn btn--xs btn--light-blue appraisal-note {} {}" data-target="#modal-appraisal-note">{} Note</button>'.format(
-                btn_class, note_class, note_text
+                note_label = "Add note for {}".format(transfer.bag_or_failed_name)
+            buttons = '<button class="btn btn--xs btn--blue appraisal-accept" aria-label="Accept transfer {0}">Accept</button>\
+                    <button class="btn btn--xs btn--orange appraisal-reject" aria-label="Reject transfer {0}">Reject</button>\
+                    <button class="btn btn--xs btn--light-blue appraisal-note {1} {2}" data-target="#modal-appraisal-note" aria-label="{3}">{4} Note</button>'.format(
+                transfer.bag_or_failed_name, btn_class, note_class, note_label, note_text
             )
         return buttons
 

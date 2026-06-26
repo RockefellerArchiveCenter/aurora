@@ -330,7 +330,7 @@ class SavedAccessionsDatatableView(BaseDatatableView):
         button = "Accession not delivered"
         if self.request.user.can_accession():
             button = (
-                '<button class="btn btn--sm btn--blue deliver">Deliver Accession</button>'
+                '<button class="btn btn--sm btn--blue deliver" aria-label="Deliver accession {0}">Deliver Accession</button>'.format(accession.title)
                 if (accession.process_status < Accession.DELIVERED)
                 else '<p>' + accession.get_process_status_display() + "</p>"
             )

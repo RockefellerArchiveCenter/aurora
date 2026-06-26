@@ -205,18 +205,18 @@ function activateModal(uid, label, transfer_name, appraisal_note) {
 
 function resolveRowCallback(uid, action) {
   $('.appraisal-note').each(function(){
-    if (action == 'add') {
-      if ($(this).parents('tr').data('transfer-id') == uid){
+    var row = $(this).parents('tr');
+    if (row.data('transfer-id') == uid) {
+      var transferName = row.data('transfer-name');
+      if (action == 'add') {
         $(this).text('Edit Note');
         $(this).addClass('edit-note');
-        $(this).attr('aria-label', 'Edit existing note');
-      }
-    } else {
-      if ($(this).parents('tr').data('transfer-id') == uid){
+        $(this).attr('aria-label', 'Edit note for ' + transferName);
+      } else {
         $(this).text('Add Note');
         $(this).removeClass('edit-note');
         $(this).addClass('btn-info');
-        $(this).removeAttr('aria-label')
+        $(this).attr('aria-label', 'Add note for ' + transferName);
       }
     }
   });
