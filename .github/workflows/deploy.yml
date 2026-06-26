@@ -39,11 +39,9 @@ jobs:
           files: |
             $APPLICATION_NAME/config.py.deploy
             appspec.yml.deploy
-            deploy_scripts/create_apache_config.sh.deploy
             deploy_scripts/curl_index.sh.deploy
             deploy_scripts/curl_status_endpoint.sh.deploy
             deploy_scripts/install_dependencies_django.sh.deploy
-            deploy_scripts/restart_apachectl.sh.deploy
             deploy_scripts/run_management_commands_django.sh.deploy
             deploy_scripts/set_permissions.sh.deploy
             deploy_scripts/stop_cron.sh.deploy
@@ -52,11 +50,9 @@ jobs:
         run: |
           mv $APPLICATION_NAME/config.py.deploy $APPLICATION_NAME/config.py
           mv appspec.yml.deploy appspec.yml
-          mv deploy_scripts/create_apache_config.sh.deploy deploy_scripts/create_apache_config.sh
           mv deploy_scripts/curl_index.sh.deploy deploy_scripts/curl_index.sh
           mv deploy_scripts/curl_status_endpoint.sh.deploy deploy_scripts/curl_status_endpoint.sh
           mv deploy_scripts/install_dependencies_django.sh.deploy deploy_scripts/install_dependencies_django.sh
-          mv deploy_scripts/restart_apachectl.sh.deploy deploy_scripts/restart_apachectl.sh
           mv deploy_scripts/run_management_commands_django.sh.deploy deploy_scripts/run_management_commands_django.sh
           mv deploy_scripts/set_permissions.sh.deploy deploy_scripts/set_permissions.sh
           mv deploy_scripts/stop_cron.sh.deploy deploy_scripts/stop_cron.sh
