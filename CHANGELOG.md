@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.3](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.2...aurora-v4.0.3) (2026-07-28)
+
+
+### Bug Fixes
+
+* Check to see if Discover Transfers cron job is running before starting another instance ([c393400](https://github.com/RockefellerArchiveCenter/aurora/commit/c3934003f0658fef53645e116f73d8266937b475))
+* Check to see if discover transfers is running before starting ([38ba052](https://github.com/RockefellerArchiveCenter/aurora/commit/38ba052225c0dfd17eb8a8a4a285d058c233798b))
+
 ## [4.0.2](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.1...aurora-v4.0.2) (2026-07-06)
 
 
