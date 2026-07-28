@@ -2,13 +2,16 @@ name: Check Branch
 
 on:
   pull_request:
-    branches:
-      - base
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  enforcer:
+  branch-enforcer:
     uses: RockefellerArchiveCenter/.github/.github/workflows/enforcer.yml@base
