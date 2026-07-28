@@ -20,25 +20,26 @@ from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import BAGLog, Organization, Transfer
 
 
+def is_running(cls_name):
+    """Checks to see if an instance of this class is already running."""
+    try:
+        running = check_output(["pgrep", "-f", cls_name]).decode("utf-8").strip().split("\n")
+        if len(running) > 2:
+            return True
+        else:
+            return False
+    except CalledProcessError:
+        return False
+
+
 class DiscoverTransfers(CronJobBase):
     RUN_EVERY_MINS = 0
 
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "transfers.discover_transfers"
 
-    def is_running(self):
-        """Checks to see if an instance of this class is already running."""
-        try:
-            running = check_output(["pgrep", "-f", self.__class__.__name__]).decode("utf-8").strip().split("\n")
-            if len(running) > 2:
-                return True
-            else:
-                return False
-        except CalledProcessError:
-            return False
-
     def do(self):
-        if self.is_running():
+        if is_running(self.__class__.__name__):
             return
         result = True
         Pter.cron_open(self.code)
@@ -136,6 +137,8 @@ class DeliverTransfers(CronJobBase):
     code = "transfers.deliver_transfers"
 
     def do(self):
+        if is_running(self.__class__.__name__):
+            return
         result = True
         Pter.cron_open(self.code)
         if not isdir(settings.DELIVERY_QUEUE_DIR):
