@@ -1,5 +1,7 @@
+import boto3
 from asterism.file_helpers import remove_file_or_dir
 from dateutil import tz
+from django.conf import settings
 from django.views.generic import ListView
 
 from bag_transfer.lib.mailer import Mailer
@@ -31,7 +33,17 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         )
         BAGLog.log_it(("BACPT" if appraisal_decision else "BREJ"), upload)
         if not appraisal_decision:
-            remove_file_or_dir(upload.machine_file_path)
+            if settings.S3_USE:
+                s3_client = boto3.client(
+                    's3',
+                    aws_access_key_id=settings.S3_ACCESS_KEY,
+                    aws_secret_access_key=settings.S3_SECRET_KEY,
+                    region_name=settings.S3_REGION)
+                s3_client.delete_object(
+                    Bucket=settings.STORAGE_BUCKET,
+                    Key=f"{upload.machine_file_identifier}.tar.gz")
+            else:
+                remove_file_or_dir(upload.machine_file_path)
             email = Mailer()
             email.to_emails = [u.email for u in upload.organization.admin_users]
             email.setup_message("TRANS_REJECT", upload)
