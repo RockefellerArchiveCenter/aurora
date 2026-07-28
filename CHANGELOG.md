@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.0.4](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.3...aurora-v4.0.4) (2026-07-28)
+
+
+### Bug Fixes
+
+* Delete rejected transfers from S3 ([d9191c0](https://github.com/RockefellerArchiveCenter/aurora/commit/d9191c02280f12f41eac66a0863d84bfb91bcbb9))
+* Delete rejected transfers from S3 ([aa2427a](https://github.com/RockefellerArchiveCenter/aurora/commit/aa2427a1f580fc0ef153ee2c8261641dd2fc0b15))
+
 ## [4.0.3](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.2...aurora-v4.0.3) (2026-07-28)
 
 
