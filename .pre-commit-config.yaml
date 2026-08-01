@@ -11,11 +11,11 @@ repos:
   hooks:
   - id: flake8
 - repo: https://github.com/pycqa/isort
-  rev: 9.0.0a3
+  rev: 9.0.0b1
   hooks:
   - id: isort
 - repo: https://github.com/jazzband/pip-tools
-  rev: v7.5.3
+  rev: v7.6.0
   hooks:
     - id: pip-compile
       args:
