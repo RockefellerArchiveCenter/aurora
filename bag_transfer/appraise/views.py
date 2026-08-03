@@ -1,9 +1,9 @@
 import boto3
-from asterism.file_helpers import remove_file_or_dir
 from dateutil import tz
 from django.conf import settings
 from django.views.generic import ListView
 
+from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.mixins.authmixins import ArchivistMixin
 from bag_transfer.mixins.formatmixins import JSONResponseMixin
