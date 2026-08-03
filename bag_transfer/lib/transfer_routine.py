@@ -6,17 +6,17 @@ import tarfile
 import zipfile
 
 import boto3
-from asterism.file_helpers import (get_dir_size, is_dir_or_file,
-                                   move_file_or_dir, remove_file_or_dir,
-                                   tar_extract_all, zip_extract_all)
 from django.conf import settings
 from django.utils.timezone import make_aware
 
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.lib.files_helper import (all_paths_exist,
-                                           generate_identifier,
-                                           s3_bucket_exists,
+                                           generate_identifier, get_dir_size,
+                                           is_dir_or_file, move_file_or_dir,
+                                           remove_file_or_dir,
+                                           s3_bucket_exists, tar_extract_all,
                                            tar_has_top_level_only,
+                                           zip_extract_all,
                                            zip_has_top_level_only)
 from bag_transfer.lib.virus_scanner import VirusScan
 from bag_transfer.models import Organization

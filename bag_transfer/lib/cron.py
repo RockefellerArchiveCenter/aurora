@@ -5,9 +5,6 @@ from os.path import isdir, join
 from subprocess import CalledProcessError, check_output
 
 import boto3
-from asterism.bagit_helpers import update_bag_info
-from asterism.file_helpers import (make_tarfile, move_file_or_dir,
-                                   remove_file_or_dir)
 from django.conf import settings
 from django_cron import CronJobBase, Schedule
 from pytz import timezone
@@ -15,6 +12,9 @@ from pytz import timezone
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.api.serializers import TransferSerializer
 from bag_transfer.lib.bag_checker import BagChecker
+from bag_transfer.lib.bagit_helpers import update_bag_info
+from bag_transfer.lib.files_helper import (make_tarfile, move_file_or_dir,
+                                           remove_file_or_dir)
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import BAGLog, Organization, Transfer
