@@ -1,10 +1,10 @@
 import os
 
 import boto3
-from asterism.bagit_helpers import update_bag_info
-from asterism.file_helpers import make_tarfile, remove_file_or_dir
 from django.conf import settings
 
+from bag_transfer.lib.bagit_helpers import update_bag_info
+from bag_transfer.lib.files_helper import make_tarfile, remove_file_or_dir
 from bag_transfer.models import Organization, Transfer, User
 
 
