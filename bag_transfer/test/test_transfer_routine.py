@@ -3,11 +3,11 @@ import random
 import shutil
 from unittest.mock import patch
 
-from asterism.file_helpers import remove_file_or_dir
 from django.conf import settings
 from django.test import TestCase
 
 from bag_transfer.lib.bag_checker import BagChecker
+from bag_transfer.lib.files_helper import remove_file_or_dir
 from bag_transfer.lib.transfer_routine import (TransferFileObject,
                                                TransferRoutine,
                                                TransferRoutineException)
