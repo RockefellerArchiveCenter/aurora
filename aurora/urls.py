@@ -13,10 +13,10 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  re_path(r'^blog/', include('blog.urls'))
 """
-from asterism.views import PingView
 from django.contrib import admin
 from django.urls import include, re_path
 
+from bag_transfer.api.views import PingView
 from bag_transfer.transfers.views import DashboardView
 from bag_transfer.users.views import (SplashView, UserLoginView,
                                       UserLogoutView,

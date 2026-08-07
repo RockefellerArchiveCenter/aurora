@@ -4,10 +4,10 @@ import string
 from datetime import datetime
 from os import chown, listdir, path
 
-from asterism.file_helpers import copy_file_or_dir
 from django.test import TestCase, modify_settings, override_settings
 from django.utils.timezone import make_aware
 
+from bag_transfer.lib.files_helper import copy_file_or_dir
 from bag_transfer.models import (LanguageCode, Organization, RecordCreators,
                                  User)
 from bag_transfer.rights.models import (RecordType, RightsStatement,

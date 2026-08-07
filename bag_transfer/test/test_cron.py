@@ -6,7 +6,6 @@ from unittest.mock import patch
 
 import bagit
 import boto3
-from asterism.file_helpers import remove_file_or_dir, tar_extract_all
 from django.conf import settings
 from django.test import TransactionTestCase
 from moto import mock_aws
@@ -14,6 +13,7 @@ from pytz import timezone
 
 from bag_transfer.lib.cron import (DeliverTransfers, DiscoverTransfers,
                                    RotateKeys)
+from bag_transfer.lib.files_helper import remove_file_or_dir, tar_extract_all
 from bag_transfer.models import Organization, Transfer, User
 from bag_transfer.test import helpers
 

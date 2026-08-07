@@ -6,11 +6,11 @@ from os.path import isfile, join
 import arrow
 import bagit
 import bagit_profile
-from asterism.bagit_helpers import get_bag_info_fields
 from iso639 import languages
 
 from bag_transfer.api.serializers import BagItProfileSerializer
 from bag_transfer.lib import files_helper as FH
+from bag_transfer.lib.bagit_helpers import get_bag_info_fields
 from bag_transfer.models import BagItProfile, BAGLog
 
 # sets logging levels to reduce garbage printed in logs
