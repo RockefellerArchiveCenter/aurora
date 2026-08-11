@@ -39,7 +39,7 @@ class BagItProfileManageView(PageTitleMixin):
         context = super().get_context_data(**kwargs)
         organization = self.get_organization()
 
-        # Reuse the bound form that was built for this submission so errors/values survive 
+        # Reuse the bound form that was built for this submission so errors/values survive
         # a failed nested formset save
         form = context.get("form")
         if form is None or not form.is_bound:
