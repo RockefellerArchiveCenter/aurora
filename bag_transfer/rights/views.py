@@ -197,10 +197,7 @@ class RightsUpdateView(RightsManageView, UpdateView):
         else:
             context[formset_data["key"]] = formset_data["class"](instance=rights_statement)
 
-        context["granted_formset"] = (
-            getattr(self, "_invalid_granted_formset", None)
-            or RightsGrantedFormSet(instance=rights_statement)
-        )
+        context["granted_formset"] = getattr(self, "_invalid_granted_formset", None) or RightsGrantedFormSet(instance=rights_statement)
         context["organization"] = organization
         return context
 

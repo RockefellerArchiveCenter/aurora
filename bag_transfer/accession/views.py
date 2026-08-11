@@ -178,10 +178,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
                 }
             )
         context["form"] = form
-        context["creators_formset"] = (
-            getattr(self, "_invalid_creators_formset", None)
-            or CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=creators_list))
-        )
+        context["creators_formset"] = getattr(self, "_invalid_creators_formset", None) or CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=creators_list))
         context["transfers"] = transfers_list
         context["rights_statements"] = rights_statements
         return context

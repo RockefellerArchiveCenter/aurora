@@ -53,10 +53,7 @@ class BagItProfileManageView(PageTitleMixin):
                         "contact_email": "archive@rockarch.org",
                         "organization": organization})
         context["form"] = form
-        context["bag_info_formset"] = (
-            getattr(self, "_invalid_bag_info_formset", None)
-            or BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
-        )
+        context["bag_info_formset"] = getattr(self, "_invalid_bag_info_formset", None) or BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
         context["organization"] = organization
         return context
 
