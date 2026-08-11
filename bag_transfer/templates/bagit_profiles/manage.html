@@ -9,27 +9,41 @@
 
 {% block content %}
 
-<form action="" method="post">
+<form action="" method="post" novalidate>
 	{% csrf_token %}
 
 	<div class="card card--container flex--column">
 		<h2>General Information</h2>
-		{{form.management_form}}
-		{{form.non_form_errors}}
 		{% for hidden in form.hidden_fields %}
 			{{ hidden }}
 		{% endfor %}
 		<div class="input input__form-layout mb-20">
 			<label for="{{form.external_description.id_for_label}}">{{ form.external_description.label }}</label>
-			{{ form.external_description }}
+			{{ form.external_description|with_aria_attrs }}
+			{% if form.external_description.help_text %}
 			<div class="input__help-text" id="{{form.external_description.id_for_label}}-help">{{ form.external_description.help_text }}</div>
+			{% endif %}
+			{% if form.external_description.errors %}
+			<div id="{{ form.external_description.id_for_label }}-error">
+				{% for error in form.external_description.errors %}
+					<div class="input__error">{{ error }}</div>
+				{% endfor %}
+			</div>
+			{% endif %}
 		</div>
 		<div class="input-group mb-20">
-			{{ form.allow_fetch }}
+			{{ form.allow_fetch|with_aria_attrs }}
 			<label class="checkbox--blue" for="{{form.allow_fetch.id_for_label}}">{{form.allow_fetch.label}}</label>
+			{% if form.allow_fetch.errors %}
+			<div id="{{ form.allow_fetch.id_for_label }}-error">
+				{% for error in form.allow_fetch.errors %}
+					<div class="input__error">{{ error }}</div>
+				{% endfor %}
+			</div>
+			{% endif %}
 		</div>
 
-		<fieldset class="mb-20" aria-required="true" role="radiogroup">
+		<fieldset class="mb-20" aria-required="true" role="radiogroup"{% if form.serialization.errors %} aria-describedby="id_serialization-error" aria-invalid="true"{% endif %}>
 			<legend>Serialization Allowed? *</legend>
 			{% for checkbox in form.serialization %}
 					<div class="input-group">
@@ -37,6 +51,13 @@
 							<label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
 					</div>
 			{% endfor %}
+			{% if form.serialization.errors %}
+			<div id="id_serialization-error">
+				{% for error in form.serialization.errors %}
+					<div class="input__error">{{ error }}</div>
+				{% endfor %}
+			</div>
+			{% endif %}
 		</fieldset>
 
 		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.manifests_allowed legend=form.legends.manifests_allowed help_text=form.help_texts.manifests_allowed %}
@@ -47,15 +68,23 @@
 
 		<div class="input input__form-layout">
 			<label for="{{form.tag_files_required.id_for_label}}">{{form.tag_files_required.label}}</label>
-			{{form.tag_files_required}}
-			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">{{ form.tag_files_required.help_text }}</div>
+			{{ form.tag_files_required|with_aria_attrs }}
+			{% if form.tag_files_required.help_text %}
+			<div id="{{ form.tag_files_required.id_for_label }}-help" class="input__help-text">{{ form.tag_files_required.help_text }}</div>
+			{% endif %}
+			{% if form.tag_files_required.errors %}
+			<div id="{{ form.tag_files_required.id_for_label }}-error">
+				{% for error in form.tag_files_required.errors %}
+					<div class="input__error">{{ error }}</div>
+				{% endfor %}
+			</div>
+			{% endif %}
 		</div>
 	</div>
 
 	<div class="card card--container flex--column mt-30">
 		<h2>Metadata</h2>
 		{{ bag_info_formset.management_form }}
-		{{ bag_info_formset.non_form_errors }}
 		{% for form in bag_info_formset %}
 		<div id="{{ form.prefix }}-row" class="{{ form.prefix | trim_form_prefix }} card card--container card--blue dynamic-form container--full-width mb-20">
 			{% for hidden in form.hidden_fields %}
@@ -65,7 +94,6 @@
 			{% if form.nested %}
 				<div class="nested-form flex">
 					{{ form.nested.management_form }}
-					{{ form.nested.non_form_errors }}
 					<div class="values-form__input input mr-10">
 						<label id="values-label">Controlled Values (if applicable)</label>
 						{% for form in form.nested.forms %}
