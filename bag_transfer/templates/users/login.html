@@ -1,20 +1,36 @@
 {% extends 'transfers/login_base.html' %}
 {% block content %}
 <div class="card card--container login__form flex--column py-30 px-60">
-  <form action="." method="post">
-    {{ form.non_field_errors }}
+  <form action="." method="post" novalidate>
+    {% if form.non_field_errors %}
+      {% for error in form.non_field_errors %}
+        <div class="input__error form-error-summary" tabindex="-1">{{ error }}</div>
+      {% endfor %}
+    {% endif %}
 
     {% csrf_token %}
     <p>Sign in to start your session</p>
     <div class="input mb-10">
       <label for="{{ form.username.id_for_label }}">Username</label>
-      <input type="text" name="username" id="{{ form.username.id_for_label }}" class="input" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" />
-      {{ form.username.errors }}
+      <input type="text" name="username" id="{{ form.username.id_for_label }}" class="input" value="{% if form.username.value %}{{ form.username.value }}{% endif %}" {% if form.username.errors %}aria-invalid="true" aria-describedby="{{ form.username.id_for_label }}-error"{% endif %} />
+      {% if form.username.errors %}
+      <div id="{{ form.username.id_for_label }}-error">
+        {% for error in form.username.errors %}
+          <div class="input__error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
     <div class="input mb-10">
       <label for="{{ form.password.id_for_label }}">Password</label>
-      <input autocomplete="off" name="password" id="{{ form.password.id_for_label }}" type="password" class="input" value="{% if form.password.value %}{{ form.password.value }}{% endif %}" />
-      {{ form.password.errors}}
+      <input autocomplete="off" name="password" id="{{ form.password.id_for_label }}" type="password" class="input" value="{% if form.password.value %}{{ form.password.value }}{% endif %}" {% if form.password.errors %}aria-invalid="true" aria-describedby="{{ form.password.id_for_label }}-error"{% endif %} />
+      {% if form.password.errors %}
+      <div id="{{ form.password.id_for_label }}-error">
+        {% for error in form.password.errors %}
+          <div class="input__error">{{ error }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
     </div>
     <a href="{% url 'password_reset' %}">I forgot my password</a>
     <div class="input--full-width">

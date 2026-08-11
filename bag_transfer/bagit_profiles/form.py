@@ -21,10 +21,7 @@ class BagItProfileForm(forms.ModelForm):
             "version": forms.widgets.HiddenInput(),
             "bagit_profile_identifier": forms.widgets.HiddenInput(),
             "external_description": forms.widgets.Textarea(
-                attrs={
-                    "rows": 3,
-                    "aria-describedby": "id_external_description-help"
-                }
+                attrs={"rows": 3}
             ),
             "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "serialization": forms.widgets.RadioSelect(attrs={"class": "radiobutton radiobutton--blue"}),

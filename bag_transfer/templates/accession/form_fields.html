@@ -1,11 +1,14 @@
+{% load util %}
 <div class="input input--full-width mb-20">
   {% if field.label != "Delete" %}
   <label for="{{field.id_for_label}}">{{field.label}}{% if field.field.required %} *{% endif %}</label>
-  {{ field }}
+  {{ field|with_aria_attrs }}
   {% endif %}
   {% if field.errors %}
+  <div id="{{ field.id_for_label }}-error">
   {% for error in field.errors %}
     <div class="input__error">{{error}}</div>
   {% endfor %}
+  </div>
   {% endif %}
 </div>

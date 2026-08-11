@@ -5,19 +5,19 @@
 
 {% block content %}
 
-<form role="form" action="" method="post">
+<form role="form" action="" method="post" novalidate>
   {% csrf_token %}
   {% if request.user.is_manager or request.user.is_superuser %}
     <div class="input-group">
-      {{ form.is_active }}
+      {{ form.is_active|with_aria_attrs }}
       <label class="checkbox--blue" for="{{form.is_active.id_for_label}}">{{form.is_active.label}}</label>
     </div>
-    <div class="input__help-text mb-20">{{form.is_active.help_text}}</div>
+    <div class="input__help-text mb-20" id="{{ form.is_active.id_for_label }}-help">{{form.is_active.help_text}}</div>
     <div class="input-group">
-      {{ form.is_org_admin }}
+      {{ form.is_org_admin|with_aria_attrs }}
       <label class="checkbox--blue" for="{{form.is_org_admin.id_for_label}}">{{form.is_org_admin.label}}</label>
     </div>
-    <div class="input__help-text mb-20">{{form.is_org_admin.help_text}}</div>
+    <div class="input__help-text mb-20" id="{{ form.is_org_admin.id_for_label }}-help">{{form.is_org_admin.help_text}}</div>
     <div class="input__form-layout">
       {% include 'rights/form_fields.html' with field=form.username %}
     </div>

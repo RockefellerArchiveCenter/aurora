@@ -1,21 +1,26 @@
+{% load util %}
 <div class="card card--container card--blue accession__card accession__creators" id="{{creator.prefix}}">
   {% for hidden in creator.hidden_fields %}{{hidden}}{% endfor %}
   <div class="input">
     <label for="{{creator.name.id_for_label}}" required>Creator Name *</label>
-    {{ creator.name }}
+    {{ creator.name|with_aria_attrs }}
     {% if creator.name.errors %}
+    <div id="{{ creator.name.id_for_label }}-error">
     {% for error in creator.name.errors %}
       <div class="input__error">{{error}}</div>
     {% endfor %}
+    </div>
     {% endif %}
   </div>
   <div class="input">
     <label for="{{creator.type.id_for_label}}" required>Creator Type *</label>
-    {{ creator.type }}
+    {{ creator.type|with_aria_attrs }}
     {% if creator.type.errors %}
+    <div id="{{ creator.type.id_for_label }}-error">
     {% for error in creator.type.errors %}
       <div class="input__error">{{error}}</div>
     {% endfor %}
+    </div>
     {% endif %}
   </div>
 </div>

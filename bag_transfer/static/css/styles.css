@@ -535,28 +535,14 @@ fieldset input {
 	}
 }
 
-/* Removes list styles from default Django forms error list element */
-.errorlist {
-  	font-size: 14px;
-  	list-style: none;
-  	margin: 0;
-  	padding: 0;
-}
+/* Form error summary styles.*/
+.form-error-summary {
+	margin-bottom: 20px;
 
-/* Adds .input__error class styles from RAC Style Library to error class
-used in django forms */
-.errorlist li {
-	background-color: #fbe7e0;
-	border: 1px solid #B63C0C;
-	border-radius: 3px;
-	color: #2E2E2E;
-	display: block;
-	font-weight: normal;
-	font-size: 14px;
-	font-style: italic;
-	line-height: 1.15;
-	margin: 10px 0;
-	padding: 10px;
+	&:focus {
+		outline: 2px solid #B63C0C;
+		outline-offset: 2px;
+	}
 }
 
 .dates__help-text {
