@@ -46,7 +46,7 @@
 		{% include 'bagit_profiles/checkbox_fieldset.html' with fields=form.tag_manifests_required legend=form.legends.tag_manifests_required help_text=form.help_texts.tag_manifests_required %}
 
 		<div class="input input__form-layout">
-			<label id="tag_files-label">{{form.tag_files_required.label}}</label>
+			<label for="{{form.tag_files_required.id_for_label}}">{{form.tag_files_required.label}}</label>
 			{{form.tag_files_required}}
 			<div id="{{tag_files_formset.prefix}}-help" class="input__help-text">{{ form.tag_files_required.help_text }}</div>
 		</div>
