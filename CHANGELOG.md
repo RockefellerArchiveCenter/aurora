@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.6](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.5...aurora-v4.0.6) (2026-08-12)
+
+
+### Bug Fixes
+
+* linting and update pop-tools ([cc24cf0](https://github.com/RockefellerArchiveCenter/aurora/commit/cc24cf00430562b40b351594bec4e710596ff314))
+
 ## [4.0.5](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.4...aurora-v4.0.5) (2026-08-07)
 
 
