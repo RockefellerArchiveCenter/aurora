@@ -15,7 +15,7 @@ repos:
   hooks:
   - id: isort
 - repo: https://github.com/jazzband/pip-tools
-  rev: v7.6.0
+  rev: v7.6.1
   hooks:
     - id: pip-compile
       args:
