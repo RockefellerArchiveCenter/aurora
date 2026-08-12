@@ -7,6 +7,7 @@
 	{% csrf_token %}
 
 	<div class="input__form-layout">
+		<p class="form--required">*Required field</p>
 		{% include 'rights/form_fields.html' with field=form.name %}
 	</div>
 

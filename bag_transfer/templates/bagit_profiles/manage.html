@@ -13,6 +13,7 @@
 	{% csrf_token %}
 
 	<div class="card card--container flex--column">
+		<p class="form--required">*Required field</p>
 		<h2>General Information</h2>
 		{% for hidden in form.hidden_fields %}
 			{{ hidden }}

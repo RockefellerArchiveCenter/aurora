@@ -7,6 +7,9 @@
 
 <form role="form" action="" method="post" novalidate>
   {% csrf_token %}
+  <div class="input__form-layout">
+    <p class="form--required">*Required field</p>
+  </div>
   {% if request.user.is_manager or request.user.is_superuser %}
     <div class="input-group">
       {{ form.is_active|with_aria_attrs }}

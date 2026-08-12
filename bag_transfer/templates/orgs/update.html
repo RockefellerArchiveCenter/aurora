@@ -7,9 +7,14 @@
 {% block content %}
 
 <form action="" method="post" novalidate>{% csrf_token %}
-	<div class="input-group mb-20">
-		{{ form.is_active|with_aria_attrs }}
-		<label for="{{ form.is_active.id_for_label }}" class="checkbox--blue">Active?</label>
+	<div class="input__form-layout">
+		<div>
+			<p class="form--required">*Required field</p>
+			<div class="input-group mb-20">
+				{{ form.is_active|with_aria_attrs }}
+				<label for="{{ form.is_active.id_for_label }}" class="checkbox--blue">Active?</label>
+			</div>
+		</div>
 	</div>
 	<div class="input__form-layout">
 		{% include 'rights/form_fields.html' with field=form.name %}

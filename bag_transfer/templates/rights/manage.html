@@ -7,6 +7,7 @@
 <form role="form" action="" method="post" novalidate>
   {% csrf_token %}
   <div class="card card--container flex--column mb-30">
+    <p class="form--required">*Required field</p>
     <!-- 'applies_to_type', 'rights_basis' -->
     {% for field in basis_form.visible_fields %}
       <div class="input__form-layout">
