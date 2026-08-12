@@ -5,9 +5,6 @@ from os.path import isdir, join
 from subprocess import CalledProcessError, check_output
 
 import boto3
-from asterism.bagit_helpers import update_bag_info
-from asterism.file_helpers import (make_tarfile, move_file_or_dir,
-                                   remove_file_or_dir)
 from django.conf import settings
 from django_cron import CronJobBase, Schedule
 from pytz import timezone
@@ -15,9 +12,24 @@ from pytz import timezone
 import bag_transfer.lib.log_print as Pter
 from bag_transfer.api.serializers import TransferSerializer
 from bag_transfer.lib.bag_checker import BagChecker
+from bag_transfer.lib.bagit_helpers import update_bag_info
+from bag_transfer.lib.files_helper import (make_tarfile, move_file_or_dir,
+                                           remove_file_or_dir)
 from bag_transfer.lib.mailer import Mailer
 from bag_transfer.lib.transfer_routine import TransferRoutine
 from bag_transfer.models import BAGLog, Organization, Transfer
+
+
+def is_running(cls_name):
+    """Checks to see if an instance of this class is already running."""
+    try:
+        running = check_output(["pgrep", "-f", cls_name]).decode("utf-8").strip().split("\n")
+        if len(running) > 2:
+            return True
+        else:
+            return False
+    except CalledProcessError:
+        return False
 
 
 class DiscoverTransfers(CronJobBase):
@@ -26,19 +38,8 @@ class DiscoverTransfers(CronJobBase):
     schedule = Schedule(run_every_mins=RUN_EVERY_MINS)
     code = "transfers.discover_transfers"
 
-    def is_running(self):
-        """Checks to see if an instance of this class is already running."""
-        try:
-            running = check_output(["pgrep", "-f", self.__class__.__name__]).decode("utf-8").strip().split("\n")
-            if len(running) > 2:
-                return True
-            else:
-                return False
-        except CalledProcessError:
-            return False
-
     def do(self):
-        if self.is_running():
+        if is_running(self.__class__.__name__):
             return
         result = True
         Pter.cron_open(self.code)
@@ -136,6 +137,8 @@ class DeliverTransfers(CronJobBase):
     code = "transfers.deliver_transfers"
 
     def do(self):
+        if is_running(self.__class__.__name__):
+            return
         result = True
         Pter.cron_open(self.code)
         if not isdir(settings.DELIVERY_QUEUE_DIR):

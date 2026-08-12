@@ -24,12 +24,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v7.0.1
         with:
             submodules: true
 
       - name: Set up Python and cache pip
-        uses: actions/setup-python@v6.2.0
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: '3.10'
           cache: 'pip'
@@ -46,6 +46,9 @@ jobs:
       - name: Wait for services to be ready
         run: ./wait-for-it.sh $CONTAINER:$APPLICATION_PORT -- echo "$CONTAINER is ready"
 
+      - name: Run tests
+        run: docker compose exec -T $CONTAINER python manage.py test
+
       - name: Install pre-commit
         run: |
           pip install pre-commit
@@ -53,6 +56,3 @@ jobs:
 
       - name: Run pre-commit checks
         run: pre-commit run --all-files --show-diff-on-failure
-
-      - name: Run tests
-        run: docker compose exec -T $CONTAINER python manage.py test
