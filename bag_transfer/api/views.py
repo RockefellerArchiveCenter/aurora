@@ -147,13 +147,13 @@ class AccessionViewSet(
             queryset = queryset.filter(process_status=int(process_status))
         return queryset
 
-
     def get_serializer_class(self):
         if self.action == "list":
             return AccessionListSerializer
         if self.action == "retrieve":
             return AccessionSerializer
         return AccessionSerializer
+
 
 class PingView(APIView):
     """Returns a response if the application is running."""
