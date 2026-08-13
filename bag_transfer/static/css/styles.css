@@ -511,8 +511,12 @@ fieldset input {
 	width: 100%;
 
 	@media screen and (min-width: 64em) {
-		width: 75%;
+		width: 67%;
 	}
+}
+
+.values-form__input input {
+	width: 100%;
 }
 
 .input-repeat {

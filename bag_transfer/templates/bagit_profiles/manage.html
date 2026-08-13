@@ -95,16 +95,17 @@
 			{% if form.nested %}
 				<div class="nested-form flex">
 					{{ form.nested.management_form }}
-					<div class="values-form__input input mr-10">
-						<label id="values-label">Controlled Values (if applicable)</label>
+					<fieldset class="values-form__input input mr-10">
+						<legend>Controlled Values (if applicable)</legend>
 						{% for form in form.nested.forms %}
 							{% include 'bagit_profiles/repeating_form.html' %}
 						{% endfor %}
 
-					</div>
-					<button id="remove-{{ form.prefix }}-row" class="delete-row delete-field__btn btn btn--sm btn--orange" type="button" 
-						data-target="{{ form.prefix | trim_form_prefix }}">
-						<span class="material-icon material-icon--space-after" aria-hidden="true">close</span> 
+					</fieldset>
+					<button id="remove-{{ form.prefix }}-row" class="delete-row delete-field__btn btn btn--sm btn--orange" type="button"
+						data-target="{{ form.prefix | trim_form_prefix }}"
+						aria-label="Delete field">
+						<span class="material-icon material-icon--space-after" aria-hidden="true">close</span>
 						Delete Field
 					</button>
 				</div>
@@ -147,6 +148,11 @@
         $(forms.get(i)).find('label[for]').each(function () {
             updateElementIndex(this, prefix, i);
         });
+        // Keep each controlled value's input and delete button aria-labels in sync
+        if ($(forms.get(i)).hasClass('input-repeat')) {
+            $(forms.get(i)).find('input[name$="-name"]').attr('aria-label', 'Controlled value ' + (i + 1));
+            $(forms.get(i)).find('.delete-row').attr('aria-label', 'Delete controlled value ' + (i + 1));
+        }
         if ($(forms.get(i)).find('.nested-form').length) {
             nestedForm = $(forms.get(i)).find('.nested-form');
             selector = $(nestedForm).children().attr('id');
@@ -158,6 +164,13 @@
         }
     }
 	}
+  // Add aria-label to the delete field row button that is tied to the metadata field.
+  function updateFieldDeleteLabel(select) {
+		var deleteBtn = $(select).closest('.dynamic-form').find('.delete-field__btn');
+		var selectedOption = $(select).find('option:selected');
+		var hasValue = selectedOption.val();
+		deleteBtn.attr('aria-label', hasValue ? 'Delete field: ' + selectedOption.text().trim() : 'Delete field');
+  }
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
 
@@ -170,6 +183,9 @@
 		var row = $(appendAfter).clone(true).get(0);
 		$(row).find("input:not([type='hidden'], [type='checkbox'])").val('');
 		$(row).find("select[type!='hidden']").find('option:first').attr('selected', 'selected');
+		$(row).find('.bagit-metadata__input select').each(function () {
+			updateFieldDeleteLabel(this);
+		});
     $(row).insertAfter($(appendAfter)).find('.hidden').removeClass('hidden');
 		if ($(row).find('.nested-form').length) {
 			var nestedForm = $(row).find('.nested-form');
@@ -224,6 +240,11 @@
   }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()
+		$('.bagit-metadata__input select').each(function () {
+			updateFieldDeleteLabel(this);
+		}).on('change', function () {
+			updateFieldDeleteLabel(this);
+		});
 		$('input[name$=-TOTAL_FORMS]').each(function(){
 			var formPrefix = $(this).attr('name').substr(0, $(this).attr('name').indexOf('-TOTAL_FORMS'))
 			if (parseInt($(this).val()) >= parseInt($('input[name='+formPrefix+'-MAX_NUM_FORMS]').val())) {
@@ -240,19 +261,6 @@
     $('.delete-row').on('click', function() {
 	    deleteForm(this, $(this).attr('data-target'));
     })
-		$('.dynamic-form').on('change', function(e){
-			if ($(e.target).attr("type") == "text") {
-				addForm($(this).find('.add-row'), $(this).find('.add-row').attr('data-target'));
-				$(this).next('.dynamic-form').find('.delete-row').addClass('hidden')
-			} else {
-				if ($(this).attr('id').startsWith('nested')) {
-					$(this).find('.delete-row').removeClass("hidden")
-				} else {
-					$(this).find('.delete-row:not([data-target^="nested"])').removeClass("hidden")
-				}
-			};
-			return false
-		});
   });
 </script>
 {% endblock %}

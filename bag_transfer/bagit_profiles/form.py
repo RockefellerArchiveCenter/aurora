@@ -79,10 +79,13 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
     class Meta:
         model = BagItProfileBagInfoValues
         fields = ("name",)
-        widgets = {
-            "name": forms.widgets.TextInput(
-                attrs={"aria-labelledby": "values-label", })
-        }
+
+    # Read the row's position to set unique aria-label for controlled value input
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        index = self.prefix.rsplit("-", 1)[-1] if self.prefix else ""
+        if index.isdigit():
+            self.fields["name"].widget.attrs["aria-label"] = "Controlled value %s" % (int(index) + 1)
 
 
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(
