@@ -198,7 +198,8 @@
       {% endfor %}
     </div>
   </div>
-  <h2>Rights Granted or Restricted</h2>
+  <h2 id="rights-granted-heading" tabindex="-1">Rights Granted or Restricted</h2>
+  <p id="no-rights-granted-message" style="display:none;">No rights granted or restricted have been added.</p>
   <div class="rights_granted_or_restricted">
     {{ granted_formset.management_form }}
     {% for form in granted_formset %}
@@ -206,8 +207,10 @@
         {{hidden}}
       {% endfor %}
       <div id="{{ form.prefix }}-row" class="dynamic-form act">
-        <div id='granted_formset' class="card card--container card--blue flex--column mb-30">
-          <button id="remove-{{ form.prefix }}-row" type="button" class="delete-row btn btn--sm btn--orange delete-field__btn">
+        <div class="card card--container card--blue flex--column mb-30">
+          <h3 id="{{ form.prefix }}-heading" class="granted-heading" tabindex="-1">Rights Granted or Restricted {{ forloop.counter }}</h3>
+          <button id="remove-{{ form.prefix }}-row" type="button" class="delete-row btn btn--sm btn--orange delete-field__btn"
+            aria-label="Delete Rights Granted or Restricted {{ forloop.counter }}">
             <span class="material-icon material-icon--space-after" aria-hidden="true">close</span>
             Delete Rights Granted or Restricted
           </button>
@@ -218,7 +221,7 @@
             {% include 'rights/form_fields.html' with field=form.restriction %}
           </div>
           
-          <h3>Dates</h3>
+          <h4>Dates</h4>
           <div class="dates__container">
             <div class="card card--container mb-20">
               <p class="input__help-text dates__help-text">Use these fields for start and end dates which should be calculated based on creation dates of records in a transfer. Enter only whole numbers, for example: 10.</p>
@@ -301,10 +304,22 @@
 		if (el.name) el.name = el.name.replace(id_regex, replacement);
 	}
 
+  // Number Rights Granted/Restricted heading by visible position
+  function renumberGrantedHeadings() {
+    var visibleRows = $('.dynamic-form.act:visible');
+    visibleRows.each(function (i) {
+	    $(this).find('.granted-heading').text('Rights Granted or Restricted ' + (i + 1));
+	    $(this).find('.delete-field__btn').attr('aria-label', 'Delete Rights Granted or Restricted ' + (i + 1));
+    });
+    // Show the empty-state message whenever no section is visible.
+    $('#no-rights-granted-message').toggle(visibleRows.length === 0);
+  }
+
   function addForm(btn, prefix) {
     var formCount = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
     var row = $('.dynamic-form:first').clone(true).get(0);
     updateElementIndex(row, prefix, formCount)
+    updateElementIndex($(row).find('.granted-heading').get(0), prefix, formCount)
     $(row).insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
     $(row).find('[name^='+prefix+']').each(function() {
 	    updateElementIndex(this, prefix, formCount);
@@ -314,13 +329,30 @@
 	    deleteForm(this, prefix);
     });
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
+    renumberGrantedHeadings();
+
+    // Move focus to the new section's heading.
+    var heading = $(row).find('.granted-heading').get(0);
+    if (heading) {
+	    heading.focus();
+    }
   }
 
   function deleteForm(btn, prefix) {
-    form = $(btn).closest('.dynamic-form')
-		inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
-		$(form).children().append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
-    $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+    var form = $(btn).closest('.dynamic-form')
+		var inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
+		var previousRow = $(form).prevAll('.dynamic-form:visible').first();
+		$(form).append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
+    $('#id_' + prefix + '-TOTAL_FORMS').val($('.dynamic-form.act').length);
+    renumberGrantedHeadings();
+
+    // Move focus to the previous section's heading
+    var lastFocusable = previousRow.length
+	    ? previousRow.find('.granted-heading')
+	    : $('#rights-granted-heading');
+    if (lastFocusable.length) {
+	    lastFocusable.get(0).focus();
+    }
   }
 
   $(document).ready(function() {
@@ -328,6 +360,7 @@
     if ($('input#id_rights_granted-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.input__error').length) {
       $('.dynamic-form.act').first().hide()
     }
+    renumberGrantedHeadings();
     // active formset changer
     $('#id_rights_basis').change(revealSelectedBasis);
     revealSelectedBasis();
@@ -335,6 +368,8 @@
     $('.add-row').click(function() {
       if ($('.dynamic-form.act').length == 1 && $('.dynamic-form.act').first().is(':hidden')) {
         $('.dynamic-form.act').first().show()
+        renumberGrantedHeadings();
+        $('.dynamic-form.act').first().find('.granted-heading').get(0).focus();
       } else {
         addForm(this, 'rights_granted');
       }
