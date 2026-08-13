@@ -84,7 +84,7 @@
 	</div>
 
 	<div class="card card--container flex--column mt-30">
-		<h2>Metadata</h2>
+		<h2 id="metadata-heading" tabindex="-1">Metadata</h2>
 		{{ bag_info_formset.management_form }}
 		{% for form in bag_info_formset %}
 		<div id="{{ form.prefix }}-row" class="{{ form.prefix | trim_form_prefix }} card card--container card--blue dynamic-form container--full-width mb-20">
@@ -176,6 +176,8 @@
 			$(nestedForm).find('div.dynamic-form:not(:first)').remove();
 			$(nestedForm).find('div.dynamic-form').find('.add-row').show();
 			$(nestedForm).find('div.dynamic-form').find('.delete-row').addClass('hidden');
+		} else if ($(row).hasClass('input-repeat')) {
+			$(row).find('.delete-row').show();
 		}
 		if ($(btn).attr('data-target') != 'bag_info') {
 			$(btn).hide()
@@ -184,6 +186,12 @@
 		renumberForms(prefix)
 		if (parseInt($('#id_' + prefix + '-TOTAL_FORMS').val()) >= parseInt($('#id_' + prefix + '-MAX_NUM_FORMS').val())) {
 			$(row).find('.add-row').attr("disabled", "disabled");
+		}
+
+		// Move focus into newly added row
+		var firstInput = $(row).find('input:not([type="hidden"]), select, textarea').get(0);
+		if (firstInput) {
+			firstInput.focus();
 		}
   }
   function deleteForm(btn, prefix) {
@@ -198,6 +206,21 @@
 			$('.add-row[data-target='+prefix+']').removeAttr("disabled");
 		}
 		$('.dynamic-form.'+prefix+':visible').last().find('.add-row[data-target='+prefix+']').show()
+
+		// Prevent loss of focus after deletion: move focus to the last focusable element
+		var nestedForm = $(form).closest('.nested-form');
+		var lastFocusable;
+		if (nestedForm.length) {
+			lastFocusable = nestedForm.find('.add-row:visible').last();
+		} else {
+			var previousRow = $(form).prevAll('.dynamic-form:visible').first();
+			lastFocusable = previousRow.length
+				? previousRow.children('.nested-form').children('.delete-row:visible').last()
+				: $('#metadata-heading');
+		}
+		if (lastFocusable.length) {
+			lastFocusable.get(0).focus();
+		}
   }
   $(document).ready(function() {
 		$('[id$=DELETE]').hide()

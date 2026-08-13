@@ -5,7 +5,8 @@
     {{field}}
   {% endfor %}
   <div class="dynamic-form__btns">
-    <button class="delete-row btn btn--xs btn--orange" type="button"
+    <button {% if forloop.first %}style="display:none;"{% endif %}
+    class="delete-row btn btn--xs btn--orange" type="button"
     data-target="{{form.prefix | trim_form_prefix }}"
     aria-label="delete single form field">
       <span class="material-icon" aria-hidden="true">close</span>
