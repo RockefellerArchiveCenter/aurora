@@ -47,7 +47,7 @@ class Mailer:
             error_obj = transfer.last_failure
             self.subject = f"Transfer {transfer.bag_or_failed_name} failed validation"
             eparts = [
-                f"An error occurred for the transfer with bag name {transfer.bag_or_failed_name, } during {error_obj.code.code_desc if error_obj else '--'} at {error_obj.created_time if error_obj else '--'}.",
+                f"An error occurred for the transfer with bag name {transfer.bag_or_failed_name,} during {error_obj.code.code_desc if error_obj else '--'} at {error_obj.created_time if error_obj else '--'}.",
                 "The transfer has been deleted from our systems.",
                 f"Please review the complete error log at {CF.BASE_URL + reverse('transfers:detail', kwargs={'pk': transfer.pk})}, correct any errors, and try sending the transfer again.",
             ]
