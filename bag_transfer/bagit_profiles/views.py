@@ -58,7 +58,7 @@ class BagItProfileManageView(PageTitleMixin):
         return context
 
     def get_success_url(self):
-        return reverse("bagit-profiles:detail", kwargs={"pk": self.object.pk})
+        return reverse("orgs:detail", kwargs={"pk": self.object.organization.pk})
 
     def form_valid(self, form):
         """Saves associated formsets."""

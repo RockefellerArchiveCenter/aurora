@@ -4,10 +4,17 @@
 {% block h1_title %}{{page_title}}{% endblock %}
 
 {% block title_actions %}
-  <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn--md btn--gray">
+<div class=""title__actions-btns">
+  <a href="{% url 'orgs:detail' pk=object.organization.pk %}" class="btn btn--md btn--gray mb-5">
     <span class="material-icon material-icon--space-after" aria-hidden="true">keyboard_arrow_left</span>
     Back to Organization
   </a>
+  {% if request.user.is_manager or request.user.is_superuser %}
+  <a href="{% url 'bagit-profiles:edit' object.pk %}" class="btn btn--md btn--blue mb-5">
+    Edit BagIt Profile
+  </a>
+  {% endif %}
+</div>
 {% endblock %}
 
 {% block content %}
