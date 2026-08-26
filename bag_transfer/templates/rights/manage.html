@@ -206,7 +206,7 @@
       {% for hidden in form.hidden_fields %}
         {{hidden}}
       {% endfor %}
-      <div id="{{ form.prefix }}-row" class="dynamic-form act">
+      <div id="{{ form.prefix }}-row" class="dynamic-form act" {% if not form.has_changed %}data-empty-form="true"{% endif %}>
         <div class="card card--container card--blue flex--column mb-30">
           <h3 id="{{ form.prefix }}-heading" class="granted-heading" tabindex="-1">Rights Granted or Restricted {{ forloop.counter }}</h3>
           <button id="remove-{{ form.prefix }}-row" type="button" class="delete-row btn btn--sm btn--orange delete-field__btn"
@@ -320,13 +320,14 @@
     var row = $('.dynamic-form:first').clone(true).get(0);
     updateElementIndex(row, prefix, formCount)
     updateElementIndex($(row).find('.granted-heading').get(0), prefix, formCount)
-    $(row).insertAfter($('.dynamic-form:last')).children().children('.hidden').removeClass('hidden');
+    $(row).insertAfter($('.dynamic-form:last')).show()
+
     $(row).find('[name^='+prefix+']').each(function() {
-	    updateElementIndex(this, prefix, formCount);
-	    $(this).val('');
+      updateElementIndex(this, prefix, formCount);
+      $(this).val('');
     });
     $(row).find('.delete-row').click(function() {
-	    deleteForm(this, prefix);
+      deleteForm(this, prefix);
     });
     $('#id_' + prefix + '-TOTAL_FORMS').val(formCount + 1);
     renumberGrantedHeadings();
@@ -334,7 +335,7 @@
     // Move focus to the new section's heading.
     var heading = $(row).find('.granted-heading').get(0);
     if (heading) {
-	    heading.focus();
+      heading.focus();
     }
   }
 
@@ -343,7 +344,6 @@
 		var inputPrefix = $(form).attr('id').substr(0, $(form).attr('id').indexOf('-row'))
 		var previousRow = $(form).prevAll('.dynamic-form:visible').first();
 		$(form).append('<input type="hidden" name="'+inputPrefix+'-DELETE" id="id_'+inputPrefix+'-DELETE" value="true">').hide()
-    $('#id_' + prefix + '-TOTAL_FORMS').val($('.dynamic-form.act').length);
     renumberGrantedHeadings();
 
     // Move focus to the previous section's heading
@@ -356,10 +356,9 @@
   }
 
   $(document).ready(function() {
-    // Show/hide granted formset
-    if ($('input#id_rights_granted-INITIAL_FORMS')[0].value == 0 && !$('.dynamic-form.act').find('.input__error').length) {
-      $('.dynamic-form.act').first().hide()
-    }
+    // Hide the initial empty form unless the user has entered something in it.
+    $('.dynamic-form[data-empty-form="true"]').first().hide()
+
     renumberGrantedHeadings();
     // active formset changer
     $('#id_rights_basis').change(revealSelectedBasis);
