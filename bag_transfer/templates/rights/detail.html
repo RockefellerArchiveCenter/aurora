@@ -32,12 +32,11 @@
 </div>
 
 <h2>Rights Granted or Restricted</h2>
-{% if object.rights_granted %}
-<p>No rights granted or restricted have been added.</p>
-{% endif %}
 {% for rights_granted in object.rights_granted.all %}
   <div class="card card--container card--blue flex--column mb-30">
     {% include 'rights/rights_granted_info.html' %}
   </div>
+{% empty %}
+<p>No rights granted or restricted have been added.</p>
 {% endfor %}
 {% endblock %}
