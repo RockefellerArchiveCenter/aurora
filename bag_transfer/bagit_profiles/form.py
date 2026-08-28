@@ -21,10 +21,7 @@ class BagItProfileForm(forms.ModelForm):
             "version": forms.widgets.HiddenInput(),
             "bagit_profile_identifier": forms.widgets.HiddenInput(),
             "external_description": forms.widgets.Textarea(
-                attrs={
-                    "rows": 3,
-                    "aria-describedby": "id_external_description-help"
-                }
+                attrs={"rows": 3}
             ),
             "allow_fetch": forms.widgets.CheckboxInput(attrs={"class": "checkbox checkbox--blue"}),
             "serialization": forms.widgets.RadioSelect(attrs={"class": "radiobutton radiobutton--blue"}),
@@ -82,10 +79,13 @@ class BagItProfileBagInfoValuesForm(forms.ModelForm):
     class Meta:
         model = BagItProfileBagInfoValues
         fields = ("name",)
-        widgets = {
-            "name": forms.widgets.TextInput(
-                attrs={"aria-labelledby": "values-label", })
-        }
+
+    # Read the row's position to set unique aria-label for controlled value input
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        index = self.prefix.rsplit("-", 1)[-1] if self.prefix else ""
+        if index.isdigit():
+            self.fields["name"].widget.attrs["aria-label"] = "Controlled value %s" % (int(index) + 1)
 
 
 BagItProfileBagInfoValuesFormset = forms.inlineformset_factory(

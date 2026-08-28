@@ -6,6 +6,14 @@
 	font-style: normal;
 }
 
+.form--required {
+	align-self: flex-end;
+	font-family: Lato, sans-serif;
+	font-size: 14px;
+	margin-bottom: 0px;
+	text-align: right;
+}
+
 /* Base styles */
 .container {
 	max-width: 1600px;
@@ -105,7 +113,10 @@ h1 {
 }
 
 .title__actions {
+	margin-bottom: 30px;
+	
 	@media screen and (min-width: 64em) {
+		margin-bottom: 0;
 		margin-left: 20px;
 	}
 }
@@ -115,6 +126,7 @@ h1 {
 	display: block;
 
 	@media screen and (min-width: 64em) {
+		display: flex;
 		margin-bottom: 0;
 	}
 }
@@ -499,8 +511,12 @@ fieldset input {
 	width: 100%;
 
 	@media screen and (min-width: 64em) {
-		width: 75%;
+		width: 67%;
 	}
+}
+
+.values-form__input input {
+	width: 100%;
 }
 
 .input-repeat {
@@ -531,28 +547,14 @@ fieldset input {
 	}
 }
 
-/* Removes list styles from default Django forms error list element */
-.errorlist {
-  	font-size: 14px;
-  	list-style: none;
-  	margin: 0;
-  	padding: 0;
-}
+/* Form error summary styles.*/
+.form-error-summary {
+	margin-bottom: 20px;
 
-/* Adds .input__error class styles from RAC Style Library to error class
-used in django forms */
-.errorlist li {
-	background-color: #fbe7e0;
-	border: 1px solid #B63C0C;
-	border-radius: 3px;
-	color: #2E2E2E;
-	display: block;
-	font-weight: normal;
-	font-size: 14px;
-	font-style: italic;
-	line-height: 1.15;
-	margin: 10px 0;
-	padding: 10px;
+	&:focus {
+		outline: 2px solid #B63C0C;
+		outline-offset: 2px;
+	}
 }
 
 .dates__help-text {
