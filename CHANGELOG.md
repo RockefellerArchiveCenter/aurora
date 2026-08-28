@@ -1,5 +1,23 @@
 # Changelog
 
+## [4.1.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.6...aurora-v4.1.0) (2026-08-28)
+
+
+### Features
+
+* align bagit edit flow with rights edit flow ([a871fcd](https://github.com/RockefellerArchiveCenter/aurora/commit/a871fcd6763bc617e1366e47b59f1fa2c8b639eb))
+* Improve bagit form add/delete function for screen readers ([1aeb5c8](https://github.com/RockefellerArchiveCenter/aurora/commit/1aeb5c8a9d83848822b7f73d83eb4c512e2112f4))
+* include no statement exists note in detail page ([2ba22eb](https://github.com/RockefellerArchiveCenter/aurora/commit/2ba22ebd08e8ea46fcb1b70fd9df1c18a31b7e62))
+
+
+### Bug Fixes
+
+* debug rights granted formset add/delete behavior ([8f7f025](https://github.com/RockefellerArchiveCenter/aurora/commit/8f7f025240e5013e021668c87271297eb087365f))
+* Improve focus management and labels for screen reader users ([8dbd148](https://github.com/RockefellerArchiveCenter/aurora/commit/8dbd1480a1ff38fce163448b4c47a1e28b18871b))
+* Prevent loss of focus for bagit form controls ([347a749](https://github.com/RockefellerArchiveCenter/aurora/commit/347a749410683d5433877f011ef197d986632361))
+* Revert extra space added to mailer ([a490f87](https://github.com/RockefellerArchiveCenter/aurora/commit/a490f87e76380a65e9945bf91877fd8883cbe445))
+* use correct logic for no granted statements ([3f8be9c](https://github.com/RockefellerArchiveCenter/aurora/commit/3f8be9cc887bc705ff129eb28f5505caed812dce))
+
 ## [4.0.6](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.5...aurora-v4.0.6) (2026-08-12)
 
 
