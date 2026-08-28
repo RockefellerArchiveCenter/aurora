@@ -32,3 +32,20 @@ def progress_percentage(status):
 def trim_form_prefix(value):
     split_prefix = value.split("-")
     return "-".join(split_prefix[:2])
+
+
+@register.filter
+def with_aria_attrs(field):
+    """Render fields with aria-invalid/aria-describedby to
+    programmatically associate them with their help text and error messages.
+    """
+    attrs = {}
+    describedby = []
+    if field.help_text:
+        describedby.append("%s-help" % field.id_for_label)
+    if field.errors:
+        attrs["aria-invalid"] = "true"
+        describedby.append("%s-error" % field.id_for_label)
+    if describedby:
+        attrs["aria-describedby"] = " ".join(describedby)
+    return field.as_widget(attrs=attrs)

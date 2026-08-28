@@ -1,14 +1,17 @@
-
+{% load util %}
+<!-- id_for_label is blank for checkbox/radio groups. Fall back to auto_id -->
+{% firstof field.id_for_label field.auto_id as field_id %}
 <div class="input mb-20">
   {% if field.label != "Delete" %}
   {% if 'end_date_open' in field.name %}
     <div class="input-group">
-      {{ field }}
+      {{ field|with_aria_attrs }}
       <label for="{{ field.id_for_label }}" class="checkbox--blue">{{ field.label }}</label>
-      <div class="input__help-text mt-5">{{ field.help_text }}</div>
+      <div class="input__help-text mt-5" id="{{ field_id }}-help">{{ field.help_text }}</div>
     </div>
     {% elif field.name == 'applies_to_type' %}
-      <fieldset>
+      {% with describedby=field_id|add:"-help" %}
+      <fieldset{% if field.help_text or field.errors %} aria-describedby="{% if field.help_text %}{{ describedby }} {% endif %}{% if field.errors %}{{ field_id }}-error{% endif %}"{% endif %}{% if field.errors %} aria-invalid="true"{% endif %}>
         <legend>{{ field.label }}{% if field.field.required %} *{% endif %}</legend>
         <button id="toggle-all" type="button" class="btn btn--blue btn--sm my-5">Select all</button>
         {% for checkbox in field %}
@@ -18,21 +21,23 @@
           </div>
         {% endfor %}
         {% if field.help_text %}
-          <div class="input__help-text">{{ field.help_text }}</div>
+          <div class="input__help-text" id="{{ describedby }}">{{ field.help_text }}</div>
         {% endif %}
       </fieldset>
+      {% endwith %}
     {% else %}
       <label for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} *{% endif %}</label>
-      {{ field }}
+      {{ field|with_aria_attrs }}
       {% if field.help_text %}
-        <div class="input__help-text">{{ field.help_text }}</div>
+        <div class="input__help-text" id="{{ field_id }}-help">{{ field.help_text }}</div>
       {% endif %}
     {% endif %}
   {% endif %}
-  
   {% if field.errors %}
+  <div id="{{ field_id }}-error">
     {% for error in field.errors %}
       <div class="input__error">{{ error }}</div>
     {% endfor %}
+  </div>
   {% endif %}
 </div>

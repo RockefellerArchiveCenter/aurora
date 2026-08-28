@@ -1,10 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load static %}
 
-{% block h1_title %}
-  {% regroup uploads by transfer_group as upload_groups %}
-  {{page_title}}
-{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block content %}
 {% regroup uploads by transfer_group as upload_groups %}
@@ -32,7 +29,11 @@
         <td>{{group.list.0.bag_data.record_type}}</td>
         <td>
           {% if request.user.can_accession %}
-          <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" class="btn btn--sm btn--blue">Accession: {{group.list|length}} {% if group.list|length > 1 %}transfers{% else %}transfer{% endif %}</a>
+          <a href="{% url 'accession:add' %}?transfers={%for g in group.list%}{{g.id}}{%if not forloop.last%},{%endif%}{%endfor%}" 
+            class="btn btn--sm btn--blue" 
+            aria-label="Accession: {{group.list|length}} transfer{{ group.list|length|pluralize }} for {{group.list.0.organization}}, {% for r in group.list.0.bag_data.record_creators %}{{ r }}{% if not forloop.last %}, {% endif %}{% endfor %} {{group.list.0.bag_data.record_type}}">
+            Accession: {{group.list|length}} transfer{{ group.list|length|pluralize }}
+          </a>
           {% endif %}
         </td>
       </tr>

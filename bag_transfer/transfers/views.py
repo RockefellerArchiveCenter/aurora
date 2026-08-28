@@ -236,4 +236,4 @@ class TransferDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     model = Transfer
 
     def get_page_title(self, context):
-        return context["object"].bag_or_failed_name
+        return "Transfer: {}".format(context["object"].bag_or_failed_name)

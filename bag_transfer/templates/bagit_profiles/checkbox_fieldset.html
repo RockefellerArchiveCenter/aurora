@@ -1,5 +1,8 @@
-<fieldset class="mb-20">
-  <legend aria-describedby="{{ legend|slugify }}-help">{{ legend }}</legend>
+<fieldset class="mb-20"
+  {% if help_text or fields.errors %} aria-describedby="{% if help_text %}{{ legend|slugify }}-help{% endif %}{% if help_text and fields.errors %} {% endif %}
+  {% if fields.errors %}{{ legend|slugify }}-error{% endif %}"{% endif %}
+  {% if fields.errors %} aria-invalid="true"{% endif %}>
+  <legend>{{ legend }}</legend>
   {% for checkbox in fields %}
       <div class="input-group">
           {{ checkbox.tag }}
@@ -8,5 +11,12 @@
   {% endfor %}
   {% if help_text %}
     <div class="input__help-text" id="{{ legend|slugify }}-help">{{ help_text }}</div>
+  {% endif %}
+  {% if fields.errors %}
+    <div id="{{ legend|slugify }}-error">
+      {% for error in fields.errors %}
+        <div class="input__error">{{ error }}</div>
+      {% endfor %}
+    </div>
   {% endif %}
 </fieldset>

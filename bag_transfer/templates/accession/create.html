@@ -3,26 +3,38 @@
 {% block h1_title %}{{page_title}}: {{ form.extent_files.value }} files, {{ form.extent_size.value|filesizeformat }}{% endblock %}
 
 {% block content %}
-<form role="form" method="post">
+<form role="form" method="post" novalidate>
   {% csrf_token %}
   {% for hidden in form.hidden_fields %}
     {{hidden}}
   {% endfor %}
   <div class="card card--container card--grid-container mb-30">
     <div class="input--full-width">
+      <p class="form--required">*Required field</p>
       <h2>Target ArchivesSpace Resource</h2>
       <div id="resource_input_wrapper" class="input">
         <label for="resource_id">Related Resource *</label>
         <div id="resource_input">
-          <input id="resource_id" type="text" aria-describedby="resource-id-help" aria-required="true"/>
+          <input
+            id="resource_id"
+            type="text"
+            aria-describedby="resource-id-help{% if form.resource.errors %} resource-id-error{% endif %}"
+            aria-required="true"
+            {% if form.resource.errors %}aria-invalid="true"{% endif %}
+          />
           <div id="resource-id-help" class="input__help-text">Enter an ArchivesSpace resource ID (e.g. "231")</div>
+          <div id="resource-id-error">
+            {% for error in form.resource.errors %}
+              <div class="input__error">{{ error }}</div>
+            {% endfor %}
+          </div>
           <button type="button" id="resource_find" class="btn btn--sm btn--blue mt-20">Find in ArchivesSpace</button>
         </div>
       </div>
       <div id="resource_result" style="display: none;">
-        <div class="badge badge--blue" id="resource_title">
-          Resource name
-          <button id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="remove resource">
+        <div class="badge badge--blue">
+          <span id="resource_title_text">Resource name</span>
+          <button type="button" id="resource_title_dismiss" class="btn btn--xs btn--gray" aria-label="Remove resource">
             <span class="material-icon" aria-hidden="true">close</span>
           </button>
         </div>
@@ -36,15 +48,15 @@
       {% include 'accession/form_fields.html' with field=form.title %}
     </div>
     <div class="card card--container card--blue accession__card accession__dates">
-      {% include 'accession/form_fields.html' with field=form.start_date%}
-      {% include 'accession/form_fields.html' with field=form.end_date%}
+      {% include 'accession/form_fields.html' with field=form.start_date %}
+      {% include 'accession/form_fields.html' with field=form.end_date %}
     </div>
     {{ creators_formset.management_form }}
     {% for creator in creators_formset %}
       {% include 'accession/creators.html' %}
     {% endfor %}
 
-    {{form.access_restriction}}
+    {{ form.access_restriction }}
     {% include 'accession/form_fields.html' with field=form.description %}
     {% include 'accession/form_fields.html' with field=form.access_restrictions %}
     {% include 'accession/form_fields.html' with field=form.use_restrictions %}
@@ -62,10 +74,10 @@
       <tbody>
         {% regroup rights_statements by rights_group as merged_rights %}
         {% for statement in merged_rights %}
-        <tr>
-          <td>{{statement.list.0.rights_basis}}</td>
-          <td>{{statement.list.0.rights_info_notes}}</td>
-        </tr>
+          <tr>
+            <td>{{ statement.list.0.rights_basis }}</td>
+            <td>{{ statement.list.0.rights_info_notes }}</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -82,11 +94,11 @@
       </thead>
       <tbody>
         {% for t in transfers %}
-        <tr>
-          <td>{{t.bag_or_failed_name}}</td>
-          <td>{{t.metadata.date_start|date:"M j, Y"}}-{{t.metadata.date_end|date:"M j, Y"}}</td>
-          <td>{{t.machine_file_size|filesizeformat}}</td>
-        </tr>
+          <tr>
+            <td>{{ t.bag_or_failed_name }}</td>
+            <td>{{ t.metadata.date_start|date:"M j, Y" }}-{{ t.metadata.date_end|date:"M j, Y" }}</td>
+            <td>{{ t.machine_file_size|filesizeformat }}</td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
@@ -103,11 +115,17 @@
 <script type="text/javascript">
   url = "{% url 'accession:add' %}";
 
+  function clearResourceError() {
+    $('#resource_id').removeAttr('aria-invalid').attr('aria-describedby', 'resource-id-help');
+    $('#resource-id-error').empty();
+  }
+
   $(function(){
     $('#resource_find').on('click', function(e){
       e.preventDefault();
 
       $('#messages').empty();
+      clearResourceError();
       $('#resource_input').fadeTo(200, 0.5);
 
       // Make GET request to find the resource
@@ -117,35 +135,34 @@
           $('#resource_input_wrapper').hide()
 
           // Display the resource title and success alert
-          $('#resource_title').contents().first().replaceWith(resp.title); //only replace the title text, but keep  the dismiss button
+          $('#resource_title_text').text(resp.title);
           $('#id_resource').val(resp.uri) // store URI in hidden field
           $('#resource_result').show()
           displayMessage('blue', resp.title + ' was added as the target ArchiveSpace resource');
 
         } else {
-          $('#resource_input_wrapper').fadeTo(0, 1).show()
+          $('#resource_input_wrapper').show()
+          $('#resource_input').fadeTo(0, 1)
           displayMessage('orange', 'There was an error finding this resource in ArchivesSpace: '+ resp.error, false);
         }
       })
     });
 
+    // Clear error state when user edits the field
+    $('#resource_id').on('input', clearResourceError);
+
     // Dismiss resource, clear values, and show input again
     $('#resource_title_dismiss').on('click', function(){
       $('#resource_result').hide()
-      $('#resource_title').text("")
       $('#id_resource').val("")
       $('#resource_id').val("")
+      clearResourceError();
+
       $('#resource_input').fadeTo(0, 1);
       $('#resource_input_wrapper').fadeTo(0, 1).show()
+      $('#resource_id').focus()
     });
 
-    // Form validation before submit
-    $('form').on('submit', function(e){
-        if (!$('#id_resource').val().trim()) {
-            e.preventDefault(); // Stop form submission
-            displayMessage('orange', 'No ArchivesSpace resource target specified.');
-        }
-    });
   });
 </script>
 {% endblock %}

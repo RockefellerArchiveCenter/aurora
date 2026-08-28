@@ -3,6 +3,7 @@
   <table class="table table-striped rights-statement-table">
     <thead>
       <tr>
+        <th>ID</th>
         <th>Record Type</th>
         <th>Basis</th>
         <th>Rights Notes</th>
@@ -12,14 +13,15 @@
     <tbody>
       {% for statement in org.rights_statements %}
       <tr rel="{{ statement.pk }}">
+        <td>{{statement.pk}}</td>
         <td><ul>{% for t in statement.applies_to_type.all %}<li>{{t.name}}</li>{% endfor %}</ul></td>
         <td>{{statement.rights_basis}}</td>
         <td>{{statement.rights_info_notes}}</td>
         <td>
-          <a href="{% url 'rights:detail' statement.pk %}" class="btn btn--light-blue btn--xs">View</a>
+          <a href="{% url 'rights:detail' statement.pk %}" class="btn btn--light-blue btn--xs" aria-label="View rights statement {{ statement.pk }}">View</a>
           {% if request.user.is_manager or request.user.is_superuser %}
-            <a href="{% url 'rights:edit' statement.pk %}" class="btn btn--blue btn--xs">Edit</a>
-            <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn--orange btn--xs object-delete-button" data-object="rights-statement">Delete</a>
+            <a href="{% url 'rights:edit' statement.pk %}" class="btn btn--blue btn--xs" aria-label="Edit rights statement {{ statement.pk }}">Edit</a>
+            <a href="{% url 'rights:api' statement.pk 'delete' %}" class="btn btn--orange btn--xs object-delete-button" aria-label="Delete rights statement {{ statement.pk }}" data-object="rights-statement">Delete</a>
           {% endif %}
         </td>
       </tr>

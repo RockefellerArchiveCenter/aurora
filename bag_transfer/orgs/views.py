@@ -7,13 +7,14 @@ from bag_transfer.mixins.authmixins import (ArchivistMixin,
                                             OrgReadViewMixin)
 from bag_transfer.mixins.viewmixins import PageTitleMixin
 from bag_transfer.models import Organization, Transfer
+from bag_transfer.orgs.forms import OrganizationForm, OrganizationUpdateForm
 
 
 class OrganizationCreateView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, CreateView):
     template_name = "orgs/create.html"
     page_title = "Add Organization"
     model = Organization
-    fields = ["name", "acquisition_type"]
+    form_class = OrganizationForm
     success_message = "New Organization Saved!"
 
     def get_success_url(self):
@@ -47,7 +48,7 @@ class OrganizationDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
 class OrganizationEditView(PageTitleMixin, ManagingArchivistMixin, SuccessMessageMixin, UpdateView):
     template_name = "orgs/update.html"
     model = Organization
-    fields = ["is_active", "name", "acquisition_type"]
+    form_class = OrganizationUpdateForm
     success_message = "Organization Saved!"
 
     def get_page_title(self, context):

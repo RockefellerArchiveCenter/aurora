@@ -86,7 +86,7 @@ class AccessionDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     model = Accession
 
     def get_page_title(self, context):
-        return context["object"].title
+        return "Accession: {}".format(context["object"].title)
 
 
 class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONResponseMixin, CreateView):
@@ -136,6 +136,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
         messages.error(
             self.request,
             "There was a problem with your submission. Please correct the error(s) below and try again.")
+        self._invalid_creators_formset = creators_formset
         return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
@@ -155,26 +156,29 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             organization,
             record_type,
             ", ".join([creator.name for creator in creators_list]))
-        context["form"] = AccessionForm(
-            initial={
-                "title": title,
-                "start_date": sorted(dates.get("start", []))[0],
-                "end_date": sorted(dates.get("end", []))[-1],
-                "description": " ".join(set(descriptions_list)),
-                "extent_files": extent_files,
-                "extent_size": extent_size,
-                "access_restrictions": " ".join(
-                    set(notes.get("other", []) + notes.get("license", []) + notes.get("statute", []))
-                ),
-                "use_restrictions": " ".join(set(notes.get("copyright", []))),
-                "acquisition_type": organization.acquisition_type,
-                "appraisal_note": " ".join(set(notes.get("appraisal", []))),
-                "organization": organization,
-                "language": language,
-                "creators": creators_list,
-            }
-        )
-        context["creators_formset"] = CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=creators_list))
+        form = context.get("form")
+        if form is None or not form.is_bound:
+            form = AccessionForm(
+                initial={
+                    "title": title,
+                    "start_date": sorted(dates.get("start", []))[0],
+                    "end_date": sorted(dates.get("end", []))[-1],
+                    "description": " ".join(set(descriptions_list)),
+                    "extent_files": extent_files,
+                    "extent_size": extent_size,
+                    "access_restrictions": " ".join(
+                        set(notes.get("other", []) + notes.get("license", []) + notes.get("statute", []))
+                    ),
+                    "use_restrictions": " ".join(set(notes.get("copyright", []))),
+                    "acquisition_type": organization.acquisition_type,
+                    "appraisal_note": " ".join(set(notes.get("appraisal", []))),
+                    "organization": organization,
+                    "language": language,
+                    "creators": creators_list,
+                }
+            )
+        context["form"] = form
+        context["creators_formset"] = getattr(self, "_invalid_creators_formset", None) or CreatorsFormSet(queryset=RecordCreators.objects.filter(name__in=creators_list))
         context["transfers"] = transfers_list
         context["rights_statements"] = rights_statements
         return context
@@ -330,7 +334,7 @@ class SavedAccessionsDatatableView(BaseDatatableView):
         button = "Accession not delivered"
         if self.request.user.can_accession():
             button = (
-                '<button class="btn btn--sm btn--blue deliver">Deliver Accession</button>'
+                '<button class="btn btn--sm btn--blue deliver" aria-label="Deliver accession {0}">Deliver Accession</button>'.format(accession.title)
                 if (accession.process_status < Accession.DELIVERED)
                 else '<p>' + accession.get_process_status_display() + "</p>"
             )

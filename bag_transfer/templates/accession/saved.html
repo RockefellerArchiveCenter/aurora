@@ -1,9 +1,7 @@
 {% extends 'transfers/base.html' %}
 {% load static %}
 
-{% block h1_title %}
-  {{page_title}}
-{% endblock %}
+{% block h1_title %}{{page_title}}{% endblock %}
 
 {% block title_actions %}
   <a href="{% url 'accessions:data' %}" class="btn btn--md btn--blue" aria-label="Download CSV of all accessions data">

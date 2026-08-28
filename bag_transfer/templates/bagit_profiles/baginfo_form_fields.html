@@ -1,16 +1,24 @@
+{% load util %}
 <div class="input__form-layout mr-10">
   <div class="input bagit-metadata__input mb-10">
     <label for="{{ form.field.id_for_label }}">{{ form.field.label }}*</label>
-    {{ form.field }}
+    {{ form.field|with_aria_attrs }}
+    {% if form.field.errors %}
+    <div id="{{ form.field.id_for_label }}-error">
+      {% for error in form.field.errors %}
+        <div class="input__error">{{ error }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 
   <div class="input-group mb-10">
-    {{ form.required }}
+    {{ form.required|with_aria_attrs }}
     <label class="checkbox--blue" for="{{ form.required.id_for_label }}">{{ form.required.label }}</label>
   </div>
 
   <div class="input-group mb-10">
-    {{ form.repeatable }}
+    {{ form.repeatable|with_aria_attrs }}
     <label class="checkbox--blue" for="{{ form.repeatable.id_for_label }}">{{ form.repeatable.label }}</label>
   </div>
 </div>

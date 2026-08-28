@@ -46,6 +46,12 @@ class AccessionForm(forms.ModelForm):
             "creators": forms.widgets.MultipleHiddenInput(),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["resource"].error_messages["required"] = (
+            "No ArchivesSpace resource target specified."
+        )
+
 
 CreatorsFormSet = forms.modelformset_factory(
     RecordCreators,

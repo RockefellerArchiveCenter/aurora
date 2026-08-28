@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.contrib import messages
+from django.db import transaction
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -21,39 +22,54 @@ class BagItProfileManageView(PageTitleMixin):
     model = BagItProfile
     form_class = BagItProfileForm
 
+    def get_organization(self):
+        if self.object:
+            return self.object.organization
+        else:
+            return get_object_or_404(Organization, pk=self.request.GET.get("org"))
+
     def get_page_title(self, context):
-        return "Edit BagIt Profile" if self.object else "Create BagIt Profile"
+        org = self.get_organization()
+        if self.object:
+            return "Edit BagIt Profile: {}".format(org)
+        else:
+            return "Create BagIt Profile: {}".format(org)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        if self.object:
-            form = BagItProfileForm(instance=self.object)
-            organization = self.object.organization
-        else:
-            source_organization = self.request.user.organization
-            organization = get_object_or_404(Organization, pk=self.request.GET.get("org"))
-            form = BagItProfileForm(
-                initial={
-                    "source_organization": source_organization,
-                    "contact_email": "archive@rockarch.org",
-                    "organization": organization})
+        organization = self.get_organization()
+
+        # Reuse the bound form that was built for this submission so errors/values survive
+        # a failed nested formset save
+        form = context.get("form")
+        if form is None or not form.is_bound:
+            if self.object:
+                form = BagItProfileForm(instance=self.object)
+            else:
+                source_organization = self.request.user.organization
+                form = BagItProfileForm(
+                    initial={
+                        "source_organization": source_organization,
+                        "contact_email": "archive@rockarch.org",
+                        "organization": organization})
         context["form"] = form
-        context["bag_info_formset"] = BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
+        context["bag_info_formset"] = getattr(self, "_invalid_bag_info_formset", None) or BagItProfileBagInfoFormset(instance=self.object, prefix="bag_info")
         context["organization"] = organization
         return context
 
     def get_success_url(self):
-        return reverse("bagit-profiles:detail", kwargs={"pk": self.object.pk})
+        return reverse("orgs:detail", kwargs={"pk": self.object.organization.pk})
 
     def form_valid(self, form):
         """Saves associated formsets."""
-        bagit_profile = form.save()
+        # Only save once all are confirmed valid
+        bagit_profile = form.save(commit=False)
         bag_info_formset = BagItProfileBagInfoFormset(
             self.request.POST, instance=bagit_profile, prefix="bag_info")
         if not bag_info_formset.is_valid():
             error_messages = []
-            for form in bag_info_formset:
-                for field, errors in form.errors.items():
+            for bag_info_form in bag_info_formset:
+                for field, errors in bag_info_form.errors.items():
                     for error in errors:
                         error_messages.append(f"{field}: {error}")
 
@@ -67,16 +83,23 @@ class BagItProfileManageView(PageTitleMixin):
                 f"There was a problem with your submission: {detailed_errors} "
                 "Please correct the error(s) and try again."
             )
+            self._invalid_bag_info_formset = bag_info_formset
             return super().form_invalid(form)
-        else:
+        with transaction.atomic():
+            bagit_profile.save()
+            form.save_m2m()
             bag_info_formset.save()
-        bagit_profile.version = bagit_profile.version + Decimal(1)
-        bagit_profile.bagit_profile_identifier = self.request.build_absolute_uri(
-            reverse(
-                "bagitprofile-detail",
-                kwargs={"pk": bagit_profile.id, "format": "json"},
+
+            self.object = bagit_profile
+            bagit_profile.version = bagit_profile.version + Decimal(1)
+            bagit_profile.bagit_profile_identifier = self.request.build_absolute_uri(
+                reverse(
+                    "bagitprofile-detail",
+                    kwargs={"pk": bagit_profile.id, "format": "json"},
+                )
             )
-        )
+            bagit_profile.save()
+
         messages.success(self.request, "BagIt Profile saved")
         return super().form_valid(form)
 
@@ -102,8 +125,10 @@ class BagItProfileUpdateView(BagItProfileManageView, UpdateView):
 
 class BagItProfileDetailView(PageTitleMixin, OrgReadViewMixin, DetailView):
     template_name = "bagit_profiles/detail.html"
-    page_title = "BagIt Profile"
     model = BagItProfile
+
+    def get_page_title(self, context):
+        return "BagIt Profile: {}".format(context["object"].organization)
 
 
 class BagItProfileAPIAdminView(ManagingArchivistMixin, JSONResponseMixin, TemplateView):
