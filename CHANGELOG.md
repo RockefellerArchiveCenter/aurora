@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.1.1](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.1.0...aurora-v4.1.1) (2026-09-02)
+
+
+### Bug Fixes
+
+* Dependency updates ([8543c25](https://github.com/RockefellerArchiveCenter/aurora/commit/8543c2571b2bba7406a5b25407dca19bd9c91695))
+* **deps:** Scheduled dependency updates ([553e208](https://github.com/RockefellerArchiveCenter/aurora/commit/553e2084013081ec195f725dd146bedf173c4e8d))
+* **deps:** Scheduled dependency updates ([234d588](https://github.com/RockefellerArchiveCenter/aurora/commit/234d58865b0b1cd471859362351b0f6713033e6c))
+
 ## [4.1.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.0.6...aurora-v4.1.0) (2026-08-28)
 
 
