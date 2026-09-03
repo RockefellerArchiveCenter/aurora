@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.2.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.1.1...aurora-v4.2.0) (2026-09-03)
+
+
+### Features
+
+* add new BAGLogCodes ([4990953](https://github.com/RockefellerArchiveCenter/aurora/commit/4990953247622a03704b6832f1608e0d78377610))
+* Add new BAGLogCodes ([8bcd0fd](https://github.com/RockefellerArchiveCenter/aurora/commit/8bcd0fd36c161cbd9ab1e1ab364734594c6a593b))
+
 ## [4.1.1](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.1.0...aurora-v4.1.1) (2026-09-02)
 
 
