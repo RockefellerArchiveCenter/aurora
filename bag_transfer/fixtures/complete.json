@@ -926,6 +926,26 @@
     }
 },
 {
+    "model": "bag_transfer.baglogcodes",
+    "pk": 28,
+    "fields": {
+        "code_short": "PFAIL",
+        "code_type": "GE",
+        "code_desc": "Packaging failed",
+        "next_action": null
+    }
+},
+{
+    "model": "bag_transfer.baglogcodes",
+    "pk": 29,
+    "fields": {
+        "code_short": "PPASS",
+        "code_type": "S",
+        "code_desc": "Transfer packaged",
+        "next_action": null
+    }
+},
+{
     "model": "bag_transfer.baglog",
     "pk": 1,
     "fields": {
