@@ -90,18 +90,26 @@ class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
             return Response({"detail": str(e)}, status=500)
 
 
-class BAGLogViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
+class BAGLogViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
     """Endpoint for events"""
-
+    model = BAGLog
     serializer_class = BAGLogSerializer
 
     def get_queryset(self):
         queryset = BAGLog.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(
-                transfer__organization=self.request.user.organization
-            )
+                transfer__organization=self.request.user.organization)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        try:
+            transfer_pk = request.data['transfer'].rstrip("/").split("/")[-1]
+            transfer = Transfer.objects.get(pk=transfer_pk)
+            bag_log = BAGLog.log_it(request.data['code'], transfer)
+            return Response(BAGLogSerializer(bag_log, context={'request': request}).data, status=201)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
 
 
 class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):

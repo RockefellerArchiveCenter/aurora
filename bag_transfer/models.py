@@ -744,22 +744,17 @@ class BAGLog(models.Model):
     @classmethod
     def log_it(cls, code, transfer=None):
         """Creates BagLog object for event."""
-        try:
-            code = BAGLogCodes.objects.get_or_create(code_short=code)[0]
-            cls(code=code, transfer=transfer).save()
+        code = BAGLogCodes.objects.get_or_create(code_short=code)[0]
+        bag_log = cls.objects.create(code=code, transfer=transfer)
 
-            if transfer:
-                if code in BAGLogCodes.BAGIT_VALIDATIONS:
-                    cls.log_it("GBERR", transfer)
+        if transfer:
+            if code in BAGLogCodes.BAGIT_VALIDATIONS:
+                cls.log_it("GBERR", transfer)
 
-                if code in BAGLogCodes.RAC_VALIDATIONS:
-                    cls.log_it("RBERR", transfer)
+            if code in BAGLogCodes.RAC_VALIDATIONS:
+                cls.log_it("RBERR", transfer)
 
-            return True
-        except Exception as e:
-            print("Error creating BagLog: {}".format(str(e)))
-        else:
-            return False
+        return bag_log
 
 
 class BagInfoMetadata(models.Model):

@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from os.path import join
 from unittest.mock import patch
 
@@ -23,7 +24,7 @@ class APITest(TestMixin, TestCase):
             "organization": "/api/orgs/1/",
             "file_path": "/foo/bar",
             "file_size": 123456789,
-            "file_upload_time": "2026-01-01",
+            "file_upload_time": datetime.now(),
             "identifier": "transfer_id",
             "file_type": "tar",
             "bag_it_name": "bag_it_name",
@@ -65,6 +66,22 @@ class APITest(TestMixin, TestCase):
                 self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
+
+    def test_create_event(self):
+        """Assert events are created as expected via POST requests"""
+        data = {
+            "code": "PBAG",
+            "transfer": "/api/transfers/1"
+        }
+        created = self.client.post(
+            reverse('baglog-list'),
+            data=data,
+            format="json")
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.data['type'], 'Accept')
+        self.assertEqual(created.data['summary'], 'Transfer passed BagIt validation')
+        self.assertEqual(created.data['object'], 'http://testserver/api/transfers/1/')
+        self.assertEqual(created.data['result'], {'name': 'Transfer staged for BagIt Profile validation'})
 
     def test_schema_response(self):
         self.assert_status_code("get", reverse("schema"), 200)
