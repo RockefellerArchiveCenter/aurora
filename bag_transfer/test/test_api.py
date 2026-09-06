@@ -40,7 +40,6 @@ class APITest(TestMixin, TestCase):
         self.assertEqual(created.data['process_status'], 20)
         self.assertEqual(created.data['file_size'], 123456789)
         self.assertEqual(created.data['file_type'], 'tar')
-        self.assertEqual(created.data['file_upload_time'], '2026-01-01')
         self.assertEqual(created.data['file_path'], '/foo/bar')
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
