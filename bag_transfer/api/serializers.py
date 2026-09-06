@@ -215,7 +215,7 @@ class TransferSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer(read_only=True)
     events = BAGLogSerializer(many=True, read_only=True)
     rights_statements = RightsStatementSerializer(many=True, read_only=True)
-    file_size = serializers.IntegerField(source="machine_file_size")
+    file_size = serializers.CharField(source="machine_file_size")
     file_type = serializers.CharField(source="machine_file_type")
     file_path = serializers.CharField(source="machine_file_path")
     file_upload_time = serializers.DateTimeField(source="machine_file_upload_time")
