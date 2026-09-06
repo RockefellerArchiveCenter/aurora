@@ -62,20 +62,12 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
         return BagItProfileSerializer
 
 
-class TransferViewSet(
-    OrgReadViewMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
+class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
     """Endpoint for transfers"""
-
-    def dispatch(self, *args, **kwargs):
-        return super(TransferViewSet, self).dispatch(*args, **kwargs)
+    model = Transfer
 
     def get_queryset(self):
-        queryset = queryset = Transfer.objects.all()
+        queryset = Transfer.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(organization=self.request.user.organization)
         process_status = self.request.GET.get("process_status", "")
@@ -86,9 +78,8 @@ class TransferViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return TransferListSerializer
-        if self.action == "retrieve":
+        else:
             return TransferSerializer
-        return TransferSerializer
 
     def update(self, request, pk=None, *args, **kwargs):
         try:

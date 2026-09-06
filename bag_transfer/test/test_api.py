@@ -17,8 +17,30 @@ from bag_transfer.test.helpers import TestMixin
 class APITest(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
-    def setUp(self):
-        super().setUp()
+    def test_create_transfer(self):
+        """Asserts transfer is created as expected via POST request."""
+        data = {
+            "organization": "/api/orgs/1/",
+            "file_path": "/foo/bar",
+            "file_size": 123456789,
+            "file_upload_time": "2026-01-01",
+            "identifier": "transfer_id",
+            "file_type": "tar",
+            "bag_it_name": "bag_it_name",
+        }
+        created = self.client.post(
+            reverse('transfer-list'),
+            data=data,
+            format="json")
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(created.data['identifier'], 'transfer_id')
+        self.assertEqual(created.data['organization'], 'http://testserver/api/orgs/1/')
+        self.assertEqual(created.data['bag_it_name'], 'bag_it_name')
+        self.assertEqual(created.data['process_status'], 20)
+        self.assertEqual(created.data['file_size'], 123456789)
+        self.assertEqual(created.data['file_type'], 'tar')
+        self.assertEqual(created.data['file_upload_time'], '2026-01-01')
+        self.assertEqual(created.data['file_path'], '/foo/bar')
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
