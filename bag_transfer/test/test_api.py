@@ -83,6 +83,16 @@ class APITest(TestMixin, TestCase):
         self.assertEqual(created.data['object'], 'http://testserver/api/transfers/1/')
         self.assertEqual(created.data['result'], {'name': 'Transfer staged for BagIt Profile validation'})
 
+    def test_find_by_upload_target(self):
+        org = Organization.objects.get(pk=1)
+        results = self.client.get(f"{reverse('organization-find-by-upload-target')}?upload_target={org.upload_target}")
+        self.assertEqual(len(results.data['results']), 1)
+        self.assertEqual(results.data['results'][0]['url'], "http://testserver/api/orgs/1/")
+
+        results = self.client.get(f"{reverse('organization-find-by-upload-target')}")
+        self.assertEqual(results.status_code, 500)
+        self.assertEqual(results.data, {'detail': 'You must include an `upload_target` in the URL params'})
+
     def test_schema_response(self):
         self.assert_status_code("get", reverse("schema"), 200)
 

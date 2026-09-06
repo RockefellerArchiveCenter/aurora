@@ -50,6 +50,19 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         )
         return Response(serializer.data)
 
+    @action(detail=False)
+    def find_by_upload_target(self, request, *args, **kwargs):
+        try:
+            upload_target = request.GET.get('upload_target')
+            if upload_target:
+                orgs = [o for o in Organization.objects.all() if o.upload_target == upload_target]
+                serializer = OrganizationSerializer(orgs, context={"request": request}, many=True)
+                return Response({"results": serializer.data})
+            else:
+                raise Exception('You must include an `upload_target` in the URL params')
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
+
 
 class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
