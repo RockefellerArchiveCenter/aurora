@@ -10,8 +10,8 @@ from rac_schema_validator import is_valid
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.authentication import CognitoAppAuthentication
-from bag_transfer.models import (Application, BAGLog, Organization, Transfer,
-                                 User)
+from bag_transfer.models import (Application, BagInfoMetadata, BAGLog,
+                                 Organization, Transfer, User)
 from bag_transfer.test.helpers import TestMixin
 
 
@@ -23,7 +23,7 @@ class APITest(TestMixin, TestCase):
         data = {
             "organization": "/api/orgs/1/",
             "file_path": "/foo/bar",
-            "file_size": 123456789,
+            "file_size": "123456789",
             "file_upload_time": datetime.now(),
             "identifier": "transfer_id",
             "file_type": "tar",
@@ -38,7 +38,7 @@ class APITest(TestMixin, TestCase):
         self.assertEqual(created.data['organization'], 'http://testserver/api/orgs/1/')
         self.assertEqual(created.data['bag_it_name'], 'bag_it_name')
         self.assertEqual(created.data['process_status'], 20)
-        self.assertEqual(created.data['file_size'], 123456789)
+        self.assertEqual(created.data['file_size'], '123456789')
         self.assertEqual(created.data['file_type'], 'tar')
         self.assertEqual(created.data['file_path'], '/foo/bar')
 
@@ -65,6 +65,46 @@ class APITest(TestMixin, TestCase):
                 self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
             mock_cleanup.assert_called_once()
             mock_cleanup.reset_mock()
+
+    def test_save_bag_info(self):
+        BagInfoMetadata.objects.get(transfer=1).delete()  # delete existing BagInfoMetadata
+        data = {
+            "source_organization": "1",
+            "external_identifier": "External Identifier",
+            "internal_sender_description": "Internal Sender Description",
+            "title": "Title",
+            "date_start": "2021-01-01",
+            "date_end": "2021-12-31",
+            "record_type": "Record Type",
+            "bagging_date": "2026-01-01T00:00",
+            "bag_count": "Bag Count",
+            "bag_group_identifier": "Bag Group Identifier",
+            "payload_oxum": "Payload Oxum",
+            "bagit_profile_identifier": "BagIt Profile Identifier",
+            "creators_list": ["Record Creators"],
+            "language_list": ["eng"]}
+        created = self.client.post(
+            reverse('transfer-save-bag-info', kwargs={"pk": 1}),
+            data=data,
+            format="json")
+        self.assertEqual(created.status_code, 201)
+        self.assertEqual(
+            created.data,
+            {
+                'source_organization': 'Archival Repository',
+                'title': 'Title', 'record_creators': [{'name': 'Record Creators', 'type': ''}],
+                'internal_sender_description': 'Internal Sender Description',
+                'date_start': '2021-01-01',
+                'date_end': '2021-12-31',
+                'record_type': 'Record Type',
+                'language': ['eng'],
+                'bag_count': 'Bag Count',
+                'bag_group_identifier': 'Bag Group Identifier',
+                'payload_oxum': 'Payload Oxum',
+                'bagit_profile_identifier': 'BagIt Profile Identifier',
+                'bagging_date': '2026-01-01T00:00',
+                'origin': 'aurora'
+            })
 
     def test_create_event(self):
         """Assert events are created as expected via POST requests"""
