@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.3.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.2.0...aurora-v4.3.0) (2026-09-08)
+
+
+### Features
+
+* adds additional API endpoints ([252daf5](https://github.com/RockefellerArchiveCenter/aurora/commit/252daf5018880f6519b03ca33c60896d1476470e))
+* adds new API endpoints to support separation of long-running tasks ([4b47bfc](https://github.com/RockefellerArchiveCenter/aurora/commit/4b47bfcf19b79d10acac1364b6449d59a564c226))
+
 ## [4.2.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.1.1...aurora-v4.2.0) (2026-09-03)
 
 
