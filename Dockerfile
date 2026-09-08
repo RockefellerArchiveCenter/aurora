@@ -1,4 +1,4 @@
-FROM python:3.10-bullseye
+FROM python:3.10-trixie
 
 ENV PYTHONUNBUFFERED 1
 
@@ -8,7 +8,7 @@ RUN apt-get update \
     clamav-daemon \
     clamav-freshclam \
     default-libmysqlclient-dev \
-    python-dev \
+    python-dev-is-python3 \
     python3-pip \
     ssh \
     vim \
@@ -30,7 +30,7 @@ RUN mkdir /var/run/clamav && \
     freshclam
 
 # Set up SSH
-RUN mkdir /run/sshd && cp -r /etc/ssh /etc/ssh2
+RUN mkdir -p /run/sshd && cp -r /etc/ssh /etc/ssh2
 
 # Install Python dependencies
 RUN mkdir -p /code/

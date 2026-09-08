@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import (AccessionListSerializer,
                                           AccessionSerializer,
+                                          BagInfoMetadataSerializer,
                                           BagItProfileListSerializer,
                                           BagItProfileSerializer,
                                           BAGLogSerializer,
@@ -16,8 +17,9 @@ from bag_transfer.api.serializers import (AccessionListSerializer,
                                           TransferSerializer, UserSerializer)
 from bag_transfer.lib.cleanup import CleanupRoutine
 from bag_transfer.mixins.authmixins import OrgReadViewMixin
-from bag_transfer.models import (BagItProfile, BAGLog, Organization, Transfer,
-                                 User)
+from bag_transfer.models import (BagInfoMetadata, BagItProfile, BAGLog,
+                                 LanguageCode, Organization, RecordCreators,
+                                 Transfer, User)
 from bag_transfer.rights.models import RightsStatement
 
 
@@ -50,6 +52,19 @@ class OrganizationViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
         )
         return Response(serializer.data)
 
+    @action(detail=False)
+    def find_by_upload_target(self, request, *args, **kwargs):
+        try:
+            upload_target = request.GET.get('upload_target')
+            if upload_target:
+                orgs = [o for o in Organization.objects.all() if o.upload_target == upload_target]
+                serializer = OrganizationSerializer(orgs, context={"request": request}, many=True)
+                return Response({"results": serializer.data})
+            else:
+                raise Exception('You must include an `upload_target` in the URL params')
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
+
 
 class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
     """Endpoint for BagIt profiles"""
@@ -62,20 +77,12 @@ class BagItProfileViewSet(viewsets.ReadOnlyModelViewSet):
         return BagItProfileSerializer
 
 
-class TransferViewSet(
-    OrgReadViewMixin,
-    mixins.ListModelMixin,
-    mixins.RetrieveModelMixin,
-    mixins.UpdateModelMixin,
-    viewsets.GenericViewSet,
-):
+class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
     """Endpoint for transfers"""
-
-    def dispatch(self, *args, **kwargs):
-        return super(TransferViewSet, self).dispatch(*args, **kwargs)
+    model = Transfer
 
     def get_queryset(self):
-        queryset = queryset = Transfer.objects.all()
+        queryset = Transfer.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(organization=self.request.user.organization)
         process_status = self.request.GET.get("process_status", "")
@@ -86,9 +93,8 @@ class TransferViewSet(
     def get_serializer_class(self):
         if self.action == "list":
             return TransferListSerializer
-        if self.action == "retrieve":
+        else:
             return TransferSerializer
-        return TransferSerializer
 
     def update(self, request, pk=None, *args, **kwargs):
         try:
@@ -98,19 +104,57 @@ class TransferViewSet(
         except Exception as e:
             return Response({"detail": str(e)}, status=500)
 
+    @action(methods=['post'], detail=True)
+    def save_bag_info(self, request, *args, **kwargs):
+        transfer = self.get_object()
+        try:
+            source_organization = Organization.objects.get(pk=request.POST.get('source_organization'))
+            new_bag_info = BagInfoMetadata.objects.create(
+                transfer=transfer,
+                source_organization=source_organization,
+                external_identifier=request.POST.get('external_identifier'),
+                internal_sender_description=request.POST.get('internal_sender_description'),
+                title=request.POST.get('title'),
+                date_start=request.POST.get('date_start'),
+                date_end=request.POST.get('date_end'),
+                record_type=request.POST.get('record_type'),
+                bagging_date=request.POST.get('bagging_date'),
+                bag_count=request.POST.get('bag_count'),
+                bag_group_identifier=request.POST.get('bag_group_identifier'),
+                payload_oxum=request.POST.get('payload_oxum'),
+                bagit_profile_identifier=request.POST.get('bagit_profile_identifier')
+            )
+            creators_list = transfer.get_or_create_mtm_objects(RecordCreators, "name", request.POST.get("creators_list", []))
+            language_list = transfer.get_or_create_mtm_objects(LanguageCode, "code", request.POST.get("language_list", []))
+            new_bag_info.record_creators.add(*creators_list)
+            new_bag_info.language.add(*language_list)
+            new_bag_info.save()
+            serializer = BagInfoMetadataSerializer(new_bag_info)
+            return Response(serializer.data, status=201)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
 
-class BAGLogViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
+
+class BAGLogViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
     """Endpoint for events"""
-
+    model = BAGLog
     serializer_class = BAGLogSerializer
 
     def get_queryset(self):
         queryset = BAGLog.objects.all()
         if not self.request.user.is_archivist():
             queryset = queryset.filter(
-                transfer__organization=self.request.user.organization
-            )
+                transfer__organization=self.request.user.organization)
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        try:
+            transfer_pk = request.data['transfer'].rstrip("/").split("/")[-1]
+            transfer = Transfer.objects.get(pk=transfer_pk)
+            bag_log = BAGLog.log_it(request.data['code'], transfer)
+            return Response(BAGLogSerializer(bag_log, context={'request': request}).data, status=201)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
 
 
 class UserViewSet(OrgReadViewMixin, viewsets.ReadOnlyModelViewSet):
