@@ -171,8 +171,7 @@ class BAGLogSerializer(serializers.HyperlinkedModelSerializer):
     type = serializers.SerializerMethodField()
     summary = serializers.CharField(source="code.code_desc")
     object = serializers.HyperlinkedRelatedField(
-        source="transfer", view_name="transfer-detail", read_only=True
-    )
+        source="transfer", view_name="transfer-detail", read_only=True)
     result = BAGLogResultSerializer(source="code.next_action")
     endTime = serializers.StringRelatedField(source="created_time")
 
@@ -216,10 +215,12 @@ class TransferSerializer(serializers.HyperlinkedModelSerializer):
     metadata = BagInfoMetadataSerializer(read_only=True)
     events = BAGLogSerializer(many=True, read_only=True)
     rights_statements = RightsStatementSerializer(many=True, read_only=True)
-    file_size = serializers.StringRelatedField(source="machine_file_size")
-    file_type = serializers.StringRelatedField(source="machine_file_type")
-    identifier = serializers.StringRelatedField(source="machine_file_identifier")
-    origin = serializers.StringRelatedField(source="metadata.origin")
+    file_size = serializers.CharField(source="machine_file_size")
+    file_type = serializers.CharField(source="machine_file_type")
+    file_path = serializers.CharField(source="machine_file_path")
+    file_upload_time = serializers.DateTimeField(source="machine_file_upload_time")
+    identifier = serializers.CharField(source="machine_file_identifier")
+    origin = serializers.CharField(source="metadata.origin", read_only=True)
 
     class Meta:
         model = Transfer
@@ -230,8 +231,10 @@ class TransferSerializer(serializers.HyperlinkedModelSerializer):
             "origin",
             "bag_it_name",
             "process_status",
+            "file_path",
             "file_size",
             "file_type",
+            "file_upload_time",
             "appraisal_note",
             "additional_error_info",
             "metadata",
@@ -250,7 +253,7 @@ class TransferListSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Transfer
-        fields = ("url", "identifier", "created_time", "modified_time")
+        fields = ("url", "identifier", "created_time", "modified_time", "machine_file_size")
 
 
 class BagItProfileBagInfoSerializer(serializers.BaseSerializer):
