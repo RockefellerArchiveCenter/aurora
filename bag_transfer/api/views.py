@@ -16,6 +16,7 @@ from bag_transfer.api.serializers import (AccessionListSerializer,
                                           TransferListSerializer,
                                           TransferSerializer, UserSerializer)
 from bag_transfer.lib.cleanup import CleanupRoutine
+from bag_transfer.lib.mailer import Mailer
 from bag_transfer.mixins.authmixins import OrgReadViewMixin
 from bag_transfer.models import (BagInfoMetadata, BagItProfile, BAGLog,
                                  LanguageCode, Organization, RecordCreators,
@@ -101,6 +102,18 @@ class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
             transfer = get_object_or_404(Transfer, pk=pk)
             CleanupRoutine().run(transfer.machine_file_identifier)
             return super(TransferViewSet, self).update(request, *args, **kwargs)
+        except Exception as e:
+            return Response({"detail": str(e)}, status=500)
+
+    def partial_update(self, request, pk=None, *args, **kwargs):
+        try:
+            transfer = get_object_or_404(Transfer, pk=pk)
+            if request.data['process_status'] == Transfer.INVALID:
+                email = Mailer()
+                email.to_emails = [u.email for u in transfer.organization.admin_users]
+                email.setup_message("TRANS_FAIL_VAL", transfer)
+                email.send()
+            return super(TransferViewSet, self).partial_update(request, pk)
         except Exception as e:
             return Response({"detail": str(e)}, status=500)
 
