@@ -3,8 +3,11 @@ import random
 from datetime import datetime
 from unittest.mock import patch
 
+import boto3
 from django.test import TestCase
 from django.urls import reverse
+from moto import mock_aws
+from moto.core import DEFAULT_ACCOUNT_ID
 
 from bag_transfer.accession.models import Accession
 from bag_transfer.accession.views import AccessionCreateView
@@ -12,21 +15,12 @@ from bag_transfer.models import BAGLog, LanguageCode, RecordCreators, Transfer
 from bag_transfer.test import helpers
 
 
-class AccessioningTestCase(helpers.TestMixin, TestCase):
+class AccessioningTests(helpers.TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def setUp(self):
         super().setUp()
         self.to_accession = Transfer.objects.filter(process_status__lt=Transfer.ACCEPTED)
-
-    def test_views(self):
-        """Tests views to ensure exceptions are raised appropriately"""
-        transfer_ids = [str(a.id) for a in self.to_accession]
-        self.list_view(",".join(transfer_ids))
-        self.create_view(transfer_ids)
-        self.detail_view()
-        self.ajax_list_view(transfer_ids)
-        self.ajax_add_view()
 
     def test_grouped_transfer_data(self):
         """Tests the grouping of transfer data."""
@@ -79,8 +73,12 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
             self.assertEqual(len(notes[key]), 2)
             self.assertTrue(isinstance(n, str) for n in notes[key])
 
+
+class AccessioningViewTests(helpers.TestMixin, TestCase):
+    fixtures = ["complete.json"]
+
     @patch("bag_transfer.lib.clients.ArchivesSpaceClient.get_resource")
-    def ajax_add_view(self, mock_as):
+    def test_ajax_add_view(self, mock_as):
         mock_as.return_value = {"title": "foo", "id_0": "1", "uri": "foobar"}
         response = self.assert_status_code(
             "get", reverse("accession:add"), 200, data={"resource_id": 1}, ajax=True)
@@ -96,7 +94,7 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
         self.assertEqual(data["success"], 0)
 
     @patch("requests.post")
-    def ajax_list_view(self, transfer_ids, mock_post):
+    def test_ajax_list_view(self, mock_post):
         """Tests the AJAX logic branch of accession list view."""
         mock_post.status_code = 200
         accession = random.choice(Accession.objects.all())
@@ -111,13 +109,14 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
             "get", reverse("accession:list"), 200, data={"accession_id": accession_id}, ajax=True)
         self.assertEqual(json.loads(response.content)["success"], 0)
 
-    def list_view(self, id_list):
+    def test_list_view(self):
         response = self.assert_status_code("get", reverse("accession:list"), 200)
         self.assertEqual(len(response.context["uploads"]), 4)
 
     @patch("requests.post")
-    def create_view(self, id_list, mock_post):
+    def test_create_view(self, mock_post):
         """Assert add view handles data and exceptions correctly."""
+        id_list = [str(a.id) for a in Transfer.objects.filter(process_status__lt=Transfer.ACCEPTED)]
         self.assert_status_code("get", reverse("accession:add"), 200, data={"transfers": ",".join(id_list)})
 
         mock_post.status_code = 200
@@ -140,7 +139,37 @@ class AccessioningTestCase(helpers.TestMixin, TestCase):
         del accession_data["title"]  # try to submit invalid data
         self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 200, data=accession_data)
 
-    def detail_view(self):
+    def test_detail_view(self):
         """Assert Accessions detail view returns correct response code."""
         accession = random.choice(Accession.objects.all())
         self.assert_status_code("get", reverse("accession:detail", kwargs={"pk": accession.pk}), 200)
+
+    @mock_aws
+    @patch('bag_transfer.accession.views.get_aws_client_with_role')
+    def test_update_accession_transfers(self, mock_role):
+        """Tests that SNS message is sent with correct args when accessioning is started."""
+        sns = boto3.client('sns', region_name='us-east-1')
+        mock_role.return_value = sns
+        topic_arn = sns.create_topic(Name='my-topic')['TopicArn']
+        sqs_conn = boto3.resource("sqs", region_name="us-east-1")
+        sqs_conn.create_queue(QueueName="test-queue")
+        sns.subscribe(
+            TopicArn=topic_arn,
+            Protocol="sqs",
+            Endpoint=f"arn:aws:sqs:us-east-1:{DEFAULT_ACCOUNT_ID}:test-queue",)
+
+        sns_role_arn = 'arn:aws:iam:role/sns-role'
+        with self.settings(SNS_TOPIC=topic_arn, SNS_ROLE=sns_role_arn):
+            id_list = [str(a.id) for a in Transfer.objects.filter(process_status__lt=Transfer.ACCEPTED)][:10]
+            joined_list = ",".join(id_list)
+            accession_data = helpers.get_accession_form_data(
+                creator=random.choice(RecordCreators.objects.all()))
+            self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 302, data=accession_data)
+
+            mock_role.assert_called_once_with('sns', sns_role_arn)
+            queue = sqs_conn.get_queue_by_name(QueueName="test-queue")
+            messages = queue.receive_messages(MaxNumberOfMessages=len(id_list))
+            for message in messages:
+                message_body = json.loads(message.body)
+                transfer = Transfer.objects.get(pk=message_body['MessageAttributes']['package_db_id']['Value'])
+                self.assertEqual(transfer.machine_file_identifier, message_body['MessageAttributes']['package_id']['Value'])

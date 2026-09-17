@@ -1,6 +1,8 @@
+import boto3
 import requests
 from authlib.integrations.base_client import OAuthError
 from authlib.oauth2.rfc6749 import OAuth2Token
+from aws_assume_role_lib import assume_role
 from django.conf import settings
 from django.contrib.auth import login
 from django.core.cache import cache
@@ -94,3 +96,10 @@ class CognitoUserAuthentication(authentication.BaseAuthentication):
         except OAuthError as e:
             print(e)
         return None
+
+
+def get_aws_client_with_role(resource, role_arn):
+    """Gets Boto3 client for a given resource and IAM role."""
+    session = boto3.Session()
+    assumed_role_session = assume_role(session, role_arn)
+    return assumed_role_session.client(resource)
