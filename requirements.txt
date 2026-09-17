@@ -11,19 +11,22 @@ attrs==26.1.0
     #   referencing
 authlib==1.8.0
     # via -r requirements.in
+aws-assume-role-lib==2.10.0
+    # via -r requirements.in
 bagit==1.9.0
     # via
     #   -r requirements.in
     #   bagit-profile
 bagit-profile==1.3.1
     # via -r requirements.in
-boltons==26.1.0
+boltons==26.2.0
     # via archivessnake
-boto3==1.43.85
+boto3==1.43.97
     # via
     #   -r requirements.in
+    #   aws-assume-role-lib
     #   moto
-botocore==1.43.85
+botocore==1.43.97
     # via
     #   boto3
     #   moto
@@ -62,7 +65,7 @@ drf-jwt==1.19.2
     # via -r requirements.in
 ecdsa==0.19.2
     # via python-jose
-idna==3.19
+idna==3.20
     # via requests
 inflection==0.5.1
     # via -r requirements.in
@@ -86,7 +89,7 @@ more-itertools==11.1.0
     # via archivessnake
 moto==5.2.3
     # via -r requirements.in
-mysqlclient==2.2.8
+mysqlclient==2.3.0
     # via -r requirements.in
 pyasn1==0.6.4
     # via
@@ -96,7 +99,7 @@ pyclamd==0.4.0
     # via -r requirements.in
 pycparser==3.0
     # via cffi
-pyjwt[crypto]==2.13.0
+pyjwt[crypto]==2.14.0
     # via
     #   drf-jwt
     #   pyjwt
@@ -114,7 +117,7 @@ pyyaml==6.0.3
     #   -r requirements.in
     #   archivessnake
     #   responses
-rac-schema-validator==1.1.4
+rac-schema-validator==1.1.5
     # via -r requirements.in
 rapidfuzz==3.14.5
     # via archivessnake
@@ -154,11 +157,11 @@ typing-extensions==4.16.0
     #   pyjwt
     #   referencing
     #   structlog
-tzdata==2026.3
+tzdata==2026.4
     # via arrow
 uritemplate==4.2.0
     # via -r requirements.in
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   botocore
     #   requests

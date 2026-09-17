@@ -2,6 +2,7 @@ import json
 
 import requests
 from dateutil import tz
+from django.conf import settings
 from django.contrib import messages
 from django.db.models import CharField, F
 from django.db.models.functions import Concat
@@ -9,11 +10,11 @@ from django.shortcuts import reverse
 from django.views.generic import (CreateView, DetailView, ListView,
                                   TemplateView, View)
 
-from aurora import settings
 from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import AccessionSerializer
+from bag_transfer.authentication import get_aws_client_with_role
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
@@ -270,12 +271,32 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
             statement.save()
 
     def update_accession_transfers(self, transfers_list, accession):
-        """Associates a list of transfers with an accession and updates their status."""
+        """
+        Associates a list of transfers with an accession, updates their status
+        and sends an SNS message, if configured.
+        """
+        client = None
+        if all([getattr(settings, 'SNS_ROLE', None), getattr(settings, 'SNS_TOPIC', None)]):
+            client = get_aws_client_with_role('sns', settings.SNS_ROLE)
         for transfer in transfers_list:
             BAGLog.log_it("BACC", transfer)
             transfer.process_status = Transfer.ACCESSIONING_STARTED
             transfer.accession = accession
             transfer.save()
+            if client:
+                client.publish(
+                    TopicArn=settings.SNS_TOPIC,
+                    Message=f'Package {transfer.machine_file_identifier} accessioned',
+                    MessageAttributes={
+                        'package_id': {
+                            'DataType': 'String',
+                            'StringValue': transfer.machine_file_identifier,
+                        },
+                        'package_db_id': {
+                            'DataType': 'String',
+                            'StringValue': str(transfer.pk),
+                        }
+                    })
 
 
 class SavedAccessionsView(PageTitleMixin, TemplateView):

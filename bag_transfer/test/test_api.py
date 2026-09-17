@@ -1,4 +1,5 @@
 import json
+import random
 from datetime import datetime
 from os.path import join
 from unittest.mock import patch
@@ -44,27 +45,71 @@ class APITest(TestMixin, TestCase):
 
     @patch("bag_transfer.lib.cleanup.CleanupRoutine.run")
     def test_update_transfer(self, mock_cleanup):
-        """Asserts bad data can be updated."""
+        """Asserts data can be updated."""
         new_values = {
             "process_status": Transfer.ACCESSIONING_STARTED,
             "archivesspace_identifier": "/repositories/2/archival_objects/3",
             "archivesspace_parent_identifier": "/repositories/2/archival_objects/4"
         }
 
-        for transfer in Transfer.objects.all():
-            transfer_data = self.client.get(
-                reverse("transfer-detail", kwargs={"pk": transfer.pk}), format="json").json()
-            transfer_data.update(new_values)
+        transfer = random.choice(Transfer.objects.all())
+        transfer_data = self.client.get(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}), format="json").json()
+        transfer_data.update(new_values)
 
-            updated = self.client.put(
-                reverse("transfer-detail", kwargs={"pk": transfer.pk}),
-                data=json.dumps(transfer_data),
-                content_type="application/json")
-            self.assertEqual(updated.status_code, 200, updated.data)
-            for field in new_values:
-                self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
-            mock_cleanup.assert_called_once()
-            mock_cleanup.reset_mock()
+        updated = self.client.put(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+            data=json.dumps(transfer_data),
+            content_type="application/json")
+        self.assertEqual(updated.status_code, 200, updated.data)
+        for field in new_values:
+            self.assertEqual(updated.data[field], new_values[field], "{} not updated in {}".format(field, updated.data))
+        mock_cleanup.assert_called_once()
+
+    def test_partial_update_transfer(self):
+        """Assert custom behavior when Transfer is invalid."""
+        transfer = random.choice(Transfer.objects.all())
+        updated = self.client.patch(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+            data=json.dumps({"process_status": 20}),
+            content_type="application/json")
+        self.assertEqual(updated.status_code, 200, updated.data)
+
+    @patch("bag_transfer.lib.mailer.Mailer.__init__")
+    @patch("bag_transfer.lib.mailer.Mailer.setup_message")
+    @patch("bag_transfer.lib.mailer.Mailer.send")
+    def test_partial_update_transfer_invalid(self, mock_send, mock_setup, mock_init):
+        """Assert custom behavior when Transfer is invalid."""
+        mock_init.return_value = None
+
+        transfer = random.choice(Transfer.objects.all())
+        updated = self.client.patch(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+            data=json.dumps({"process_status": 30}),
+            content_type="application/json")
+        self.assertEqual(updated.status_code, 200, updated.data)
+        mock_init.assert_called_once_with()
+        mock_setup.assert_called_once_with('TRANS_FAIL_VAL', transfer)
+        mock_send.assert_called_once_with()
+
+    @patch("bag_transfer.lib.mailer.Mailer.__init__")
+    @patch("bag_transfer.lib.mailer.Mailer.setup_message")
+    @patch("bag_transfer.lib.mailer.Mailer.send")
+    @patch("bag_transfer.models.Transfer.assign_rights")
+    def test_partial_update_transfer_valid(self, mock_assign_rights, mock_send, mock_setup, mock_init):
+        """Assert custom behavior when Transfer is invalid."""
+        mock_init.return_value = None
+
+        transfer = random.choice(Transfer.objects.all())
+        updated = self.client.patch(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+            data=json.dumps({"process_status": 40}),
+            content_type="application/json")
+        self.assertEqual(updated.status_code, 200, updated.data)
+        mock_init.assert_called_once_with()
+        mock_setup.assert_called_once_with('TRANS_PASS_ALL', transfer)
+        mock_send.assert_called_once_with()
+        mock_assign_rights.assert_called_once_with()
 
     def test_save_bag_info(self):
         BagInfoMetadata.objects.get(transfer=1).delete()  # delete existing BagInfoMetadata

@@ -247,3 +247,7 @@ try:
     hashlib.md5()
 except ValueError:
     monkey_patch_md5(modules_to_patch)
+
+# AWS SNS settings
+SNS_TOPIC = getattr(config, "SNS_TOPIC", None)
+SNS_ROLE = getattr(config, "SNS_ROLE", None)
