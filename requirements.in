@@ -1,6 +1,7 @@
 ArchivesSnake~=0.10
 arrow~=1.3
 Authlib~=1.5
+aws-assume-role-lib~=2.10
 bagit~=1.8
 bagit-profile~=1.3
 boto3~=1.31
