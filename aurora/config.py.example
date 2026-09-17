@@ -74,3 +74,6 @@ COGNITO_CLIENT_ID = "12341bcdef" # ID for client application
 COGNITO_CLIENT_SECRET_KEY = "9a8b7c6d5e4f1g"  # Secret key for Cognito app
 COGNITO_CLIENT_BASE_URL = "https://user-pool.auth.us-east-1.amazoncognito.com"  # Domain name for your Cognito User Pool. Must not have a trailing slash
 COGNITO_CLIENT_CALLBACK_URL = "http://localhost:8000/oauth/cognito/callback/"  # Callback URL as configured in Cognito. Must have a trailing slash and should not use `localhost` unless testing.
+
+SNS_TOPIC = "" # Optional name of SNS topic to which post-accessioning messages should be sent (string)
+SNS_ROLE = "" # ARN for AWS IAM role with permissions to send messages to SNS (string)
