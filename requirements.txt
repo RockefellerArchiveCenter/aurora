@@ -43,7 +43,7 @@ cryptography==50.0.1
     #   joserfc
     #   moto
     #   pyjwt
-django==5.2.17
+django==4.2.30
     # via
     #   -r requirements.in
     #   django-braces
@@ -57,7 +57,7 @@ django-cron==0.6.0
     # via -r requirements.in
 django-csp==3.8
     # via -r requirements.in
-djangorestframework==3.18.1
+djangorestframework==3.17.2
     # via
     #   -r requirements.in
     #   drf-jwt
