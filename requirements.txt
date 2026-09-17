@@ -43,7 +43,7 @@ cryptography==50.0.1
     #   joserfc
     #   moto
     #   pyjwt
-django==4.2.30
+django==5.2.17
     # via
     #   -r requirements.in
     #   django-braces
@@ -57,7 +57,7 @@ django-cron==0.6.0
     # via -r requirements.in
 django-csp==3.8
     # via -r requirements.in
-djangorestframework==3.17.2
+djangorestframework==3.18.1
     # via
     #   -r requirements.in
     #   drf-jwt
@@ -119,7 +119,7 @@ pyyaml==6.0.3
     #   responses
 rac-schema-validator==1.1.5
     # via -r requirements.in
-rapidfuzz==3.14.6
+rapidfuzz==3.14.5
     # via archivessnake
 referencing==0.37.0
     # via
@@ -134,7 +134,7 @@ requests==2.34.2
     #   responses
 responses==0.26.3
     # via moto
-rpds-py==2026.6.3
+rpds-py==0.30.0
     # via
     #   jsonschema
     #   referencing
