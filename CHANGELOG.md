@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.3.0...aurora-v4.4.0) (2026-09-17)
+
+
+### Features
+
+* reimplement cron application logic ([026d28f](https://github.com/RockefellerArchiveCenter/aurora/commit/026d28f70c09de243de256ac5b419117055492fb))
+* reimplement logic from crons ([7a2d164](https://github.com/RockefellerArchiveCenter/aurora/commit/7a2d164784bfce907ed60cf8490728eaa379d4f4))
+
 ## [4.3.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.2.0...aurora-v4.3.0) (2026-09-08)
 
 
