@@ -151,7 +151,12 @@ sqlparse==0.6.0
 structlog==26.1.0
     # via archivessnake
 typing-extensions==4.16.0
-    # via referencing
+    # via
+    #   asgiref
+    #   cryptography
+    #   pyjwt
+    #   referencing
+    #   structlog
 tzdata==2026.4
     # via arrow
 uritemplate==4.2.0
