@@ -71,7 +71,7 @@ class APITest(TestMixin, TestCase):
         transfer = random.choice(Transfer.objects.all())
         updated = self.client.patch(
             reverse("transfer-detail", kwargs={"pk": transfer.pk}),
-            data=json.dumps({"process_status": 40}),
+            data=json.dumps({"process_status": 20}),
             content_type="application/json")
         self.assertEqual(updated.status_code, 200, updated.data)
 
@@ -91,6 +91,25 @@ class APITest(TestMixin, TestCase):
         mock_init.assert_called_once_with()
         mock_setup.assert_called_once_with('TRANS_FAIL_VAL', transfer)
         mock_send.assert_called_once_with()
+
+    @patch("bag_transfer.lib.mailer.Mailer.__init__")
+    @patch("bag_transfer.lib.mailer.Mailer.setup_message")
+    @patch("bag_transfer.lib.mailer.Mailer.send")
+    @patch("bag_transfer.models.Transfer.assign_rights")
+    def test_partial_update_transfer_valid(self, mock_assign_rights, mock_send, mock_setup, mock_init):
+        """Assert custom behavior when Transfer is invalid."""
+        mock_init.return_value = None
+
+        transfer = random.choice(Transfer.objects.all())
+        updated = self.client.patch(
+            reverse("transfer-detail", kwargs={"pk": transfer.pk}),
+            data=json.dumps({"process_status": 40}),
+            content_type="application/json")
+        self.assertEqual(updated.status_code, 200, updated.data)
+        mock_init.assert_called_once_with()
+        mock_setup.assert_called_once_with('TRANS_PASS_ALL', transfer)
+        mock_send.assert_called_once_with()
+        mock_assign_rights.assert_called_once_with()
 
     def test_save_bag_info(self):
         BagInfoMetadata.objects.get(transfer=1).delete()  # delete existing BagInfoMetadata

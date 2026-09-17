@@ -113,6 +113,12 @@ class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
                 email.to_emails = [u.email for u in transfer.organization.admin_users]
                 email.setup_message("TRANS_FAIL_VAL", transfer)
                 email.send()
+            elif request.data['process_status'] == Transfer.VALIDATED:
+                transfer.assign_rights()
+                email = Mailer()
+                email.to_emails = [u.email for u in transfer.organization.admin_users]
+                email.setup_message("TRANS_PASS_ALL", transfer)
+                email.send()
             return super(TransferViewSet, self).partial_update(request, pk)
         except Exception as e:
             return Response({"detail": str(e)}, status=500)

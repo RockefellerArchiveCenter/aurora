@@ -12,7 +12,7 @@ from bag_transfer.rights.models import (RightsStatement,
 from bag_transfer.test.helpers import TestMixin
 
 
-class TransferTestCase(TestMixin, TestCase):
+class TransferViewsTests(TestMixin, TestCase):
     fixtures = ["complete.json"]
 
     def assert_all_views(self, organization=None):
@@ -30,22 +30,12 @@ class TransferTestCase(TestMixin, TestCase):
         self.client.force_login(donor_user)
         self.assert_all_views(donor_user.organization)
 
-    def test_model_methods(self):
-        """Tests Transfer model methods."""
-        self.bag_or_failed_name()
-        self.errors()
-        self.failures()
-        self.additional_errors()
-        self.add_autofail_information()
-        self.get_or_create_mtm_objects()
-        self.save_bag_data()
-        self.handle_start_date()
-        self.handle_end_date()
-        self.records_creators()
-        self.assign_rights()
+
+class TransferModelMethodTests(TestMixin, TestCase):
+    fixtures = ["complete.json"]
 
     @patch("bag_transfer.models.Transfer.bag_data", new_callable=PropertyMock)
-    def bag_or_failed_name(self, mock_bag_data):
+    def test_bag_or_failed_name(self, mock_bag_data):
         """Asserts bag_or_failed_name returns expected values."""
         for instance, bag_data, expected_name in [
                 (Transfer(bag_it_valid=False, machine_file_path="/baz/bar/foo"), None, "foo"),
@@ -56,7 +46,7 @@ class TransferTestCase(TestMixin, TestCase):
                 instance.bag_or_failed_name, expected_name,
                 "Expected bag_or_failed_name to be {}, got {} instead".format(expected_name, instance.bag_or_failed_name))
 
-    def errors(self):
+    def test_errors(self):
         transfer = random.choice(Transfer.objects.filter(bag_it_valid=True))
         self.assertEqual(transfer.errors, None)
         code = BAGLogCodes.objects.filter(code_type="BE").first()
@@ -64,7 +54,7 @@ class TransferTestCase(TestMixin, TestCase):
         transfer.bag_it_valid = False
         self.assertEqual(len(transfer.errors), 1)
 
-    def failures(self):
+    def test_failures(self):
         transfer = random.choice(Transfer.objects.filter(bag_it_valid=True).exclude(events__code__code_type__in=["BE"]))
         self.assertFalse(transfer.failures)
         self.assertFalse(transfer.last_failure)
@@ -78,7 +68,7 @@ class TransferTestCase(TestMixin, TestCase):
         self.assertEqual(len(transfer.failures), 2)
 
     @patch("bag_transfer.models.Transfer.failures", new_callable=PropertyMock)
-    def additional_errors(self, mock_failures):
+    def test_additional_errors(self, mock_failures):
         transfer = random.choice(Transfer.objects.all())
         transfer.additional_error_info = "foo"
         self.assertEqual(transfer.additional_errors, ["foo"])
@@ -96,7 +86,7 @@ class TransferTestCase(TestMixin, TestCase):
                 "additional_errors returned {}, expecting {}".format(
                     transfer.additional_errors, expected))
 
-    def add_autofail_information(self):
+    def test_add_autofail_information(self):
         for instance, information in [
                 ({"auto_fail_code": "VIRUS", "virus_scanresult": ["foo"]}, "Virus found in: foo"),
                 ({"auto_fail_code": "FSERR", "file_size": 4000}, "Bag size (4000) is larger than maximum allowed size (2000000000000)")]:
@@ -104,7 +94,7 @@ class TransferTestCase(TestMixin, TestCase):
             arch.add_autofail_information(instance)
             self.assertEqual(arch.additional_error_info, information)
 
-    def get_or_create_mtm_objects(self):
+    def test_get_or_create_mtm_objects(self):
         for cls, model_field, field_data, expected_len in [
                 (RecordCreators, "name", ["foo", "bar"], 2),
                 (LanguageCode, "code", "eng ", 1)]:
@@ -112,7 +102,7 @@ class TransferTestCase(TestMixin, TestCase):
             self.assertEqual(len(objects), expected_len)
             self.assertTrue([isinstance(o, cls) for o in objects])
 
-    def save_bag_data(self):
+    def test_save_bag_data(self):
         metadata = {
             "Source_Organization": "Donor Organization",
             "External_Identifier": "123456",
@@ -135,25 +125,25 @@ class TransferTestCase(TestMixin, TestCase):
         self.assertEqual(len(BagInfoMetadata.objects.filter(transfer=transfer)), 1)
         self.assertFalse(transfer.save_bag_data(None))
 
-    def handle_start_date(self):
+    def test_handle_start_date(self):
         transfer = random.choice(Transfer.objects.all())
         for input, expected in [('2021', '2021-01-01'), ('2021-03', '2021-03-01'), ('2021-02-02', '2021-02-02')]:
             output = transfer.handle_start_date(input)
             self.assertEqual(output, expected)
 
-    def handle_end_date(self):
+    def test_handle_end_date(self):
         transfer = random.choice(Transfer.objects.all())
         for input, expected in [('2021', '2021-12-31'), ('2021-04', '2021-04-30'), ('2021-02-02', '2021-02-02')]:
             output = transfer.handle_end_date(input)
             self.assertEqual(output, expected)
 
-    def records_creators(self):
+    def test_records_creators(self):
         transfer = random.choice(Transfer.objects.all())
         creators = transfer.records_creators
         self.assertTrue(isinstance(creators, list))
         self.assertTrue([isinstance(c, RecordCreators) for c in creators])
 
-    def assign_rights(self):
+    def test_assign_rights(self):
         """Asserts the correct number of rights statements are assigned. Also
         asserts that non-null start dates are assigned to both rights bases and
         rights granted objects."""
