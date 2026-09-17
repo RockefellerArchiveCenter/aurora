@@ -638,7 +638,7 @@ class Transfer(models.Model):
             return bag_data
 
     def assign_rights(self):
-        """Assigns rights to an Archive."""
+        """Assigns rights to a Transfer."""
 
         def update_date(obj, date_key, period_key, bag_date):
             """Updates the date if it does not exist or is not open."""
