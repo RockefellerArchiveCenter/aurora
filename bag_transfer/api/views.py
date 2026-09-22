@@ -131,20 +131,20 @@ class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
             new_bag_info = BagInfoMetadata.objects.create(
                 transfer=transfer,
                 source_organization=source_organization,
-                external_identifier=request.POST.get('external_identifier'),
-                internal_sender_description=request.POST.get('internal_sender_description'),
-                title=request.POST.get('title'),
-                date_start=request.POST.get('date_start'),
-                date_end=request.POST.get('date_end'),
-                record_type=request.POST.get('record_type'),
-                bagging_date=request.POST.get('bagging_date'),
-                bag_count=request.POST.get('bag_count'),
-                bag_group_identifier=request.POST.get('bag_group_identifier'),
-                payload_oxum=request.POST.get('payload_oxum'),
-                bagit_profile_identifier=request.POST.get('bagit_profile_identifier')
+                external_identifier=request.data.get('external_identifier'),
+                internal_sender_description=request.data.get('internal_sender_description'),
+                title=request.data.get('title'),
+                date_start=request.data.get('date_start'),
+                date_end=request.data.get('date_end'),
+                record_type=request.data.get('record_type'),
+                bagging_date=request.data.get('bagging_date'),
+                bag_count=request.data.get('bag_count'),
+                bag_group_identifier=request.data.get('bag_group_identifier'),
+                payload_oxum=request.data.get('payload_oxum'),
+                bagit_profile_identifier=request.data.get('bagit_profile_identifier')
             )
-            creators_list = transfer.get_or_create_mtm_objects(RecordCreators, "name", request.POST.get("creators_list", []))
-            language_list = transfer.get_or_create_mtm_objects(LanguageCode, "code", request.POST.get("language_list", []))
+            creators_list = transfer.get_or_create_mtm_objects(RecordCreators, "name", request.data.get("creators_list", []))
+            language_list = transfer.get_or_create_mtm_objects(LanguageCode, "code", request.data.get("language_list", []))
             new_bag_info.record_creators.add(*creators_list)
             new_bag_info.language.add(*language_list)
             new_bag_info.save()

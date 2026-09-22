@@ -25,15 +25,15 @@ class APITest(TestMixin, TestCase):
             "organization": "/api/orgs/1/",
             "file_path": "/foo/bar",
             "file_size": "123456789",
-            "file_upload_time": datetime.now(),
+            "file_upload_time": str(datetime.now()),
             "identifier": "transfer_id",
             "file_type": "tar",
             "bag_it_name": "bag_it_name",
         }
         created = self.client.post(
             reverse('transfer-list'),
-            data=data,
-            format="json")
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.data['identifier'], 'transfer_id')
         self.assertEqual(created.data['organization'], 'http://testserver/api/orgs/1/')
@@ -129,8 +129,8 @@ class APITest(TestMixin, TestCase):
             "language_list": ["eng"]}
         created = self.client.post(
             reverse('transfer-save-bag-info', kwargs={"pk": 1}),
-            data=data,
-            format="json")
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertEqual(created.status_code, 201)
         self.assertEqual(
             created.data,
@@ -158,8 +158,8 @@ class APITest(TestMixin, TestCase):
         }
         created = self.client.post(
             reverse('baglog-list'),
-            data=data,
-            format="json")
+            data=json.dumps(data),
+            content_type="application/json")
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.data['type'], 'Accept')
         self.assertEqual(created.data['summary'], 'Transfer passed BagIt validation')
