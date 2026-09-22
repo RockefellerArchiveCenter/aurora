@@ -127,7 +127,7 @@ class TransferViewSet(OrgReadViewMixin, viewsets.ModelViewSet):
     def save_bag_info(self, request, *args, **kwargs):
         transfer = self.get_object()
         try:
-            source_organization = Organization.objects.get(pk=request.POST.get('source_organization'))
+            source_organization = transfer.organization
             new_bag_info = BagInfoMetadata.objects.create(
                 transfer=transfer,
                 source_organization=source_organization,
