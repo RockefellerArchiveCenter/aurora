@@ -114,7 +114,6 @@ class APITest(TestMixin, TestCase):
     def test_save_bag_info(self):
         BagInfoMetadata.objects.get(transfer=1).delete()  # delete existing BagInfoMetadata
         data = {
-            "source_organization": "1",
             "external_identifier": "External Identifier",
             "internal_sender_description": "Internal Sender Description",
             "title": "Title",
@@ -136,7 +135,7 @@ class APITest(TestMixin, TestCase):
         self.assertEqual(
             created.data,
             {
-                'source_organization': 'Archival Repository',
+                'source_organization': 'Donor Organization',
                 'title': 'Title', 'record_creators': [{'name': 'Record Creators', 'type': ''}],
                 'internal_sender_description': 'Internal Sender Description',
                 'date_start': '2021-01-01',
