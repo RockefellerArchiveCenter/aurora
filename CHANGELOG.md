@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.1](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.0...aurora-v4.4.1) (2026-09-22)
+
+
+### Bug Fixes
+
+* improve save_bag_info API endpoint ([6fc6287](https://github.com/RockefellerArchiveCenter/aurora/commit/6fc6287dd855a7e447f24f62b14b66a0b34c2e00))
+* improve save_bag_info endpoint ([ee196f0](https://github.com/RockefellerArchiveCenter/aurora/commit/ee196f0af93c6431c4af0e75047190ce6197974a))
+
 ## [4.4.0](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.3.0...aurora-v4.4.0) (2026-09-17)
 
 
