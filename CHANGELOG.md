@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.4.2](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.1...aurora-v4.4.2) (2026-09-29)
+
+
+### Bug Fixes
+
+* update handling of data in CSV export ([d842083](https://github.com/RockefellerArchiveCenter/aurora/commit/d842083e0cd16b9bf0ab81efb6c73c02de133ec7))
+* update handling of data in CSV exports ([8f734a6](https://github.com/RockefellerArchiveCenter/aurora/commit/8f734a6f7e5678a56b9ff12acfe955789326cce7))
+
 ## [4.4.1](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.0...aurora-v4.4.1) (2026-09-22)
 
 
