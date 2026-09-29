@@ -89,7 +89,7 @@ class TransfersView(PageTitleMixin, LoggedInMixinDefaults, TemplateView):
         return context
 
 
-class TransferDataView(CSVResponseMixin, View):
+class TransferDataView(CSVResponseMixin, LoggedInMixinDefaults, View):
     model = Transfer
     prefix = 'transfers'
 
@@ -123,7 +123,7 @@ class TransferDataView(CSVResponseMixin, View):
         transfers = Transfer.objects.filter(process_status__gte=Transfer.TRANSFER_COMPLETED)
         if not self.request.user.is_archivist():
             self.organization = get_object_or_404(Organization, pk=self.request.user.organization.pk)
-            transfers.filter(organization=self.organization)
+            transfers = Transfer.objects.filter(process_status__gte=Transfer.TRANSFER_COMPLETED, organization=self.organization)
         for transfer in transfers.order_by("-created_time"):
             bag_info_data = transfer.bag_data
             data.append(

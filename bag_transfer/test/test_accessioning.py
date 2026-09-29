@@ -113,6 +113,10 @@ class AccessioningViewTests(helpers.TestMixin, TestCase):
         response = self.assert_status_code("get", reverse("accession:list"), 200)
         self.assertEqual(len(response.context["uploads"]), 4)
 
+    def test_csv_view(self):
+        response = self.assert_status_code("get", reverse("accession:data"), 200)
+        self.assertEqual(response.headers['Content-Type'], 'text/csv')
+
     @patch("requests.post")
     def test_create_view(self, mock_post):
         """Assert add view handles data and exceptions correctly."""

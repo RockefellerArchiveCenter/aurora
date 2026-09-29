@@ -384,7 +384,7 @@ class SavedAccessionsDatatableView(BaseDatatableView):
         return json_data
 
 
-class SavedAccessionsCsvView(CSVResponseMixin, View):
+class SavedAccessionsCsvView(CSVResponseMixin, OrgReadViewMixin, View):
     model = Transfer
     prefix = 'accessions'
 
@@ -405,7 +405,7 @@ class SavedAccessionsCsvView(CSVResponseMixin, View):
 
         accessions = Accession.objects.all()
         if not self.request.user.is_archivist():
-            accessions.filter(organization=self.request.user.organization)
+            accessions = Accession.objects.filter(organization=self.request.user.organization)
         for accession in accessions.order_by("-created"):
             data.append(
                 (
