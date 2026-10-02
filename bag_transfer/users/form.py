@@ -137,11 +137,7 @@ class UserPasswordChangeForm(PasswordChangeForm):
         cleaned_data = super().clean()
 
         if settings.COGNITO_USE:
-            cognito_client = boto3.client(
-                'cognito-idp',
-                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-                region_name=settings.COGNITO_REGION)
+            cognito_client = boto3.client('cognito-idp', region_name=settings.AWS_REGION)
             try:
                 cognito_client.change_password(
                     PreviousPassword=cleaned_data.get("old_password"),

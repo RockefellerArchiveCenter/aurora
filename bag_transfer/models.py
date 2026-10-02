@@ -66,9 +66,9 @@ class Organization(models.Model):
     @property
     def upload_target(self):
         if settings.S3_USE:
-            max_len = 63 - len(settings.S3_PREFIX) - 8  # ensure bucket name will not exceed max length
+            max_len = 63 - len(settings.S3_PREFIX)  # ensure bucket name will not exceed max length
             machine_name_truncated = self.machine_name[:max_len]
-            return f"{settings.S3_PREFIX}-{machine_name_truncated}-upload"
+            return f"{settings.S3_PREFIX}-{machine_name_truncated}"
         else:
             return join(settings.TRANSFER_UPLOADS_ROOT.rstrip("/"), self.machine_name, "upload")
 
@@ -84,10 +84,7 @@ class Organization(models.Model):
         return "".join([c for c in org_name.lower() if c.isalnum()]).strip()
 
     def get_policy_arn(self, policy_name):
-        sts_client = boto3.client(
-            'sts',
-            aws_access_key_id=settings.IAM_ACCESS_KEY,
-            aws_secret_access_key=settings.IAM_SECRET_KEY)
+        sts_client = boto3.client('sts', region_name=settings.AWS_REGION)
         account_id = sts_client.get_caller_identity()['Account']
         return f"arn:aws:iam::{account_id}:policy/{settings.IAM_PATH}/{policy_name}"
 
@@ -97,11 +94,7 @@ class Organization(models.Model):
         The `s3_client.create_bucket()` call will either create the bucket if it
         doesn't exist or return the bucket matching the provided key.
         """
-        s3_client = boto3.client(
-            's3',
-            aws_access_key_id=settings.S3_ACCESS_KEY,
-            aws_secret_access_key=settings.S3_SECRET_KEY,
-            region_name=settings.S3_REGION)
+        s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
         bucket = self.upload_target
         s3_client.create_bucket(Bucket=bucket)  # creates the bucket if it doesn't exist
         s3_client.put_public_access_block(
@@ -111,6 +104,7 @@ class Organization(models.Model):
                 'IgnorePublicAcls': True,
                 'BlockPublicPolicy': True,
                 'RestrictPublicBuckets': True})
+        # TODO enable GuardDuty
         return bucket
 
     def create_iam_user(self, bucket):
@@ -140,11 +134,7 @@ class Organization(models.Model):
                 }
             ]
         }
-        iam_client = boto3.client(
-            'iam',
-            aws_access_key_id=settings.IAM_ACCESS_KEY,
-            aws_secret_access_key=settings.IAM_SECRET_KEY,
-            region_name=settings.IAM_REGION)
+        iam_client = boto3.client('iam', region_name=settings.AWS_REGION)
         try:
             iam_client.create_user(
                 Path=formatted_path,
@@ -180,11 +170,7 @@ class Organization(models.Model):
     def deactivate_iam_user(self, user_name):
         """Removes the policy allowing organization IAM user access to S3 bucket."""
         environment = settings.IAM_PATH.rstrip('/').lstrip('/')
-        iam_client = boto3.client(
-            'iam',
-            aws_access_key_id=settings.IAM_ACCESS_KEY,
-            aws_secret_access_key=settings.IAM_SECRET_KEY,
-            region_name=settings.IAM_REGION)
+        iam_client = boto3.client('iam', region_name=settings.AWS_REGION)
         iam_client.remove_user_from_group(
             GroupName=f"{environment}-{user_name}-UserGroup",
             UserName=f"{environment}-{user_name}")
@@ -350,11 +336,7 @@ class User(AbstractUser):
     def cognito_status(self):
         """Returns user's status in AWS Cognito, if applicable."""
         if settings.COGNITO_USE:
-            cognito_client = boto3.client(
-                'cognito-idp',
-                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-                region_name=settings.COGNITO_REGION)
+            cognito_client = boto3.client('cognito-idp', region_name=settings.AWS_REGION)
             user = cognito_client.admin_get_user(
                 UserPoolId=settings.COGNITO_USER_POOL,
                 Username=self.username)
@@ -364,11 +346,7 @@ class User(AbstractUser):
 
     def resend_invitation(self):
         """Resends the initial password reset email."""
-        cognito_client = boto3.client(
-            'cognito-idp',
-            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-            region_name=settings.COGNITO_REGION)
+        cognito_client = boto3.client('cognito-idp', region_name=settings.AWS_REGION)
         cognito_client.admin_create_user(
             UserPoolId=settings.COGNITO_USER_POOL,
             Username=self.username,
@@ -379,11 +357,7 @@ class User(AbstractUser):
         """Adds additional behaviors to default save."""
         if settings.COGNITO_USE:
             """Behaviors for Cognito users."""
-            cognito_client = boto3.client(
-                'cognito-idp',
-                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-                region_name=settings.COGNITO_REGION)
+            cognito_client = boto3.client('cognito-idp', region_name=settings.AWS_REGION)
             if self.pk is None:
                 self.create_cognito_user(cognito_client)
                 if not settings.S3_USE:

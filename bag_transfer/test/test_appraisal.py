@@ -42,7 +42,7 @@ class AppraisalTestCase(helpers.TestMixin, TestCase):
     def test_reject_s3(self):
         transfer = random.choice(Transfer.objects.filter(process_status=Transfer.VALIDATED))
         with self.settings(S3_USE=True):
-            s3_client = boto3.client('s3')
+            s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
             s3_client.create_bucket(Bucket=settings.STORAGE_BUCKET)
             s3_client.put_object(
                 Body='mockfileobject',

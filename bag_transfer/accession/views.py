@@ -1,5 +1,6 @@
 import json
 
+import boto3
 import requests
 from dateutil import tz
 from django.conf import settings
@@ -14,7 +15,6 @@ from bag_transfer.accession.db_functions import GroupConcat
 from bag_transfer.accession.forms import AccessionForm, CreatorsFormSet
 from bag_transfer.accession.models import Accession
 from bag_transfer.api.serializers import AccessionSerializer
-from bag_transfer.authentication import get_aws_client_with_role
 from bag_transfer.lib.clients import ArchivesSpaceClient
 from bag_transfer.lib.view_helpers import file_size
 from bag_transfer.mixins.authmixins import (AccessioningArchivistMixin,
@@ -277,7 +277,7 @@ class AccessionCreateView(PageTitleMixin, AccessioningArchivistMixin, JSONRespon
         """
         client = None
         if all([getattr(settings, 'SNS_ROLE', None), getattr(settings, 'SNS_TOPIC', None)]):
-            client = get_aws_client_with_role('sns', settings.SNS_ROLE)
+            client = boto3.client('sns', region_name=settings.AWS_REGION)
         for transfer in transfers_list:
             BAGLog.log_it("BACC", transfer)
             transfer.process_status = Transfer.ACCESSIONING_STARTED

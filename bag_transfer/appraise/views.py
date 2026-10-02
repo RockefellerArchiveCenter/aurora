@@ -34,11 +34,7 @@ class AppraiseView(PageTitleMixin, ArchivistMixin, JSONResponseMixin, ListView):
         BAGLog.log_it(("BACPT" if appraisal_decision else "BREJ"), upload)
         if not appraisal_decision:
             if settings.S3_USE:
-                s3_client = boto3.client(
-                    's3',
-                    aws_access_key_id=settings.S3_ACCESS_KEY,
-                    aws_secret_access_key=settings.S3_SECRET_KEY,
-                    region_name=settings.S3_REGION)
+                s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
                 s3_client.delete_object(
                     Bucket=settings.STORAGE_BUCKET,
                     Key=f"{upload.machine_file_identifier}.tar.gz")

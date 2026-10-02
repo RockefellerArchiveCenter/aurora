@@ -149,11 +149,9 @@ class AccessioningViewTests(helpers.TestMixin, TestCase):
         self.assert_status_code("get", reverse("accession:detail", kwargs={"pk": accession.pk}), 200)
 
     @mock_aws
-    @patch('bag_transfer.accession.views.get_aws_client_with_role')
-    def test_update_accession_transfers(self, mock_role):
+    def test_update_accession_transfers(self):
         """Tests that SNS message is sent with correct args when accessioning is started."""
         sns = boto3.client('sns', region_name='us-east-1')
-        mock_role.return_value = sns
         topic_arn = sns.create_topic(Name='my-topic')['TopicArn']
         sqs_conn = boto3.resource("sqs", region_name="us-east-1")
         sqs_conn.create_queue(QueueName="test-queue")
@@ -170,7 +168,6 @@ class AccessioningViewTests(helpers.TestMixin, TestCase):
                 creator=random.choice(RecordCreators.objects.all()))
             self.assert_status_code("post", "{}?transfers={}".format(reverse("accession:add"), joined_list), 302, data=accession_data)
 
-            mock_role.assert_called_once_with('sns', sns_role_arn)
             queue = sqs_conn.get_queue_by_name(QueueName="test-queue")
             messages = queue.receive_messages(MaxNumberOfMessages=len(id_list))
             for message in messages:

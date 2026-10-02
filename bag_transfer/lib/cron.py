@@ -92,11 +92,7 @@ class DiscoverTransfers(CronJobBase):
                             join(settings.TRANSFER_EXTRACT_TMP, tar_filename),
                             remove_src=True)
                         if settings.S3_USE:
-                            s3_client = boto3.client(
-                                's3',
-                                aws_access_key_id=settings.S3_ACCESS_KEY,
-                                aws_secret_access_key=settings.S3_SECRET_KEY,
-                                region_name=settings.S3_REGION)
+                            s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
                             s3_client.upload_file(
                                 join(settings.TRANSFER_EXTRACT_TMP, tar_filename),
                                 settings.STORAGE_BUCKET,
@@ -150,11 +146,7 @@ class DeliverTransfers(CronJobBase):
                 mkdir(target_dir)
                 tar_filename = "{}.tar.gz".format(transfer.machine_file_identifier)
                 if settings.S3_USE:
-                    s3_client = boto3.client(
-                        's3',
-                        aws_access_key_id=settings.S3_ACCESS_KEY,
-                        aws_secret_access_key=settings.S3_SECRET_KEY,
-                        region_name=settings.S3_REGION)
+                    s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
                     s3_client.download_file(
                         settings.STORAGE_BUCKET,
                         transfer.machine_file_path,
@@ -174,11 +166,7 @@ class DeliverTransfers(CronJobBase):
                 if settings.S3_DELIVER:
                     delivery_tar_filename = join(settings.DELIVERY_QUEUE_DIR, tar_filename)
                     make_tarfile(target_dir, delivery_tar_filename)
-                    s3_client = boto3.client(
-                        's3',
-                        aws_access_key_id=settings.S3_ACCESS_KEY,
-                        aws_secret_access_key=settings.S3_SECRET_KEY,
-                        region_name=settings.S3_REGION)
+                    s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
                     s3_client.upload_file(
                         delivery_tar_filename,
                         settings.DELIVERY_BUCKET,
@@ -209,11 +197,7 @@ class RotateKeys(CronJobBase):
         Pter.cron_open(self.code)
         tz = timezone(settings.TIME_ZONE)
         current_date = datetime.now(tz)
-        iam_client = boto3.client(
-            'iam',
-            aws_access_key_id=settings.IAM_ACCESS_KEY,
-            aws_secret_access_key=settings.IAM_SECRET_KEY,
-            region_name=settings.IAM_REGION)
+        iam_client = boto3.client('iam', region_name=settings.AWS_REGION)
         for org in Organization.objects.filter(s3_username__isnull=False):
             last_updated = org.s3_credentials_updated if org.s3_credentials_updated else current_date - timedelta(days=settings.S3_KEY_ROTATION_PERIOD)
             date_difference = current_date - last_updated

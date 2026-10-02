@@ -98,7 +98,7 @@ class RotateKeysCronTest(TransactionTestCase):
         org.s3_secret_access_key = initial_secret_access_key
         org.s3_credentials_updated = initial_updated
         org.save()
-        iam_client = boto3.client('iam')
+        iam_client = boto3.client('iam', region_name=settings.AWS_REGION)
         iam_client.create_user(UserName=s3_username)
 
         RotateKeys().do()

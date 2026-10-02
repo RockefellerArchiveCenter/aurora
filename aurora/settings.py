@@ -110,12 +110,12 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = ("django.contrib.auth.backends.ModelBackend",)
 
+# AWS
+AWS_REGION = config.AWS_REGION
+
 # Amazon Cognito
 COGNITO_USE = config.COGNITO_USE
 COGNITO_USER_POOL = config.COGNITO_USER_POOL
-COGNITO_REGION = config.COGNITO_REGION
-COGNITO_ACCESS_KEY = config.COGNITO_ACCESS_KEY
-COGNITO_SECRET_KEY = config.COGNITO_SECRET_KEY
 
 # COGNITO_CLIENT
 COGNITO_CLIENT = {
@@ -129,7 +129,7 @@ COGNITO_CLIENT = {
         'token_endpoint_auth_method': 'client_secret_basic',
     },
     'userinfo_endpoint': '/oauth2/userInfo',
-    'jwks_url': f"https://cognito-idp.{COGNITO_REGION}.amazonaws.com/{COGNITO_USER_POOL}/.well-known/jwks.json",
+    'jwks_url': f"https://cognito-idp.{config.AWS_REGION}.amazonaws.com/{COGNITO_USER_POOL}/.well-known/jwks.json",
 }
 
 COGNITO_CLIENT_CALLBACK_URL = config.COGNITO_CLIENT_CALLBACK_URL
@@ -174,13 +174,7 @@ CSP_FONT_SRC = ("'self'", 'https://assets.rockarch.org/')
 S3_USE = config.S3_USE
 S3_KEY_ROTATION_PERIOD = int(config.S3_KEY_ROTATION_PERIOD)
 S3_DELIVER = config.S3_DELIVER
-S3_ACCESS_KEY = config.S3_ACCESS_KEY
-S3_SECRET_KEY = config.S3_SECRET_KEY
-S3_REGION = config.S3_REGION
 S3_PREFIX = config.S3_PREFIX
-IAM_ACCESS_KEY = config.IAM_ACCESS_KEY
-IAM_SECRET_KEY = config.IAM_SECRET_KEY
-IAM_REGION = config.IAM_REGION
 IAM_PATH = config.IAM_PATH
 STORAGE_ROOT_DIR = config.TRANSFER_STORAGE_ROOT_DIR
 STORAGE_BUCKET = f"{config.S3_PREFIX}-storage"
@@ -250,4 +244,3 @@ except ValueError:
 
 # AWS SNS settings
 SNS_TOPIC = getattr(config, "SNS_TOPIC", None)
-SNS_ROLE = getattr(config, "SNS_ROLE", None)

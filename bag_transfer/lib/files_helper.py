@@ -10,7 +10,7 @@ from uuid import uuid4
 import boto3
 from django.conf import settings
 
-from ..models import Transfer
+from bag_transfer.models import Transfer
 
 
 def copy_file_or_dir(src, dest):
@@ -182,11 +182,7 @@ def chown_path_to_root(file_path):
 
 def s3_bucket_exists(bucket_name, client=None):
     """Checks to see if an S3 bucket exists."""
-    s3_client = client or boto3.client(
-        's3',
-        aws_access_key_id=settings.S3_ACCESS_KEY,
-        aws_secret_access_key=settings.S3_SECRET_KEY,
-        region_name=settings.S3_REGION)
+    s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
     try:
         s3_client.head_bucket(Bucket=bucket_name)
         return True

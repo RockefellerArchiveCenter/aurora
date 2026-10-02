@@ -142,11 +142,7 @@ class CognitoTestCase(TestMixin, TestCase):
             organization=random.choice(Organization.objects.all()))
         self.assertEqual(mock_add_user.call_count, 1)
         self.assertEqual(mock_add2grp.call_count, 1)
-        mock_boto.assert_called_once_with(
-            'cognito-idp',
-            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-            region_name=settings.COGNITO_REGION)
+        mock_boto.assert_called_once_with('cognito-idp', region_name=settings.AWS_REGION)
         mock_boto().admin_create_user.assert_called_once_with(
             UserPoolId=settings.COGNITO_USER_POOL,
             Username=mock_username,
@@ -165,11 +161,7 @@ class CognitoTestCase(TestMixin, TestCase):
         user.save()
         self.assertEqual(mock_add_user.call_count, 0)
         self.assertEqual(mock_add2grp.call_count, 0)
-        mock_boto.assert_called_once_with(
-            'cognito-idp',
-            aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-            aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-            region_name=settings.COGNITO_REGION)
+        mock_boto.assert_called_once_with('cognito-idp', region_name=settings.AWS_REGION)
         mock_boto().admin_get_user.assert_called_once_with(
             UserPoolId=settings.COGNITO_USER_POOL,
             Username=user.username)

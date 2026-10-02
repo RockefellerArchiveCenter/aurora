@@ -110,11 +110,7 @@ class TransferRoutine(object):
                     "count": 0}
             upload_path = org.upload_target
             if settings.S3_USE:
-                s3_client = boto3.client(
-                    's3',
-                    aws_access_key_id=settings.S3_ACCESS_KEY,
-                    aws_secret_access_key=settings.S3_SECRET_KEY,
-                    region_name=settings.S3_REGION)
+                s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
                 paginator = s3_client.get_paginator('list_objects_v2')
                 results = paginator.paginate(Bucket=upload_path)
                 for page in results:
@@ -137,11 +133,7 @@ class TransferRoutine(object):
         """Moves transfer from upload target to processing directory."""
         upload_path = Organization.objects.get(machine_name=org).upload_target
         if settings.S3_USE:
-            s3_client = boto3.client(
-                's3',
-                aws_access_key_id=settings.S3_ACCESS_KEY,
-                aws_secret_access_key=settings.S3_SECRET_KEY,
-                region_name=settings.S3_REGION)
+            s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
             if os.path.dirname(file_path):
                 target_dir = os.path.join(self.tmp_dir, os.path.dirname(file_path))
                 if not os.path.exists(target_dir):

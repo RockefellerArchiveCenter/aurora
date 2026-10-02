@@ -34,11 +34,7 @@ def move_files_to_s3():
             tar_filename = f"{filename}.tar.gz"
             local_tarpath = os.path.join(settings.STORAGE_ROOT_DIR, tar_filename)
             make_tarfile(local_filepath, local_tarpath)
-            s3_client = boto3.client(
-                's3',
-                aws_access_key_id=settings.S3_ACCESS_KEY,
-                aws_secret_access_key=settings.S3_SECRET_KEY,
-                region_name=settings.S3_REGION)
+            s3_client = boto3.client('s3', region_name=settings.AWS_REGION)
             s3_client.upload_file(local_tarpath, settings.STORAGE_BUCKET, tar_filename)
             transfer_obj.machine_file_path = tar_filename
             transfer_obj.save()
@@ -52,11 +48,7 @@ def reset_user_passwords():
     for user in User.objects.filter(is_active=True):
         if settings.COGNITO_USE:
             print(f"Resetting password for {user.username}")
-            cognito_client = boto3.client(
-                'cognito-idp',
-                aws_access_key_id=settings.COGNITO_ACCESS_KEY,
-                aws_secret_access_key=settings.COGNITO_SECRET_KEY,
-                region_name=settings.COGNITO_REGION)
+            cognito_client = boto3.client('cognito-idp', region_name=settings.AWS_REGION)
             user.create_cognito_user(cognito_client)
             if not settings.S3_USE:
                 user.create_system_user()
