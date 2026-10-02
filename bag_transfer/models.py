@@ -104,7 +104,11 @@ class Organization(models.Model):
                 'IgnorePublicAcls': True,
                 'BlockPublicPolicy': True,
                 'RestrictPublicBuckets': True})
-        # TODO enable GuardDuty
+        guardduty_client = boto3.client('guardduty', region_name=settings.AWS_REGION)
+        guardduty_client.create_malware_protection_plan(
+            Role=settings.GUARDDUTY_ROLE_ARN,
+            ProtectedResource={'S3Bucket': {'BucketName': bucket}},
+            Actions={'Tagging': {'Status': 'DISABLED'}})
         return bucket
 
     def create_iam_user(self, bucket):

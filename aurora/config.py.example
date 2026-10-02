@@ -37,6 +37,7 @@ AWS_REGION = "us-east-1" # Region in which AWS resources are located
 S3_USE = False  # Use Amazon S3 as a storage layer (boolean)
 S3_KEY_ROTATION_PERIOD = 90 # Number of days at which AWS access keys should be rotated (integer)
 S3_DELIVER = False # Deliver to Amazon S3 bucket after processing (boolean)
+GUARDDUTY_ROLE_ARN = "arn:aws:iam:role/guardduty_role"  # ARN for GuardDuty Role which has permissions to run malware checks on objects in buckets
 IAM_PATH = "auroradev"  # Path at which to create IAM user (see https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_identifiers.html) (string)
 TRANSFER_STORAGE_ROOT_DIR = "/data1/"  # directory in which transfers are stored (string)
 TRANSFER_DELIVERY_QUEUE_DIR = "/delivery/"  # directory in which transfers waiting for delivery are stored (string)

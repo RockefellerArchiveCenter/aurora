@@ -175,6 +175,7 @@ S3_USE = config.S3_USE
 S3_KEY_ROTATION_PERIOD = int(config.S3_KEY_ROTATION_PERIOD)
 S3_DELIVER = config.S3_DELIVER
 S3_PREFIX = config.S3_PREFIX
+GUARDDUTY_ROLE_ARN = config.GUARDDUTY_ROLE_ARN
 IAM_PATH = config.IAM_PATH
 STORAGE_ROOT_DIR = config.TRANSFER_STORAGE_ROOT_DIR
 STORAGE_BUCKET = f"{config.S3_PREFIX}-storage"
@@ -224,7 +225,6 @@ ASPACE = {
 
 # Matomo Analytics configs
 MTM_ID = config.MTM_ID
-
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
