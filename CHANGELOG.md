@@ -1,5 +1,15 @@
 # Changelog
 
+## [4.4.4](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.3...aurora-v4.4.4) (2026-10-19)
+
+
+### Bug Fixes
+
+* get rid of extra p tag ([0a8166b](https://github.com/RockefellerArchiveCenter/aurora/commit/0a8166b1eb263ae0994c9491d25700d2087b900c))
+* remove extra closing p tag in footer ([afff942](https://github.com/RockefellerArchiveCenter/aurora/commit/afff94219ee30fe659cc256ee2ecbc27ea490e17))
+* update footer ([d497013](https://github.com/RockefellerArchiveCenter/aurora/commit/d4970139ff829aa79cbeda3a953b66c70586d43d))
+* update reading room hours in footer ([b59968a](https://github.com/RockefellerArchiveCenter/aurora/commit/b59968a80ded3026f133e3b49512baa817372b62))
+
 ## [4.4.3](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.2...aurora-v4.4.3) (2026-10-05)
 
 
