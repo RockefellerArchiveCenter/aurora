@@ -1,5 +1,16 @@
 # Changelog
 
+## [4.4.5](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.4...aurora-v4.4.5) (2026-10-21)
+
+
+### Bug Fixes
+
+* pip and deps ([063da25](https://github.com/RockefellerArchiveCenter/aurora/commit/063da25a0da4d8b8d625ee13cf07158d7b6d36ff))
+* pip and deps ([063da25](https://github.com/RockefellerArchiveCenter/aurora/commit/063da25a0da4d8b8d625ee13cf07158d7b6d36ff))
+* pip and deps ([6977690](https://github.com/RockefellerArchiveCenter/aurora/commit/6977690e91d860303e00fa55bf43ba199a243734))
+* pip and deps ([6977690](https://github.com/RockefellerArchiveCenter/aurora/commit/6977690e91d860303e00fa55bf43ba199a243734))
+* pip and deps ([6bc0d37](https://github.com/RockefellerArchiveCenter/aurora/commit/6bc0d3773059c4844aae4b158d323acc723f9801))
+
 ## [4.4.4](https://github.com/RockefellerArchiveCenter/aurora/compare/aurora-v4.4.3...aurora-v4.4.4) (2026-10-19)
 
 
