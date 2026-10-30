@@ -70,7 +70,7 @@
       <div class="card card--container">
         <h2>Recent Transfers</h2>
         {% if org.uploads %}
-          <ol class="list--unstyled container--full-width">
+          <ol class="list--unstyled container--full-width" role="list">
             {% for upload in org.uploads %}
               <li>
                 {% include 'parts/uploads_list_item.html' %}

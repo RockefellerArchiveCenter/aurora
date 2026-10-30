@@ -20,7 +20,7 @@
 {% block content %}
 <div class="card card--container flex--column mb-40">
   <h2>Applies to Record Type(s)</h2>
-  <ol class="list--unstyled list__badge">
+  <ol class="list--unstyled list__badge" role="list">
     {% for t in object.applies_to_type.all %}<li><span class="badge badge--light-blue">{{t}}</span></li> {% endfor %}
   </ol>
 </div>
