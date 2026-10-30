@@ -286,6 +286,11 @@ div.badge {
 	color: #fff;
 	text-align: center;
 }
+.login__credit a,
+.login__credit a:hover,
+.login__credit a:focus {
+    color: #ffffff;
+}
 
 .login__logo {
 	font-family: "Satisfy", cursive;
